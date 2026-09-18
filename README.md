@@ -8,7 +8,8 @@ Source of truth for every TANK wire type: Connect RPC services, realtime WebSock
 | `tank.auth.v1` | principals (user / bot / agent), magic link, OIDC code exchange, refresh, gateway token |
 | `tank.workspace.v1` | workspaces, members, roles, the one-call `GetBootstrap` |
 | `tank.channel.v1` | channels (presented as **Treads**) with the pinned `TreadGoal`, read state |
-| `tank.message.v1` | messages, threads, reactions, read marks, block actions; `RichText` AST |
+| `tank.richtext.v1` | portable `RichText` AST shared by messages and blocks |
+| `tank.message.v1` | messages, threads, reactions, read marks, block actions |
 | `tank.blocks.v1` | cards agents post: plan, diff, CI status, approval, tool log, status |
 | `tank.presence.v1` | presence incl. **Armor Mode** |
 | `tank.files.v1` | presigned uploads, signed downloads |

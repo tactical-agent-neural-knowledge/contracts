@@ -2,7 +2,7 @@ from google.protobuf import struct_pb2 as _struct_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from tank.auth.v1 import auth_pb2 as _auth_pb2
 from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
-from tank.message.v1 import richtext_pb2 as _richtext_pb2
+from tank.richtext.v1 import richtext_pb2 as _richtext_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor

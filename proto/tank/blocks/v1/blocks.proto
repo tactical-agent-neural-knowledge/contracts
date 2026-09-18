@@ -3,7 +3,7 @@ syntax = "proto3";
 package tank.blocks.v1;
 
 import "google/protobuf/timestamp.proto";
-import "tank/message/v1/richtext.proto";
+import "tank/richtext/v1/richtext.proto";
 
 // Rich "cards" rendered identically by web and mobile. Agents post these.
 message Blocks {
@@ -33,7 +33,7 @@ message Header {
 }
 
 message Section {
-  tank.message.v1.RichText text = 1;
+  tank.richtext.v1.RichText text = 1;
   repeated Field fields = 2;
   Button accessory = 3;
 }
@@ -44,7 +44,7 @@ message Field {
 }
 
 message Context {
-  repeated tank.message.v1.RichText elements = 1;
+  repeated tank.richtext.v1.RichText elements = 1;
 }
 
 message Divider {}

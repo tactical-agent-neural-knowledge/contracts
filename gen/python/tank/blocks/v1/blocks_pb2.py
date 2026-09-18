@@ -23,10 +23,10 @@ _sym_db = _symbol_database.Default()
 
 
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
-from tank.message.v1 import richtext_pb2 as tank_dot_message_dot_v1_dot_richtext__pb2
+from tank.richtext.v1 import richtext_pb2 as tank_dot_richtext_dot_v1_dot_richtext__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1btank/blocks/v1/blocks.proto\x12\x0etank.blocks.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1etank/message/v1/richtext.proto\"7\n\x06\x42locks\x12-\n\x06\x62locks\x18\x01 \x03(\x0b\x32\x15.tank.blocks.v1.BlockR\x06\x62locks\"\xe6\x05\n\x05\x42lock\x12\x19\n\x08\x62lock_id\x18\x01 \x01(\tR\x07\x62lockId\x12\x30\n\x06header\x18\x02 \x01(\x0b\x32\x16.tank.blocks.v1.HeaderH\x00R\x06header\x12\x33\n\x07section\x18\x03 \x01(\x0b\x32\x17.tank.blocks.v1.SectionH\x00R\x07section\x12\x33\n\x07\x63ontext\x18\x04 \x01(\x0b\x32\x17.tank.blocks.v1.ContextH\x00R\x07\x63ontext\x12\x33\n\x07\x64ivider\x18\x05 \x01(\x0b\x32\x17.tank.blocks.v1.DividerH\x00R\x07\x64ivider\x12\x33\n\x07\x61\x63tions\x18\x06 \x01(\x0b\x32\x17.tank.blocks.v1.ActionsH\x00R\x07\x61\x63tions\x12\x37\n\tplan_card\x18\x07 \x01(\x0b\x32\x18.tank.blocks.v1.PlanCardH\x00R\x08planCard\x12@\n\x0c\x64iff_preview\x18\x08 \x01(\x0b\x32\x1b.tank.blocks.v1.DiffPreviewH\x00R\x0b\x64iffPreview\x12\x37\n\tci_status\x18\t \x01(\x0b\x32\x18.tank.blocks.v1.CiStatusH\x00R\x08\x63iStatus\x12I\n\x0f\x61pproval_prompt\x18\n \x01(\x0b\x32\x1e.tank.blocks.v1.ApprovalPromptH\x00R\x0e\x61pprovalPrompt\x12\x34\n\x08tool_log\x18\x0b \x01(\x0b\x32\x17.tank.blocks.v1.ToolLogH\x00R\x07toolLog\x12@\n\x0c\x66ile_preview\x18\x0c \x01(\x0b\x32\x1b.tank.blocks.v1.FilePreviewH\x00R\x0b\x66ilePreview\x12=\n\x0bstatus_card\x18\r \x01(\x0b\x32\x1a.tank.blocks.v1.StatusCardH\x00R\nstatusCardB\x06\n\x04kind\"\x1c\n\x06Header\x12\x12\n\x04text\x18\x01 \x01(\tR\x04text\"\x9d\x01\n\x07Section\x12-\n\x04text\x18\x01 \x01(\x0b\x32\x19.tank.message.v1.RichTextR\x04text\x12-\n\x06\x66ields\x18\x02 \x03(\x0b\x32\x15.tank.blocks.v1.FieldR\x06\x66ields\x12\x34\n\taccessory\x18\x03 \x01(\x0b\x32\x16.tank.blocks.v1.ButtonR\taccessory\"3\n\x05\x46ield\x12\x14\n\x05label\x18\x01 \x01(\tR\x05label\x12\x14\n\x05value\x18\x02 \x01(\tR\x05value\"@\n\x07\x43ontext\x12\x35\n\x08\x65lements\x18\x01 \x03(\x0b\x32\x19.tank.message.v1.RichTextR\x08\x65lements\"\t\n\x07\x44ivider\"\xc7\x01\n\x06\x42utton\x12\x1b\n\taction_id\x18\x01 \x01(\tR\x08\x61\x63tionId\x12\x12\n\x04text\x18\x02 \x01(\tR\x04text\x12\x14\n\x05value\x18\x03 \x01(\tR\x05value\x12\x31\n\x05style\x18\x04 \x01(\x0e\x32\x1b.tank.blocks.v1.ButtonStyleR\x05style\x12\x10\n\x03url\x18\x05 \x01(\tR\x03url\x12\x31\n\x07\x63onfirm\x18\x06 \x01(\x0b\x32\x17.tank.blocks.v1.ConfirmR\x07\x63onfirm\"a\n\x07\x43onfirm\x12\x14\n\x05title\x18\x01 \x01(\tR\x05title\x12\x12\n\x04text\x18\x02 \x01(\tR\x04text\x12\x18\n\x07\x63onfirm\x18\x03 \x01(\tR\x07\x63onfirm\x12\x12\n\x04\x64\x65ny\x18\x04 \x01(\tR\x04\x64\x65ny\";\n\x07\x41\x63tions\x12\x30\n\x07\x62uttons\x18\x01 \x03(\x0b\x32\x16.tank.blocks.v1.ButtonR\x07\x62uttons\"z\n\x08PlanStep\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n\x05title\x18\x02 \x01(\tR\x05title\x12\x32\n\x06status\x18\x03 \x01(\x0e\x32\x1a.tank.blocks.v1.StepStatusR\x06status\x12\x14\n\x05\x66iles\x18\x04 \x03(\tR\x05\x66iles\"\xe2\x01\n\x08PlanCard\x12\x18\n\x07summary\x18\x01 \x01(\tR\x07summary\x12.\n\x05steps\x18\x02 \x03(\x0b\x32\x18.tank.blocks.v1.PlanStepR\x05steps\x12\x14\n\x05risks\x18\x03 \x03(\tR\x05risks\x12\x1c\n\tquestions\x18\x04 \x03(\tR\tquestions\x12!\n\x0c\x61pprover_ids\x18\x05 \x03(\tR\x0b\x61pproverIds\x12\x1b\n\tplan_hash\x18\x06 \x01(\tR\x08planHash\x12\x18\n\x07version\x18\x07 \x01(\x05R\x07version\"}\n\x08\x44iffFile\x12\x12\n\x04path\x18\x01 \x01(\tR\x04path\x12\x1c\n\tadditions\x18\x02 \x01(\x05R\tadditions\x12\x1c\n\tdeletions\x18\x03 \x01(\x05R\tdeletions\x12!\n\x0chunk_preview\x18\x04 \x01(\tR\x0bhunkPreview\"\xcf\x01\n\x0b\x44iffPreview\x12\x1d\n\ncommit_sha\x18\x01 \x01(\tR\tcommitSha\x12\x1f\n\x0b\x63ompare_url\x18\x02 \x01(\tR\ncompareUrl\x12.\n\x05\x66iles\x18\x03 \x03(\x0b\x32\x18.tank.blocks.v1.DiffFileR\x05\x66iles\x12\'\n\x0ftotal_additions\x18\x04 \x01(\x05R\x0etotalAdditions\x12\'\n\x0ftotal_deletions\x18\x05 \x01(\x05R\x0etotalDeletions\"\x88\x01\n\x05\x43heck\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x30\n\x05state\x18\x02 \x01(\x0e\x32\x1a.tank.blocks.v1.CheckStateR\x05state\x12\x10\n\x03url\x18\x03 \x01(\tR\x03url\x12\'\n\x0f\x66\x61ilure_excerpt\x18\x04 \x01(\tR\x0e\x66\x61ilureExcerpt\"\x88\x01\n\x08\x43iStatus\x12\x19\n\x08head_sha\x18\x01 \x01(\tR\x07headSha\x12-\n\x06\x63hecks\x18\x02 \x03(\x0b\x32\x15.tank.blocks.v1.CheckR\x06\x63hecks\x12\x15\n\x06pr_url\x18\x03 \x01(\tR\x05prUrl\x12\x1b\n\tpr_number\x18\x04 \x01(\x05R\x08prNumber\"\xaa\x02\n\x0e\x41pprovalPrompt\x12\x17\n\x07gate_id\x18\x01 \x01(\tR\x06gateId\x12,\n\x04kind\x18\x02 \x01(\x0e\x32\x18.tank.blocks.v1.GateKindR\x04kind\x12\x18\n\x07subject\x18\x03 \x01(\tR\x07subject\x12!\n\x0c\x61pprover_ids\x18\x04 \x03(\tR\x0b\x61pproverIds\x12#\n\rmin_approvals\x18\x05 \x01(\x05R\x0cminApprovals\x12\x39\n\nexpires_at\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\texpiresAt\x12\x18\n\x07\x64\x65\x63ided\x18\x07 \x01(\x08R\x07\x64\x65\x63ided\x12\x1a\n\x08\x64\x65\x63ision\x18\x08 \x01(\tR\x08\x64\x65\x63ision\"x\n\x0cToolLogEntry\x12*\n\x02\x61t\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x02\x61t\x12\x12\n\x04tool\x18\x02 \x01(\tR\x04tool\x12\x18\n\x07summary\x18\x03 \x01(\tR\x07summary\x12\x0e\n\x02ok\x18\x04 \x01(\x08R\x02ok\"\xbb\x01\n\x07ToolLog\x12\x14\n\x05phase\x18\x01 \x01(\tR\x05phase\x12\x1d\n\ntool_calls\x18\x02 \x01(\x05R\ttoolCalls\x12!\n\x0c\x66iles_edited\x18\x03 \x01(\x05R\x0b\x66ilesEdited\x12\x34\n\x06recent\x18\x04 \x03(\x0b\x32\x1c.tank.blocks.v1.ToolLogEntryR\x06recent\x12\"\n\rrun_panel_url\x18\x05 \x01(\tR\x0brunPanelUrl\"\x87\x01\n\x0b\x46ilePreview\x12\x17\n\x07\x66ile_id\x18\x01 \x01(\tR\x06\x66ileId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n\x04mime\x18\x03 \x01(\tR\x04mime\x12\x12\n\x04size\x18\x04 \x01(\x03R\x04size\x12#\n\rthumbnail_url\x18\x05 \x01(\tR\x0cthumbnailUrl\"\xe3\x01\n\nStatusCard\x12\x15\n\x06run_id\x18\x01 \x01(\tR\x05runId\x12\x14\n\x05state\x18\x02 \x01(\tR\x05state\x12\x16\n\x06\x64\x65tail\x18\x03 \x01(\tR\x06\x64\x65tail\x12\x16\n\x06\x62ranch\x18\x04 \x01(\tR\x06\x62ranch\x12\x19\n\x08\x63ost_usd\x18\x05 \x01(\x01R\x07\x63ostUsd\x12\x39\n\nstarted_at\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tstartedAt\x12\"\n\rrun_panel_url\x18\x07 \x01(\tR\x0brunPanelUrl\"\xbf\x01\n\x0b\x42lockAction\x12\x1d\n\nmessage_id\x18\x01 \x01(\tR\tmessageId\x12\x19\n\x08\x62lock_id\x18\x02 \x01(\tR\x07\x62lockId\x12\x1b\n\taction_id\x18\x03 \x01(\tR\x08\x61\x63tionId\x12\x14\n\x05value\x18\x04 \x01(\tR\x05value\x12\x17\n\x07user_id\x18\x05 \x01(\tR\x06userId\x12*\n\x02\x61t\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x02\x61t*^\n\x0b\x42uttonStyle\x12\x1c\n\x18\x42UTTON_STYLE_UNSPECIFIED\x10\x00\x12\x18\n\x14\x42UTTON_STYLE_PRIMARY\x10\x01\x12\x17\n\x13\x42UTTON_STYLE_DANGER\x10\x02*\xa2\x01\n\nStepStatus\x12\x1b\n\x17STEP_STATUS_UNSPECIFIED\x10\x00\x12\x17\n\x13STEP_STATUS_PENDING\x10\x01\x12\x17\n\x13STEP_STATUS_RUNNING\x10\x02\x12\x14\n\x10STEP_STATUS_DONE\x10\x03\x12\x16\n\x12STEP_STATUS_FAILED\x10\x04\x12\x17\n\x13STEP_STATUS_SKIPPED\x10\x05*\xa7\x01\n\nCheckState\x12\x1b\n\x17\x43HECK_STATE_UNSPECIFIED\x10\x00\x12\x16\n\x12\x43HECK_STATE_QUEUED\x10\x01\x12\x17\n\x13\x43HECK_STATE_RUNNING\x10\x02\x12\x17\n\x13\x43HECK_STATE_SUCCESS\x10\x03\x12\x17\n\x13\x43HECK_STATE_FAILURE\x10\x04\x12\x19\n\x15\x43HECK_STATE_CANCELLED\x10\x05*\xbf\x01\n\x08GateKind\x12\x19\n\x15GATE_KIND_UNSPECIFIED\x10\x00\x12\x12\n\x0eGATE_KIND_PLAN\x10\x01\x12\x1a\n\x16GATE_KIND_SCOPE_CHANGE\x10\x02\x12\x13\n\x0fGATE_KIND_MERGE\x10\x03\x12\x14\n\x10GATE_KIND_DEPLOY\x10\x04\x12\x1e\n\x1aGATE_KIND_DESTRUCTIVE_TOOL\x10\x05\x12\x1d\n\x19GATE_KIND_BUDGET_INCREASE\x10\x06\x42\xd0\x01\n\x12\x63om.tank.blocks.v1B\x0b\x42locksProtoP\x01ZSgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/blocks/v1;blocksv1\xa2\x02\x03TBX\xaa\x02\x0eTank.Blocks.V1\xca\x02\x0eTank\\Blocks\\V1\xe2\x02\x1aTank\\Blocks\\V1\\GPBMetadata\xea\x02\x10Tank::Blocks::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1btank/blocks/v1/blocks.proto\x12\x0etank.blocks.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1ftank/richtext/v1/richtext.proto\"7\n\x06\x42locks\x12-\n\x06\x62locks\x18\x01 \x03(\x0b\x32\x15.tank.blocks.v1.BlockR\x06\x62locks\"\xe6\x05\n\x05\x42lock\x12\x19\n\x08\x62lock_id\x18\x01 \x01(\tR\x07\x62lockId\x12\x30\n\x06header\x18\x02 \x01(\x0b\x32\x16.tank.blocks.v1.HeaderH\x00R\x06header\x12\x33\n\x07section\x18\x03 \x01(\x0b\x32\x17.tank.blocks.v1.SectionH\x00R\x07section\x12\x33\n\x07\x63ontext\x18\x04 \x01(\x0b\x32\x17.tank.blocks.v1.ContextH\x00R\x07\x63ontext\x12\x33\n\x07\x64ivider\x18\x05 \x01(\x0b\x32\x17.tank.blocks.v1.DividerH\x00R\x07\x64ivider\x12\x33\n\x07\x61\x63tions\x18\x06 \x01(\x0b\x32\x17.tank.blocks.v1.ActionsH\x00R\x07\x61\x63tions\x12\x37\n\tplan_card\x18\x07 \x01(\x0b\x32\x18.tank.blocks.v1.PlanCardH\x00R\x08planCard\x12@\n\x0c\x64iff_preview\x18\x08 \x01(\x0b\x32\x1b.tank.blocks.v1.DiffPreviewH\x00R\x0b\x64iffPreview\x12\x37\n\tci_status\x18\t \x01(\x0b\x32\x18.tank.blocks.v1.CiStatusH\x00R\x08\x63iStatus\x12I\n\x0f\x61pproval_prompt\x18\n \x01(\x0b\x32\x1e.tank.blocks.v1.ApprovalPromptH\x00R\x0e\x61pprovalPrompt\x12\x34\n\x08tool_log\x18\x0b \x01(\x0b\x32\x17.tank.blocks.v1.ToolLogH\x00R\x07toolLog\x12@\n\x0c\x66ile_preview\x18\x0c \x01(\x0b\x32\x1b.tank.blocks.v1.FilePreviewH\x00R\x0b\x66ilePreview\x12=\n\x0bstatus_card\x18\r \x01(\x0b\x32\x1a.tank.blocks.v1.StatusCardH\x00R\nstatusCardB\x06\n\x04kind\"\x1c\n\x06Header\x12\x12\n\x04text\x18\x01 \x01(\tR\x04text\"\x9e\x01\n\x07Section\x12.\n\x04text\x18\x01 \x01(\x0b\x32\x1a.tank.richtext.v1.RichTextR\x04text\x12-\n\x06\x66ields\x18\x02 \x03(\x0b\x32\x15.tank.blocks.v1.FieldR\x06\x66ields\x12\x34\n\taccessory\x18\x03 \x01(\x0b\x32\x16.tank.blocks.v1.ButtonR\taccessory\"3\n\x05\x46ield\x12\x14\n\x05label\x18\x01 \x01(\tR\x05label\x12\x14\n\x05value\x18\x02 \x01(\tR\x05value\"A\n\x07\x43ontext\x12\x36\n\x08\x65lements\x18\x01 \x03(\x0b\x32\x1a.tank.richtext.v1.RichTextR\x08\x65lements\"\t\n\x07\x44ivider\"\xc7\x01\n\x06\x42utton\x12\x1b\n\taction_id\x18\x01 \x01(\tR\x08\x61\x63tionId\x12\x12\n\x04text\x18\x02 \x01(\tR\x04text\x12\x14\n\x05value\x18\x03 \x01(\tR\x05value\x12\x31\n\x05style\x18\x04 \x01(\x0e\x32\x1b.tank.blocks.v1.ButtonStyleR\x05style\x12\x10\n\x03url\x18\x05 \x01(\tR\x03url\x12\x31\n\x07\x63onfirm\x18\x06 \x01(\x0b\x32\x17.tank.blocks.v1.ConfirmR\x07\x63onfirm\"a\n\x07\x43onfirm\x12\x14\n\x05title\x18\x01 \x01(\tR\x05title\x12\x12\n\x04text\x18\x02 \x01(\tR\x04text\x12\x18\n\x07\x63onfirm\x18\x03 \x01(\tR\x07\x63onfirm\x12\x12\n\x04\x64\x65ny\x18\x04 \x01(\tR\x04\x64\x65ny\";\n\x07\x41\x63tions\x12\x30\n\x07\x62uttons\x18\x01 \x03(\x0b\x32\x16.tank.blocks.v1.ButtonR\x07\x62uttons\"z\n\x08PlanStep\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n\x05title\x18\x02 \x01(\tR\x05title\x12\x32\n\x06status\x18\x03 \x01(\x0e\x32\x1a.tank.blocks.v1.StepStatusR\x06status\x12\x14\n\x05\x66iles\x18\x04 \x03(\tR\x05\x66iles\"\xe2\x01\n\x08PlanCard\x12\x18\n\x07summary\x18\x01 \x01(\tR\x07summary\x12.\n\x05steps\x18\x02 \x03(\x0b\x32\x18.tank.blocks.v1.PlanStepR\x05steps\x12\x14\n\x05risks\x18\x03 \x03(\tR\x05risks\x12\x1c\n\tquestions\x18\x04 \x03(\tR\tquestions\x12!\n\x0c\x61pprover_ids\x18\x05 \x03(\tR\x0b\x61pproverIds\x12\x1b\n\tplan_hash\x18\x06 \x01(\tR\x08planHash\x12\x18\n\x07version\x18\x07 \x01(\x05R\x07version\"}\n\x08\x44iffFile\x12\x12\n\x04path\x18\x01 \x01(\tR\x04path\x12\x1c\n\tadditions\x18\x02 \x01(\x05R\tadditions\x12\x1c\n\tdeletions\x18\x03 \x01(\x05R\tdeletions\x12!\n\x0chunk_preview\x18\x04 \x01(\tR\x0bhunkPreview\"\xcf\x01\n\x0b\x44iffPreview\x12\x1d\n\ncommit_sha\x18\x01 \x01(\tR\tcommitSha\x12\x1f\n\x0b\x63ompare_url\x18\x02 \x01(\tR\ncompareUrl\x12.\n\x05\x66iles\x18\x03 \x03(\x0b\x32\x18.tank.blocks.v1.DiffFileR\x05\x66iles\x12\'\n\x0ftotal_additions\x18\x04 \x01(\x05R\x0etotalAdditions\x12\'\n\x0ftotal_deletions\x18\x05 \x01(\x05R\x0etotalDeletions\"\x88\x01\n\x05\x43heck\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x30\n\x05state\x18\x02 \x01(\x0e\x32\x1a.tank.blocks.v1.CheckStateR\x05state\x12\x10\n\x03url\x18\x03 \x01(\tR\x03url\x12\'\n\x0f\x66\x61ilure_excerpt\x18\x04 \x01(\tR\x0e\x66\x61ilureExcerpt\"\x88\x01\n\x08\x43iStatus\x12\x19\n\x08head_sha\x18\x01 \x01(\tR\x07headSha\x12-\n\x06\x63hecks\x18\x02 \x03(\x0b\x32\x15.tank.blocks.v1.CheckR\x06\x63hecks\x12\x15\n\x06pr_url\x18\x03 \x01(\tR\x05prUrl\x12\x1b\n\tpr_number\x18\x04 \x01(\x05R\x08prNumber\"\xaa\x02\n\x0e\x41pprovalPrompt\x12\x17\n\x07gate_id\x18\x01 \x01(\tR\x06gateId\x12,\n\x04kind\x18\x02 \x01(\x0e\x32\x18.tank.blocks.v1.GateKindR\x04kind\x12\x18\n\x07subject\x18\x03 \x01(\tR\x07subject\x12!\n\x0c\x61pprover_ids\x18\x04 \x03(\tR\x0b\x61pproverIds\x12#\n\rmin_approvals\x18\x05 \x01(\x05R\x0cminApprovals\x12\x39\n\nexpires_at\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\texpiresAt\x12\x18\n\x07\x64\x65\x63ided\x18\x07 \x01(\x08R\x07\x64\x65\x63ided\x12\x1a\n\x08\x64\x65\x63ision\x18\x08 \x01(\tR\x08\x64\x65\x63ision\"x\n\x0cToolLogEntry\x12*\n\x02\x61t\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x02\x61t\x12\x12\n\x04tool\x18\x02 \x01(\tR\x04tool\x12\x18\n\x07summary\x18\x03 \x01(\tR\x07summary\x12\x0e\n\x02ok\x18\x04 \x01(\x08R\x02ok\"\xbb\x01\n\x07ToolLog\x12\x14\n\x05phase\x18\x01 \x01(\tR\x05phase\x12\x1d\n\ntool_calls\x18\x02 \x01(\x05R\ttoolCalls\x12!\n\x0c\x66iles_edited\x18\x03 \x01(\x05R\x0b\x66ilesEdited\x12\x34\n\x06recent\x18\x04 \x03(\x0b\x32\x1c.tank.blocks.v1.ToolLogEntryR\x06recent\x12\"\n\rrun_panel_url\x18\x05 \x01(\tR\x0brunPanelUrl\"\x87\x01\n\x0b\x46ilePreview\x12\x17\n\x07\x66ile_id\x18\x01 \x01(\tR\x06\x66ileId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n\x04mime\x18\x03 \x01(\tR\x04mime\x12\x12\n\x04size\x18\x04 \x01(\x03R\x04size\x12#\n\rthumbnail_url\x18\x05 \x01(\tR\x0cthumbnailUrl\"\xe3\x01\n\nStatusCard\x12\x15\n\x06run_id\x18\x01 \x01(\tR\x05runId\x12\x14\n\x05state\x18\x02 \x01(\tR\x05state\x12\x16\n\x06\x64\x65tail\x18\x03 \x01(\tR\x06\x64\x65tail\x12\x16\n\x06\x62ranch\x18\x04 \x01(\tR\x06\x62ranch\x12\x19\n\x08\x63ost_usd\x18\x05 \x01(\x01R\x07\x63ostUsd\x12\x39\n\nstarted_at\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tstartedAt\x12\"\n\rrun_panel_url\x18\x07 \x01(\tR\x0brunPanelUrl\"\xbf\x01\n\x0b\x42lockAction\x12\x1d\n\nmessage_id\x18\x01 \x01(\tR\tmessageId\x12\x19\n\x08\x62lock_id\x18\x02 \x01(\tR\x07\x62lockId\x12\x1b\n\taction_id\x18\x03 \x01(\tR\x08\x61\x63tionId\x12\x14\n\x05value\x18\x04 \x01(\tR\x05value\x12\x17\n\x07user_id\x18\x05 \x01(\tR\x06userId\x12*\n\x02\x61t\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x02\x61t*^\n\x0b\x42uttonStyle\x12\x1c\n\x18\x42UTTON_STYLE_UNSPECIFIED\x10\x00\x12\x18\n\x14\x42UTTON_STYLE_PRIMARY\x10\x01\x12\x17\n\x13\x42UTTON_STYLE_DANGER\x10\x02*\xa2\x01\n\nStepStatus\x12\x1b\n\x17STEP_STATUS_UNSPECIFIED\x10\x00\x12\x17\n\x13STEP_STATUS_PENDING\x10\x01\x12\x17\n\x13STEP_STATUS_RUNNING\x10\x02\x12\x14\n\x10STEP_STATUS_DONE\x10\x03\x12\x16\n\x12STEP_STATUS_FAILED\x10\x04\x12\x17\n\x13STEP_STATUS_SKIPPED\x10\x05*\xa7\x01\n\nCheckState\x12\x1b\n\x17\x43HECK_STATE_UNSPECIFIED\x10\x00\x12\x16\n\x12\x43HECK_STATE_QUEUED\x10\x01\x12\x17\n\x13\x43HECK_STATE_RUNNING\x10\x02\x12\x17\n\x13\x43HECK_STATE_SUCCESS\x10\x03\x12\x17\n\x13\x43HECK_STATE_FAILURE\x10\x04\x12\x19\n\x15\x43HECK_STATE_CANCELLED\x10\x05*\xbf\x01\n\x08GateKind\x12\x19\n\x15GATE_KIND_UNSPECIFIED\x10\x00\x12\x12\n\x0eGATE_KIND_PLAN\x10\x01\x12\x1a\n\x16GATE_KIND_SCOPE_CHANGE\x10\x02\x12\x13\n\x0fGATE_KIND_MERGE\x10\x03\x12\x14\n\x10GATE_KIND_DEPLOY\x10\x04\x12\x1e\n\x1aGATE_KIND_DESTRUCTIVE_TOOL\x10\x05\x12\x1d\n\x19GATE_KIND_BUDGET_INCREASE\x10\x06\x42\xd0\x01\n\x12\x63om.tank.blocks.v1B\x0b\x42locksProtoP\x01ZSgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/blocks/v1;blocksv1\xa2\x02\x03TBX\xaa\x02\x0eTank.Blocks.V1\xca\x02\x0eTank\\Blocks\\V1\xe2\x02\x1aTank\\Blocks\\V1\\GPBMetadata\xea\x02\x10Tank::Blocks::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,56 +34,56 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'tank.blocks.v1.blocks_pb2',
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\022com.tank.blocks.v1B\013BlocksProtoP\001ZSgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/blocks/v1;blocksv1\242\002\003TBX\252\002\016Tank.Blocks.V1\312\002\016Tank\\Blocks\\V1\342\002\032Tank\\Blocks\\V1\\GPBMetadata\352\002\020Tank::Blocks::V1'
-  _globals['_BUTTONSTYLE']._serialized_start=3739
-  _globals['_BUTTONSTYLE']._serialized_end=3833
-  _globals['_STEPSTATUS']._serialized_start=3836
-  _globals['_STEPSTATUS']._serialized_end=3998
-  _globals['_CHECKSTATE']._serialized_start=4001
-  _globals['_CHECKSTATE']._serialized_end=4168
-  _globals['_GATEKIND']._serialized_start=4171
-  _globals['_GATEKIND']._serialized_end=4362
-  _globals['_BLOCKS']._serialized_start=112
-  _globals['_BLOCKS']._serialized_end=167
-  _globals['_BLOCK']._serialized_start=170
-  _globals['_BLOCK']._serialized_end=912
-  _globals['_HEADER']._serialized_start=914
-  _globals['_HEADER']._serialized_end=942
-  _globals['_SECTION']._serialized_start=945
-  _globals['_SECTION']._serialized_end=1102
-  _globals['_FIELD']._serialized_start=1104
-  _globals['_FIELD']._serialized_end=1155
-  _globals['_CONTEXT']._serialized_start=1157
-  _globals['_CONTEXT']._serialized_end=1221
-  _globals['_DIVIDER']._serialized_start=1223
-  _globals['_DIVIDER']._serialized_end=1232
-  _globals['_BUTTON']._serialized_start=1235
-  _globals['_BUTTON']._serialized_end=1434
-  _globals['_CONFIRM']._serialized_start=1436
-  _globals['_CONFIRM']._serialized_end=1533
-  _globals['_ACTIONS']._serialized_start=1535
-  _globals['_ACTIONS']._serialized_end=1594
-  _globals['_PLANSTEP']._serialized_start=1596
-  _globals['_PLANSTEP']._serialized_end=1718
-  _globals['_PLANCARD']._serialized_start=1721
-  _globals['_PLANCARD']._serialized_end=1947
-  _globals['_DIFFFILE']._serialized_start=1949
-  _globals['_DIFFFILE']._serialized_end=2074
-  _globals['_DIFFPREVIEW']._serialized_start=2077
-  _globals['_DIFFPREVIEW']._serialized_end=2284
-  _globals['_CHECK']._serialized_start=2287
-  _globals['_CHECK']._serialized_end=2423
-  _globals['_CISTATUS']._serialized_start=2426
-  _globals['_CISTATUS']._serialized_end=2562
-  _globals['_APPROVALPROMPT']._serialized_start=2565
-  _globals['_APPROVALPROMPT']._serialized_end=2863
-  _globals['_TOOLLOGENTRY']._serialized_start=2865
-  _globals['_TOOLLOGENTRY']._serialized_end=2985
-  _globals['_TOOLLOG']._serialized_start=2988
-  _globals['_TOOLLOG']._serialized_end=3175
-  _globals['_FILEPREVIEW']._serialized_start=3178
-  _globals['_FILEPREVIEW']._serialized_end=3313
-  _globals['_STATUSCARD']._serialized_start=3316
-  _globals['_STATUSCARD']._serialized_end=3543
-  _globals['_BLOCKACTION']._serialized_start=3546
-  _globals['_BLOCKACTION']._serialized_end=3737
+  _globals['_BUTTONSTYLE']._serialized_start=3742
+  _globals['_BUTTONSTYLE']._serialized_end=3836
+  _globals['_STEPSTATUS']._serialized_start=3839
+  _globals['_STEPSTATUS']._serialized_end=4001
+  _globals['_CHECKSTATE']._serialized_start=4004
+  _globals['_CHECKSTATE']._serialized_end=4171
+  _globals['_GATEKIND']._serialized_start=4174
+  _globals['_GATEKIND']._serialized_end=4365
+  _globals['_BLOCKS']._serialized_start=113
+  _globals['_BLOCKS']._serialized_end=168
+  _globals['_BLOCK']._serialized_start=171
+  _globals['_BLOCK']._serialized_end=913
+  _globals['_HEADER']._serialized_start=915
+  _globals['_HEADER']._serialized_end=943
+  _globals['_SECTION']._serialized_start=946
+  _globals['_SECTION']._serialized_end=1104
+  _globals['_FIELD']._serialized_start=1106
+  _globals['_FIELD']._serialized_end=1157
+  _globals['_CONTEXT']._serialized_start=1159
+  _globals['_CONTEXT']._serialized_end=1224
+  _globals['_DIVIDER']._serialized_start=1226
+  _globals['_DIVIDER']._serialized_end=1235
+  _globals['_BUTTON']._serialized_start=1238
+  _globals['_BUTTON']._serialized_end=1437
+  _globals['_CONFIRM']._serialized_start=1439
+  _globals['_CONFIRM']._serialized_end=1536
+  _globals['_ACTIONS']._serialized_start=1538
+  _globals['_ACTIONS']._serialized_end=1597
+  _globals['_PLANSTEP']._serialized_start=1599
+  _globals['_PLANSTEP']._serialized_end=1721
+  _globals['_PLANCARD']._serialized_start=1724
+  _globals['_PLANCARD']._serialized_end=1950
+  _globals['_DIFFFILE']._serialized_start=1952
+  _globals['_DIFFFILE']._serialized_end=2077
+  _globals['_DIFFPREVIEW']._serialized_start=2080
+  _globals['_DIFFPREVIEW']._serialized_end=2287
+  _globals['_CHECK']._serialized_start=2290
+  _globals['_CHECK']._serialized_end=2426
+  _globals['_CISTATUS']._serialized_start=2429
+  _globals['_CISTATUS']._serialized_end=2565
+  _globals['_APPROVALPROMPT']._serialized_start=2568
+  _globals['_APPROVALPROMPT']._serialized_end=2866
+  _globals['_TOOLLOGENTRY']._serialized_start=2868
+  _globals['_TOOLLOGENTRY']._serialized_end=2988
+  _globals['_TOOLLOG']._serialized_start=2991
+  _globals['_TOOLLOG']._serialized_end=3178
+  _globals['_FILEPREVIEW']._serialized_start=3181
+  _globals['_FILEPREVIEW']._serialized_end=3316
+  _globals['_STATUSCARD']._serialized_start=3319
+  _globals['_STATUSCARD']._serialized_end=3546
+  _globals['_BLOCKACTION']._serialized_start=3549
+  _globals['_BLOCKACTION']._serialized_end=3740
 # @@protoc_insertion_point(module_scope)

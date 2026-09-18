@@ -6,7 +6,7 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "tank/auth/v1/auth.proto";
 import "tank/blocks/v1/blocks.proto";
-import "tank/message/v1/richtext.proto";
+import "tank/richtext/v1/richtext.proto";
 
 enum MessageKind {
   MESSAGE_KIND_UNSPECIFIED = 0;
@@ -35,7 +35,7 @@ message Message {
   MessageKind kind = 9;
   string client_msg_id = 10;
   string text = 11; // plain-text fallback / search
-  RichText rich_text = 12;
+  tank.richtext.v1.RichText rich_text = 12;
   tank.blocks.v1.Blocks blocks = 13;
   repeated string mention_ids = 14;
   repeated string file_ids = 15;
@@ -55,7 +55,7 @@ message PostMessageRequest {
   string thread_root_id = 2;
   string client_msg_id = 3; // UUIDv7, idempotency key
   string text = 4;
-  RichText rich_text = 5;
+  tank.richtext.v1.RichText rich_text = 5;
   tank.blocks.v1.Blocks blocks = 6;
   repeated string file_ids = 7;
   MessageKind kind = 8;
@@ -71,7 +71,7 @@ message PostMessageResponse {
 message UpdateMessageRequest {
   string message_id = 1;
   string text = 2;
-  RichText rich_text = 3;
+  tank.richtext.v1.RichText rich_text = 3;
   tank.blocks.v1.Blocks blocks = 4;
   google.protobuf.Struct metadata = 5;
   // Monotonic hint so gateways can coalesce rapid agent edits.

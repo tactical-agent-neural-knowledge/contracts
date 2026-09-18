@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package tank.message.v1;
+package tank.richtext.v1;
 
 // Portable rich-text AST (the shape of Slack's rich_text block). Editors
 // convert to and from this; Markdown is never the storage format.
