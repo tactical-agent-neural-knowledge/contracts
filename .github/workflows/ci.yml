@@ -1,0 +1,77 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # breaking check compares against main
+      - uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: buf lint
+      # The check that makes the polyrepo safe: a wire break here would be a
+      # production incident in web/mobile/agent-runner, so it is caught at the source.
+      - name: breaking change check
+        if: github.event_name == 'pull_request'
+        run: buf breaking --against ".git#branch=main"
+      - name: generated code is current
+        run: |
+          buf generate
+          if ! git diff --exit-code --stat gen/; then
+            echo "::error::gen/ is stale. Run 'make gen' and commit the result."; exit 1
+          fi
+      - run: go build ./...
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: typescript compiles
+        working-directory: gen/ts
+        run: npm install --no-audit --no-fund && npm run build
+
+  publish-ts:
+    if: github.event_name == 'push'
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://npm.pkg.github.com
+          scope: "@tactical-agent-neural-knowledge"
+      - name: version (canary on main, semver on tag)
+        working-directory: gen/ts
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            npm version --no-git-tag-version "${GITHUB_REF_NAME#v}"; echo "TAG=latest" >> "$GITHUB_ENV"
+          else
+            npm version --no-git-tag-version "0.0.0-canary.${GITHUB_SHA::12}"; echo "TAG=canary" >> "$GITHUB_ENV"
+          fi
+      - working-directory: gen/ts
+        run: npm install --no-audit --no-fund && npm run build
+      - working-directory: gen/ts
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+        run: npm publish --access restricted --tag "$TAG"

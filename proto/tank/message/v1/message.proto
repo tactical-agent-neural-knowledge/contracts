@@ -1,0 +1,154 @@
+syntax = "proto3";
+
+package tank.message.v1;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "tank/auth/v1/auth.proto";
+import "tank/blocks/v1/blocks.proto";
+import "tank/message/v1/richtext.proto";
+
+enum MessageKind {
+  MESSAGE_KIND_UNSPECIFIED = 0;
+  MESSAGE_KIND_MESSAGE = 1;
+  MESSAGE_KIND_SYSTEM = 2;
+  MESSAGE_KIND_AGENT_EVENT = 3;
+  MESSAGE_KIND_BOT = 4;
+}
+
+message Reaction {
+  string emoji = 1;
+  int32 count = 2;
+  repeated string user_ids = 3; // capped
+  bool reacted = 4;             // by the caller
+}
+
+message Message {
+  string id = 1;
+  string workspace_id = 2;
+  string channel_id = 3;
+  int64 channel_seq = 4;
+  string thread_root_id = 5;
+  int64 thread_seq = 6;
+  string author_id = 7;
+  tank.auth.v1.PrincipalKind author_kind = 8;
+  MessageKind kind = 9;
+  string client_msg_id = 10;
+  string text = 11; // plain-text fallback / search
+  RichText rich_text = 12;
+  tank.blocks.v1.Blocks blocks = 13;
+  repeated string mention_ids = 14;
+  repeated string file_ids = 15;
+  repeated Reaction reactions = 16;
+  google.protobuf.Timestamp edited_at = 17;
+  google.protobuf.Timestamp deleted_at = 18;
+  int32 reply_count = 19;
+  google.protobuf.Timestamp last_reply_at = 20;
+  repeated string reply_user_ids = 21;
+  // Opaque per-message metadata returned on every event (run_id, card_type, ...).
+  google.protobuf.Struct metadata = 22;
+  google.protobuf.Timestamp created_at = 23;
+}
+
+message PostMessageRequest {
+  string channel_id = 1;
+  string thread_root_id = 2;
+  string client_msg_id = 3; // UUIDv7, idempotency key
+  string text = 4;
+  RichText rich_text = 5;
+  tank.blocks.v1.Blocks blocks = 6;
+  repeated string file_ids = 7;
+  MessageKind kind = 8;
+  google.protobuf.Struct metadata = 9;
+  bool also_send_to_channel = 10;
+  bool ephemeral = 11;      // visible only to ephemeral_user_id, never stored
+  string ephemeral_user_id = 12;
+}
+message PostMessageResponse {
+  Message message = 1;
+}
+
+message UpdateMessageRequest {
+  string message_id = 1;
+  string text = 2;
+  RichText rich_text = 3;
+  tank.blocks.v1.Blocks blocks = 4;
+  google.protobuf.Struct metadata = 5;
+  // Monotonic hint so gateways can coalesce rapid agent edits.
+  int64 stream_seq = 6;
+}
+message UpdateMessageResponse {
+  Message message = 1;
+}
+
+message DeleteMessageRequest {
+  string message_id = 1;
+}
+message DeleteMessageResponse {}
+
+message ListMessagesRequest {
+  string channel_id = 1;
+  int64 before_seq = 2;
+  int64 after_seq = 3;
+  int32 limit = 4;
+  repeated MessageKind kinds = 5; // Filtered Focus Feed
+}
+message ListMessagesResponse {
+  repeated Message messages = 1;
+  bool has_more = 2;
+}
+
+message GetThreadRequest {
+  string thread_root_id = 1;
+  int64 after_thread_seq = 2;
+  int32 limit = 3;
+}
+message GetThreadResponse {
+  Message root = 1;
+  repeated Message replies = 2;
+  bool has_more = 3;
+}
+
+message MarkReadRequest {
+  string channel_id = 1;
+  int64 seq = 2;
+  string thread_root_id = 3;
+  int64 thread_seq = 4;
+}
+message MarkReadResponse {}
+
+message AddReactionRequest {
+  string message_id = 1;
+  string emoji = 2;
+}
+message AddReactionResponse {}
+
+message RemoveReactionRequest {
+  string message_id = 1;
+  string emoji = 2;
+}
+message RemoveReactionResponse {}
+
+message SubscribeThreadRequest {
+  string thread_root_id = 1;
+  bool subscribed = 2;
+}
+message SubscribeThreadResponse {}
+
+message PostBlockActionRequest {
+  tank.blocks.v1.BlockAction action = 1;
+}
+message PostBlockActionResponse {}
+
+service ChatService {
+  rpc PostMessage(PostMessageRequest) returns (PostMessageResponse);
+  rpc UpdateMessage(UpdateMessageRequest) returns (UpdateMessageResponse);
+  rpc DeleteMessage(DeleteMessageRequest) returns (DeleteMessageResponse);
+  rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
+  rpc GetThread(GetThreadRequest) returns (GetThreadResponse);
+  rpc MarkRead(MarkReadRequest) returns (MarkReadResponse);
+  rpc AddReaction(AddReactionRequest) returns (AddReactionResponse);
+  rpc RemoveReaction(RemoveReactionRequest) returns (RemoveReactionResponse);
+  rpc SubscribeThread(SubscribeThreadRequest) returns (SubscribeThreadResponse);
+  rpc PostBlockAction(PostBlockActionRequest) returns (PostBlockActionResponse);
+}

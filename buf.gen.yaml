@@ -1,0 +1,29 @@
+version: v2
+
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: github.com/tactical-agent-neural-knowledge/contracts/gen/go
+
+plugins:
+  # Go — consumed by api and agent-control as a Go module.
+  - remote: buf.build/protocolbuffers/go:v1.36.4
+    out: gen/go
+    opt: paths=source_relative
+  - remote: buf.build/connectrpc/go:v1.18.1
+    out: gen/go
+    opt: paths=source_relative
+
+  # TypeScript — consumed by sdk-ts, web, mobile, agent-runner as @tactical-agent-neural-knowledge/contracts.
+  - remote: buf.build/bufbuild/es:v2.2.3
+    out: gen/ts/src
+    opt:
+      - target=ts
+      - import_extension=js
+
+  # Python — consumed by knowledge.
+  - remote: buf.build/protocolbuffers/python:v29.3
+    out: gen/python
+  - remote: buf.build/protocolbuffers/pyi:v29.3
+    out: gen/python

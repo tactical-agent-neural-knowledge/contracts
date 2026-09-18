@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package tank.events.v1;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+import "tank/blocks/v1/blocks.proto";
+import "tank/message/v1/message.proto";
+import "tank/presence/v1/presence.proto";
+
+// Every durable event on the bus and every realtime frame payload is one of
+// these, wrapped in an Envelope. Subjects: evt.{ws}.ch.{channel},
+// evt.{ws}.thread.{root}, evt.{ws}.user.{uid}, evt.{ws}.ws.
+message Envelope {
+  string id = 1;               // Nats-Msg-Id, idempotency key
+  string workspace_id = 2;
+  string type = 3;             // e.g. message.created
+  string subject = 4;
+  google.protobuf.Timestamp occurred_at = 5;
+  string trace_parent = 6;
+  google.protobuf.Any payload = 7;
+}
+
+message MessageCreated {
+  tank.message.v1.Message message = 1;
+}
+message MessageUpdated {
+  tank.message.v1.Message message = 1;
+}
+message MessageDeleted {
+  string message_id = 1;
+  string channel_id = 2;
+  string thread_root_id = 3;
+}
+message ReactionAdded {
+  string message_id = 1;
+  string user_id = 2;
+  string emoji = 3;
+}
+message ReactionRemoved {
+  string message_id = 1;
+  string user_id = 2;
+  string emoji = 3;
+}
+message ReadStateUpdated {
+  string user_id = 1;
+  string channel_id = 2;
+  int64 last_read_seq = 3;
+  string thread_root_id = 4;
+  int64 last_read_thread_seq = 5;
+}
+message ChannelUpdated {
+  string channel_id = 1;
+}
+message ChannelMembershipChanged {
+  string channel_id = 1;
+  string user_id = 2;
+  bool joined = 3;
+}
+message CardAction {
+  tank.blocks.v1.BlockAction action = 1;
+}
+message AppCommand {
+  string command = 1; // e.g. tank
+  string text = 2;
+  string user_id = 3;
+  string channel_id = 4;
+  string thread_root_id = 5;
+}
+message PresenceChanged {
+  tank.presence.v1.Presence presence = 1;
+}
+message Typing {
+  string channel_id = 1;
+  string user_id = 2;
+  string thread_root_id = 3;
+}
+message AgentStatus {
+  string channel_id = 1;
+  string thread_root_id = 2;
+  string run_id = 3;
+  string status = 4; // "reading repo", "running tests", ...
+}
+message NotificationCreated {
+  string notification_id = 1;
+  string kind = 2;
+  string message_id = 3;
+  string channel_id = 4;
+  string actor_id = 5;
+}

@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package tank.realtime.v1;
+
+import "google/protobuf/timestamp.proto";
+import "tank/events/v1/events.proto";
+
+// WebSocket frames on wss://gw.<domain>/v1. Binary protobuf by default, JSON
+// selectable with ?enc=json for debugging.
+
+message Hello {
+  string access_token = 1;
+  repeated string workspace_ids = 2;
+  repeated string capabilities = 3;
+}
+
+message Resume {
+  string session_id = 1;
+  string resume_token = 2;
+  // JetStream stream sequence of the last event applied, per workspace.
+  map<string, int64> cursors = 3;
+}
+
+message Subscribe {
+  repeated string channel_ids = 1;
+  repeated string thread_root_ids = 2;
+}
+
+message Unsubscribe {
+  repeated string channel_ids = 1;
+  repeated string thread_root_ids = 2;
+}
+
+message PresenceSubscribe {
+  repeated string user_ids = 1; // max 500, replaces the previous set
+}
+
+message TypingFrame {
+  string channel_id = 1;
+  string thread_root_id = 2;
+}
+
+message Focus {
+  string channel_id = 1; // channel the client is looking at; suppresses push
+}
+
+message Ping {}
+
+message ClientFrame {
+  oneof kind {
+    Hello hello = 1;
+    Resume resume = 2;
+    Subscribe subscribe = 3;
+    Unsubscribe unsubscribe = 4;
+    PresenceSubscribe presence_subscribe = 5;
+    TypingFrame typing = 6;
+    Focus focus = 7;
+    Ping ping = 8;
+  }
+}
+
+message Ready {
+  string session_id = 1;
+  string resume_token = 2;
+  int32 heartbeat_interval_ms = 3;
+  google.protobuf.Timestamp server_time = 4;
+}
+
+message Resumed {
+  int32 replayed = 1;
+}
+
+message ResyncRequired {
+  string reason = 1;
+}
+
+message Event {
+  int64 cursor = 1; // stream sequence; persist and send back in Resume
+  tank.events.v1.Envelope envelope = 2;
+}
+
+message Pong {}
+
+enum ErrorCode {
+  ERROR_CODE_UNSPECIFIED = 0;
+  ERROR_CODE_UNAUTHENTICATED = 1;
+  ERROR_CODE_SLOW_CONSUMER = 2;
+  ERROR_CODE_BAD_FRAME = 3;
+  ERROR_CODE_RATE_LIMITED = 4;
+}
+
+message Error {
+  ErrorCode code = 1;
+  string message = 2;
+}
+
+message ServerFrame {
+  oneof kind {
+    Ready ready = 1;
+    Resumed resumed = 2;
+    ResyncRequired resync_required = 3;
+    Event event = 4;
+    Pong pong = 5;
+    Error error = 6;
+    tank.events.v1.Typing typing = 7;
+    tank.events.v1.PresenceChanged presence = 8;
+    tank.events.v1.AgentStatus agent_status = 9;
+  }
+}

@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package tank.message.v1;
+
+// Portable rich-text AST (the shape of Slack's rich_text block). Editors
+// convert to and from this; Markdown is never the storage format.
+message RichText {
+  repeated RichTextBlock blocks = 1;
+}
+
+message RichTextBlock {
+  oneof kind {
+    RichTextSection section = 1;
+    RichTextCode code = 2;
+    RichTextQuote quote = 3;
+    RichTextList list = 4;
+  }
+}
+
+message Style {
+  bool bold = 1;
+  bool italic = 2;
+  bool strike = 3;
+  bool code = 4;
+}
+
+message RichTextElement {
+  oneof kind {
+    TextElement text = 1;
+    EmojiElement emoji = 2;
+    UserMention user = 3;
+    ChannelMention channel = 4;
+    BroadcastMention broadcast = 5;
+    LinkElement link = 6;
+  }
+}
+
+message TextElement {
+  string text = 1;
+  Style style = 2;
+}
+
+message EmojiElement {
+  string name = 1;
+  string unicode = 2;
+}
+
+message UserMention {
+  string user_id = 1;
+  Style style = 2;
+}
+
+message ChannelMention {
+  string channel_id = 1;
+}
+
+enum Broadcast {
+  BROADCAST_UNSPECIFIED = 0;
+  BROADCAST_HERE = 1;
+  BROADCAST_CHANNEL = 2;
+  BROADCAST_EVERYONE = 3;
+}
+
+message BroadcastMention {
+  Broadcast range = 1;
+}
+
+message LinkElement {
+  string url = 1;
+  string text = 2;
+  Style style = 3;
+}
+
+message RichTextSection {
+  repeated RichTextElement elements = 1;
+}
+
+message RichTextCode {
+  string language = 1;
+  string text = 2;
+}
+
+message RichTextQuote {
+  repeated RichTextElement elements = 1;
+}
+
+message RichTextList {
+  bool ordered = 1;
+  int32 indent = 2;
+  repeated RichTextSection items = 3;
+}

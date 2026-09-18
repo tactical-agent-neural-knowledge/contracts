@@ -1,0 +1,205 @@
+syntax = "proto3";
+
+package tank.blocks.v1;
+
+import "google/protobuf/timestamp.proto";
+import "tank/message/v1/richtext.proto";
+
+// Rich "cards" rendered identically by web and mobile. Agents post these.
+message Blocks {
+  repeated Block blocks = 1;
+}
+
+message Block {
+  string block_id = 1;
+  oneof kind {
+    Header header = 2;
+    Section section = 3;
+    Context context = 4;
+    Divider divider = 5;
+    Actions actions = 6;
+    PlanCard plan_card = 7;
+    DiffPreview diff_preview = 8;
+    CiStatus ci_status = 9;
+    ApprovalPrompt approval_prompt = 10;
+    ToolLog tool_log = 11;
+    FilePreview file_preview = 12;
+    StatusCard status_card = 13;
+  }
+}
+
+message Header {
+  string text = 1;
+}
+
+message Section {
+  tank.message.v1.RichText text = 1;
+  repeated Field fields = 2;
+  Button accessory = 3;
+}
+
+message Field {
+  string label = 1;
+  string value = 2;
+}
+
+message Context {
+  repeated tank.message.v1.RichText elements = 1;
+}
+
+message Divider {}
+
+enum ButtonStyle {
+  BUTTON_STYLE_UNSPECIFIED = 0;
+  BUTTON_STYLE_PRIMARY = 1;
+  BUTTON_STYLE_DANGER = 2;
+}
+
+message Button {
+  string action_id = 1;
+  string text = 2;
+  string value = 3;
+  ButtonStyle style = 4;
+  string url = 5; // link button when set
+  Confirm confirm = 6;
+}
+
+message Confirm {
+  string title = 1;
+  string text = 2;
+  string confirm = 3;
+  string deny = 4;
+}
+
+message Actions {
+  repeated Button buttons = 1;
+}
+
+enum StepStatus {
+  STEP_STATUS_UNSPECIFIED = 0;
+  STEP_STATUS_PENDING = 1;
+  STEP_STATUS_RUNNING = 2;
+  STEP_STATUS_DONE = 3;
+  STEP_STATUS_FAILED = 4;
+  STEP_STATUS_SKIPPED = 5;
+}
+
+message PlanStep {
+  string id = 1;
+  string title = 2;
+  StepStatus status = 3;
+  repeated string files = 4;
+}
+
+message PlanCard {
+  string summary = 1;
+  repeated PlanStep steps = 2;
+  repeated string risks = 3;
+  repeated string questions = 4;
+  repeated string approver_ids = 5;
+  string plan_hash = 6;
+  int32 version = 7;
+}
+
+message DiffFile {
+  string path = 1;
+  int32 additions = 2;
+  int32 deletions = 3;
+  string hunk_preview = 4; // truncated unified diff
+}
+
+message DiffPreview {
+  string commit_sha = 1;
+  string compare_url = 2;
+  repeated DiffFile files = 3;
+  int32 total_additions = 4;
+  int32 total_deletions = 5;
+}
+
+enum CheckState {
+  CHECK_STATE_UNSPECIFIED = 0;
+  CHECK_STATE_QUEUED = 1;
+  CHECK_STATE_RUNNING = 2;
+  CHECK_STATE_SUCCESS = 3;
+  CHECK_STATE_FAILURE = 4;
+  CHECK_STATE_CANCELLED = 5;
+}
+
+message Check {
+  string name = 1;
+  CheckState state = 2;
+  string url = 3;
+  string failure_excerpt = 4;
+}
+
+message CiStatus {
+  string head_sha = 1;
+  repeated Check checks = 2;
+  string pr_url = 3;
+  int32 pr_number = 4;
+}
+
+enum GateKind {
+  GATE_KIND_UNSPECIFIED = 0;
+  GATE_KIND_PLAN = 1;
+  GATE_KIND_SCOPE_CHANGE = 2;
+  GATE_KIND_MERGE = 3;
+  GATE_KIND_DEPLOY = 4;
+  GATE_KIND_DESTRUCTIVE_TOOL = 5;
+  GATE_KIND_BUDGET_INCREASE = 6;
+}
+
+message ApprovalPrompt {
+  string gate_id = 1;
+  GateKind kind = 2;
+  string subject = 3;
+  repeated string approver_ids = 4;
+  int32 min_approvals = 5;
+  google.protobuf.Timestamp expires_at = 6;
+  bool decided = 7;
+  string decision = 8; // approved | rejected | expired
+}
+
+message ToolLogEntry {
+  google.protobuf.Timestamp at = 1;
+  string tool = 2;
+  string summary = 3;
+  bool ok = 4;
+}
+
+message ToolLog {
+  string phase = 1;
+  int32 tool_calls = 2;
+  int32 files_edited = 3;
+  repeated ToolLogEntry recent = 4; // tail only; the run panel has everything
+  string run_panel_url = 5;
+}
+
+message FilePreview {
+  string file_id = 1;
+  string name = 2;
+  string mime = 3;
+  int64 size = 4;
+  string thumbnail_url = 5;
+}
+
+message StatusCard {
+  string run_id = 1;
+  string state = 2;
+  string detail = 3;
+  string branch = 4;
+  double cost_usd = 5;
+  google.protobuf.Timestamp started_at = 6;
+  string run_panel_url = 7;
+}
+
+// Posted by a client when a user interacts with a block; delivered to the
+// owning app/agent as an event.
+message BlockAction {
+  string message_id = 1;
+  string block_id = 2;
+  string action_id = 3;
+  string value = 4;
+  string user_id = 5;
+  google.protobuf.Timestamp at = 6;
+}

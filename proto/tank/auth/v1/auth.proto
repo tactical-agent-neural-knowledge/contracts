@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package tank.auth.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// Every actor is a principal. Bots and agents are first-class so every author
+// reference is uniform across the data model.
+enum PrincipalKind {
+  PRINCIPAL_KIND_UNSPECIFIED = 0;
+  PRINCIPAL_KIND_USER = 1;
+  PRINCIPAL_KIND_BOT = 2;
+  PRINCIPAL_KIND_AGENT = 3;
+}
+
+message Principal {
+  string id = 1;
+  PrincipalKind kind = 2;
+  string display_name = 3;
+  string avatar_url = 4;
+  string email = 5; // users only, self-view only
+}
+
+message StartMagicLinkRequest {
+  string email = 1;
+}
+message StartMagicLinkResponse {}
+
+message CompleteMagicLinkRequest {
+  string token = 1;
+}
+message CompleteMagicLinkResponse {
+  Principal me = 1;
+  // Mobile clients receive tokens; web clients receive a session cookie instead.
+  string access_token = 2;
+  string refresh_token = 3;
+  google.protobuf.Timestamp access_expires_at = 4;
+}
+
+message ExchangeCodeRequest {
+  string provider = 1; // google | apple | github | microsoft
+  string code = 2;
+  string code_verifier = 3;
+  string redirect_uri = 4;
+}
+message ExchangeCodeResponse {
+  Principal me = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  google.protobuf.Timestamp access_expires_at = 4;
+}
+
+message RefreshRequest {
+  string refresh_token = 1;
+}
+message RefreshResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  google.protobuf.Timestamp access_expires_at = 3;
+}
+
+message LogoutRequest {}
+message LogoutResponse {}
+
+// Short-lived bearer for the WebSocket gateway; web sessions are cookies and
+// cannot be sent on the socket handshake, so both platforms mint this first.
+message MintGatewayTokenRequest {}
+message MintGatewayTokenResponse {
+  string token = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+message GetMeRequest {}
+message GetMeResponse {
+  Principal me = 1;
+}
+
+service AuthService {
+  rpc StartMagicLink(StartMagicLinkRequest) returns (StartMagicLinkResponse);
+  rpc CompleteMagicLink(CompleteMagicLinkRequest) returns (CompleteMagicLinkResponse);
+  rpc ExchangeCode(ExchangeCodeRequest) returns (ExchangeCodeResponse);
+  rpc Refresh(RefreshRequest) returns (RefreshResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc MintGatewayToken(MintGatewayTokenRequest) returns (MintGatewayTokenResponse);
+  rpc GetMe(GetMeRequest) returns (GetMeResponse);
+}

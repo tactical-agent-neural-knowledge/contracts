@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package tank.agent.v1;
+
+import "google/protobuf/timestamp.proto";
+
+enum RunState {
+  RUN_STATE_UNSPECIFIED = 0;
+  RUN_STATE_REQUESTED = 1;
+  RUN_STATE_ADMITTED = 2;
+  RUN_STATE_PROVISIONING = 3;
+  RUN_STATE_PLANNING = 4;
+  RUN_STATE_AWAITING_PLAN_APPROVAL = 5;
+  RUN_STATE_IMPLEMENTING = 6;
+  RUN_STATE_PUSHED = 7;
+  RUN_STATE_CI_WATCHING = 8;
+  RUN_STATE_PR_OPEN = 9;
+  RUN_STATE_AWAITING_MERGE_APPROVAL = 10;
+  RUN_STATE_MERGED = 11;
+  RUN_STATE_VERIFYING_DEPLOY = 12;
+  RUN_STATE_DONE = 13;
+  RUN_STATE_CANCELLED = 14;
+  RUN_STATE_FAILED = 15;
+  RUN_STATE_BUDGET_EXHAUSTED = 16;
+  RUN_STATE_TIMED_OUT = 17;
+  RUN_STATE_APPROVAL_EXPIRED = 18;
+}
+
+message Agent {
+  string id = 1;
+  string workspace_id = 2;
+  string principal_id = 3; // the agent's user row
+  string name = 4;
+  repeated string scopes = 5;
+}
+
+message Run {
+  string id = 1;
+  string workspace_id = 2;
+  string channel_id = 3;
+  string thread_root_id = 4;
+  string agent_id = 5;
+  string requested_by = 6;
+  RunState state = 7;
+  string branch = 8;
+  string pr_url = 9;
+  double cost_usd = 10;
+  string status_message_id = 11;
+  google.protobuf.Timestamp started_at = 12;
+  google.protobuf.Timestamp ended_at = 13;
+}
+
+message StartRunRequest {
+  string thread_root_id = 1;
+  string agent_id = 2;
+  string instructions = 3;
+}
+message StartRunResponse {
+  Run run = 1;
+  // Agent-session token scoped to this thread; TTL = max run duration.
+  string agent_session_token = 2;
+  google.protobuf.Timestamp token_expires_at = 3;
+}
+
+message StopRunRequest {
+  string run_id = 1;
+  string reason = 2;
+}
+message StopRunResponse {
+  Run run = 1;
+}
+
+message HeartbeatRequest {
+  string run_id = 1;
+}
+message HeartbeatResponse {}
+
+message SetStatusRequest {
+  string run_id = 1;
+  RunState state = 2;
+  string status = 3; // human-readable, shown like typing
+  string branch = 4;
+  string pr_url = 5;
+  double cost_usd = 6;
+}
+message SetStatusResponse {
+  Run run = 1;
+}
+
+message GetRunRequest {
+  string run_id = 1;
+}
+message GetRunResponse {
+  Run run = 1;
+}
+
+message ListRunsRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string thread_root_id = 3;
+  string cursor = 4;
+  int32 limit = 5;
+}
+message ListRunsResponse {
+  repeated Run runs = 1;
+  string next_cursor = 2;
+}
+
+service AgentService {
+  rpc StartRun(StartRunRequest) returns (StartRunResponse);
+  rpc StopRun(StopRunRequest) returns (StopRunResponse);
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+  rpc SetStatus(SetStatusRequest) returns (SetStatusResponse);
+  rpc GetRun(GetRunRequest) returns (GetRunResponse);
+  rpc ListRuns(ListRunsRequest) returns (ListRunsResponse);
+}

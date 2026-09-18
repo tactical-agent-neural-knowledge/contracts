@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package tank.channel.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// A Channel is presented as a "Tread" in the product: an objective-centric
+// stream with a pinned Goal Header. The wire name stays Channel.
+enum ChannelType {
+  CHANNEL_TYPE_UNSPECIFIED = 0;
+  CHANNEL_TYPE_PUBLIC = 1;
+  CHANNEL_TYPE_PRIVATE = 2;
+  CHANNEL_TYPE_DM = 3;
+  CHANNEL_TYPE_MPDM = 4;
+}
+
+// The pinned Goal Header of a Tread.
+message TreadGoal {
+  string goal = 1;
+  repeated string assignee_ids = 2;
+  // Free-form pipeline status rendered in the header, e.g. "PR #12 · CI green".
+  string pipeline_status = 3;
+  google.protobuf.Timestamp updated_at = 4;
+  string updated_by = 5;
+}
+
+message Channel {
+  string id = 1;
+  string workspace_id = 2;
+  ChannelType type = 3;
+  string name = 4;
+  string topic = 5;
+  string purpose = 6;
+  // Gapless per-channel sequence of the newest message; unread = last_seq - last_read_seq.
+  int64 last_seq = 7;
+  int32 member_count = 8;
+  google.protobuf.Timestamp last_message_at = 9;
+  google.protobuf.Timestamp archived_at = 10;
+  google.protobuf.Timestamp created_at = 11;
+  TreadGoal goal = 12;
+  // DM / MPDM participants.
+  repeated string member_ids = 13;
+}
+
+message ChannelReadState {
+  string channel_id = 1;
+  int64 last_read_seq = 2;
+  int32 mention_count = 3;
+  bool muted = 4;
+  bool starred = 5;
+}
+
+message CreateChannelRequest {
+  string workspace_id = 1;
+  ChannelType type = 2;
+  string name = 3;
+  string purpose = 4;
+  repeated string member_ids = 5; // DM/MPDM participants or initial invitees
+}
+message CreateChannelResponse {
+  Channel channel = 1;
+}
+
+message ListChannelsRequest {
+  string workspace_id = 1;
+  // Only channels the caller can see; public ones the caller has not joined are included.
+  bool include_unjoined_public = 2;
+  string cursor = 3;
+  int32 limit = 4;
+}
+message ListChannelsResponse {
+  repeated Channel channels = 1;
+  string next_cursor = 2;
+}
+
+message GetChannelRequest {
+  string channel_id = 1;
+}
+message GetChannelResponse {
+  Channel channel = 1;
+  ChannelReadState read_state = 2;
+}
+
+message JoinChannelRequest {
+  string channel_id = 1;
+}
+message JoinChannelResponse {
+  Channel channel = 1;
+}
+
+message LeaveChannelRequest {
+  string channel_id = 1;
+}
+message LeaveChannelResponse {}
+
+message InviteToChannelRequest {
+  string channel_id = 1;
+  repeated string member_ids = 2;
+}
+message InviteToChannelResponse {}
+
+message SetGoalRequest {
+  string channel_id = 1;
+  TreadGoal goal = 2;
+}
+message SetGoalResponse {
+  Channel channel = 1;
+}
+
+message ListChannelMembersRequest {
+  string channel_id = 1;
+  string cursor = 2;
+  int32 limit = 3;
+}
+message ListChannelMembersResponse {
+  repeated string member_ids = 1;
+  string next_cursor = 2;
+}
+
+service ChannelService {
+  rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse);
+  rpc ListChannels(ListChannelsRequest) returns (ListChannelsResponse);
+  rpc GetChannel(GetChannelRequest) returns (GetChannelResponse);
+  rpc JoinChannel(JoinChannelRequest) returns (JoinChannelResponse);
+  rpc LeaveChannel(LeaveChannelRequest) returns (LeaveChannelResponse);
+  rpc InviteToChannel(InviteToChannelRequest) returns (InviteToChannelResponse);
+  rpc SetGoal(SetGoalRequest) returns (SetGoalResponse);
+  rpc ListChannelMembers(ListChannelMembersRequest) returns (ListChannelMembersResponse);
+}

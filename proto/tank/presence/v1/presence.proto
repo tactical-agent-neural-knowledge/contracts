@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package tank.presence.v1;
+
+import "google/protobuf/timestamp.proto";
+
+enum PresenceStatus {
+  PRESENCE_STATUS_UNSPECIFIED = 0;
+  PRESENCE_STATUS_ACTIVE = 1;
+  PRESENCE_STATUS_AWAY = 2;
+  PRESENCE_STATUS_DND = 3;
+  // Armor Mode: ambient messages are summarised; only critical alerts break through.
+  PRESENCE_STATUS_ARMOR = 4;
+}
+
+message Presence {
+  string user_id = 1;
+  PresenceStatus status = 2;
+  google.protobuf.Timestamp last_seen = 3;
+  string custom_status_text = 4;
+  string custom_status_emoji = 5;
+  google.protobuf.Timestamp status_expires_at = 6;
+}
+
+message SetStatusRequest {
+  PresenceStatus status = 1;
+  string custom_status_text = 2;
+  string custom_status_emoji = 3;
+  google.protobuf.Timestamp expires_at = 4;
+}
+message SetStatusResponse {
+  Presence presence = 1;
+}
+
+message GetPresenceRequest {
+  repeated string user_ids = 1; // max 500
+}
+message GetPresenceResponse {
+  repeated Presence presences = 1;
+}
+
+service PresenceService {
+  rpc SetStatus(SetStatusRequest) returns (SetStatusResponse);
+  rpc GetPresence(GetPresenceRequest) returns (GetPresenceResponse);
+}
