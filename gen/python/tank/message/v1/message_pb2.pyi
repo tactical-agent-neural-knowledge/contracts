@@ -37,7 +37,7 @@ class Reaction(_message.Message):
     def __init__(self, emoji: _Optional[str] = ..., count: _Optional[int] = ..., user_ids: _Optional[_Iterable[str]] = ..., reacted: bool = ...) -> None: ...
 
 class Message(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "channel_seq", "thread_root_id", "thread_seq", "author_id", "author_kind", "kind", "client_msg_id", "text", "rich_text", "blocks", "mention_ids", "file_ids", "reactions", "edited_at", "deleted_at", "reply_count", "last_reply_at", "reply_user_ids", "metadata", "created_at")
+    __slots__ = ("id", "workspace_id", "channel_id", "channel_seq", "thread_root_id", "thread_seq", "author_id", "author_kind", "kind", "client_msg_id", "text", "rich_text", "blocks", "mention_ids", "file_ids", "reactions", "edited_at", "deleted_at", "reply_count", "last_reply_at", "reply_user_ids", "metadata", "created_at", "pinned", "saved")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -61,6 +61,8 @@ class Message(_message.Message):
     REPLY_USER_IDS_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    PINNED_FIELD_NUMBER: _ClassVar[int]
+    SAVED_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -84,10 +86,12 @@ class Message(_message.Message):
     reply_user_ids: _containers.RepeatedScalarFieldContainer[str]
     metadata: _struct_pb2.Struct
     created_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., channel_seq: _Optional[int] = ..., thread_root_id: _Optional[str] = ..., thread_seq: _Optional[int] = ..., author_id: _Optional[str] = ..., author_kind: _Optional[_Union[_auth_pb2.PrincipalKind, str]] = ..., kind: _Optional[_Union[MessageKind, str]] = ..., client_msg_id: _Optional[str] = ..., text: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., blocks: _Optional[_Union[_blocks_pb2.Blocks, _Mapping]] = ..., mention_ids: _Optional[_Iterable[str]] = ..., file_ids: _Optional[_Iterable[str]] = ..., reactions: _Optional[_Iterable[_Union[Reaction, _Mapping]]] = ..., edited_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., reply_count: _Optional[int] = ..., last_reply_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., reply_user_ids: _Optional[_Iterable[str]] = ..., metadata: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    pinned: bool
+    saved: bool
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., channel_seq: _Optional[int] = ..., thread_root_id: _Optional[str] = ..., thread_seq: _Optional[int] = ..., author_id: _Optional[str] = ..., author_kind: _Optional[_Union[_auth_pb2.PrincipalKind, str]] = ..., kind: _Optional[_Union[MessageKind, str]] = ..., client_msg_id: _Optional[str] = ..., text: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., blocks: _Optional[_Union[_blocks_pb2.Blocks, _Mapping]] = ..., mention_ids: _Optional[_Iterable[str]] = ..., file_ids: _Optional[_Iterable[str]] = ..., reactions: _Optional[_Iterable[_Union[Reaction, _Mapping]]] = ..., edited_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., reply_count: _Optional[int] = ..., last_reply_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., reply_user_ids: _Optional[_Iterable[str]] = ..., metadata: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., pinned: bool = ..., saved: bool = ...) -> None: ...
 
 class PostMessageRequest(_message.Message):
-    __slots__ = ("channel_id", "thread_root_id", "client_msg_id", "text", "rich_text", "blocks", "file_ids", "kind", "metadata", "also_send_to_channel", "ephemeral", "ephemeral_user_id")
+    __slots__ = ("channel_id", "thread_root_id", "client_msg_id", "text", "rich_text", "blocks", "file_ids", "kind", "metadata", "also_send_to_channel", "ephemeral", "ephemeral_user_id", "mention_ids")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     CLIENT_MSG_ID_FIELD_NUMBER: _ClassVar[int]
@@ -100,6 +104,7 @@ class PostMessageRequest(_message.Message):
     ALSO_SEND_TO_CHANNEL_FIELD_NUMBER: _ClassVar[int]
     EPHEMERAL_FIELD_NUMBER: _ClassVar[int]
     EPHEMERAL_USER_ID_FIELD_NUMBER: _ClassVar[int]
+    MENTION_IDS_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
     thread_root_id: str
     client_msg_id: str
@@ -112,7 +117,8 @@ class PostMessageRequest(_message.Message):
     also_send_to_channel: bool
     ephemeral: bool
     ephemeral_user_id: str
-    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., client_msg_id: _Optional[str] = ..., text: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., blocks: _Optional[_Union[_blocks_pb2.Blocks, _Mapping]] = ..., file_ids: _Optional[_Iterable[str]] = ..., kind: _Optional[_Union[MessageKind, str]] = ..., metadata: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., also_send_to_channel: bool = ..., ephemeral: bool = ..., ephemeral_user_id: _Optional[str] = ...) -> None: ...
+    mention_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., client_msg_id: _Optional[str] = ..., text: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., blocks: _Optional[_Union[_blocks_pb2.Blocks, _Mapping]] = ..., file_ids: _Optional[_Iterable[str]] = ..., kind: _Optional[_Union[MessageKind, str]] = ..., metadata: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., also_send_to_channel: bool = ..., ephemeral: bool = ..., ephemeral_user_id: _Optional[str] = ..., mention_ids: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class PostMessageResponse(_message.Message):
     __slots__ = ("message",)
@@ -267,3 +273,101 @@ class PostBlockActionRequest(_message.Message):
 class PostBlockActionResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class Pin(_message.Message):
+    __slots__ = ("message", "pinned_by", "pinned_at")
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    PINNED_BY_FIELD_NUMBER: _ClassVar[int]
+    PINNED_AT_FIELD_NUMBER: _ClassVar[int]
+    message: Message
+    pinned_by: str
+    pinned_at: _timestamp_pb2.Timestamp
+    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ..., pinned_by: _Optional[str] = ..., pinned_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class PinMessageRequest(_message.Message):
+    __slots__ = ("message_id",)
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    def __init__(self, message_id: _Optional[str] = ...) -> None: ...
+
+class PinMessageResponse(_message.Message):
+    __slots__ = ("pin",)
+    PIN_FIELD_NUMBER: _ClassVar[int]
+    pin: Pin
+    def __init__(self, pin: _Optional[_Union[Pin, _Mapping]] = ...) -> None: ...
+
+class UnpinMessageRequest(_message.Message):
+    __slots__ = ("message_id",)
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    def __init__(self, message_id: _Optional[str] = ...) -> None: ...
+
+class UnpinMessageResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListPinsRequest(_message.Message):
+    __slots__ = ("channel_id", "cursor", "limit")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    CURSOR_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    cursor: str
+    limit: int
+    def __init__(self, channel_id: _Optional[str] = ..., cursor: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListPinsResponse(_message.Message):
+    __slots__ = ("pins", "next_cursor")
+    PINS_FIELD_NUMBER: _ClassVar[int]
+    NEXT_CURSOR_FIELD_NUMBER: _ClassVar[int]
+    pins: _containers.RepeatedCompositeFieldContainer[Pin]
+    next_cursor: str
+    def __init__(self, pins: _Optional[_Iterable[_Union[Pin, _Mapping]]] = ..., next_cursor: _Optional[str] = ...) -> None: ...
+
+class SavedItem(_message.Message):
+    __slots__ = ("message", "saved_at")
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    SAVED_AT_FIELD_NUMBER: _ClassVar[int]
+    message: Message
+    saved_at: _timestamp_pb2.Timestamp
+    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ..., saved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class SaveMessageRequest(_message.Message):
+    __slots__ = ("message_id",)
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    def __init__(self, message_id: _Optional[str] = ...) -> None: ...
+
+class SaveMessageResponse(_message.Message):
+    __slots__ = ("item",)
+    ITEM_FIELD_NUMBER: _ClassVar[int]
+    item: SavedItem
+    def __init__(self, item: _Optional[_Union[SavedItem, _Mapping]] = ...) -> None: ...
+
+class UnsaveMessageRequest(_message.Message):
+    __slots__ = ("message_id",)
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    def __init__(self, message_id: _Optional[str] = ...) -> None: ...
+
+class UnsaveMessageResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListSavedRequest(_message.Message):
+    __slots__ = ("workspace_id", "cursor", "limit")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CURSOR_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    cursor: str
+    limit: int
+    def __init__(self, workspace_id: _Optional[str] = ..., cursor: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListSavedResponse(_message.Message):
+    __slots__ = ("items", "next_cursor")
+    ITEMS_FIELD_NUMBER: _ClassVar[int]
+    NEXT_CURSOR_FIELD_NUMBER: _ClassVar[int]
+    items: _containers.RepeatedCompositeFieldContainer[SavedItem]
+    next_cursor: str
+    def __init__(self, items: _Optional[_Iterable[_Union[SavedItem, _Mapping]]] = ..., next_cursor: _Optional[str] = ...) -> None: ...

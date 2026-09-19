@@ -14,6 +14,14 @@ enum ChannelType {
   CHANNEL_TYPE_MPDM = 4;
 }
 
+// Per-member notification level for a channel.
+enum NotifyPref {
+  NOTIFY_PREF_UNSPECIFIED = 0; // follow the workspace preference
+  NOTIFY_PREF_ALL = 1;
+  NOTIFY_PREF_MENTIONS = 2;
+  NOTIFY_PREF_NOTHING = 3;
+}
+
 // The pinned Goal Header of a Tread.
 message TreadGoal {
   string goal = 1;
@@ -50,6 +58,7 @@ message ChannelReadState {
   int32 mention_count = 3;
   bool muted = 4;
   bool starred = 5;
+  NotifyPref notify_pref = 6;
 }
 
 message CreateChannelRequest {
@@ -119,6 +128,43 @@ message ListChannelMembersResponse {
   string next_cursor = 2;
 }
 
+// Unset fields are left unchanged.
+message UpdateChannelRequest {
+  string channel_id = 1;
+  optional string name = 2;
+  optional string topic = 3;
+  optional string purpose = 4;
+}
+message UpdateChannelResponse {
+  Channel channel = 1;
+}
+
+// Archived channels stay readable; posting is refused until unarchived.
+message ArchiveChannelRequest {
+  string channel_id = 1;
+}
+message ArchiveChannelResponse {
+  Channel channel = 1;
+}
+
+message UnarchiveChannelRequest {
+  string channel_id = 1;
+}
+message UnarchiveChannelResponse {
+  Channel channel = 1;
+}
+
+// The caller's own per-channel settings; unset fields are left unchanged.
+message SetChannelPreferenceRequest {
+  string channel_id = 1;
+  optional NotifyPref notify_pref = 2;
+  optional bool muted = 3;
+  optional bool starred = 4;
+}
+message SetChannelPreferenceResponse {
+  ChannelReadState read_state = 1;
+}
+
 service ChannelService {
   rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse);
   rpc ListChannels(ListChannelsRequest) returns (ListChannelsResponse);
@@ -128,4 +174,8 @@ service ChannelService {
   rpc InviteToChannel(InviteToChannelRequest) returns (InviteToChannelResponse);
   rpc SetGoal(SetGoalRequest) returns (SetGoalResponse);
   rpc ListChannelMembers(ListChannelMembersRequest) returns (ListChannelMembersResponse);
+  rpc UpdateChannel(UpdateChannelRequest) returns (UpdateChannelResponse);
+  rpc ArchiveChannel(ArchiveChannelRequest) returns (ArchiveChannelResponse);
+  rpc UnarchiveChannel(UnarchiveChannelRequest) returns (UnarchiveChannelResponse);
+  rpc SetChannelPreference(SetChannelPreferenceRequest) returns (SetChannelPreferenceResponse);
 }

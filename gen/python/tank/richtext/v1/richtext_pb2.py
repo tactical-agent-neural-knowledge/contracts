@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1ftank/richtext/v1/richtext.proto\x12\x10tank.richtext.v1\"C\n\x08RichText\x12\x37\n\x06\x62locks\x18\x01 \x03(\x0b\x32\x1f.tank.richtext.v1.RichTextBlockR\x06\x62locks\"\xfb\x01\n\rRichTextBlock\x12=\n\x07section\x18\x01 \x01(\x0b\x32!.tank.richtext.v1.RichTextSectionH\x00R\x07section\x12\x34\n\x04\x63ode\x18\x02 \x01(\x0b\x32\x1e.tank.richtext.v1.RichTextCodeH\x00R\x04\x63ode\x12\x37\n\x05quote\x18\x03 \x01(\x0b\x32\x1f.tank.richtext.v1.RichTextQuoteH\x00R\x05quote\x12\x34\n\x04list\x18\x04 \x01(\x0b\x32\x1e.tank.richtext.v1.RichTextListH\x00R\x04listB\x06\n\x04kind\"_\n\x05Style\x12\x12\n\x04\x62old\x18\x01 \x01(\x08R\x04\x62old\x12\x16\n\x06italic\x18\x02 \x01(\x08R\x06italic\x12\x16\n\x06strike\x18\x03 \x01(\x08R\x06strike\x12\x12\n\x04\x63ode\x18\x04 \x01(\x08R\x04\x63ode\"\xf2\x02\n\x0fRichTextElement\x12\x33\n\x04text\x18\x01 \x01(\x0b\x32\x1d.tank.richtext.v1.TextElementH\x00R\x04text\x12\x36\n\x05\x65moji\x18\x02 \x01(\x0b\x32\x1e.tank.richtext.v1.EmojiElementH\x00R\x05\x65moji\x12\x33\n\x04user\x18\x03 \x01(\x0b\x32\x1d.tank.richtext.v1.UserMentionH\x00R\x04user\x12<\n\x07\x63hannel\x18\x04 \x01(\x0b\x32 .tank.richtext.v1.ChannelMentionH\x00R\x07\x63hannel\x12\x42\n\tbroadcast\x18\x05 \x01(\x0b\x32\".tank.richtext.v1.BroadcastMentionH\x00R\tbroadcast\x12\x33\n\x04link\x18\x06 \x01(\x0b\x32\x1d.tank.richtext.v1.LinkElementH\x00R\x04linkB\x06\n\x04kind\"P\n\x0bTextElement\x12\x12\n\x04text\x18\x01 \x01(\tR\x04text\x12-\n\x05style\x18\x02 \x01(\x0b\x32\x17.tank.richtext.v1.StyleR\x05style\"<\n\x0c\x45mojiElement\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n\x07unicode\x18\x02 \x01(\tR\x07unicode\"U\n\x0bUserMention\x12\x17\n\x07user_id\x18\x01 \x01(\tR\x06userId\x12-\n\x05style\x18\x02 \x01(\x0b\x32\x17.tank.richtext.v1.StyleR\x05style\"/\n\x0e\x43hannelMention\x12\x1d\n\nchannel_id\x18\x01 \x01(\tR\tchannelId\"E\n\x10\x42roadcastMention\x12\x31\n\x05range\x18\x01 \x01(\x0e\x32\x1b.tank.richtext.v1.BroadcastR\x05range\"b\n\x0bLinkElement\x12\x10\n\x03url\x18\x01 \x01(\tR\x03url\x12\x12\n\x04text\x18\x02 \x01(\tR\x04text\x12-\n\x05style\x18\x03 \x01(\x0b\x32\x17.tank.richtext.v1.StyleR\x05style\"P\n\x0fRichTextSection\x12=\n\x08\x65lements\x18\x01 \x03(\x0b\x32!.tank.richtext.v1.RichTextElementR\x08\x65lements\">\n\x0cRichTextCode\x12\x1a\n\x08language\x18\x01 \x01(\tR\x08language\x12\x12\n\x04text\x18\x02 \x01(\tR\x04text\"N\n\rRichTextQuote\x12=\n\x08\x65lements\x18\x01 \x03(\x0b\x32!.tank.richtext.v1.RichTextElementR\x08\x65lements\"y\n\x0cRichTextList\x12\x18\n\x07ordered\x18\x01 \x01(\x08R\x07ordered\x12\x16\n\x06indent\x18\x02 \x01(\x05R\x06indent\x12\x37\n\x05items\x18\x03 \x03(\x0b\x32!.tank.richtext.v1.RichTextSectionR\x05items*i\n\tBroadcast\x12\x19\n\x15\x42ROADCAST_UNSPECIFIED\x10\x00\x12\x12\n\x0e\x42ROADCAST_HERE\x10\x01\x12\x15\n\x11\x42ROADCAST_CHANNEL\x10\x02\x12\x16\n\x12\x42ROADCAST_EVERYONE\x10\x03\x42\xe0\x01\n\x14\x63om.tank.richtext.v1B\rRichtextProtoP\x01ZWgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/richtext/v1;richtextv1\xa2\x02\x03TRX\xaa\x02\x10Tank.Richtext.V1\xca\x02\x10Tank\\Richtext\\V1\xe2\x02\x1cTank\\Richtext\\V1\\GPBMetadata\xea\x02\x12Tank::Richtext::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1ftank/richtext/v1/richtext.proto\x12\x10tank.richtext.v1\"C\n\x08RichText\x12\x37\n\x06\x62locks\x18\x01 \x03(\x0b\x32\x1f.tank.richtext.v1.RichTextBlockR\x06\x62locks\"\xfb\x01\n\rRichTextBlock\x12=\n\x07section\x18\x01 \x01(\x0b\x32!.tank.richtext.v1.RichTextSectionH\x00R\x07section\x12\x34\n\x04\x63ode\x18\x02 \x01(\x0b\x32\x1e.tank.richtext.v1.RichTextCodeH\x00R\x04\x63ode\x12\x37\n\x05quote\x18\x03 \x01(\x0b\x32\x1f.tank.richtext.v1.RichTextQuoteH\x00R\x05quote\x12\x34\n\x04list\x18\x04 \x01(\x0b\x32\x1e.tank.richtext.v1.RichTextListH\x00R\x04listB\x06\n\x04kind\"_\n\x05Style\x12\x12\n\x04\x62old\x18\x01 \x01(\x08R\x04\x62old\x12\x16\n\x06italic\x18\x02 \x01(\x08R\x06italic\x12\x16\n\x06strike\x18\x03 \x01(\x08R\x06strike\x12\x12\n\x04\x63ode\x18\x04 \x01(\x08R\x04\x63ode\"\xb7\x03\n\x0fRichTextElement\x12\x33\n\x04text\x18\x01 \x01(\x0b\x32\x1d.tank.richtext.v1.TextElementH\x00R\x04text\x12\x36\n\x05\x65moji\x18\x02 \x01(\x0b\x32\x1e.tank.richtext.v1.EmojiElementH\x00R\x05\x65moji\x12\x33\n\x04user\x18\x03 \x01(\x0b\x32\x1d.tank.richtext.v1.UserMentionH\x00R\x04user\x12<\n\x07\x63hannel\x18\x04 \x01(\x0b\x32 .tank.richtext.v1.ChannelMentionH\x00R\x07\x63hannel\x12\x42\n\tbroadcast\x18\x05 \x01(\x0b\x32\".tank.richtext.v1.BroadcastMentionH\x00R\tbroadcast\x12\x33\n\x04link\x18\x06 \x01(\x0b\x32\x1d.tank.richtext.v1.LinkElementH\x00R\x04link\x12\x43\n\nuser_group\x18\x07 \x01(\x0b\x32\".tank.richtext.v1.UserGroupMentionH\x00R\tuserGroupB\x06\n\x04kind\"E\n\x10UserGroupMention\x12\x19\n\x08group_id\x18\x01 \x01(\tR\x07groupId\x12\x16\n\x06handle\x18\x02 \x01(\tR\x06handle\"P\n\x0bTextElement\x12\x12\n\x04text\x18\x01 \x01(\tR\x04text\x12-\n\x05style\x18\x02 \x01(\x0b\x32\x17.tank.richtext.v1.StyleR\x05style\"<\n\x0c\x45mojiElement\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n\x07unicode\x18\x02 \x01(\tR\x07unicode\"U\n\x0bUserMention\x12\x17\n\x07user_id\x18\x01 \x01(\tR\x06userId\x12-\n\x05style\x18\x02 \x01(\x0b\x32\x17.tank.richtext.v1.StyleR\x05style\"/\n\x0e\x43hannelMention\x12\x1d\n\nchannel_id\x18\x01 \x01(\tR\tchannelId\"E\n\x10\x42roadcastMention\x12\x31\n\x05range\x18\x01 \x01(\x0e\x32\x1b.tank.richtext.v1.BroadcastR\x05range\"b\n\x0bLinkElement\x12\x10\n\x03url\x18\x01 \x01(\tR\x03url\x12\x12\n\x04text\x18\x02 \x01(\tR\x04text\x12-\n\x05style\x18\x03 \x01(\x0b\x32\x17.tank.richtext.v1.StyleR\x05style\"P\n\x0fRichTextSection\x12=\n\x08\x65lements\x18\x01 \x03(\x0b\x32!.tank.richtext.v1.RichTextElementR\x08\x65lements\">\n\x0cRichTextCode\x12\x1a\n\x08language\x18\x01 \x01(\tR\x08language\x12\x12\n\x04text\x18\x02 \x01(\tR\x04text\"N\n\rRichTextQuote\x12=\n\x08\x65lements\x18\x01 \x03(\x0b\x32!.tank.richtext.v1.RichTextElementR\x08\x65lements\"y\n\x0cRichTextList\x12\x18\n\x07ordered\x18\x01 \x01(\x08R\x07ordered\x12\x16\n\x06indent\x18\x02 \x01(\x05R\x06indent\x12\x37\n\x05items\x18\x03 \x03(\x0b\x32!.tank.richtext.v1.RichTextSectionR\x05items*i\n\tBroadcast\x12\x19\n\x15\x42ROADCAST_UNSPECIFIED\x10\x00\x12\x12\n\x0e\x42ROADCAST_HERE\x10\x01\x12\x15\n\x11\x42ROADCAST_CHANNEL\x10\x02\x12\x16\n\x12\x42ROADCAST_EVERYONE\x10\x03\x42\xe0\x01\n\x14\x63om.tank.richtext.v1B\rRichtextProtoP\x01ZWgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/richtext/v1;richtextv1\xa2\x02\x03TRX\xaa\x02\x10Tank.Richtext.V1\xca\x02\x10Tank\\Richtext\\V1\xe2\x02\x1cTank\\Richtext\\V1\\GPBMetadata\xea\x02\x12Tank::Richtext::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,8 +32,8 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'tank.richtext.v1.richtext_p
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\024com.tank.richtext.v1B\rRichtextProtoP\001ZWgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/richtext/v1;richtextv1\242\002\003TRX\252\002\020Tank.Richtext.V1\312\002\020Tank\\Richtext\\V1\342\002\034Tank\\Richtext\\V1\\GPBMetadata\352\002\022Tank::Richtext::V1'
-  _globals['_BROADCAST']._serialized_start=1646
-  _globals['_BROADCAST']._serialized_end=1751
+  _globals['_BROADCAST']._serialized_start=1786
+  _globals['_BROADCAST']._serialized_end=1891
   _globals['_RICHTEXT']._serialized_start=53
   _globals['_RICHTEXT']._serialized_end=120
   _globals['_RICHTEXTBLOCK']._serialized_start=123
@@ -41,25 +41,27 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_STYLE']._serialized_start=376
   _globals['_STYLE']._serialized_end=471
   _globals['_RICHTEXTELEMENT']._serialized_start=474
-  _globals['_RICHTEXTELEMENT']._serialized_end=844
-  _globals['_TEXTELEMENT']._serialized_start=846
-  _globals['_TEXTELEMENT']._serialized_end=926
-  _globals['_EMOJIELEMENT']._serialized_start=928
-  _globals['_EMOJIELEMENT']._serialized_end=988
-  _globals['_USERMENTION']._serialized_start=990
-  _globals['_USERMENTION']._serialized_end=1075
-  _globals['_CHANNELMENTION']._serialized_start=1077
-  _globals['_CHANNELMENTION']._serialized_end=1124
-  _globals['_BROADCASTMENTION']._serialized_start=1126
-  _globals['_BROADCASTMENTION']._serialized_end=1195
-  _globals['_LINKELEMENT']._serialized_start=1197
-  _globals['_LINKELEMENT']._serialized_end=1295
-  _globals['_RICHTEXTSECTION']._serialized_start=1297
-  _globals['_RICHTEXTSECTION']._serialized_end=1377
-  _globals['_RICHTEXTCODE']._serialized_start=1379
-  _globals['_RICHTEXTCODE']._serialized_end=1441
-  _globals['_RICHTEXTQUOTE']._serialized_start=1443
-  _globals['_RICHTEXTQUOTE']._serialized_end=1521
-  _globals['_RICHTEXTLIST']._serialized_start=1523
-  _globals['_RICHTEXTLIST']._serialized_end=1644
+  _globals['_RICHTEXTELEMENT']._serialized_end=913
+  _globals['_USERGROUPMENTION']._serialized_start=915
+  _globals['_USERGROUPMENTION']._serialized_end=984
+  _globals['_TEXTELEMENT']._serialized_start=986
+  _globals['_TEXTELEMENT']._serialized_end=1066
+  _globals['_EMOJIELEMENT']._serialized_start=1068
+  _globals['_EMOJIELEMENT']._serialized_end=1128
+  _globals['_USERMENTION']._serialized_start=1130
+  _globals['_USERMENTION']._serialized_end=1215
+  _globals['_CHANNELMENTION']._serialized_start=1217
+  _globals['_CHANNELMENTION']._serialized_end=1264
+  _globals['_BROADCASTMENTION']._serialized_start=1266
+  _globals['_BROADCASTMENTION']._serialized_end=1335
+  _globals['_LINKELEMENT']._serialized_start=1337
+  _globals['_LINKELEMENT']._serialized_end=1435
+  _globals['_RICHTEXTSECTION']._serialized_start=1437
+  _globals['_RICHTEXTSECTION']._serialized_end=1517
+  _globals['_RICHTEXTCODE']._serialized_start=1519
+  _globals['_RICHTEXTCODE']._serialized_end=1581
+  _globals['_RICHTEXTQUOTE']._serialized_start=1583
+  _globals['_RICHTEXTQUOTE']._serialized_end=1661
+  _globals['_RICHTEXTLIST']._serialized_start=1663
+  _globals['_RICHTEXTLIST']._serialized_end=1784
 # @@protoc_insertion_point(module_scope)

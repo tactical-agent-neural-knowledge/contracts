@@ -14,11 +14,22 @@ class ChannelType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     CHANNEL_TYPE_PRIVATE: _ClassVar[ChannelType]
     CHANNEL_TYPE_DM: _ClassVar[ChannelType]
     CHANNEL_TYPE_MPDM: _ClassVar[ChannelType]
+
+class NotifyPref(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    NOTIFY_PREF_UNSPECIFIED: _ClassVar[NotifyPref]
+    NOTIFY_PREF_ALL: _ClassVar[NotifyPref]
+    NOTIFY_PREF_MENTIONS: _ClassVar[NotifyPref]
+    NOTIFY_PREF_NOTHING: _ClassVar[NotifyPref]
 CHANNEL_TYPE_UNSPECIFIED: ChannelType
 CHANNEL_TYPE_PUBLIC: ChannelType
 CHANNEL_TYPE_PRIVATE: ChannelType
 CHANNEL_TYPE_DM: ChannelType
 CHANNEL_TYPE_MPDM: ChannelType
+NOTIFY_PREF_UNSPECIFIED: NotifyPref
+NOTIFY_PREF_ALL: NotifyPref
+NOTIFY_PREF_MENTIONS: NotifyPref
+NOTIFY_PREF_NOTHING: NotifyPref
 
 class TreadGoal(_message.Message):
     __slots__ = ("goal", "assignee_ids", "pipeline_status", "updated_at", "updated_by")
@@ -67,18 +78,20 @@ class Channel(_message.Message):
     def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., type: _Optional[_Union[ChannelType, str]] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., last_seq: _Optional[int] = ..., member_count: _Optional[int] = ..., last_message_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., archived_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., goal: _Optional[_Union[TreadGoal, _Mapping]] = ..., member_ids: _Optional[_Iterable[str]] = ..., joined: bool = ...) -> None: ...
 
 class ChannelReadState(_message.Message):
-    __slots__ = ("channel_id", "last_read_seq", "mention_count", "muted", "starred")
+    __slots__ = ("channel_id", "last_read_seq", "mention_count", "muted", "starred", "notify_pref")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     LAST_READ_SEQ_FIELD_NUMBER: _ClassVar[int]
     MENTION_COUNT_FIELD_NUMBER: _ClassVar[int]
     MUTED_FIELD_NUMBER: _ClassVar[int]
     STARRED_FIELD_NUMBER: _ClassVar[int]
+    NOTIFY_PREF_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
     last_read_seq: int
     mention_count: int
     muted: bool
     starred: bool
-    def __init__(self, channel_id: _Optional[str] = ..., last_read_seq: _Optional[int] = ..., mention_count: _Optional[int] = ..., muted: bool = ..., starred: bool = ...) -> None: ...
+    notify_pref: NotifyPref
+    def __init__(self, channel_id: _Optional[str] = ..., last_read_seq: _Optional[int] = ..., mention_count: _Optional[int] = ..., muted: bool = ..., starred: bool = ..., notify_pref: _Optional[_Union[NotifyPref, str]] = ...) -> None: ...
 
 class CreateChannelRequest(_message.Message):
     __slots__ = ("workspace_id", "type", "name", "purpose", "member_ids")
@@ -199,3 +212,63 @@ class ListChannelMembersResponse(_message.Message):
     member_ids: _containers.RepeatedScalarFieldContainer[str]
     next_cursor: str
     def __init__(self, member_ids: _Optional[_Iterable[str]] = ..., next_cursor: _Optional[str] = ...) -> None: ...
+
+class UpdateChannelRequest(_message.Message):
+    __slots__ = ("channel_id", "name", "topic", "purpose")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    TOPIC_FIELD_NUMBER: _ClassVar[int]
+    PURPOSE_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    name: str
+    topic: str
+    purpose: str
+    def __init__(self, channel_id: _Optional[str] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ...) -> None: ...
+
+class UpdateChannelResponse(_message.Message):
+    __slots__ = ("channel",)
+    CHANNEL_FIELD_NUMBER: _ClassVar[int]
+    channel: Channel
+    def __init__(self, channel: _Optional[_Union[Channel, _Mapping]] = ...) -> None: ...
+
+class ArchiveChannelRequest(_message.Message):
+    __slots__ = ("channel_id",)
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
+
+class ArchiveChannelResponse(_message.Message):
+    __slots__ = ("channel",)
+    CHANNEL_FIELD_NUMBER: _ClassVar[int]
+    channel: Channel
+    def __init__(self, channel: _Optional[_Union[Channel, _Mapping]] = ...) -> None: ...
+
+class UnarchiveChannelRequest(_message.Message):
+    __slots__ = ("channel_id",)
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
+
+class UnarchiveChannelResponse(_message.Message):
+    __slots__ = ("channel",)
+    CHANNEL_FIELD_NUMBER: _ClassVar[int]
+    channel: Channel
+    def __init__(self, channel: _Optional[_Union[Channel, _Mapping]] = ...) -> None: ...
+
+class SetChannelPreferenceRequest(_message.Message):
+    __slots__ = ("channel_id", "notify_pref", "muted", "starred")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    NOTIFY_PREF_FIELD_NUMBER: _ClassVar[int]
+    MUTED_FIELD_NUMBER: _ClassVar[int]
+    STARRED_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    notify_pref: NotifyPref
+    muted: bool
+    starred: bool
+    def __init__(self, channel_id: _Optional[str] = ..., notify_pref: _Optional[_Union[NotifyPref, str]] = ..., muted: bool = ..., starred: bool = ...) -> None: ...
+
+class SetChannelPreferenceResponse(_message.Message):
+    __slots__ = ("read_state",)
+    READ_STATE_FIELD_NUMBER: _ClassVar[int]
+    read_state: ChannelReadState
+    def __init__(self, read_state: _Optional[_Union[ChannelReadState, _Mapping]] = ...) -> None: ...

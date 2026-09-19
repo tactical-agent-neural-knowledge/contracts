@@ -19,6 +19,8 @@ message Principal {
   string display_name = 3;
   string avatar_url = 4;
   string email = 5; // users only, self-view only
+  // Uploaded avatar (tank.files.v1.File id); resolve with GetDownloadUrl. Empty = use avatar_url.
+  string avatar_file_id = 6;
 }
 
 message StartMagicLinkRequest {

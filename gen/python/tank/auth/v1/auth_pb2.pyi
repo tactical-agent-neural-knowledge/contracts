@@ -18,18 +18,20 @@ PRINCIPAL_KIND_BOT: PrincipalKind
 PRINCIPAL_KIND_AGENT: PrincipalKind
 
 class Principal(_message.Message):
-    __slots__ = ("id", "kind", "display_name", "avatar_url", "email")
+    __slots__ = ("id", "kind", "display_name", "avatar_url", "email", "avatar_file_id")
     ID_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
     AVATAR_URL_FIELD_NUMBER: _ClassVar[int]
     EMAIL_FIELD_NUMBER: _ClassVar[int]
+    AVATAR_FILE_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
     kind: PrincipalKind
     display_name: str
     avatar_url: str
     email: str
-    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[PrincipalKind, str]] = ..., display_name: _Optional[str] = ..., avatar_url: _Optional[str] = ..., email: _Optional[str] = ...) -> None: ...
+    avatar_file_id: str
+    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[PrincipalKind, str]] = ..., display_name: _Optional[str] = ..., avatar_url: _Optional[str] = ..., email: _Optional[str] = ..., avatar_file_id: _Optional[str] = ...) -> None: ...
 
 class StartMagicLinkRequest(_message.Message):
     __slots__ = ("email",)

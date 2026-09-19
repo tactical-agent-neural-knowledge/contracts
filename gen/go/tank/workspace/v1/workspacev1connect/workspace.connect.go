@@ -51,6 +51,66 @@ const (
 	// WorkspaceServiceJoinWorkspaceProcedure is the fully-qualified name of the WorkspaceService's
 	// JoinWorkspace RPC.
 	WorkspaceServiceJoinWorkspaceProcedure = "/tank.workspace.v1.WorkspaceService/JoinWorkspace"
+	// WorkspaceServiceUpdateProfileProcedure is the fully-qualified name of the WorkspaceService's
+	// UpdateProfile RPC.
+	WorkspaceServiceUpdateProfileProcedure = "/tank.workspace.v1.WorkspaceService/UpdateProfile"
+	// WorkspaceServiceGetPreferencesProcedure is the fully-qualified name of the WorkspaceService's
+	// GetPreferences RPC.
+	WorkspaceServiceGetPreferencesProcedure = "/tank.workspace.v1.WorkspaceService/GetPreferences"
+	// WorkspaceServiceUpdatePreferencesProcedure is the fully-qualified name of the WorkspaceService's
+	// UpdatePreferences RPC.
+	WorkspaceServiceUpdatePreferencesProcedure = "/tank.workspace.v1.WorkspaceService/UpdatePreferences"
+	// WorkspaceServiceListEmojiProcedure is the fully-qualified name of the WorkspaceService's
+	// ListEmoji RPC.
+	WorkspaceServiceListEmojiProcedure = "/tank.workspace.v1.WorkspaceService/ListEmoji"
+	// WorkspaceServiceCreateEmojiProcedure is the fully-qualified name of the WorkspaceService's
+	// CreateEmoji RPC.
+	WorkspaceServiceCreateEmojiProcedure = "/tank.workspace.v1.WorkspaceService/CreateEmoji"
+	// WorkspaceServiceDeleteEmojiProcedure is the fully-qualified name of the WorkspaceService's
+	// DeleteEmoji RPC.
+	WorkspaceServiceDeleteEmojiProcedure = "/tank.workspace.v1.WorkspaceService/DeleteEmoji"
+	// WorkspaceServiceListUserGroupsProcedure is the fully-qualified name of the WorkspaceService's
+	// ListUserGroups RPC.
+	WorkspaceServiceListUserGroupsProcedure = "/tank.workspace.v1.WorkspaceService/ListUserGroups"
+	// WorkspaceServiceCreateUserGroupProcedure is the fully-qualified name of the WorkspaceService's
+	// CreateUserGroup RPC.
+	WorkspaceServiceCreateUserGroupProcedure = "/tank.workspace.v1.WorkspaceService/CreateUserGroup"
+	// WorkspaceServiceUpdateUserGroupMembersProcedure is the fully-qualified name of the
+	// WorkspaceService's UpdateUserGroupMembers RPC.
+	WorkspaceServiceUpdateUserGroupMembersProcedure = "/tank.workspace.v1.WorkspaceService/UpdateUserGroupMembers"
+	// WorkspaceServiceDeleteUserGroupProcedure is the fully-qualified name of the WorkspaceService's
+	// DeleteUserGroup RPC.
+	WorkspaceServiceDeleteUserGroupProcedure = "/tank.workspace.v1.WorkspaceService/DeleteUserGroup"
+	// WorkspaceServiceListBookmarksProcedure is the fully-qualified name of the WorkspaceService's
+	// ListBookmarks RPC.
+	WorkspaceServiceListBookmarksProcedure = "/tank.workspace.v1.WorkspaceService/ListBookmarks"
+	// WorkspaceServiceAddBookmarkProcedure is the fully-qualified name of the WorkspaceService's
+	// AddBookmark RPC.
+	WorkspaceServiceAddBookmarkProcedure = "/tank.workspace.v1.WorkspaceService/AddBookmark"
+	// WorkspaceServiceRemoveBookmarkProcedure is the fully-qualified name of the WorkspaceService's
+	// RemoveBookmark RPC.
+	WorkspaceServiceRemoveBookmarkProcedure = "/tank.workspace.v1.WorkspaceService/RemoveBookmark"
+	// WorkspaceServiceGetDraftProcedure is the fully-qualified name of the WorkspaceService's GetDraft
+	// RPC.
+	WorkspaceServiceGetDraftProcedure = "/tank.workspace.v1.WorkspaceService/GetDraft"
+	// WorkspaceServicePutDraftProcedure is the fully-qualified name of the WorkspaceService's PutDraft
+	// RPC.
+	WorkspaceServicePutDraftProcedure = "/tank.workspace.v1.WorkspaceService/PutDraft"
+	// WorkspaceServiceDeleteDraftProcedure is the fully-qualified name of the WorkspaceService's
+	// DeleteDraft RPC.
+	WorkspaceServiceDeleteDraftProcedure = "/tank.workspace.v1.WorkspaceService/DeleteDraft"
+	// WorkspaceServiceListDraftsProcedure is the fully-qualified name of the WorkspaceService's
+	// ListDrafts RPC.
+	WorkspaceServiceListDraftsProcedure = "/tank.workspace.v1.WorkspaceService/ListDrafts"
+	// WorkspaceServiceScheduleMessageProcedure is the fully-qualified name of the WorkspaceService's
+	// ScheduleMessage RPC.
+	WorkspaceServiceScheduleMessageProcedure = "/tank.workspace.v1.WorkspaceService/ScheduleMessage"
+	// WorkspaceServiceListScheduledProcedure is the fully-qualified name of the WorkspaceService's
+	// ListScheduled RPC.
+	WorkspaceServiceListScheduledProcedure = "/tank.workspace.v1.WorkspaceService/ListScheduled"
+	// WorkspaceServiceCancelScheduledProcedure is the fully-qualified name of the WorkspaceService's
+	// CancelScheduled RPC.
+	WorkspaceServiceCancelScheduledProcedure = "/tank.workspace.v1.WorkspaceService/CancelScheduled"
 )
 
 // WorkspaceServiceClient is a client for the tank.workspace.v1.WorkspaceService service.
@@ -61,6 +121,26 @@ type WorkspaceServiceClient interface {
 	ListMembers(context.Context, *connect.Request[v1.ListMembersRequest]) (*connect.Response[v1.ListMembersResponse], error)
 	InviteMember(context.Context, *connect.Request[v1.InviteMemberRequest]) (*connect.Response[v1.InviteMemberResponse], error)
 	JoinWorkspace(context.Context, *connect.Request[v1.JoinWorkspaceRequest]) (*connect.Response[v1.JoinWorkspaceResponse], error)
+	UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error)
+	GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error)
+	UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error)
+	ListEmoji(context.Context, *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error)
+	CreateEmoji(context.Context, *connect.Request[v1.CreateEmojiRequest]) (*connect.Response[v1.CreateEmojiResponse], error)
+	DeleteEmoji(context.Context, *connect.Request[v1.DeleteEmojiRequest]) (*connect.Response[v1.DeleteEmojiResponse], error)
+	ListUserGroups(context.Context, *connect.Request[v1.ListUserGroupsRequest]) (*connect.Response[v1.ListUserGroupsResponse], error)
+	CreateUserGroup(context.Context, *connect.Request[v1.CreateUserGroupRequest]) (*connect.Response[v1.CreateUserGroupResponse], error)
+	UpdateUserGroupMembers(context.Context, *connect.Request[v1.UpdateUserGroupMembersRequest]) (*connect.Response[v1.UpdateUserGroupMembersResponse], error)
+	DeleteUserGroup(context.Context, *connect.Request[v1.DeleteUserGroupRequest]) (*connect.Response[v1.DeleteUserGroupResponse], error)
+	ListBookmarks(context.Context, *connect.Request[v1.ListBookmarksRequest]) (*connect.Response[v1.ListBookmarksResponse], error)
+	AddBookmark(context.Context, *connect.Request[v1.AddBookmarkRequest]) (*connect.Response[v1.AddBookmarkResponse], error)
+	RemoveBookmark(context.Context, *connect.Request[v1.RemoveBookmarkRequest]) (*connect.Response[v1.RemoveBookmarkResponse], error)
+	GetDraft(context.Context, *connect.Request[v1.GetDraftRequest]) (*connect.Response[v1.GetDraftResponse], error)
+	PutDraft(context.Context, *connect.Request[v1.PutDraftRequest]) (*connect.Response[v1.PutDraftResponse], error)
+	DeleteDraft(context.Context, *connect.Request[v1.DeleteDraftRequest]) (*connect.Response[v1.DeleteDraftResponse], error)
+	ListDrafts(context.Context, *connect.Request[v1.ListDraftsRequest]) (*connect.Response[v1.ListDraftsResponse], error)
+	ScheduleMessage(context.Context, *connect.Request[v1.ScheduleMessageRequest]) (*connect.Response[v1.ScheduleMessageResponse], error)
+	ListScheduled(context.Context, *connect.Request[v1.ListScheduledRequest]) (*connect.Response[v1.ListScheduledResponse], error)
+	CancelScheduled(context.Context, *connect.Request[v1.CancelScheduledRequest]) (*connect.Response[v1.CancelScheduledResponse], error)
 }
 
 // NewWorkspaceServiceClient constructs a client for the tank.workspace.v1.WorkspaceService service.
@@ -110,17 +190,157 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(workspaceServiceMethods.ByName("JoinWorkspace")),
 			connect.WithClientOptions(opts...),
 		),
+		updateProfile: connect.NewClient[v1.UpdateProfileRequest, v1.UpdateProfileResponse](
+			httpClient,
+			baseURL+WorkspaceServiceUpdateProfileProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("UpdateProfile")),
+			connect.WithClientOptions(opts...),
+		),
+		getPreferences: connect.NewClient[v1.GetPreferencesRequest, v1.GetPreferencesResponse](
+			httpClient,
+			baseURL+WorkspaceServiceGetPreferencesProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("GetPreferences")),
+			connect.WithClientOptions(opts...),
+		),
+		updatePreferences: connect.NewClient[v1.UpdatePreferencesRequest, v1.UpdatePreferencesResponse](
+			httpClient,
+			baseURL+WorkspaceServiceUpdatePreferencesProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("UpdatePreferences")),
+			connect.WithClientOptions(opts...),
+		),
+		listEmoji: connect.NewClient[v1.ListEmojiRequest, v1.ListEmojiResponse](
+			httpClient,
+			baseURL+WorkspaceServiceListEmojiProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("ListEmoji")),
+			connect.WithClientOptions(opts...),
+		),
+		createEmoji: connect.NewClient[v1.CreateEmojiRequest, v1.CreateEmojiResponse](
+			httpClient,
+			baseURL+WorkspaceServiceCreateEmojiProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("CreateEmoji")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteEmoji: connect.NewClient[v1.DeleteEmojiRequest, v1.DeleteEmojiResponse](
+			httpClient,
+			baseURL+WorkspaceServiceDeleteEmojiProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("DeleteEmoji")),
+			connect.WithClientOptions(opts...),
+		),
+		listUserGroups: connect.NewClient[v1.ListUserGroupsRequest, v1.ListUserGroupsResponse](
+			httpClient,
+			baseURL+WorkspaceServiceListUserGroupsProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("ListUserGroups")),
+			connect.WithClientOptions(opts...),
+		),
+		createUserGroup: connect.NewClient[v1.CreateUserGroupRequest, v1.CreateUserGroupResponse](
+			httpClient,
+			baseURL+WorkspaceServiceCreateUserGroupProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("CreateUserGroup")),
+			connect.WithClientOptions(opts...),
+		),
+		updateUserGroupMembers: connect.NewClient[v1.UpdateUserGroupMembersRequest, v1.UpdateUserGroupMembersResponse](
+			httpClient,
+			baseURL+WorkspaceServiceUpdateUserGroupMembersProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("UpdateUserGroupMembers")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteUserGroup: connect.NewClient[v1.DeleteUserGroupRequest, v1.DeleteUserGroupResponse](
+			httpClient,
+			baseURL+WorkspaceServiceDeleteUserGroupProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("DeleteUserGroup")),
+			connect.WithClientOptions(opts...),
+		),
+		listBookmarks: connect.NewClient[v1.ListBookmarksRequest, v1.ListBookmarksResponse](
+			httpClient,
+			baseURL+WorkspaceServiceListBookmarksProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("ListBookmarks")),
+			connect.WithClientOptions(opts...),
+		),
+		addBookmark: connect.NewClient[v1.AddBookmarkRequest, v1.AddBookmarkResponse](
+			httpClient,
+			baseURL+WorkspaceServiceAddBookmarkProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("AddBookmark")),
+			connect.WithClientOptions(opts...),
+		),
+		removeBookmark: connect.NewClient[v1.RemoveBookmarkRequest, v1.RemoveBookmarkResponse](
+			httpClient,
+			baseURL+WorkspaceServiceRemoveBookmarkProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("RemoveBookmark")),
+			connect.WithClientOptions(opts...),
+		),
+		getDraft: connect.NewClient[v1.GetDraftRequest, v1.GetDraftResponse](
+			httpClient,
+			baseURL+WorkspaceServiceGetDraftProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("GetDraft")),
+			connect.WithClientOptions(opts...),
+		),
+		putDraft: connect.NewClient[v1.PutDraftRequest, v1.PutDraftResponse](
+			httpClient,
+			baseURL+WorkspaceServicePutDraftProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("PutDraft")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteDraft: connect.NewClient[v1.DeleteDraftRequest, v1.DeleteDraftResponse](
+			httpClient,
+			baseURL+WorkspaceServiceDeleteDraftProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("DeleteDraft")),
+			connect.WithClientOptions(opts...),
+		),
+		listDrafts: connect.NewClient[v1.ListDraftsRequest, v1.ListDraftsResponse](
+			httpClient,
+			baseURL+WorkspaceServiceListDraftsProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("ListDrafts")),
+			connect.WithClientOptions(opts...),
+		),
+		scheduleMessage: connect.NewClient[v1.ScheduleMessageRequest, v1.ScheduleMessageResponse](
+			httpClient,
+			baseURL+WorkspaceServiceScheduleMessageProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("ScheduleMessage")),
+			connect.WithClientOptions(opts...),
+		),
+		listScheduled: connect.NewClient[v1.ListScheduledRequest, v1.ListScheduledResponse](
+			httpClient,
+			baseURL+WorkspaceServiceListScheduledProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("ListScheduled")),
+			connect.WithClientOptions(opts...),
+		),
+		cancelScheduled: connect.NewClient[v1.CancelScheduledRequest, v1.CancelScheduledResponse](
+			httpClient,
+			baseURL+WorkspaceServiceCancelScheduledProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("CancelScheduled")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // workspaceServiceClient implements WorkspaceServiceClient.
 type workspaceServiceClient struct {
-	createWorkspace *connect.Client[v1.CreateWorkspaceRequest, v1.CreateWorkspaceResponse]
-	listWorkspaces  *connect.Client[v1.ListWorkspacesRequest, v1.ListWorkspacesResponse]
-	getBootstrap    *connect.Client[v1.GetBootstrapRequest, v1.GetBootstrapResponse]
-	listMembers     *connect.Client[v1.ListMembersRequest, v1.ListMembersResponse]
-	inviteMember    *connect.Client[v1.InviteMemberRequest, v1.InviteMemberResponse]
-	joinWorkspace   *connect.Client[v1.JoinWorkspaceRequest, v1.JoinWorkspaceResponse]
+	createWorkspace        *connect.Client[v1.CreateWorkspaceRequest, v1.CreateWorkspaceResponse]
+	listWorkspaces         *connect.Client[v1.ListWorkspacesRequest, v1.ListWorkspacesResponse]
+	getBootstrap           *connect.Client[v1.GetBootstrapRequest, v1.GetBootstrapResponse]
+	listMembers            *connect.Client[v1.ListMembersRequest, v1.ListMembersResponse]
+	inviteMember           *connect.Client[v1.InviteMemberRequest, v1.InviteMemberResponse]
+	joinWorkspace          *connect.Client[v1.JoinWorkspaceRequest, v1.JoinWorkspaceResponse]
+	updateProfile          *connect.Client[v1.UpdateProfileRequest, v1.UpdateProfileResponse]
+	getPreferences         *connect.Client[v1.GetPreferencesRequest, v1.GetPreferencesResponse]
+	updatePreferences      *connect.Client[v1.UpdatePreferencesRequest, v1.UpdatePreferencesResponse]
+	listEmoji              *connect.Client[v1.ListEmojiRequest, v1.ListEmojiResponse]
+	createEmoji            *connect.Client[v1.CreateEmojiRequest, v1.CreateEmojiResponse]
+	deleteEmoji            *connect.Client[v1.DeleteEmojiRequest, v1.DeleteEmojiResponse]
+	listUserGroups         *connect.Client[v1.ListUserGroupsRequest, v1.ListUserGroupsResponse]
+	createUserGroup        *connect.Client[v1.CreateUserGroupRequest, v1.CreateUserGroupResponse]
+	updateUserGroupMembers *connect.Client[v1.UpdateUserGroupMembersRequest, v1.UpdateUserGroupMembersResponse]
+	deleteUserGroup        *connect.Client[v1.DeleteUserGroupRequest, v1.DeleteUserGroupResponse]
+	listBookmarks          *connect.Client[v1.ListBookmarksRequest, v1.ListBookmarksResponse]
+	addBookmark            *connect.Client[v1.AddBookmarkRequest, v1.AddBookmarkResponse]
+	removeBookmark         *connect.Client[v1.RemoveBookmarkRequest, v1.RemoveBookmarkResponse]
+	getDraft               *connect.Client[v1.GetDraftRequest, v1.GetDraftResponse]
+	putDraft               *connect.Client[v1.PutDraftRequest, v1.PutDraftResponse]
+	deleteDraft            *connect.Client[v1.DeleteDraftRequest, v1.DeleteDraftResponse]
+	listDrafts             *connect.Client[v1.ListDraftsRequest, v1.ListDraftsResponse]
+	scheduleMessage        *connect.Client[v1.ScheduleMessageRequest, v1.ScheduleMessageResponse]
+	listScheduled          *connect.Client[v1.ListScheduledRequest, v1.ListScheduledResponse]
+	cancelScheduled        *connect.Client[v1.CancelScheduledRequest, v1.CancelScheduledResponse]
 }
 
 // CreateWorkspace calls tank.workspace.v1.WorkspaceService.CreateWorkspace.
@@ -153,6 +373,106 @@ func (c *workspaceServiceClient) JoinWorkspace(ctx context.Context, req *connect
 	return c.joinWorkspace.CallUnary(ctx, req)
 }
 
+// UpdateProfile calls tank.workspace.v1.WorkspaceService.UpdateProfile.
+func (c *workspaceServiceClient) UpdateProfile(ctx context.Context, req *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error) {
+	return c.updateProfile.CallUnary(ctx, req)
+}
+
+// GetPreferences calls tank.workspace.v1.WorkspaceService.GetPreferences.
+func (c *workspaceServiceClient) GetPreferences(ctx context.Context, req *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error) {
+	return c.getPreferences.CallUnary(ctx, req)
+}
+
+// UpdatePreferences calls tank.workspace.v1.WorkspaceService.UpdatePreferences.
+func (c *workspaceServiceClient) UpdatePreferences(ctx context.Context, req *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error) {
+	return c.updatePreferences.CallUnary(ctx, req)
+}
+
+// ListEmoji calls tank.workspace.v1.WorkspaceService.ListEmoji.
+func (c *workspaceServiceClient) ListEmoji(ctx context.Context, req *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error) {
+	return c.listEmoji.CallUnary(ctx, req)
+}
+
+// CreateEmoji calls tank.workspace.v1.WorkspaceService.CreateEmoji.
+func (c *workspaceServiceClient) CreateEmoji(ctx context.Context, req *connect.Request[v1.CreateEmojiRequest]) (*connect.Response[v1.CreateEmojiResponse], error) {
+	return c.createEmoji.CallUnary(ctx, req)
+}
+
+// DeleteEmoji calls tank.workspace.v1.WorkspaceService.DeleteEmoji.
+func (c *workspaceServiceClient) DeleteEmoji(ctx context.Context, req *connect.Request[v1.DeleteEmojiRequest]) (*connect.Response[v1.DeleteEmojiResponse], error) {
+	return c.deleteEmoji.CallUnary(ctx, req)
+}
+
+// ListUserGroups calls tank.workspace.v1.WorkspaceService.ListUserGroups.
+func (c *workspaceServiceClient) ListUserGroups(ctx context.Context, req *connect.Request[v1.ListUserGroupsRequest]) (*connect.Response[v1.ListUserGroupsResponse], error) {
+	return c.listUserGroups.CallUnary(ctx, req)
+}
+
+// CreateUserGroup calls tank.workspace.v1.WorkspaceService.CreateUserGroup.
+func (c *workspaceServiceClient) CreateUserGroup(ctx context.Context, req *connect.Request[v1.CreateUserGroupRequest]) (*connect.Response[v1.CreateUserGroupResponse], error) {
+	return c.createUserGroup.CallUnary(ctx, req)
+}
+
+// UpdateUserGroupMembers calls tank.workspace.v1.WorkspaceService.UpdateUserGroupMembers.
+func (c *workspaceServiceClient) UpdateUserGroupMembers(ctx context.Context, req *connect.Request[v1.UpdateUserGroupMembersRequest]) (*connect.Response[v1.UpdateUserGroupMembersResponse], error) {
+	return c.updateUserGroupMembers.CallUnary(ctx, req)
+}
+
+// DeleteUserGroup calls tank.workspace.v1.WorkspaceService.DeleteUserGroup.
+func (c *workspaceServiceClient) DeleteUserGroup(ctx context.Context, req *connect.Request[v1.DeleteUserGroupRequest]) (*connect.Response[v1.DeleteUserGroupResponse], error) {
+	return c.deleteUserGroup.CallUnary(ctx, req)
+}
+
+// ListBookmarks calls tank.workspace.v1.WorkspaceService.ListBookmarks.
+func (c *workspaceServiceClient) ListBookmarks(ctx context.Context, req *connect.Request[v1.ListBookmarksRequest]) (*connect.Response[v1.ListBookmarksResponse], error) {
+	return c.listBookmarks.CallUnary(ctx, req)
+}
+
+// AddBookmark calls tank.workspace.v1.WorkspaceService.AddBookmark.
+func (c *workspaceServiceClient) AddBookmark(ctx context.Context, req *connect.Request[v1.AddBookmarkRequest]) (*connect.Response[v1.AddBookmarkResponse], error) {
+	return c.addBookmark.CallUnary(ctx, req)
+}
+
+// RemoveBookmark calls tank.workspace.v1.WorkspaceService.RemoveBookmark.
+func (c *workspaceServiceClient) RemoveBookmark(ctx context.Context, req *connect.Request[v1.RemoveBookmarkRequest]) (*connect.Response[v1.RemoveBookmarkResponse], error) {
+	return c.removeBookmark.CallUnary(ctx, req)
+}
+
+// GetDraft calls tank.workspace.v1.WorkspaceService.GetDraft.
+func (c *workspaceServiceClient) GetDraft(ctx context.Context, req *connect.Request[v1.GetDraftRequest]) (*connect.Response[v1.GetDraftResponse], error) {
+	return c.getDraft.CallUnary(ctx, req)
+}
+
+// PutDraft calls tank.workspace.v1.WorkspaceService.PutDraft.
+func (c *workspaceServiceClient) PutDraft(ctx context.Context, req *connect.Request[v1.PutDraftRequest]) (*connect.Response[v1.PutDraftResponse], error) {
+	return c.putDraft.CallUnary(ctx, req)
+}
+
+// DeleteDraft calls tank.workspace.v1.WorkspaceService.DeleteDraft.
+func (c *workspaceServiceClient) DeleteDraft(ctx context.Context, req *connect.Request[v1.DeleteDraftRequest]) (*connect.Response[v1.DeleteDraftResponse], error) {
+	return c.deleteDraft.CallUnary(ctx, req)
+}
+
+// ListDrafts calls tank.workspace.v1.WorkspaceService.ListDrafts.
+func (c *workspaceServiceClient) ListDrafts(ctx context.Context, req *connect.Request[v1.ListDraftsRequest]) (*connect.Response[v1.ListDraftsResponse], error) {
+	return c.listDrafts.CallUnary(ctx, req)
+}
+
+// ScheduleMessage calls tank.workspace.v1.WorkspaceService.ScheduleMessage.
+func (c *workspaceServiceClient) ScheduleMessage(ctx context.Context, req *connect.Request[v1.ScheduleMessageRequest]) (*connect.Response[v1.ScheduleMessageResponse], error) {
+	return c.scheduleMessage.CallUnary(ctx, req)
+}
+
+// ListScheduled calls tank.workspace.v1.WorkspaceService.ListScheduled.
+func (c *workspaceServiceClient) ListScheduled(ctx context.Context, req *connect.Request[v1.ListScheduledRequest]) (*connect.Response[v1.ListScheduledResponse], error) {
+	return c.listScheduled.CallUnary(ctx, req)
+}
+
+// CancelScheduled calls tank.workspace.v1.WorkspaceService.CancelScheduled.
+func (c *workspaceServiceClient) CancelScheduled(ctx context.Context, req *connect.Request[v1.CancelScheduledRequest]) (*connect.Response[v1.CancelScheduledResponse], error) {
+	return c.cancelScheduled.CallUnary(ctx, req)
+}
+
 // WorkspaceServiceHandler is an implementation of the tank.workspace.v1.WorkspaceService service.
 type WorkspaceServiceHandler interface {
 	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
@@ -161,6 +481,26 @@ type WorkspaceServiceHandler interface {
 	ListMembers(context.Context, *connect.Request[v1.ListMembersRequest]) (*connect.Response[v1.ListMembersResponse], error)
 	InviteMember(context.Context, *connect.Request[v1.InviteMemberRequest]) (*connect.Response[v1.InviteMemberResponse], error)
 	JoinWorkspace(context.Context, *connect.Request[v1.JoinWorkspaceRequest]) (*connect.Response[v1.JoinWorkspaceResponse], error)
+	UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error)
+	GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error)
+	UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error)
+	ListEmoji(context.Context, *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error)
+	CreateEmoji(context.Context, *connect.Request[v1.CreateEmojiRequest]) (*connect.Response[v1.CreateEmojiResponse], error)
+	DeleteEmoji(context.Context, *connect.Request[v1.DeleteEmojiRequest]) (*connect.Response[v1.DeleteEmojiResponse], error)
+	ListUserGroups(context.Context, *connect.Request[v1.ListUserGroupsRequest]) (*connect.Response[v1.ListUserGroupsResponse], error)
+	CreateUserGroup(context.Context, *connect.Request[v1.CreateUserGroupRequest]) (*connect.Response[v1.CreateUserGroupResponse], error)
+	UpdateUserGroupMembers(context.Context, *connect.Request[v1.UpdateUserGroupMembersRequest]) (*connect.Response[v1.UpdateUserGroupMembersResponse], error)
+	DeleteUserGroup(context.Context, *connect.Request[v1.DeleteUserGroupRequest]) (*connect.Response[v1.DeleteUserGroupResponse], error)
+	ListBookmarks(context.Context, *connect.Request[v1.ListBookmarksRequest]) (*connect.Response[v1.ListBookmarksResponse], error)
+	AddBookmark(context.Context, *connect.Request[v1.AddBookmarkRequest]) (*connect.Response[v1.AddBookmarkResponse], error)
+	RemoveBookmark(context.Context, *connect.Request[v1.RemoveBookmarkRequest]) (*connect.Response[v1.RemoveBookmarkResponse], error)
+	GetDraft(context.Context, *connect.Request[v1.GetDraftRequest]) (*connect.Response[v1.GetDraftResponse], error)
+	PutDraft(context.Context, *connect.Request[v1.PutDraftRequest]) (*connect.Response[v1.PutDraftResponse], error)
+	DeleteDraft(context.Context, *connect.Request[v1.DeleteDraftRequest]) (*connect.Response[v1.DeleteDraftResponse], error)
+	ListDrafts(context.Context, *connect.Request[v1.ListDraftsRequest]) (*connect.Response[v1.ListDraftsResponse], error)
+	ScheduleMessage(context.Context, *connect.Request[v1.ScheduleMessageRequest]) (*connect.Response[v1.ScheduleMessageResponse], error)
+	ListScheduled(context.Context, *connect.Request[v1.ListScheduledRequest]) (*connect.Response[v1.ListScheduledResponse], error)
+	CancelScheduled(context.Context, *connect.Request[v1.CancelScheduledRequest]) (*connect.Response[v1.CancelScheduledResponse], error)
 }
 
 // NewWorkspaceServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -206,6 +546,126 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 		connect.WithSchema(workspaceServiceMethods.ByName("JoinWorkspace")),
 		connect.WithHandlerOptions(opts...),
 	)
+	workspaceServiceUpdateProfileHandler := connect.NewUnaryHandler(
+		WorkspaceServiceUpdateProfileProcedure,
+		svc.UpdateProfile,
+		connect.WithSchema(workspaceServiceMethods.ByName("UpdateProfile")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceGetPreferencesHandler := connect.NewUnaryHandler(
+		WorkspaceServiceGetPreferencesProcedure,
+		svc.GetPreferences,
+		connect.WithSchema(workspaceServiceMethods.ByName("GetPreferences")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceUpdatePreferencesHandler := connect.NewUnaryHandler(
+		WorkspaceServiceUpdatePreferencesProcedure,
+		svc.UpdatePreferences,
+		connect.WithSchema(workspaceServiceMethods.ByName("UpdatePreferences")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceListEmojiHandler := connect.NewUnaryHandler(
+		WorkspaceServiceListEmojiProcedure,
+		svc.ListEmoji,
+		connect.WithSchema(workspaceServiceMethods.ByName("ListEmoji")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceCreateEmojiHandler := connect.NewUnaryHandler(
+		WorkspaceServiceCreateEmojiProcedure,
+		svc.CreateEmoji,
+		connect.WithSchema(workspaceServiceMethods.ByName("CreateEmoji")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceDeleteEmojiHandler := connect.NewUnaryHandler(
+		WorkspaceServiceDeleteEmojiProcedure,
+		svc.DeleteEmoji,
+		connect.WithSchema(workspaceServiceMethods.ByName("DeleteEmoji")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceListUserGroupsHandler := connect.NewUnaryHandler(
+		WorkspaceServiceListUserGroupsProcedure,
+		svc.ListUserGroups,
+		connect.WithSchema(workspaceServiceMethods.ByName("ListUserGroups")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceCreateUserGroupHandler := connect.NewUnaryHandler(
+		WorkspaceServiceCreateUserGroupProcedure,
+		svc.CreateUserGroup,
+		connect.WithSchema(workspaceServiceMethods.ByName("CreateUserGroup")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceUpdateUserGroupMembersHandler := connect.NewUnaryHandler(
+		WorkspaceServiceUpdateUserGroupMembersProcedure,
+		svc.UpdateUserGroupMembers,
+		connect.WithSchema(workspaceServiceMethods.ByName("UpdateUserGroupMembers")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceDeleteUserGroupHandler := connect.NewUnaryHandler(
+		WorkspaceServiceDeleteUserGroupProcedure,
+		svc.DeleteUserGroup,
+		connect.WithSchema(workspaceServiceMethods.ByName("DeleteUserGroup")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceListBookmarksHandler := connect.NewUnaryHandler(
+		WorkspaceServiceListBookmarksProcedure,
+		svc.ListBookmarks,
+		connect.WithSchema(workspaceServiceMethods.ByName("ListBookmarks")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceAddBookmarkHandler := connect.NewUnaryHandler(
+		WorkspaceServiceAddBookmarkProcedure,
+		svc.AddBookmark,
+		connect.WithSchema(workspaceServiceMethods.ByName("AddBookmark")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceRemoveBookmarkHandler := connect.NewUnaryHandler(
+		WorkspaceServiceRemoveBookmarkProcedure,
+		svc.RemoveBookmark,
+		connect.WithSchema(workspaceServiceMethods.ByName("RemoveBookmark")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceGetDraftHandler := connect.NewUnaryHandler(
+		WorkspaceServiceGetDraftProcedure,
+		svc.GetDraft,
+		connect.WithSchema(workspaceServiceMethods.ByName("GetDraft")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServicePutDraftHandler := connect.NewUnaryHandler(
+		WorkspaceServicePutDraftProcedure,
+		svc.PutDraft,
+		connect.WithSchema(workspaceServiceMethods.ByName("PutDraft")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceDeleteDraftHandler := connect.NewUnaryHandler(
+		WorkspaceServiceDeleteDraftProcedure,
+		svc.DeleteDraft,
+		connect.WithSchema(workspaceServiceMethods.ByName("DeleteDraft")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceListDraftsHandler := connect.NewUnaryHandler(
+		WorkspaceServiceListDraftsProcedure,
+		svc.ListDrafts,
+		connect.WithSchema(workspaceServiceMethods.ByName("ListDrafts")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceScheduleMessageHandler := connect.NewUnaryHandler(
+		WorkspaceServiceScheduleMessageProcedure,
+		svc.ScheduleMessage,
+		connect.WithSchema(workspaceServiceMethods.ByName("ScheduleMessage")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceListScheduledHandler := connect.NewUnaryHandler(
+		WorkspaceServiceListScheduledProcedure,
+		svc.ListScheduled,
+		connect.WithSchema(workspaceServiceMethods.ByName("ListScheduled")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceCancelScheduledHandler := connect.NewUnaryHandler(
+		WorkspaceServiceCancelScheduledProcedure,
+		svc.CancelScheduled,
+		connect.WithSchema(workspaceServiceMethods.ByName("CancelScheduled")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.workspace.v1.WorkspaceService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case WorkspaceServiceCreateWorkspaceProcedure:
@@ -220,6 +680,46 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 			workspaceServiceInviteMemberHandler.ServeHTTP(w, r)
 		case WorkspaceServiceJoinWorkspaceProcedure:
 			workspaceServiceJoinWorkspaceHandler.ServeHTTP(w, r)
+		case WorkspaceServiceUpdateProfileProcedure:
+			workspaceServiceUpdateProfileHandler.ServeHTTP(w, r)
+		case WorkspaceServiceGetPreferencesProcedure:
+			workspaceServiceGetPreferencesHandler.ServeHTTP(w, r)
+		case WorkspaceServiceUpdatePreferencesProcedure:
+			workspaceServiceUpdatePreferencesHandler.ServeHTTP(w, r)
+		case WorkspaceServiceListEmojiProcedure:
+			workspaceServiceListEmojiHandler.ServeHTTP(w, r)
+		case WorkspaceServiceCreateEmojiProcedure:
+			workspaceServiceCreateEmojiHandler.ServeHTTP(w, r)
+		case WorkspaceServiceDeleteEmojiProcedure:
+			workspaceServiceDeleteEmojiHandler.ServeHTTP(w, r)
+		case WorkspaceServiceListUserGroupsProcedure:
+			workspaceServiceListUserGroupsHandler.ServeHTTP(w, r)
+		case WorkspaceServiceCreateUserGroupProcedure:
+			workspaceServiceCreateUserGroupHandler.ServeHTTP(w, r)
+		case WorkspaceServiceUpdateUserGroupMembersProcedure:
+			workspaceServiceUpdateUserGroupMembersHandler.ServeHTTP(w, r)
+		case WorkspaceServiceDeleteUserGroupProcedure:
+			workspaceServiceDeleteUserGroupHandler.ServeHTTP(w, r)
+		case WorkspaceServiceListBookmarksProcedure:
+			workspaceServiceListBookmarksHandler.ServeHTTP(w, r)
+		case WorkspaceServiceAddBookmarkProcedure:
+			workspaceServiceAddBookmarkHandler.ServeHTTP(w, r)
+		case WorkspaceServiceRemoveBookmarkProcedure:
+			workspaceServiceRemoveBookmarkHandler.ServeHTTP(w, r)
+		case WorkspaceServiceGetDraftProcedure:
+			workspaceServiceGetDraftHandler.ServeHTTP(w, r)
+		case WorkspaceServicePutDraftProcedure:
+			workspaceServicePutDraftHandler.ServeHTTP(w, r)
+		case WorkspaceServiceDeleteDraftProcedure:
+			workspaceServiceDeleteDraftHandler.ServeHTTP(w, r)
+		case WorkspaceServiceListDraftsProcedure:
+			workspaceServiceListDraftsHandler.ServeHTTP(w, r)
+		case WorkspaceServiceScheduleMessageProcedure:
+			workspaceServiceScheduleMessageHandler.ServeHTTP(w, r)
+		case WorkspaceServiceListScheduledProcedure:
+			workspaceServiceListScheduledHandler.ServeHTTP(w, r)
+		case WorkspaceServiceCancelScheduledProcedure:
+			workspaceServiceCancelScheduledHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -251,4 +751,84 @@ func (UnimplementedWorkspaceServiceHandler) InviteMember(context.Context, *conne
 
 func (UnimplementedWorkspaceServiceHandler) JoinWorkspace(context.Context, *connect.Request[v1.JoinWorkspaceRequest]) (*connect.Response[v1.JoinWorkspaceResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.JoinWorkspace is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.UpdateProfile is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.GetPreferences is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.UpdatePreferences is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) ListEmoji(context.Context, *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ListEmoji is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) CreateEmoji(context.Context, *connect.Request[v1.CreateEmojiRequest]) (*connect.Response[v1.CreateEmojiResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.CreateEmoji is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) DeleteEmoji(context.Context, *connect.Request[v1.DeleteEmojiRequest]) (*connect.Response[v1.DeleteEmojiResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.DeleteEmoji is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) ListUserGroups(context.Context, *connect.Request[v1.ListUserGroupsRequest]) (*connect.Response[v1.ListUserGroupsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ListUserGroups is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) CreateUserGroup(context.Context, *connect.Request[v1.CreateUserGroupRequest]) (*connect.Response[v1.CreateUserGroupResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.CreateUserGroup is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) UpdateUserGroupMembers(context.Context, *connect.Request[v1.UpdateUserGroupMembersRequest]) (*connect.Response[v1.UpdateUserGroupMembersResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.UpdateUserGroupMembers is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) DeleteUserGroup(context.Context, *connect.Request[v1.DeleteUserGroupRequest]) (*connect.Response[v1.DeleteUserGroupResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.DeleteUserGroup is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) ListBookmarks(context.Context, *connect.Request[v1.ListBookmarksRequest]) (*connect.Response[v1.ListBookmarksResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ListBookmarks is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) AddBookmark(context.Context, *connect.Request[v1.AddBookmarkRequest]) (*connect.Response[v1.AddBookmarkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.AddBookmark is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) RemoveBookmark(context.Context, *connect.Request[v1.RemoveBookmarkRequest]) (*connect.Response[v1.RemoveBookmarkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.RemoveBookmark is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) GetDraft(context.Context, *connect.Request[v1.GetDraftRequest]) (*connect.Response[v1.GetDraftResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.GetDraft is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) PutDraft(context.Context, *connect.Request[v1.PutDraftRequest]) (*connect.Response[v1.PutDraftResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.PutDraft is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) DeleteDraft(context.Context, *connect.Request[v1.DeleteDraftRequest]) (*connect.Response[v1.DeleteDraftResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.DeleteDraft is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) ListDrafts(context.Context, *connect.Request[v1.ListDraftsRequest]) (*connect.Response[v1.ListDraftsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ListDrafts is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) ScheduleMessage(context.Context, *connect.Request[v1.ScheduleMessageRequest]) (*connect.Response[v1.ScheduleMessageResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ScheduleMessage is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) ListScheduled(context.Context, *connect.Request[v1.ListScheduledRequest]) (*connect.Response[v1.ListScheduledResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ListScheduled is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) CancelScheduled(context.Context, *connect.Request[v1.CancelScheduledRequest]) (*connect.Response[v1.CancelScheduledResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.CancelScheduled is not implemented"))
 }

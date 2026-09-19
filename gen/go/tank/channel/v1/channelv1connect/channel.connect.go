@@ -56,6 +56,18 @@ const (
 	// ChannelServiceListChannelMembersProcedure is the fully-qualified name of the ChannelService's
 	// ListChannelMembers RPC.
 	ChannelServiceListChannelMembersProcedure = "/tank.channel.v1.ChannelService/ListChannelMembers"
+	// ChannelServiceUpdateChannelProcedure is the fully-qualified name of the ChannelService's
+	// UpdateChannel RPC.
+	ChannelServiceUpdateChannelProcedure = "/tank.channel.v1.ChannelService/UpdateChannel"
+	// ChannelServiceArchiveChannelProcedure is the fully-qualified name of the ChannelService's
+	// ArchiveChannel RPC.
+	ChannelServiceArchiveChannelProcedure = "/tank.channel.v1.ChannelService/ArchiveChannel"
+	// ChannelServiceUnarchiveChannelProcedure is the fully-qualified name of the ChannelService's
+	// UnarchiveChannel RPC.
+	ChannelServiceUnarchiveChannelProcedure = "/tank.channel.v1.ChannelService/UnarchiveChannel"
+	// ChannelServiceSetChannelPreferenceProcedure is the fully-qualified name of the ChannelService's
+	// SetChannelPreference RPC.
+	ChannelServiceSetChannelPreferenceProcedure = "/tank.channel.v1.ChannelService/SetChannelPreference"
 )
 
 // ChannelServiceClient is a client for the tank.channel.v1.ChannelService service.
@@ -68,6 +80,10 @@ type ChannelServiceClient interface {
 	InviteToChannel(context.Context, *connect.Request[v1.InviteToChannelRequest]) (*connect.Response[v1.InviteToChannelResponse], error)
 	SetGoal(context.Context, *connect.Request[v1.SetGoalRequest]) (*connect.Response[v1.SetGoalResponse], error)
 	ListChannelMembers(context.Context, *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error)
+	UpdateChannel(context.Context, *connect.Request[v1.UpdateChannelRequest]) (*connect.Response[v1.UpdateChannelResponse], error)
+	ArchiveChannel(context.Context, *connect.Request[v1.ArchiveChannelRequest]) (*connect.Response[v1.ArchiveChannelResponse], error)
+	UnarchiveChannel(context.Context, *connect.Request[v1.UnarchiveChannelRequest]) (*connect.Response[v1.UnarchiveChannelResponse], error)
+	SetChannelPreference(context.Context, *connect.Request[v1.SetChannelPreferenceRequest]) (*connect.Response[v1.SetChannelPreferenceResponse], error)
 }
 
 // NewChannelServiceClient constructs a client for the tank.channel.v1.ChannelService service. By
@@ -129,19 +145,47 @@ func NewChannelServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(channelServiceMethods.ByName("ListChannelMembers")),
 			connect.WithClientOptions(opts...),
 		),
+		updateChannel: connect.NewClient[v1.UpdateChannelRequest, v1.UpdateChannelResponse](
+			httpClient,
+			baseURL+ChannelServiceUpdateChannelProcedure,
+			connect.WithSchema(channelServiceMethods.ByName("UpdateChannel")),
+			connect.WithClientOptions(opts...),
+		),
+		archiveChannel: connect.NewClient[v1.ArchiveChannelRequest, v1.ArchiveChannelResponse](
+			httpClient,
+			baseURL+ChannelServiceArchiveChannelProcedure,
+			connect.WithSchema(channelServiceMethods.ByName("ArchiveChannel")),
+			connect.WithClientOptions(opts...),
+		),
+		unarchiveChannel: connect.NewClient[v1.UnarchiveChannelRequest, v1.UnarchiveChannelResponse](
+			httpClient,
+			baseURL+ChannelServiceUnarchiveChannelProcedure,
+			connect.WithSchema(channelServiceMethods.ByName("UnarchiveChannel")),
+			connect.WithClientOptions(opts...),
+		),
+		setChannelPreference: connect.NewClient[v1.SetChannelPreferenceRequest, v1.SetChannelPreferenceResponse](
+			httpClient,
+			baseURL+ChannelServiceSetChannelPreferenceProcedure,
+			connect.WithSchema(channelServiceMethods.ByName("SetChannelPreference")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // channelServiceClient implements ChannelServiceClient.
 type channelServiceClient struct {
-	createChannel      *connect.Client[v1.CreateChannelRequest, v1.CreateChannelResponse]
-	listChannels       *connect.Client[v1.ListChannelsRequest, v1.ListChannelsResponse]
-	getChannel         *connect.Client[v1.GetChannelRequest, v1.GetChannelResponse]
-	joinChannel        *connect.Client[v1.JoinChannelRequest, v1.JoinChannelResponse]
-	leaveChannel       *connect.Client[v1.LeaveChannelRequest, v1.LeaveChannelResponse]
-	inviteToChannel    *connect.Client[v1.InviteToChannelRequest, v1.InviteToChannelResponse]
-	setGoal            *connect.Client[v1.SetGoalRequest, v1.SetGoalResponse]
-	listChannelMembers *connect.Client[v1.ListChannelMembersRequest, v1.ListChannelMembersResponse]
+	createChannel        *connect.Client[v1.CreateChannelRequest, v1.CreateChannelResponse]
+	listChannels         *connect.Client[v1.ListChannelsRequest, v1.ListChannelsResponse]
+	getChannel           *connect.Client[v1.GetChannelRequest, v1.GetChannelResponse]
+	joinChannel          *connect.Client[v1.JoinChannelRequest, v1.JoinChannelResponse]
+	leaveChannel         *connect.Client[v1.LeaveChannelRequest, v1.LeaveChannelResponse]
+	inviteToChannel      *connect.Client[v1.InviteToChannelRequest, v1.InviteToChannelResponse]
+	setGoal              *connect.Client[v1.SetGoalRequest, v1.SetGoalResponse]
+	listChannelMembers   *connect.Client[v1.ListChannelMembersRequest, v1.ListChannelMembersResponse]
+	updateChannel        *connect.Client[v1.UpdateChannelRequest, v1.UpdateChannelResponse]
+	archiveChannel       *connect.Client[v1.ArchiveChannelRequest, v1.ArchiveChannelResponse]
+	unarchiveChannel     *connect.Client[v1.UnarchiveChannelRequest, v1.UnarchiveChannelResponse]
+	setChannelPreference *connect.Client[v1.SetChannelPreferenceRequest, v1.SetChannelPreferenceResponse]
 }
 
 // CreateChannel calls tank.channel.v1.ChannelService.CreateChannel.
@@ -184,6 +228,26 @@ func (c *channelServiceClient) ListChannelMembers(ctx context.Context, req *conn
 	return c.listChannelMembers.CallUnary(ctx, req)
 }
 
+// UpdateChannel calls tank.channel.v1.ChannelService.UpdateChannel.
+func (c *channelServiceClient) UpdateChannel(ctx context.Context, req *connect.Request[v1.UpdateChannelRequest]) (*connect.Response[v1.UpdateChannelResponse], error) {
+	return c.updateChannel.CallUnary(ctx, req)
+}
+
+// ArchiveChannel calls tank.channel.v1.ChannelService.ArchiveChannel.
+func (c *channelServiceClient) ArchiveChannel(ctx context.Context, req *connect.Request[v1.ArchiveChannelRequest]) (*connect.Response[v1.ArchiveChannelResponse], error) {
+	return c.archiveChannel.CallUnary(ctx, req)
+}
+
+// UnarchiveChannel calls tank.channel.v1.ChannelService.UnarchiveChannel.
+func (c *channelServiceClient) UnarchiveChannel(ctx context.Context, req *connect.Request[v1.UnarchiveChannelRequest]) (*connect.Response[v1.UnarchiveChannelResponse], error) {
+	return c.unarchiveChannel.CallUnary(ctx, req)
+}
+
+// SetChannelPreference calls tank.channel.v1.ChannelService.SetChannelPreference.
+func (c *channelServiceClient) SetChannelPreference(ctx context.Context, req *connect.Request[v1.SetChannelPreferenceRequest]) (*connect.Response[v1.SetChannelPreferenceResponse], error) {
+	return c.setChannelPreference.CallUnary(ctx, req)
+}
+
 // ChannelServiceHandler is an implementation of the tank.channel.v1.ChannelService service.
 type ChannelServiceHandler interface {
 	CreateChannel(context.Context, *connect.Request[v1.CreateChannelRequest]) (*connect.Response[v1.CreateChannelResponse], error)
@@ -194,6 +258,10 @@ type ChannelServiceHandler interface {
 	InviteToChannel(context.Context, *connect.Request[v1.InviteToChannelRequest]) (*connect.Response[v1.InviteToChannelResponse], error)
 	SetGoal(context.Context, *connect.Request[v1.SetGoalRequest]) (*connect.Response[v1.SetGoalResponse], error)
 	ListChannelMembers(context.Context, *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error)
+	UpdateChannel(context.Context, *connect.Request[v1.UpdateChannelRequest]) (*connect.Response[v1.UpdateChannelResponse], error)
+	ArchiveChannel(context.Context, *connect.Request[v1.ArchiveChannelRequest]) (*connect.Response[v1.ArchiveChannelResponse], error)
+	UnarchiveChannel(context.Context, *connect.Request[v1.UnarchiveChannelRequest]) (*connect.Response[v1.UnarchiveChannelResponse], error)
+	SetChannelPreference(context.Context, *connect.Request[v1.SetChannelPreferenceRequest]) (*connect.Response[v1.SetChannelPreferenceResponse], error)
 }
 
 // NewChannelServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -251,6 +319,30 @@ func NewChannelServiceHandler(svc ChannelServiceHandler, opts ...connect.Handler
 		connect.WithSchema(channelServiceMethods.ByName("ListChannelMembers")),
 		connect.WithHandlerOptions(opts...),
 	)
+	channelServiceUpdateChannelHandler := connect.NewUnaryHandler(
+		ChannelServiceUpdateChannelProcedure,
+		svc.UpdateChannel,
+		connect.WithSchema(channelServiceMethods.ByName("UpdateChannel")),
+		connect.WithHandlerOptions(opts...),
+	)
+	channelServiceArchiveChannelHandler := connect.NewUnaryHandler(
+		ChannelServiceArchiveChannelProcedure,
+		svc.ArchiveChannel,
+		connect.WithSchema(channelServiceMethods.ByName("ArchiveChannel")),
+		connect.WithHandlerOptions(opts...),
+	)
+	channelServiceUnarchiveChannelHandler := connect.NewUnaryHandler(
+		ChannelServiceUnarchiveChannelProcedure,
+		svc.UnarchiveChannel,
+		connect.WithSchema(channelServiceMethods.ByName("UnarchiveChannel")),
+		connect.WithHandlerOptions(opts...),
+	)
+	channelServiceSetChannelPreferenceHandler := connect.NewUnaryHandler(
+		ChannelServiceSetChannelPreferenceProcedure,
+		svc.SetChannelPreference,
+		connect.WithSchema(channelServiceMethods.ByName("SetChannelPreference")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.channel.v1.ChannelService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ChannelServiceCreateChannelProcedure:
@@ -269,6 +361,14 @@ func NewChannelServiceHandler(svc ChannelServiceHandler, opts ...connect.Handler
 			channelServiceSetGoalHandler.ServeHTTP(w, r)
 		case ChannelServiceListChannelMembersProcedure:
 			channelServiceListChannelMembersHandler.ServeHTTP(w, r)
+		case ChannelServiceUpdateChannelProcedure:
+			channelServiceUpdateChannelHandler.ServeHTTP(w, r)
+		case ChannelServiceArchiveChannelProcedure:
+			channelServiceArchiveChannelHandler.ServeHTTP(w, r)
+		case ChannelServiceUnarchiveChannelProcedure:
+			channelServiceUnarchiveChannelHandler.ServeHTTP(w, r)
+		case ChannelServiceSetChannelPreferenceProcedure:
+			channelServiceSetChannelPreferenceHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -308,4 +408,20 @@ func (UnimplementedChannelServiceHandler) SetGoal(context.Context, *connect.Requ
 
 func (UnimplementedChannelServiceHandler) ListChannelMembers(context.Context, *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.channel.v1.ChannelService.ListChannelMembers is not implemented"))
+}
+
+func (UnimplementedChannelServiceHandler) UpdateChannel(context.Context, *connect.Request[v1.UpdateChannelRequest]) (*connect.Response[v1.UpdateChannelResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.channel.v1.ChannelService.UpdateChannel is not implemented"))
+}
+
+func (UnimplementedChannelServiceHandler) ArchiveChannel(context.Context, *connect.Request[v1.ArchiveChannelRequest]) (*connect.Response[v1.ArchiveChannelResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.channel.v1.ChannelService.ArchiveChannel is not implemented"))
+}
+
+func (UnimplementedChannelServiceHandler) UnarchiveChannel(context.Context, *connect.Request[v1.UnarchiveChannelRequest]) (*connect.Response[v1.UnarchiveChannelResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.channel.v1.ChannelService.UnarchiveChannel is not implemented"))
+}
+
+func (UnimplementedChannelServiceHandler) SetChannelPreference(context.Context, *connect.Request[v1.SetChannelPreferenceRequest]) (*connect.Response[v1.SetChannelPreferenceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.channel.v1.ChannelService.SetChannelPreference is not implemented"))
 }

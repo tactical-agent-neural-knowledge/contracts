@@ -5,6 +5,7 @@ package tank.workspace.v1;
 import "google/protobuf/timestamp.proto";
 import "tank/auth/v1/auth.proto";
 import "tank/channel/v1/channel.proto";
+import "tank/richtext/v1/richtext.proto";
 
 enum Role {
   ROLE_UNSPECIFIED = 0;
@@ -55,8 +56,12 @@ message GetBootstrapResponse {
   repeated tank.channel.v1.Channel channels = 3;
   repeated tank.channel.v1.ChannelReadState read_states = 4;
   repeated Member members = 5; // capped; ListMembers pages the rest
+  // Changes whenever the workspace's custom emoji set changes; clients
+  // refetch ListEmoji when it differs from their cached value.
   string custom_emoji_hash = 6;
   int32 unread_notification_count = 7;
+  Preferences preferences = 8;
+  repeated UserGroup user_groups = 9;
 }
 
 message ListMembersRequest {
@@ -86,6 +91,250 @@ message JoinWorkspaceResponse {
   Member me = 2;
 }
 
+// ---- Profile & preferences ------------------------------------------------
+
+// Unset fields are left unchanged. display_name and avatar are global to the
+// user; title and timezone are per workspace.
+message UpdateProfileRequest {
+  string workspace_id = 1;
+  optional string display_name = 2;
+  optional string title = 3;
+  optional string timezone = 4; // IANA name
+  optional string avatar_file_id = 5; // empty string clears the avatar
+}
+message UpdateProfileResponse {
+  Member me = 1;
+}
+
+// Armor Mode (do not disturb) on a schedule, in the user's timezone.
+message ArmorModeSchedule {
+  bool enabled = 1;
+  string start = 2; // "HH:MM" local time
+  string end = 3;   // "HH:MM" local time; earlier than start = overnight
+  repeated int32 days = 4; // 0 = Sunday .. 6 = Saturday; empty = every day
+  string timezone = 5;     // IANA name; empty = profile timezone
+  bool allow_critical = 6; // let critical alerts (agent_needs_input, DMs) through
+}
+
+message Preferences {
+  tank.channel.v1.NotifyPref notify_default = 1;    // channels without their own preference
+  tank.channel.v1.NotifyPref dm_notify_default = 2; // DMs and group DMs
+  string theme = 3; // system | light | dark
+  ArmorModeSchedule armor_mode_schedule = 4;
+  bool email_digest = 5;
+  bool desktop_sound = 6;
+  bool push_on_mention_only = 7;
+}
+
+message GetPreferencesRequest {
+  string workspace_id = 1;
+}
+message GetPreferencesResponse {
+  Preferences preferences = 1;
+}
+
+message UpdatePreferencesRequest {
+  string workspace_id = 1;
+  Preferences preferences = 2; // replaces the stored preferences
+}
+message UpdatePreferencesResponse {
+  Preferences preferences = 1;
+}
+
+// ---- Custom emoji ----------------------------------------------------------
+
+// The image is a normal uploaded file readable by every workspace member.
+message CustomEmoji {
+  string id = 1;
+  string workspace_id = 2;
+  string name = 3; // :name:, unique per workspace
+  string file_id = 4;
+  string created_by = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message ListEmojiRequest {
+  string workspace_id = 1;
+}
+message ListEmojiResponse {
+  repeated CustomEmoji emoji = 1;
+  string hash = 2; // matches GetBootstrap.custom_emoji_hash
+}
+
+message CreateEmojiRequest {
+  string workspace_id = 1;
+  string name = 2;
+  string file_id = 3;
+}
+message CreateEmojiResponse {
+  CustomEmoji emoji = 1;
+}
+
+message DeleteEmojiRequest {
+  string emoji_id = 1;
+}
+message DeleteEmojiResponse {}
+
+// ---- User groups -----------------------------------------------------------
+
+// @handle that expands to its members when mentioned.
+message UserGroup {
+  string id = 1;
+  string workspace_id = 2;
+  string handle = 3; // without the @
+  string name = 4;
+  string description = 5;
+  repeated string member_ids = 6;
+  string created_by = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
+
+message ListUserGroupsRequest {
+  string workspace_id = 1;
+}
+message ListUserGroupsResponse {
+  repeated UserGroup groups = 1;
+}
+
+message CreateUserGroupRequest {
+  string workspace_id = 1;
+  string handle = 2;
+  string name = 3;
+  string description = 4;
+  repeated string member_ids = 5;
+}
+message CreateUserGroupResponse {
+  UserGroup group = 1;
+}
+
+message UpdateUserGroupMembersRequest {
+  string group_id = 1;
+  repeated string member_ids = 2; // replaces the member list
+}
+message UpdateUserGroupMembersResponse {
+  UserGroup group = 1;
+}
+
+message DeleteUserGroupRequest {
+  string group_id = 1;
+}
+message DeleteUserGroupResponse {}
+
+// ---- Channel bookmarks -----------------------------------------------------
+
+message ChannelBookmark {
+  string id = 1;
+  string channel_id = 2;
+  string title = 3;
+  string url = 4;
+  string emoji = 5;
+  string created_by = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message ListBookmarksRequest {
+  string channel_id = 1;
+}
+message ListBookmarksResponse {
+  repeated ChannelBookmark bookmarks = 1;
+}
+
+message AddBookmarkRequest {
+  string channel_id = 1;
+  string title = 2;
+  string url = 3;
+  string emoji = 4;
+}
+message AddBookmarkResponse {
+  ChannelBookmark bookmark = 1;
+}
+
+message RemoveBookmarkRequest {
+  string bookmark_id = 1;
+}
+message RemoveBookmarkResponse {}
+
+// ---- Drafts (cross-device) -------------------------------------------------
+
+// One draft per (user, channel) or (user, thread). Private to the user.
+message Draft {
+  string channel_id = 1;
+  string thread_root_id = 2; // empty for the channel composer
+  tank.richtext.v1.RichText rich_text = 3;
+  string text = 4;
+  repeated string file_ids = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message GetDraftRequest {
+  string channel_id = 1;
+  string thread_root_id = 2;
+}
+message GetDraftResponse {
+  Draft draft = 1; // unset when there is no draft
+}
+
+message PutDraftRequest {
+  Draft draft = 1;
+}
+message PutDraftResponse {
+  Draft draft = 1;
+}
+
+message DeleteDraftRequest {
+  string channel_id = 1;
+  string thread_root_id = 2;
+}
+message DeleteDraftResponse {}
+
+message ListDraftsRequest {
+  string workspace_id = 1;
+}
+message ListDraftsResponse {
+  repeated Draft drafts = 1;
+}
+
+// ---- Scheduled messages ----------------------------------------------------
+
+message ScheduledMessage {
+  string id = 1;
+  string workspace_id = 2;
+  string channel_id = 3;
+  string thread_root_id = 4;
+  string text = 5;
+  tank.richtext.v1.RichText rich_text = 6;
+  repeated string file_ids = 7;
+  google.protobuf.Timestamp send_at = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp sent_at = 10;
+  string sent_message_id = 11;
+  string error = 12; // set when sending failed (archived channel, left channel, ...)
+}
+
+message ScheduleMessageRequest {
+  string channel_id = 1;
+  string thread_root_id = 2;
+  string text = 3;
+  tank.richtext.v1.RichText rich_text = 4;
+  repeated string file_ids = 5;
+  google.protobuf.Timestamp send_at = 6;
+}
+message ScheduleMessageResponse {
+  ScheduledMessage scheduled = 1;
+}
+
+message ListScheduledRequest {
+  string workspace_id = 1;
+}
+message ListScheduledResponse {
+  repeated ScheduledMessage scheduled = 1; // pending only, soonest first
+}
+
+message CancelScheduledRequest {
+  string scheduled_id = 1;
+}
+message CancelScheduledResponse {}
+
 service WorkspaceService {
   rpc CreateWorkspace(CreateWorkspaceRequest) returns (CreateWorkspaceResponse);
   rpc ListWorkspaces(ListWorkspacesRequest) returns (ListWorkspacesResponse);
@@ -93,4 +342,24 @@ service WorkspaceService {
   rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
   rpc InviteMember(InviteMemberRequest) returns (InviteMemberResponse);
   rpc JoinWorkspace(JoinWorkspaceRequest) returns (JoinWorkspaceResponse);
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
+  rpc GetPreferences(GetPreferencesRequest) returns (GetPreferencesResponse);
+  rpc UpdatePreferences(UpdatePreferencesRequest) returns (UpdatePreferencesResponse);
+  rpc ListEmoji(ListEmojiRequest) returns (ListEmojiResponse);
+  rpc CreateEmoji(CreateEmojiRequest) returns (CreateEmojiResponse);
+  rpc DeleteEmoji(DeleteEmojiRequest) returns (DeleteEmojiResponse);
+  rpc ListUserGroups(ListUserGroupsRequest) returns (ListUserGroupsResponse);
+  rpc CreateUserGroup(CreateUserGroupRequest) returns (CreateUserGroupResponse);
+  rpc UpdateUserGroupMembers(UpdateUserGroupMembersRequest) returns (UpdateUserGroupMembersResponse);
+  rpc DeleteUserGroup(DeleteUserGroupRequest) returns (DeleteUserGroupResponse);
+  rpc ListBookmarks(ListBookmarksRequest) returns (ListBookmarksResponse);
+  rpc AddBookmark(AddBookmarkRequest) returns (AddBookmarkResponse);
+  rpc RemoveBookmark(RemoveBookmarkRequest) returns (RemoveBookmarkResponse);
+  rpc GetDraft(GetDraftRequest) returns (GetDraftResponse);
+  rpc PutDraft(PutDraftRequest) returns (PutDraftResponse);
+  rpc DeleteDraft(DeleteDraftRequest) returns (DeleteDraftResponse);
+  rpc ListDrafts(ListDraftsRequest) returns (ListDraftsResponse);
+  rpc ScheduleMessage(ScheduleMessageRequest) returns (ScheduleMessageResponse);
+  rpc ListScheduled(ListScheduledRequest) returns (ListScheduledResponse);
+  rpc CancelScheduled(CancelScheduledRequest) returns (CancelScheduledResponse);
 }

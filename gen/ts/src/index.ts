@@ -13,3 +13,4 @@ export * as realtime from "./tank/realtime/v1/realtime_pb.js";
 export * as agent from "./tank/agent/v1/agent_pb.js";
 export * as agentctl from "./tank/agentctl/v1/agentctl_pb.js";
 export * as notification from "./tank/notification/v1/notification_pb.js";
+export * as search from "./tank/search/v1/search_pb.js";

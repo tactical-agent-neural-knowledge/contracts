@@ -48,20 +48,30 @@ class Style(_message.Message):
     def __init__(self, bold: bool = ..., italic: bool = ..., strike: bool = ..., code: bool = ...) -> None: ...
 
 class RichTextElement(_message.Message):
-    __slots__ = ("text", "emoji", "user", "channel", "broadcast", "link")
+    __slots__ = ("text", "emoji", "user", "channel", "broadcast", "link", "user_group")
     TEXT_FIELD_NUMBER: _ClassVar[int]
     EMOJI_FIELD_NUMBER: _ClassVar[int]
     USER_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_FIELD_NUMBER: _ClassVar[int]
     BROADCAST_FIELD_NUMBER: _ClassVar[int]
     LINK_FIELD_NUMBER: _ClassVar[int]
+    USER_GROUP_FIELD_NUMBER: _ClassVar[int]
     text: TextElement
     emoji: EmojiElement
     user: UserMention
     channel: ChannelMention
     broadcast: BroadcastMention
     link: LinkElement
-    def __init__(self, text: _Optional[_Union[TextElement, _Mapping]] = ..., emoji: _Optional[_Union[EmojiElement, _Mapping]] = ..., user: _Optional[_Union[UserMention, _Mapping]] = ..., channel: _Optional[_Union[ChannelMention, _Mapping]] = ..., broadcast: _Optional[_Union[BroadcastMention, _Mapping]] = ..., link: _Optional[_Union[LinkElement, _Mapping]] = ...) -> None: ...
+    user_group: UserGroupMention
+    def __init__(self, text: _Optional[_Union[TextElement, _Mapping]] = ..., emoji: _Optional[_Union[EmojiElement, _Mapping]] = ..., user: _Optional[_Union[UserMention, _Mapping]] = ..., channel: _Optional[_Union[ChannelMention, _Mapping]] = ..., broadcast: _Optional[_Union[BroadcastMention, _Mapping]] = ..., link: _Optional[_Union[LinkElement, _Mapping]] = ..., user_group: _Optional[_Union[UserGroupMention, _Mapping]] = ...) -> None: ...
+
+class UserGroupMention(_message.Message):
+    __slots__ = ("group_id", "handle")
+    GROUP_ID_FIELD_NUMBER: _ClassVar[int]
+    HANDLE_FIELD_NUMBER: _ClassVar[int]
+    group_id: str
+    handle: str
+    def __init__(self, group_id: _Optional[str] = ..., handle: _Optional[str] = ...) -> None: ...
 
 class TextElement(_message.Message):
     __slots__ = ("text", "style")

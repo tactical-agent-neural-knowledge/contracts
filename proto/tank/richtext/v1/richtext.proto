@@ -32,7 +32,15 @@ message RichTextElement {
     ChannelMention channel = 4;
     BroadcastMention broadcast = 5;
     LinkElement link = 6;
+    UserGroupMention user_group = 7;
   }
+}
+
+// @handle of a tank.workspace.v1.UserGroup; the notify worker expands it to
+// the group's members.
+message UserGroupMention {
+  string group_id = 1;
+  string handle = 2;
 }
 
 message TextElement {
