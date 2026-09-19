@@ -4,6 +4,7 @@ package tank.agentctl.v1;
 
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
+import "tank/agent/v1/agent.proto";
 import "tank/blocks/v1/blocks.proto";
 
 // Runner <-> control-plane contract. The in-sandbox agent runner talks only to
@@ -291,6 +292,40 @@ message SessionStoreListSessionsResponse {
   repeated string session_ids = 1;
 }
 
+// ---------------------------------------------------------------------- inbox
+
+// Human -> agent traffic queued by the control plane for the runner: steer
+// messages, approval decisions, question answers, cancel.
+enum InboxKind {
+  INBOX_KIND_UNSPECIFIED = 0;
+  INBOX_KIND_STEER = 1;
+  INBOX_KIND_APPROVAL = 2;
+  INBOX_KIND_ANSWER = 3;
+  INBOX_KIND_CANCEL = 4;
+}
+
+message InboxItem {
+  int64 seq = 1;
+  InboxKind kind = 2;
+  string user_id = 3;
+  string user_name = 4;
+  string text = 5;      // steer text, answer, feedback
+  string gate_id = 6;   // approval
+  string decision = 7;  // approved | rejected
+  string card_id = 8;   // answer
+  google.protobuf.Timestamp at = 9;
+}
+
+// Long-poll: returns as soon as an item with seq > after_seq exists, or after
+// wait_ms with an empty list.
+message PollInboxRequest {
+  int64 after_seq = 1;
+  int32 wait_ms = 2;
+}
+message PollInboxResponse {
+  repeated InboxItem items = 1;
+}
+
 // RunnerService is the only network surface the sandbox may reach besides the
 // LLM gateway. Every call carries "Authorization: Bearer <RUN_TOKEN>".
 service RunnerService {
@@ -304,6 +339,7 @@ service RunnerService {
   rpc AskQuestion(AskQuestionRequest) returns (AskQuestionResponse);
   rpc ReportStatus(ReportStatusRequest) returns (ReportStatusResponse);
   rpc ReadThread(ReadThreadRequest) returns (ReadThreadResponse);
+  rpc PollInbox(PollInboxRequest) returns (PollInboxResponse);
 
   rpc OpenPullRequest(OpenPullRequestRequest) returns (OpenPullRequestResponse);
   rpc RequestCiWatch(RequestCiWatchRequest) returns (RequestCiWatchResponse);
@@ -319,4 +355,103 @@ service RunnerService {
   rpc SessionStorePut(SessionStorePutRequest) returns (SessionStorePutResponse);
   rpc SessionStoreList(SessionStoreListRequest) returns (SessionStoreListResponse);
   rpc SessionStoreListSessions(SessionStoreListSessionsRequest) returns (SessionStoreListSessionsResponse);
+}
+
+// ------------------------------------------------------------ control service
+
+// ControlService is the operator/product surface of agent-control (run panel,
+// slash commands, tests). Authenticated with a service token, never a RUN_TOKEN.
+
+message StartRunRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string thread_root_id = 3;
+  string agent_id = 4;
+  string requested_by = 5;
+  string instructions = 6;
+}
+message StartRunResponse {
+  tank.agent.v1.Run run = 1;
+}
+
+message GetRunRequest {
+  string run_id = 1;
+}
+message GetRunResponse {
+  tank.agent.v1.Run run = 1;
+  string sdk_session_id = 2;
+  string head_sha = 3;
+  repeated Gate gates = 4;
+}
+
+message Gate {
+  string id = 1;
+  tank.blocks.v1.GateKind kind = 2;
+  string subject_hash = 3;
+  repeated string required_approvers = 4;
+  int32 min_approvals = 5;
+  google.protobuf.Timestamp expires_at = 6;
+  string decision = 7; // pending | approved | rejected | expired
+  repeated GateDecision decisions = 8;
+}
+message GateDecision {
+  string user_id = 1;
+  string decision = 2;
+  string feedback = 3;
+  google.protobuf.Timestamp at = 4;
+}
+
+message ListRunsRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string thread_root_id = 3;
+  int32 limit = 4;
+}
+message ListRunsResponse {
+  repeated tank.agent.v1.Run runs = 1;
+}
+
+message DecideGateRequest {
+  string run_id = 1;
+  string gate_id = 2;
+  string user_id = 3;
+  string decision = 4; // approved | rejected
+  string feedback = 5;
+}
+message DecideGateResponse {
+  Gate gate = 1;
+}
+
+message SteerRunRequest {
+  string run_id = 1;
+  string user_id = 2;
+  string text = 3;
+}
+message SteerRunResponse {}
+
+message CancelRunRequest {
+  string run_id = 1;
+  string user_id = 2;
+  string reason = 3;
+}
+message CancelRunResponse {}
+
+message ListRunEventsRequest {
+  string run_id = 1;
+  int64 after_seq = 2;
+  int32 limit = 3;
+}
+message ListRunEventsResponse {
+  repeated RunEvent events = 1;
+  bool has_more = 2;
+}
+
+service ControlService {
+  rpc StartRun(StartRunRequest) returns (StartRunResponse);
+  rpc GetRun(GetRunRequest) returns (GetRunResponse);
+  rpc ListRuns(ListRunsRequest) returns (ListRunsResponse);
+  rpc DecideGate(DecideGateRequest) returns (DecideGateResponse);
+  rpc SteerRun(SteerRunRequest) returns (SteerRunResponse);
+  rpc CancelRun(CancelRunRequest) returns (CancelRunResponse);
+  rpc ListRunEvents(ListRunEventsRequest) returns (ListRunEventsResponse);
 }

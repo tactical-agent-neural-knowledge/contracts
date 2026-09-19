@@ -1,5 +1,6 @@
 from google.protobuf import struct_pb2 as _struct_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from tank.agent.v1 import agent_pb2 as _agent_pb2
 from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
@@ -26,6 +27,14 @@ class RunEventKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     RUN_EVENT_KIND_USAGE: _ClassVar[RunEventKind]
     RUN_EVENT_KIND_STATUS: _ClassVar[RunEventKind]
     RUN_EVENT_KIND_LOG: _ClassVar[RunEventKind]
+
+class InboxKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    INBOX_KIND_UNSPECIFIED: _ClassVar[InboxKind]
+    INBOX_KIND_STEER: _ClassVar[InboxKind]
+    INBOX_KIND_APPROVAL: _ClassVar[InboxKind]
+    INBOX_KIND_ANSWER: _ClassVar[InboxKind]
+    INBOX_KIND_CANCEL: _ClassVar[InboxKind]
 RUN_PHASE_UNSPECIFIED: RunPhase
 RUN_PHASE_PLANNING: RunPhase
 RUN_PHASE_IMPLEMENTING: RunPhase
@@ -38,6 +47,11 @@ RUN_EVENT_KIND_RESULT: RunEventKind
 RUN_EVENT_KIND_USAGE: RunEventKind
 RUN_EVENT_KIND_STATUS: RunEventKind
 RUN_EVENT_KIND_LOG: RunEventKind
+INBOX_KIND_UNSPECIFIED: InboxKind
+INBOX_KIND_STEER: InboxKind
+INBOX_KIND_APPROVAL: InboxKind
+INBOX_KIND_ANSWER: InboxKind
+INBOX_KIND_CANCEL: InboxKind
 
 class ThreadMessage(_message.Message):
     __slots__ = ("message_id", "author_id", "author_name", "author_kind", "text", "created_at")
@@ -482,3 +496,195 @@ class SessionStoreListSessionsResponse(_message.Message):
     SESSION_IDS_FIELD_NUMBER: _ClassVar[int]
     session_ids: _containers.RepeatedScalarFieldContainer[str]
     def __init__(self, session_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class InboxItem(_message.Message):
+    __slots__ = ("seq", "kind", "user_id", "user_name", "text", "gate_id", "decision", "card_id", "at")
+    SEQ_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_NAME_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    GATE_ID_FIELD_NUMBER: _ClassVar[int]
+    DECISION_FIELD_NUMBER: _ClassVar[int]
+    CARD_ID_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    seq: int
+    kind: InboxKind
+    user_id: str
+    user_name: str
+    text: str
+    gate_id: str
+    decision: str
+    card_id: str
+    at: _timestamp_pb2.Timestamp
+    def __init__(self, seq: _Optional[int] = ..., kind: _Optional[_Union[InboxKind, str]] = ..., user_id: _Optional[str] = ..., user_name: _Optional[str] = ..., text: _Optional[str] = ..., gate_id: _Optional[str] = ..., decision: _Optional[str] = ..., card_id: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class PollInboxRequest(_message.Message):
+    __slots__ = ("after_seq", "wait_ms")
+    AFTER_SEQ_FIELD_NUMBER: _ClassVar[int]
+    WAIT_MS_FIELD_NUMBER: _ClassVar[int]
+    after_seq: int
+    wait_ms: int
+    def __init__(self, after_seq: _Optional[int] = ..., wait_ms: _Optional[int] = ...) -> None: ...
+
+class PollInboxResponse(_message.Message):
+    __slots__ = ("items",)
+    ITEMS_FIELD_NUMBER: _ClassVar[int]
+    items: _containers.RepeatedCompositeFieldContainer[InboxItem]
+    def __init__(self, items: _Optional[_Iterable[_Union[InboxItem, _Mapping]]] = ...) -> None: ...
+
+class StartRunRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "instructions")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    AGENT_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    INSTRUCTIONS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    thread_root_id: str
+    agent_id: str
+    requested_by: str
+    instructions: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., instructions: _Optional[str] = ...) -> None: ...
+
+class StartRunResponse(_message.Message):
+    __slots__ = ("run",)
+    RUN_FIELD_NUMBER: _ClassVar[int]
+    run: _agent_pb2.Run
+    def __init__(self, run: _Optional[_Union[_agent_pb2.Run, _Mapping]] = ...) -> None: ...
+
+class GetRunRequest(_message.Message):
+    __slots__ = ("run_id",)
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    def __init__(self, run_id: _Optional[str] = ...) -> None: ...
+
+class GetRunResponse(_message.Message):
+    __slots__ = ("run", "sdk_session_id", "head_sha", "gates")
+    RUN_FIELD_NUMBER: _ClassVar[int]
+    SDK_SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    HEAD_SHA_FIELD_NUMBER: _ClassVar[int]
+    GATES_FIELD_NUMBER: _ClassVar[int]
+    run: _agent_pb2.Run
+    sdk_session_id: str
+    head_sha: str
+    gates: _containers.RepeatedCompositeFieldContainer[Gate]
+    def __init__(self, run: _Optional[_Union[_agent_pb2.Run, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., head_sha: _Optional[str] = ..., gates: _Optional[_Iterable[_Union[Gate, _Mapping]]] = ...) -> None: ...
+
+class Gate(_message.Message):
+    __slots__ = ("id", "kind", "subject_hash", "required_approvers", "min_approvals", "expires_at", "decision", "decisions")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_HASH_FIELD_NUMBER: _ClassVar[int]
+    REQUIRED_APPROVERS_FIELD_NUMBER: _ClassVar[int]
+    MIN_APPROVALS_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    DECISION_FIELD_NUMBER: _ClassVar[int]
+    DECISIONS_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    kind: _blocks_pb2.GateKind
+    subject_hash: str
+    required_approvers: _containers.RepeatedScalarFieldContainer[str]
+    min_approvals: int
+    expires_at: _timestamp_pb2.Timestamp
+    decision: str
+    decisions: _containers.RepeatedCompositeFieldContainer[GateDecision]
+    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[_blocks_pb2.GateKind, str]] = ..., subject_hash: _Optional[str] = ..., required_approvers: _Optional[_Iterable[str]] = ..., min_approvals: _Optional[int] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., decision: _Optional[str] = ..., decisions: _Optional[_Iterable[_Union[GateDecision, _Mapping]]] = ...) -> None: ...
+
+class GateDecision(_message.Message):
+    __slots__ = ("user_id", "decision", "feedback", "at")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    DECISION_FIELD_NUMBER: _ClassVar[int]
+    FEEDBACK_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    decision: str
+    feedback: str
+    at: _timestamp_pb2.Timestamp
+    def __init__(self, user_id: _Optional[str] = ..., decision: _Optional[str] = ..., feedback: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ListRunsRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "limit")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    thread_root_id: str
+    limit: int
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListRunsResponse(_message.Message):
+    __slots__ = ("runs",)
+    RUNS_FIELD_NUMBER: _ClassVar[int]
+    runs: _containers.RepeatedCompositeFieldContainer[_agent_pb2.Run]
+    def __init__(self, runs: _Optional[_Iterable[_Union[_agent_pb2.Run, _Mapping]]] = ...) -> None: ...
+
+class DecideGateRequest(_message.Message):
+    __slots__ = ("run_id", "gate_id", "user_id", "decision", "feedback")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    GATE_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    DECISION_FIELD_NUMBER: _ClassVar[int]
+    FEEDBACK_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    gate_id: str
+    user_id: str
+    decision: str
+    feedback: str
+    def __init__(self, run_id: _Optional[str] = ..., gate_id: _Optional[str] = ..., user_id: _Optional[str] = ..., decision: _Optional[str] = ..., feedback: _Optional[str] = ...) -> None: ...
+
+class DecideGateResponse(_message.Message):
+    __slots__ = ("gate",)
+    GATE_FIELD_NUMBER: _ClassVar[int]
+    gate: Gate
+    def __init__(self, gate: _Optional[_Union[Gate, _Mapping]] = ...) -> None: ...
+
+class SteerRunRequest(_message.Message):
+    __slots__ = ("run_id", "user_id", "text")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    user_id: str
+    text: str
+    def __init__(self, run_id: _Optional[str] = ..., user_id: _Optional[str] = ..., text: _Optional[str] = ...) -> None: ...
+
+class SteerRunResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class CancelRunRequest(_message.Message):
+    __slots__ = ("run_id", "user_id", "reason")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    user_id: str
+    reason: str
+    def __init__(self, run_id: _Optional[str] = ..., user_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+
+class CancelRunResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListRunEventsRequest(_message.Message):
+    __slots__ = ("run_id", "after_seq", "limit")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    AFTER_SEQ_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    after_seq: int
+    limit: int
+    def __init__(self, run_id: _Optional[str] = ..., after_seq: _Optional[int] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListRunEventsResponse(_message.Message):
+    __slots__ = ("events", "has_more")
+    EVENTS_FIELD_NUMBER: _ClassVar[int]
+    HAS_MORE_FIELD_NUMBER: _ClassVar[int]
+    events: _containers.RepeatedCompositeFieldContainer[RunEvent]
+    has_more: bool
+    def __init__(self, events: _Optional[_Iterable[_Union[RunEvent, _Mapping]]] = ..., has_more: bool = ...) -> None: ...

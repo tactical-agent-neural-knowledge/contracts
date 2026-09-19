@@ -6,6 +6,8 @@ import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobu
 import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_struct, file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
+import type { Run } from "../../agent/v1/agent_pb.js";
+import { file_tank_agent_v1_agent } from "../../agent/v1/agent_pb.js";
 import type { Blocks, Check, GateKind, PlanStep } from "../../blocks/v1/blocks_pb.js";
 import { file_tank_blocks_v1_blocks } from "../../blocks/v1/blocks_pb.js";
 import type { JsonObject, Message } from "@bufbuild/protobuf";
@@ -14,7 +16,7 @@ import type { JsonObject, Message } from "@bufbuild/protobuf";
  * Describes the file tank/agentctl/v1/agentctl.proto.
  */
 export const file_tank_agentctl_v1_agentctl: GenFile = /*@__PURE__*/
-  fileDesc("Ch90YW5rL2FnZW50Y3RsL3YxL2FnZW50Y3RsLnByb3RvEhB0YW5rLmFnZW50Y3RsLnYxIp4BCg1UaHJlYWRNZXNzYWdlEhIKCm1lc3NhZ2VfaWQYASABKAkSEQoJYXV0aG9yX2lkGAIgASgJEhMKC2F1dGhvcl9uYW1lGAMgASgJEhMKC2F1dGhvcl9raW5kGAQgASgJEgwKBHRleHQYBSABKAkSLgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiuQEKDVBvbGljeVN1bW1hcnkSDAoEbW9kZRgBIAEoCRISCgp0b29sc19kZW55GAIgAygJEh0KFW5ldHdvcmtfYWxsb3dlZF9ob3N0cxgDIAMoCRIVCg1kZWZhdWx0X21vZGVsGAQgASgJEhYKDnN1YmFnZW50X21vZGVsGAUgASgJEhEKCW1heF90dXJucxgGIAEoBRIWCg5tYXhfYnVkZ2V0X3VzZBgHIAEoARINCgVydWxlcxgIIAMoCSLCAQoMQXBwcm92ZWRQbGFuEhEKCXBsYW5faGFzaBgBIAEoCRIPCgdzdW1tYXJ5GAIgASgJEicKBXN0ZXBzGAMgAygLMhgudGFuay5ibG9ja3MudjEuUGxhblN0ZXASDQoFcmlza3MYBCADKAkSEwoLYXBwcm92ZWRfYnkYBSABKAkSLwoLYXBwcm92ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhAKCGZlZWRiYWNrGAcgASgJIqIECgpSdW5Db250ZXh0Eg4KBnJ1bl9pZBgBIAEoCRIUCgx3b3Jrc3BhY2VfaWQYAiABKAkSEgoKY2hhbm5lbF9pZBgDIAEoCRIWCg50aHJlYWRfcm9vdF9pZBgEIAEoCRIQCghhZ2VudF9pZBgFIAEoCRISCgphZ2VudF9uYW1lGAYgASgJEhQKDHJlcXVlc3RlZF9ieRgHIAEoCRIpCgVwaGFzZRgIIAEoDjIaLnRhbmsuYWdlbnRjdGwudjEuUnVuUGhhc2USFAoMaW5zdHJ1Y3Rpb25zGAkgASgJEjcKDnRocmVhZF9leGNlcnB0GAogAygLMh8udGFuay5hZ2VudGN0bC52MS5UaHJlYWRNZXNzYWdlEgwKBHJlcG8YCyABKAkSEwoLYmFzZV9icmFuY2gYDCABKAkSDgoGYnJhbmNoGA0gASgJEhEKCXRvb2xjaGFpbhgOIAEoCRIvCgZwb2xpY3kYDyABKAsyHy50YW5rLmFnZW50Y3RsLnYxLlBvbGljeVN1bW1hcnkSFwoPb3BlcmF0aW5nX3J1bGVzGBAgASgJEjUKDWFwcHJvdmVkX3BsYW4YESABKAsyHi50YW5rLmFnZW50Y3RsLnYxLkFwcHJvdmVkUGxhbhIWCg5zZGtfc2Vzc2lvbl9pZBgSIAEoCRIVCg13b3Jrc3BhY2VfZGlyGBMgASgJEhYKDmdpdF9yZW1vdGVfdXJsGBQgASgJIhYKFEdldFJ1bkNvbnRleHRSZXF1ZXN0IkYKFUdldFJ1bkNvbnRleHRSZXNwb25zZRItCgdjb250ZXh0GAEgASgLMhwudGFuay5hZ2VudGN0bC52MS5SdW5Db250ZXh0IigKF0dldEdpdENyZWRlbnRpYWxSZXF1ZXN0Eg0KBXNjb3BlGAEgASgJIoIBChhHZXRHaXRDcmVkZW50aWFsUmVzcG9uc2USEAoIdXNlcm5hbWUYASABKAkSEAoIcGFzc3dvcmQYAiABKAkSLgoKZXhwaXJlc19hdBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKcmVtb3RlX3VybBgEIAEoCSI6ChNQb3N0VG9UaHJlYWRSZXF1ZXN0EgwKBHRleHQYASABKAkSFQoNY2xpZW50X21zZ19pZBgCIAEoCSIqChRQb3N0VG9UaHJlYWRSZXNwb25zZRISCgptZXNzYWdlX2lkGAEgASgJIm0KD1Bvc3RQbGFuUmVxdWVzdBIPCgdzdW1tYXJ5GAEgASgJEicKBXN0ZXBzGAIgAygLMhgudGFuay5ibG9ja3MudjEuUGxhblN0ZXASDQoFcmlza3MYAyADKAkSEQoJcXVlc3Rpb25zGAQgAygJIkcKEFBvc3RQbGFuUmVzcG9uc2USDwoHY2FyZF9pZBgBIAEoCRIPCgdnYXRlX2lkGAIgASgJEhEKCXBsYW5faGFzaBgDIAEoCSJaChFVcGRhdGVDYXJkUmVxdWVzdBIPCgdjYXJkX2lkGAEgASgJEiYKBmJsb2NrcxgCIAEoCzIWLnRhbmsuYmxvY2tzLnYxLkJsb2NrcxIMCgR0ZXh0GAMgASgJIhQKElVwZGF0ZUNhcmRSZXNwb25zZSJgChVBc2tGb3JBcHByb3ZhbFJlcXVlc3QSJgoEa2luZBgBIAEoDjIYLnRhbmsuYmxvY2tzLnYxLkdhdGVLaW5kEg8KB3N1YmplY3QYAiABKAkSDgoGcmVhc29uGAMgASgJIk0KFkFza0ZvckFwcHJvdmFsUmVzcG9uc2USDwoHZ2F0ZV9pZBgBIAEoCRIQCghkZWNpc2lvbhgCIAEoCRIQCghmZWVkYmFjaxgDIAEoCSJNChJBc2tRdWVzdGlvblJlcXVlc3QSEAoIcXVlc3Rpb24YASABKAkSDwoHb3B0aW9ucxgCIAMoCRIUCgxtdWx0aV9zZWxlY3QYAyABKAgiNgoTQXNrUXVlc3Rpb25SZXNwb25zZRIPCgdjYXJkX2lkGAEgASgJEg4KBmFuc3dlchgCIAEoCSI1ChNSZXBvcnRTdGF0dXNSZXF1ZXN0Eg4KBnN0YXR1cxgBIAEoCRIOCgZkZXRhaWwYAiABKAkiFgoUUmVwb3J0U3RhdHVzUmVzcG9uc2UiPAoRUmVhZFRocmVhZFJlcXVlc3QSGAoQYWZ0ZXJfdGhyZWFkX3NlcRgBIAEoAxINCgVsaW1pdBgCIAEoBSJHChJSZWFkVGhyZWFkUmVzcG9uc2USMQoIbWVzc2FnZXMYASADKAsyHy50YW5rLmFnZW50Y3RsLnYxLlRocmVhZE1lc3NhZ2UiVgoWT3BlblB1bGxSZXF1ZXN0UmVxdWVzdBINCgV0aXRsZRgBIAEoCRIMCgRib2R5GAIgASgJEhAKCGhlYWRfc2hhGAMgASgJEg0KBWRyYWZ0GAQgASgIIjwKF09wZW5QdWxsUmVxdWVzdFJlc3BvbnNlEg4KBnByX3VybBgBIAEoCRIRCglwcl9udW1iZXIYAiABKAUiPAoVUmVxdWVzdENpV2F0Y2hSZXF1ZXN0EhAKCGhlYWRfc2hhGAEgASgJEhEKCXdvcmtmbG93cxgCIAMoCSIqChZSZXF1ZXN0Q2lXYXRjaFJlc3BvbnNlEhAKCHdhdGNoX2lkGAEgASgJIicKE0dldENpRmFpbHVyZVJlcXVlc3QSEAoIaGVhZF9zaGEYASABKAkiegoUR2V0Q2lGYWlsdXJlUmVzcG9uc2USEAoIY29tcGxldGUYASABKAgSDQoFZ3JlZW4YAiABKAgSJQoGY2hlY2tzGAMgAygLMhUudGFuay5ibG9ja3MudjEuQ2hlY2sSGgoSZmFpbGVkX2xvZ19leGNlcnB0GAQgASgJIkIKFVJlY29yZERlY2lzaW9uUmVxdWVzdBINCgV0aXRsZRgBIAEoCRIMCgRib2R5GAIgASgJEgwKBHRhZ3MYAyADKAkiLQoWUmVjb3JkRGVjaXNpb25SZXNwb25zZRITCgtkZWNpc2lvbl9pZBgBIAEoCSItCg9SZW1lbWJlclJlcXVlc3QSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJIhIKEFJlbWVtYmVyUmVzcG9uc2UimwEKBVVzYWdlEhQKDGlucHV0X3Rva2VucxgBIAEoAxIVCg1vdXRwdXRfdG9rZW5zGAIgASgDEh8KF2NhY2hlX3JlYWRfaW5wdXRfdG9rZW5zGAMgASgDEiMKG2NhY2hlX2NyZWF0aW9uX2lucHV0X3Rva2VucxgEIAEoAxIQCghjb3N0X3VzZBgFIAEoARINCgVtb2RlbBgGIAEoCSKTAwoIUnVuRXZlbnQSCwoDc2VxGAEgASgDEiYKAmF0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIsCgRraW5kGAMgASgOMh4udGFuay5hZ2VudGN0bC52MS5SdW5FdmVudEtpbmQSFgoOc2RrX3Nlc3Npb25faWQYBCABKAkSDAoEdGV4dBgFIAEoCRIRCgl0b29sX25hbWUYBiABKAkSEwoLdG9vbF91c2VfaWQYByABKAkSKwoKdG9vbF9pbnB1dBgIIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSEwoLdG9vbF9vdXRwdXQYCSABKAkSGgoSdG9vbF9vdXRwdXRfc2hhMjU2GAogASgJEhAKCGlzX2Vycm9yGAsgASgIEiYKBXVzYWdlGAwgASgLMhcudGFuay5hZ2VudGN0bC52MS5Vc2FnZRIWCg5yZXN1bHRfc3VidHlwZRgNIAEoCRIRCgludW1fdHVybnMYDiABKAUSEwoLZHVyYXRpb25fbXMYDyABKAMiQAoTU3RyZWFtRXZlbnRzUmVxdWVzdBIpCgVldmVudBgBIAEoCzIaLnRhbmsuYWdlbnRjdGwudjEuUnVuRXZlbnQiKAoUU3RyZWFtRXZlbnRzUmVzcG9uc2USEAoIYWNjZXB0ZWQYASABKAMirAEKDFNlc3Npb25FbnRyeRISCgpzZXNzaW9uX2lkGAEgASgJEhMKC3Byb2plY3Rfa2V5GAIgASgJEgsKA3NlcRgDIAEoAxIRCglwYXJlbnRfaWQYBCABKAkSEgoKZW50cnlfdHlwZRgFIAEoCRIPCgdwYXlsb2FkGAYgASgMEi4KCmNyZWF0ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIkkKFlNlc3Npb25TdG9yZVB1dFJlcXVlc3QSLwoHZW50cmllcxgBIAMoCzIeLnRhbmsuYWdlbnRjdGwudjEuU2Vzc2lvbkVudHJ5IioKF1Nlc3Npb25TdG9yZVB1dFJlc3BvbnNlEg8KB3dyaXR0ZW4YASABKAUiZAoXU2Vzc2lvblN0b3JlTGlzdFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRITCgtwcm9qZWN0X2tleRgCIAEoCRIRCglhZnRlcl9zZXEYAyABKAMSDQoFbGltaXQYBCABKAUiXQoYU2Vzc2lvblN0b3JlTGlzdFJlc3BvbnNlEi8KB2VudHJpZXMYASADKAsyHi50YW5rLmFnZW50Y3RsLnYxLlNlc3Npb25FbnRyeRIQCghoYXNfbW9yZRgCIAEoCCI2Ch9TZXNzaW9uU3RvcmVMaXN0U2Vzc2lvbnNSZXF1ZXN0EhMKC3Byb2plY3Rfa2V5GAEgASgJIjcKIFNlc3Npb25TdG9yZUxpc3RTZXNzaW9uc1Jlc3BvbnNlEhMKC3Nlc3Npb25faWRzGAEgAygJKlkKCFJ1blBoYXNlEhkKFVJVTl9QSEFTRV9VTlNQRUNJRklFRBAAEhYKElJVTl9QSEFTRV9QTEFOTklORxABEhoKFlJVTl9QSEFTRV9JTVBMRU1FTlRJTkcQAiqfAgoMUnVuRXZlbnRLaW5kEh4KGlJVTl9FVkVOVF9LSU5EX1VOU1BFQ0lGSUVEEAASIgoeUlVOX0VWRU5UX0tJTkRfQVNTSVNUQU5UX0RFTFRBEAESHAoYUlVOX0VWRU5UX0tJTkRfVE9PTF9DQUxMEAISHgoaUlVOX0VWRU5UX0tJTkRfVE9PTF9SRVNVTFQQAxIlCiFSVU5fRVZFTlRfS0lORF9QRVJNSVNTSU9OX1JFUVVFU1QQBBIZChVSVU5fRVZFTlRfS0lORF9SRVNVTFQQBRIYChRSVU5fRVZFTlRfS0lORF9VU0FHRRAGEhkKFVJVTl9FVkVOVF9LSU5EX1NUQVRVUxAHEhYKElJVTl9FVkVOVF9LSU5EX0xPRxAIMvwNCg1SdW5uZXJTZXJ2aWNlEmAKDUdldFJ1bkNvbnRleHQSJi50YW5rLmFnZW50Y3RsLnYxLkdldFJ1bkNvbnRleHRSZXF1ZXN0GicudGFuay5hZ2VudGN0bC52MS5HZXRSdW5Db250ZXh0UmVzcG9uc2USaQoQR2V0R2l0Q3JlZGVudGlhbBIpLnRhbmsuYWdlbnRjdGwudjEuR2V0R2l0Q3JlZGVudGlhbFJlcXVlc3QaKi50YW5rLmFnZW50Y3RsLnYxLkdldEdpdENyZWRlbnRpYWxSZXNwb25zZRJdCgxQb3N0VG9UaHJlYWQSJS50YW5rLmFnZW50Y3RsLnYxLlBvc3RUb1RocmVhZFJlcXVlc3QaJi50YW5rLmFnZW50Y3RsLnYxLlBvc3RUb1RocmVhZFJlc3BvbnNlElEKCFBvc3RQbGFuEiEudGFuay5hZ2VudGN0bC52MS5Qb3N0UGxhblJlcXVlc3QaIi50YW5rLmFnZW50Y3RsLnYxLlBvc3RQbGFuUmVzcG9uc2USVwoKVXBkYXRlQ2FyZBIjLnRhbmsuYWdlbnRjdGwudjEuVXBkYXRlQ2FyZFJlcXVlc3QaJC50YW5rLmFnZW50Y3RsLnYxLlVwZGF0ZUNhcmRSZXNwb25zZRJjCg5Bc2tGb3JBcHByb3ZhbBInLnRhbmsuYWdlbnRjdGwudjEuQXNrRm9yQXBwcm92YWxSZXF1ZXN0GigudGFuay5hZ2VudGN0bC52MS5Bc2tGb3JBcHByb3ZhbFJlc3BvbnNlEloKC0Fza1F1ZXN0aW9uEiQudGFuay5hZ2VudGN0bC52MS5Bc2tRdWVzdGlvblJlcXVlc3QaJS50YW5rLmFnZW50Y3RsLnYxLkFza1F1ZXN0aW9uUmVzcG9uc2USXQoMUmVwb3J0U3RhdHVzEiUudGFuay5hZ2VudGN0bC52MS5SZXBvcnRTdGF0dXNSZXF1ZXN0GiYudGFuay5hZ2VudGN0bC52MS5SZXBvcnRTdGF0dXNSZXNwb25zZRJXCgpSZWFkVGhyZWFkEiMudGFuay5hZ2VudGN0bC52MS5SZWFkVGhyZWFkUmVxdWVzdBokLnRhbmsuYWdlbnRjdGwudjEuUmVhZFRocmVhZFJlc3BvbnNlEmYKD09wZW5QdWxsUmVxdWVzdBIoLnRhbmsuYWdlbnRjdGwudjEuT3BlblB1bGxSZXF1ZXN0UmVxdWVzdBopLnRhbmsuYWdlbnRjdGwudjEuT3BlblB1bGxSZXF1ZXN0UmVzcG9uc2USYwoOUmVxdWVzdENpV2F0Y2gSJy50YW5rLmFnZW50Y3RsLnYxLlJlcXVlc3RDaVdhdGNoUmVxdWVzdBooLnRhbmsuYWdlbnRjdGwudjEuUmVxdWVzdENpV2F0Y2hSZXNwb25zZRJdCgxHZXRDaUZhaWx1cmUSJS50YW5rLmFnZW50Y3RsLnYxLkdldENpRmFpbHVyZVJlcXVlc3QaJi50YW5rLmFnZW50Y3RsLnYxLkdldENpRmFpbHVyZVJlc3BvbnNlEmMKDlJlY29yZERlY2lzaW9uEicudGFuay5hZ2VudGN0bC52MS5SZWNvcmREZWNpc2lvblJlcXVlc3QaKC50YW5rLmFnZW50Y3RsLnYxLlJlY29yZERlY2lzaW9uUmVzcG9uc2USUQoIUmVtZW1iZXISIS50YW5rLmFnZW50Y3RsLnYxLlJlbWVtYmVyUmVxdWVzdBoiLnRhbmsuYWdlbnRjdGwudjEuUmVtZW1iZXJSZXNwb25zZRJfCgxTdHJlYW1FdmVudHMSJS50YW5rLmFnZW50Y3RsLnYxLlN0cmVhbUV2ZW50c1JlcXVlc3QaJi50YW5rLmFnZW50Y3RsLnYxLlN0cmVhbUV2ZW50c1Jlc3BvbnNlKAESZgoPU2Vzc2lvblN0b3JlUHV0EigudGFuay5hZ2VudGN0bC52MS5TZXNzaW9uU3RvcmVQdXRSZXF1ZXN0GikudGFuay5hZ2VudGN0bC52MS5TZXNzaW9uU3RvcmVQdXRSZXNwb25zZRJpChBTZXNzaW9uU3RvcmVMaXN0EikudGFuay5hZ2VudGN0bC52MS5TZXNzaW9uU3RvcmVMaXN0UmVxdWVzdBoqLnRhbmsuYWdlbnRjdGwudjEuU2Vzc2lvblN0b3JlTGlzdFJlc3BvbnNlEoEBChhTZXNzaW9uU3RvcmVMaXN0U2Vzc2lvbnMSMS50YW5rLmFnZW50Y3RsLnYxLlNlc3Npb25TdG9yZUxpc3RTZXNzaW9uc1JlcXVlc3QaMi50YW5rLmFnZW50Y3RsLnYxLlNlc3Npb25TdG9yZUxpc3RTZXNzaW9uc1Jlc3BvbnNlQuABChRjb20udGFuay5hZ2VudGN0bC52MUINQWdlbnRjdGxQcm90b1ABWldnaXRodWIuY29tL3RhY3RpY2FsLWFnZW50LW5ldXJhbC1rbm93bGVkZ2UvY29udHJhY3RzL2dlbi9nby90YW5rL2FnZW50Y3RsL3YxO2FnZW50Y3RsdjGiAgNUQViqAhBUYW5rLkFnZW50Y3RsLlYxygIQVGFua1xBZ2VudGN0bFxWMeICHFRhbmtcQWdlbnRjdGxcVjFcR1BCTWV0YWRhdGHqAhJUYW5rOjpBZ2VudGN0bDo6VjFiBnByb3RvMw", [file_google_protobuf_struct, file_google_protobuf_timestamp, file_tank_blocks_v1_blocks]);
+  fileDesc("Ch90YW5rL2FnZW50Y3RsL3YxL2FnZW50Y3RsLnByb3RvEhB0YW5rLmFnZW50Y3RsLnYxIp4BCg1UaHJlYWRNZXNzYWdlEhIKCm1lc3NhZ2VfaWQYASABKAkSEQoJYXV0aG9yX2lkGAIgASgJEhMKC2F1dGhvcl9uYW1lGAMgASgJEhMKC2F1dGhvcl9raW5kGAQgASgJEgwKBHRleHQYBSABKAkSLgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiuQEKDVBvbGljeVN1bW1hcnkSDAoEbW9kZRgBIAEoCRISCgp0b29sc19kZW55GAIgAygJEh0KFW5ldHdvcmtfYWxsb3dlZF9ob3N0cxgDIAMoCRIVCg1kZWZhdWx0X21vZGVsGAQgASgJEhYKDnN1YmFnZW50X21vZGVsGAUgASgJEhEKCW1heF90dXJucxgGIAEoBRIWCg5tYXhfYnVkZ2V0X3VzZBgHIAEoARINCgVydWxlcxgIIAMoCSLCAQoMQXBwcm92ZWRQbGFuEhEKCXBsYW5faGFzaBgBIAEoCRIPCgdzdW1tYXJ5GAIgASgJEicKBXN0ZXBzGAMgAygLMhgudGFuay5ibG9ja3MudjEuUGxhblN0ZXASDQoFcmlza3MYBCADKAkSEwoLYXBwcm92ZWRfYnkYBSABKAkSLwoLYXBwcm92ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhAKCGZlZWRiYWNrGAcgASgJIqIECgpSdW5Db250ZXh0Eg4KBnJ1bl9pZBgBIAEoCRIUCgx3b3Jrc3BhY2VfaWQYAiABKAkSEgoKY2hhbm5lbF9pZBgDIAEoCRIWCg50aHJlYWRfcm9vdF9pZBgEIAEoCRIQCghhZ2VudF9pZBgFIAEoCRISCgphZ2VudF9uYW1lGAYgASgJEhQKDHJlcXVlc3RlZF9ieRgHIAEoCRIpCgVwaGFzZRgIIAEoDjIaLnRhbmsuYWdlbnRjdGwudjEuUnVuUGhhc2USFAoMaW5zdHJ1Y3Rpb25zGAkgASgJEjcKDnRocmVhZF9leGNlcnB0GAogAygLMh8udGFuay5hZ2VudGN0bC52MS5UaHJlYWRNZXNzYWdlEgwKBHJlcG8YCyABKAkSEwoLYmFzZV9icmFuY2gYDCABKAkSDgoGYnJhbmNoGA0gASgJEhEKCXRvb2xjaGFpbhgOIAEoCRIvCgZwb2xpY3kYDyABKAsyHy50YW5rLmFnZW50Y3RsLnYxLlBvbGljeVN1bW1hcnkSFwoPb3BlcmF0aW5nX3J1bGVzGBAgASgJEjUKDWFwcHJvdmVkX3BsYW4YESABKAsyHi50YW5rLmFnZW50Y3RsLnYxLkFwcHJvdmVkUGxhbhIWCg5zZGtfc2Vzc2lvbl9pZBgSIAEoCRIVCg13b3Jrc3BhY2VfZGlyGBMgASgJEhYKDmdpdF9yZW1vdGVfdXJsGBQgASgJIhYKFEdldFJ1bkNvbnRleHRSZXF1ZXN0IkYKFUdldFJ1bkNvbnRleHRSZXNwb25zZRItCgdjb250ZXh0GAEgASgLMhwudGFuay5hZ2VudGN0bC52MS5SdW5Db250ZXh0IigKF0dldEdpdENyZWRlbnRpYWxSZXF1ZXN0Eg0KBXNjb3BlGAEgASgJIoIBChhHZXRHaXRDcmVkZW50aWFsUmVzcG9uc2USEAoIdXNlcm5hbWUYASABKAkSEAoIcGFzc3dvcmQYAiABKAkSLgoKZXhwaXJlc19hdBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKcmVtb3RlX3VybBgEIAEoCSI6ChNQb3N0VG9UaHJlYWRSZXF1ZXN0EgwKBHRleHQYASABKAkSFQoNY2xpZW50X21zZ19pZBgCIAEoCSIqChRQb3N0VG9UaHJlYWRSZXNwb25zZRISCgptZXNzYWdlX2lkGAEgASgJIm0KD1Bvc3RQbGFuUmVxdWVzdBIPCgdzdW1tYXJ5GAEgASgJEicKBXN0ZXBzGAIgAygLMhgudGFuay5ibG9ja3MudjEuUGxhblN0ZXASDQoFcmlza3MYAyADKAkSEQoJcXVlc3Rpb25zGAQgAygJIkcKEFBvc3RQbGFuUmVzcG9uc2USDwoHY2FyZF9pZBgBIAEoCRIPCgdnYXRlX2lkGAIgASgJEhEKCXBsYW5faGFzaBgDIAEoCSJaChFVcGRhdGVDYXJkUmVxdWVzdBIPCgdjYXJkX2lkGAEgASgJEiYKBmJsb2NrcxgCIAEoCzIWLnRhbmsuYmxvY2tzLnYxLkJsb2NrcxIMCgR0ZXh0GAMgASgJIhQKElVwZGF0ZUNhcmRSZXNwb25zZSJgChVBc2tGb3JBcHByb3ZhbFJlcXVlc3QSJgoEa2luZBgBIAEoDjIYLnRhbmsuYmxvY2tzLnYxLkdhdGVLaW5kEg8KB3N1YmplY3QYAiABKAkSDgoGcmVhc29uGAMgASgJIk0KFkFza0ZvckFwcHJvdmFsUmVzcG9uc2USDwoHZ2F0ZV9pZBgBIAEoCRIQCghkZWNpc2lvbhgCIAEoCRIQCghmZWVkYmFjaxgDIAEoCSJNChJBc2tRdWVzdGlvblJlcXVlc3QSEAoIcXVlc3Rpb24YASABKAkSDwoHb3B0aW9ucxgCIAMoCRIUCgxtdWx0aV9zZWxlY3QYAyABKAgiNgoTQXNrUXVlc3Rpb25SZXNwb25zZRIPCgdjYXJkX2lkGAEgASgJEg4KBmFuc3dlchgCIAEoCSI1ChNSZXBvcnRTdGF0dXNSZXF1ZXN0Eg4KBnN0YXR1cxgBIAEoCRIOCgZkZXRhaWwYAiABKAkiFgoUUmVwb3J0U3RhdHVzUmVzcG9uc2UiPAoRUmVhZFRocmVhZFJlcXVlc3QSGAoQYWZ0ZXJfdGhyZWFkX3NlcRgBIAEoAxINCgVsaW1pdBgCIAEoBSJHChJSZWFkVGhyZWFkUmVzcG9uc2USMQoIbWVzc2FnZXMYASADKAsyHy50YW5rLmFnZW50Y3RsLnYxLlRocmVhZE1lc3NhZ2UiVgoWT3BlblB1bGxSZXF1ZXN0UmVxdWVzdBINCgV0aXRsZRgBIAEoCRIMCgRib2R5GAIgASgJEhAKCGhlYWRfc2hhGAMgASgJEg0KBWRyYWZ0GAQgASgIIjwKF09wZW5QdWxsUmVxdWVzdFJlc3BvbnNlEg4KBnByX3VybBgBIAEoCRIRCglwcl9udW1iZXIYAiABKAUiPAoVUmVxdWVzdENpV2F0Y2hSZXF1ZXN0EhAKCGhlYWRfc2hhGAEgASgJEhEKCXdvcmtmbG93cxgCIAMoCSIqChZSZXF1ZXN0Q2lXYXRjaFJlc3BvbnNlEhAKCHdhdGNoX2lkGAEgASgJIicKE0dldENpRmFpbHVyZVJlcXVlc3QSEAoIaGVhZF9zaGEYASABKAkiegoUR2V0Q2lGYWlsdXJlUmVzcG9uc2USEAoIY29tcGxldGUYASABKAgSDQoFZ3JlZW4YAiABKAgSJQoGY2hlY2tzGAMgAygLMhUudGFuay5ibG9ja3MudjEuQ2hlY2sSGgoSZmFpbGVkX2xvZ19leGNlcnB0GAQgASgJIkIKFVJlY29yZERlY2lzaW9uUmVxdWVzdBINCgV0aXRsZRgBIAEoCRIMCgRib2R5GAIgASgJEgwKBHRhZ3MYAyADKAkiLQoWUmVjb3JkRGVjaXNpb25SZXNwb25zZRITCgtkZWNpc2lvbl9pZBgBIAEoCSItCg9SZW1lbWJlclJlcXVlc3QSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJIhIKEFJlbWVtYmVyUmVzcG9uc2UimwEKBVVzYWdlEhQKDGlucHV0X3Rva2VucxgBIAEoAxIVCg1vdXRwdXRfdG9rZW5zGAIgASgDEh8KF2NhY2hlX3JlYWRfaW5wdXRfdG9rZW5zGAMgASgDEiMKG2NhY2hlX2NyZWF0aW9uX2lucHV0X3Rva2VucxgEIAEoAxIQCghjb3N0X3VzZBgFIAEoARINCgVtb2RlbBgGIAEoCSKTAwoIUnVuRXZlbnQSCwoDc2VxGAEgASgDEiYKAmF0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIsCgRraW5kGAMgASgOMh4udGFuay5hZ2VudGN0bC52MS5SdW5FdmVudEtpbmQSFgoOc2RrX3Nlc3Npb25faWQYBCABKAkSDAoEdGV4dBgFIAEoCRIRCgl0b29sX25hbWUYBiABKAkSEwoLdG9vbF91c2VfaWQYByABKAkSKwoKdG9vbF9pbnB1dBgIIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSEwoLdG9vbF9vdXRwdXQYCSABKAkSGgoSdG9vbF9vdXRwdXRfc2hhMjU2GAogASgJEhAKCGlzX2Vycm9yGAsgASgIEiYKBXVzYWdlGAwgASgLMhcudGFuay5hZ2VudGN0bC52MS5Vc2FnZRIWCg5yZXN1bHRfc3VidHlwZRgNIAEoCRIRCgludW1fdHVybnMYDiABKAUSEwoLZHVyYXRpb25fbXMYDyABKAMiQAoTU3RyZWFtRXZlbnRzUmVxdWVzdBIpCgVldmVudBgBIAEoCzIaLnRhbmsuYWdlbnRjdGwudjEuUnVuRXZlbnQiKAoUU3RyZWFtRXZlbnRzUmVzcG9uc2USEAoIYWNjZXB0ZWQYASABKAMirAEKDFNlc3Npb25FbnRyeRISCgpzZXNzaW9uX2lkGAEgASgJEhMKC3Byb2plY3Rfa2V5GAIgASgJEgsKA3NlcRgDIAEoAxIRCglwYXJlbnRfaWQYBCABKAkSEgoKZW50cnlfdHlwZRgFIAEoCRIPCgdwYXlsb2FkGAYgASgMEi4KCmNyZWF0ZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIkkKFlNlc3Npb25TdG9yZVB1dFJlcXVlc3QSLwoHZW50cmllcxgBIAMoCzIeLnRhbmsuYWdlbnRjdGwudjEuU2Vzc2lvbkVudHJ5IioKF1Nlc3Npb25TdG9yZVB1dFJlc3BvbnNlEg8KB3dyaXR0ZW4YASABKAUiZAoXU2Vzc2lvblN0b3JlTGlzdFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRITCgtwcm9qZWN0X2tleRgCIAEoCRIRCglhZnRlcl9zZXEYAyABKAMSDQoFbGltaXQYBCABKAUiXQoYU2Vzc2lvblN0b3JlTGlzdFJlc3BvbnNlEi8KB2VudHJpZXMYASADKAsyHi50YW5rLmFnZW50Y3RsLnYxLlNlc3Npb25FbnRyeRIQCghoYXNfbW9yZRgCIAEoCCI2Ch9TZXNzaW9uU3RvcmVMaXN0U2Vzc2lvbnNSZXF1ZXN0EhMKC3Byb2plY3Rfa2V5GAEgASgJIjcKIFNlc3Npb25TdG9yZUxpc3RTZXNzaW9uc1Jlc3BvbnNlEhMKC3Nlc3Npb25faWRzGAEgAygJItEBCglJbmJveEl0ZW0SCwoDc2VxGAEgASgDEikKBGtpbmQYAiABKA4yGy50YW5rLmFnZW50Y3RsLnYxLkluYm94S2luZBIPCgd1c2VyX2lkGAMgASgJEhEKCXVzZXJfbmFtZRgEIAEoCRIMCgR0ZXh0GAUgASgJEg8KB2dhdGVfaWQYBiABKAkSEAoIZGVjaXNpb24YByABKAkSDwoHY2FyZF9pZBgIIAEoCRImCgJhdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiNgoQUG9sbEluYm94UmVxdWVzdBIRCglhZnRlcl9zZXEYASABKAMSDwoHd2FpdF9tcxgCIAEoBSI/ChFQb2xsSW5ib3hSZXNwb25zZRIqCgVpdGVtcxgBIAMoCzIbLnRhbmsuYWdlbnRjdGwudjEuSW5ib3hJdGVtIpEBCg9TdGFydFJ1blJlcXVlc3QSFAoMd29ya3NwYWNlX2lkGAEgASgJEhIKCmNoYW5uZWxfaWQYAiABKAkSFgoOdGhyZWFkX3Jvb3RfaWQYAyABKAkSEAoIYWdlbnRfaWQYBCABKAkSFAoMcmVxdWVzdGVkX2J5GAUgASgJEhQKDGluc3RydWN0aW9ucxgGIAEoCSIzChBTdGFydFJ1blJlc3BvbnNlEh8KA3J1bhgBIAEoCzISLnRhbmsuYWdlbnQudjEuUnVuIh8KDUdldFJ1blJlcXVlc3QSDgoGcnVuX2lkGAEgASgJIoIBCg5HZXRSdW5SZXNwb25zZRIfCgNydW4YASABKAsyEi50YW5rLmFnZW50LnYxLlJ1bhIWCg5zZGtfc2Vzc2lvbl9pZBgCIAEoCRIQCghoZWFkX3NoYRgDIAEoCRIlCgVnYXRlcxgEIAMoCzIWLnRhbmsuYWdlbnRjdGwudjEuR2F0ZSL4AQoER2F0ZRIKCgJpZBgBIAEoCRImCgRraW5kGAIgASgOMhgudGFuay5ibG9ja3MudjEuR2F0ZUtpbmQSFAoMc3ViamVjdF9oYXNoGAMgASgJEhoKEnJlcXVpcmVkX2FwcHJvdmVycxgEIAMoCRIVCg1taW5fYXBwcm92YWxzGAUgASgFEi4KCmV4cGlyZXNfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhAKCGRlY2lzaW9uGAcgASgJEjEKCWRlY2lzaW9ucxgIIAMoCzIeLnRhbmsuYWdlbnRjdGwudjEuR2F0ZURlY2lzaW9uImsKDEdhdGVEZWNpc2lvbhIPCgd1c2VyX2lkGAEgASgJEhAKCGRlY2lzaW9uGAIgASgJEhAKCGZlZWRiYWNrGAMgASgJEiYKAmF0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCJiCg9MaXN0UnVuc1JlcXVlc3QSFAoMd29ya3NwYWNlX2lkGAEgASgJEhIKCmNoYW5uZWxfaWQYAiABKAkSFgoOdGhyZWFkX3Jvb3RfaWQYAyABKAkSDQoFbGltaXQYBCABKAUiNAoQTGlzdFJ1bnNSZXNwb25zZRIgCgRydW5zGAEgAygLMhIudGFuay5hZ2VudC52MS5SdW4iaQoRRGVjaWRlR2F0ZVJlcXVlc3QSDgoGcnVuX2lkGAEgASgJEg8KB2dhdGVfaWQYAiABKAkSDwoHdXNlcl9pZBgDIAEoCRIQCghkZWNpc2lvbhgEIAEoCRIQCghmZWVkYmFjaxgFIAEoCSI6ChJEZWNpZGVHYXRlUmVzcG9uc2USJAoEZ2F0ZRgBIAEoCzIWLnRhbmsuYWdlbnRjdGwudjEuR2F0ZSJACg9TdGVlclJ1blJlcXVlc3QSDgoGcnVuX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSDAoEdGV4dBgDIAEoCSISChBTdGVlclJ1blJlc3BvbnNlIkMKEENhbmNlbFJ1blJlcXVlc3QSDgoGcnVuX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSDgoGcmVhc29uGAMgASgJIhMKEUNhbmNlbFJ1blJlc3BvbnNlIkgKFExpc3RSdW5FdmVudHNSZXF1ZXN0Eg4KBnJ1bl9pZBgBIAEoCRIRCglhZnRlcl9zZXEYAiABKAMSDQoFbGltaXQYAyABKAUiVQoVTGlzdFJ1bkV2ZW50c1Jlc3BvbnNlEioKBmV2ZW50cxgBIAMoCzIaLnRhbmsuYWdlbnRjdGwudjEuUnVuRXZlbnQSEAoIaGFzX21vcmUYAiABKAgqWQoIUnVuUGhhc2USGQoVUlVOX1BIQVNFX1VOU1BFQ0lGSUVEEAASFgoSUlVOX1BIQVNFX1BMQU5OSU5HEAESGgoWUlVOX1BIQVNFX0lNUExFTUVOVElORxACKp8CCgxSdW5FdmVudEtpbmQSHgoaUlVOX0VWRU5UX0tJTkRfVU5TUEVDSUZJRUQQABIiCh5SVU5fRVZFTlRfS0lORF9BU1NJU1RBTlRfREVMVEEQARIcChhSVU5fRVZFTlRfS0lORF9UT09MX0NBTEwQAhIeChpSVU5fRVZFTlRfS0lORF9UT09MX1JFU1VMVBADEiUKIVJVTl9FVkVOVF9LSU5EX1BFUk1JU1NJT05fUkVRVUVTVBAEEhkKFVJVTl9FVkVOVF9LSU5EX1JFU1VMVBAFEhgKFFJVTl9FVkVOVF9LSU5EX1VTQUdFEAYSGQoVUlVOX0VWRU5UX0tJTkRfU1RBVFVTEAcSFgoSUlVOX0VWRU5UX0tJTkRfTE9HEAgqhAEKCUluYm94S2luZBIaChZJTkJPWF9LSU5EX1VOU1BFQ0lGSUVEEAASFAoQSU5CT1hfS0lORF9TVEVFUhABEhcKE0lOQk9YX0tJTkRfQVBQUk9WQUwQAhIVChFJTkJPWF9LSU5EX0FOU1dFUhADEhUKEUlOQk9YX0tJTkRfQ0FOQ0VMEAQy0g4KDVJ1bm5lclNlcnZpY2USYAoNR2V0UnVuQ29udGV4dBImLnRhbmsuYWdlbnRjdGwudjEuR2V0UnVuQ29udGV4dFJlcXVlc3QaJy50YW5rLmFnZW50Y3RsLnYxLkdldFJ1bkNvbnRleHRSZXNwb25zZRJpChBHZXRHaXRDcmVkZW50aWFsEikudGFuay5hZ2VudGN0bC52MS5HZXRHaXRDcmVkZW50aWFsUmVxdWVzdBoqLnRhbmsuYWdlbnRjdGwudjEuR2V0R2l0Q3JlZGVudGlhbFJlc3BvbnNlEl0KDFBvc3RUb1RocmVhZBIlLnRhbmsuYWdlbnRjdGwudjEuUG9zdFRvVGhyZWFkUmVxdWVzdBomLnRhbmsuYWdlbnRjdGwudjEuUG9zdFRvVGhyZWFkUmVzcG9uc2USUQoIUG9zdFBsYW4SIS50YW5rLmFnZW50Y3RsLnYxLlBvc3RQbGFuUmVxdWVzdBoiLnRhbmsuYWdlbnRjdGwudjEuUG9zdFBsYW5SZXNwb25zZRJXCgpVcGRhdGVDYXJkEiMudGFuay5hZ2VudGN0bC52MS5VcGRhdGVDYXJkUmVxdWVzdBokLnRhbmsuYWdlbnRjdGwudjEuVXBkYXRlQ2FyZFJlc3BvbnNlEmMKDkFza0ZvckFwcHJvdmFsEicudGFuay5hZ2VudGN0bC52MS5Bc2tGb3JBcHByb3ZhbFJlcXVlc3QaKC50YW5rLmFnZW50Y3RsLnYxLkFza0ZvckFwcHJvdmFsUmVzcG9uc2USWgoLQXNrUXVlc3Rpb24SJC50YW5rLmFnZW50Y3RsLnYxLkFza1F1ZXN0aW9uUmVxdWVzdBolLnRhbmsuYWdlbnRjdGwudjEuQXNrUXVlc3Rpb25SZXNwb25zZRJdCgxSZXBvcnRTdGF0dXMSJS50YW5rLmFnZW50Y3RsLnYxLlJlcG9ydFN0YXR1c1JlcXVlc3QaJi50YW5rLmFnZW50Y3RsLnYxLlJlcG9ydFN0YXR1c1Jlc3BvbnNlElcKClJlYWRUaHJlYWQSIy50YW5rLmFnZW50Y3RsLnYxLlJlYWRUaHJlYWRSZXF1ZXN0GiQudGFuay5hZ2VudGN0bC52MS5SZWFkVGhyZWFkUmVzcG9uc2USVAoJUG9sbEluYm94EiIudGFuay5hZ2VudGN0bC52MS5Qb2xsSW5ib3hSZXF1ZXN0GiMudGFuay5hZ2VudGN0bC52MS5Qb2xsSW5ib3hSZXNwb25zZRJmCg9PcGVuUHVsbFJlcXVlc3QSKC50YW5rLmFnZW50Y3RsLnYxLk9wZW5QdWxsUmVxdWVzdFJlcXVlc3QaKS50YW5rLmFnZW50Y3RsLnYxLk9wZW5QdWxsUmVxdWVzdFJlc3BvbnNlEmMKDlJlcXVlc3RDaVdhdGNoEicudGFuay5hZ2VudGN0bC52MS5SZXF1ZXN0Q2lXYXRjaFJlcXVlc3QaKC50YW5rLmFnZW50Y3RsLnYxLlJlcXVlc3RDaVdhdGNoUmVzcG9uc2USXQoMR2V0Q2lGYWlsdXJlEiUudGFuay5hZ2VudGN0bC52MS5HZXRDaUZhaWx1cmVSZXF1ZXN0GiYudGFuay5hZ2VudGN0bC52MS5HZXRDaUZhaWx1cmVSZXNwb25zZRJjCg5SZWNvcmREZWNpc2lvbhInLnRhbmsuYWdlbnRjdGwudjEuUmVjb3JkRGVjaXNpb25SZXF1ZXN0GigudGFuay5hZ2VudGN0bC52MS5SZWNvcmREZWNpc2lvblJlc3BvbnNlElEKCFJlbWVtYmVyEiEudGFuay5hZ2VudGN0bC52MS5SZW1lbWJlclJlcXVlc3QaIi50YW5rLmFnZW50Y3RsLnYxLlJlbWVtYmVyUmVzcG9uc2USXwoMU3RyZWFtRXZlbnRzEiUudGFuay5hZ2VudGN0bC52MS5TdHJlYW1FdmVudHNSZXF1ZXN0GiYudGFuay5hZ2VudGN0bC52MS5TdHJlYW1FdmVudHNSZXNwb25zZSgBEmYKD1Nlc3Npb25TdG9yZVB1dBIoLnRhbmsuYWdlbnRjdGwudjEuU2Vzc2lvblN0b3JlUHV0UmVxdWVzdBopLnRhbmsuYWdlbnRjdGwudjEuU2Vzc2lvblN0b3JlUHV0UmVzcG9uc2USaQoQU2Vzc2lvblN0b3JlTGlzdBIpLnRhbmsuYWdlbnRjdGwudjEuU2Vzc2lvblN0b3JlTGlzdFJlcXVlc3QaKi50YW5rLmFnZW50Y3RsLnYxLlNlc3Npb25TdG9yZUxpc3RSZXNwb25zZRKBAQoYU2Vzc2lvblN0b3JlTGlzdFNlc3Npb25zEjEudGFuay5hZ2VudGN0bC52MS5TZXNzaW9uU3RvcmVMaXN0U2Vzc2lvbnNSZXF1ZXN0GjIudGFuay5hZ2VudGN0bC52MS5TZXNzaW9uU3RvcmVMaXN0U2Vzc2lvbnNSZXNwb25zZTLnBAoOQ29udHJvbFNlcnZpY2USUQoIU3RhcnRSdW4SIS50YW5rLmFnZW50Y3RsLnYxLlN0YXJ0UnVuUmVxdWVzdBoiLnRhbmsuYWdlbnRjdGwudjEuU3RhcnRSdW5SZXNwb25zZRJLCgZHZXRSdW4SHy50YW5rLmFnZW50Y3RsLnYxLkdldFJ1blJlcXVlc3QaIC50YW5rLmFnZW50Y3RsLnYxLkdldFJ1blJlc3BvbnNlElEKCExpc3RSdW5zEiEudGFuay5hZ2VudGN0bC52MS5MaXN0UnVuc1JlcXVlc3QaIi50YW5rLmFnZW50Y3RsLnYxLkxpc3RSdW5zUmVzcG9uc2USVwoKRGVjaWRlR2F0ZRIjLnRhbmsuYWdlbnRjdGwudjEuRGVjaWRlR2F0ZVJlcXVlc3QaJC50YW5rLmFnZW50Y3RsLnYxLkRlY2lkZUdhdGVSZXNwb25zZRJRCghTdGVlclJ1bhIhLnRhbmsuYWdlbnRjdGwudjEuU3RlZXJSdW5SZXF1ZXN0GiIudGFuay5hZ2VudGN0bC52MS5TdGVlclJ1blJlc3BvbnNlElQKCUNhbmNlbFJ1bhIiLnRhbmsuYWdlbnRjdGwudjEuQ2FuY2VsUnVuUmVxdWVzdBojLnRhbmsuYWdlbnRjdGwudjEuQ2FuY2VsUnVuUmVzcG9uc2USYAoNTGlzdFJ1bkV2ZW50cxImLnRhbmsuYWdlbnRjdGwudjEuTGlzdFJ1bkV2ZW50c1JlcXVlc3QaJy50YW5rLmFnZW50Y3RsLnYxLkxpc3RSdW5FdmVudHNSZXNwb25zZULgAQoUY29tLnRhbmsuYWdlbnRjdGwudjFCDUFnZW50Y3RsUHJvdG9QAVpXZ2l0aHViLmNvbS90YWN0aWNhbC1hZ2VudC1uZXVyYWwta25vd2xlZGdlL2NvbnRyYWN0cy9nZW4vZ28vdGFuay9hZ2VudGN0bC92MTthZ2VudGN0bHYxogIDVEFYqgIQVGFuay5BZ2VudGN0bC5WMcoCEFRhbmtcQWdlbnRjdGxcVjHiAhxUYW5rXEFnZW50Y3RsXFYxXEdQQk1ldGFkYXRh6gISVGFuazo6QWdlbnRjdGw6OlYxYgZwcm90bzM", [file_google_protobuf_struct, file_google_protobuf_timestamp, file_tank_agent_v1_agent, file_tank_blocks_v1_blocks]);
 
 /**
  * @generated from message tank.agentctl.v1.ThreadMessage
@@ -1287,6 +1289,541 @@ export const SessionStoreListSessionsResponseSchema: GenMessage<SessionStoreList
   messageDesc(file_tank_agentctl_v1_agentctl, 42);
 
 /**
+ * @generated from message tank.agentctl.v1.InboxItem
+ */
+export type InboxItem = Message<"tank.agentctl.v1.InboxItem"> & {
+  /**
+   * @generated from field: int64 seq = 1;
+   */
+  seq: bigint;
+
+  /**
+   * @generated from field: tank.agentctl.v1.InboxKind kind = 2;
+   */
+  kind: InboxKind;
+
+  /**
+   * @generated from field: string user_id = 3;
+   */
+  userId: string;
+
+  /**
+   * @generated from field: string user_name = 4;
+   */
+  userName: string;
+
+  /**
+   * steer text, answer, feedback
+   *
+   * @generated from field: string text = 5;
+   */
+  text: string;
+
+  /**
+   * approval
+   *
+   * @generated from field: string gate_id = 6;
+   */
+  gateId: string;
+
+  /**
+   * approved | rejected
+   *
+   * @generated from field: string decision = 7;
+   */
+  decision: string;
+
+  /**
+   * answer
+   *
+   * @generated from field: string card_id = 8;
+   */
+  cardId: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp at = 9;
+   */
+  at?: Timestamp;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.InboxItem.
+ * Use `create(InboxItemSchema)` to create a new message.
+ */
+export const InboxItemSchema: GenMessage<InboxItem> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 43);
+
+/**
+ * Long-poll: returns as soon as an item with seq > after_seq exists, or after
+ * wait_ms with an empty list.
+ *
+ * @generated from message tank.agentctl.v1.PollInboxRequest
+ */
+export type PollInboxRequest = Message<"tank.agentctl.v1.PollInboxRequest"> & {
+  /**
+   * @generated from field: int64 after_seq = 1;
+   */
+  afterSeq: bigint;
+
+  /**
+   * @generated from field: int32 wait_ms = 2;
+   */
+  waitMs: number;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.PollInboxRequest.
+ * Use `create(PollInboxRequestSchema)` to create a new message.
+ */
+export const PollInboxRequestSchema: GenMessage<PollInboxRequest> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 44);
+
+/**
+ * @generated from message tank.agentctl.v1.PollInboxResponse
+ */
+export type PollInboxResponse = Message<"tank.agentctl.v1.PollInboxResponse"> & {
+  /**
+   * @generated from field: repeated tank.agentctl.v1.InboxItem items = 1;
+   */
+  items: InboxItem[];
+};
+
+/**
+ * Describes the message tank.agentctl.v1.PollInboxResponse.
+ * Use `create(PollInboxResponseSchema)` to create a new message.
+ */
+export const PollInboxResponseSchema: GenMessage<PollInboxResponse> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 45);
+
+/**
+ * @generated from message tank.agentctl.v1.StartRunRequest
+ */
+export type StartRunRequest = Message<"tank.agentctl.v1.StartRunRequest"> & {
+  /**
+   * @generated from field: string workspace_id = 1;
+   */
+  workspaceId: string;
+
+  /**
+   * @generated from field: string channel_id = 2;
+   */
+  channelId: string;
+
+  /**
+   * @generated from field: string thread_root_id = 3;
+   */
+  threadRootId: string;
+
+  /**
+   * @generated from field: string agent_id = 4;
+   */
+  agentId: string;
+
+  /**
+   * @generated from field: string requested_by = 5;
+   */
+  requestedBy: string;
+
+  /**
+   * @generated from field: string instructions = 6;
+   */
+  instructions: string;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.StartRunRequest.
+ * Use `create(StartRunRequestSchema)` to create a new message.
+ */
+export const StartRunRequestSchema: GenMessage<StartRunRequest> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 46);
+
+/**
+ * @generated from message tank.agentctl.v1.StartRunResponse
+ */
+export type StartRunResponse = Message<"tank.agentctl.v1.StartRunResponse"> & {
+  /**
+   * @generated from field: tank.agent.v1.Run run = 1;
+   */
+  run?: Run;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.StartRunResponse.
+ * Use `create(StartRunResponseSchema)` to create a new message.
+ */
+export const StartRunResponseSchema: GenMessage<StartRunResponse> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 47);
+
+/**
+ * @generated from message tank.agentctl.v1.GetRunRequest
+ */
+export type GetRunRequest = Message<"tank.agentctl.v1.GetRunRequest"> & {
+  /**
+   * @generated from field: string run_id = 1;
+   */
+  runId: string;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.GetRunRequest.
+ * Use `create(GetRunRequestSchema)` to create a new message.
+ */
+export const GetRunRequestSchema: GenMessage<GetRunRequest> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 48);
+
+/**
+ * @generated from message tank.agentctl.v1.GetRunResponse
+ */
+export type GetRunResponse = Message<"tank.agentctl.v1.GetRunResponse"> & {
+  /**
+   * @generated from field: tank.agent.v1.Run run = 1;
+   */
+  run?: Run;
+
+  /**
+   * @generated from field: string sdk_session_id = 2;
+   */
+  sdkSessionId: string;
+
+  /**
+   * @generated from field: string head_sha = 3;
+   */
+  headSha: string;
+
+  /**
+   * @generated from field: repeated tank.agentctl.v1.Gate gates = 4;
+   */
+  gates: Gate[];
+};
+
+/**
+ * Describes the message tank.agentctl.v1.GetRunResponse.
+ * Use `create(GetRunResponseSchema)` to create a new message.
+ */
+export const GetRunResponseSchema: GenMessage<GetRunResponse> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 49);
+
+/**
+ * @generated from message tank.agentctl.v1.Gate
+ */
+export type Gate = Message<"tank.agentctl.v1.Gate"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: tank.blocks.v1.GateKind kind = 2;
+   */
+  kind: GateKind;
+
+  /**
+   * @generated from field: string subject_hash = 3;
+   */
+  subjectHash: string;
+
+  /**
+   * @generated from field: repeated string required_approvers = 4;
+   */
+  requiredApprovers: string[];
+
+  /**
+   * @generated from field: int32 min_approvals = 5;
+   */
+  minApprovals: number;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp expires_at = 6;
+   */
+  expiresAt?: Timestamp;
+
+  /**
+   * pending | approved | rejected | expired
+   *
+   * @generated from field: string decision = 7;
+   */
+  decision: string;
+
+  /**
+   * @generated from field: repeated tank.agentctl.v1.GateDecision decisions = 8;
+   */
+  decisions: GateDecision[];
+};
+
+/**
+ * Describes the message tank.agentctl.v1.Gate.
+ * Use `create(GateSchema)` to create a new message.
+ */
+export const GateSchema: GenMessage<Gate> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 50);
+
+/**
+ * @generated from message tank.agentctl.v1.GateDecision
+ */
+export type GateDecision = Message<"tank.agentctl.v1.GateDecision"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+
+  /**
+   * @generated from field: string decision = 2;
+   */
+  decision: string;
+
+  /**
+   * @generated from field: string feedback = 3;
+   */
+  feedback: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp at = 4;
+   */
+  at?: Timestamp;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.GateDecision.
+ * Use `create(GateDecisionSchema)` to create a new message.
+ */
+export const GateDecisionSchema: GenMessage<GateDecision> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 51);
+
+/**
+ * @generated from message tank.agentctl.v1.ListRunsRequest
+ */
+export type ListRunsRequest = Message<"tank.agentctl.v1.ListRunsRequest"> & {
+  /**
+   * @generated from field: string workspace_id = 1;
+   */
+  workspaceId: string;
+
+  /**
+   * @generated from field: string channel_id = 2;
+   */
+  channelId: string;
+
+  /**
+   * @generated from field: string thread_root_id = 3;
+   */
+  threadRootId: string;
+
+  /**
+   * @generated from field: int32 limit = 4;
+   */
+  limit: number;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.ListRunsRequest.
+ * Use `create(ListRunsRequestSchema)` to create a new message.
+ */
+export const ListRunsRequestSchema: GenMessage<ListRunsRequest> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 52);
+
+/**
+ * @generated from message tank.agentctl.v1.ListRunsResponse
+ */
+export type ListRunsResponse = Message<"tank.agentctl.v1.ListRunsResponse"> & {
+  /**
+   * @generated from field: repeated tank.agent.v1.Run runs = 1;
+   */
+  runs: Run[];
+};
+
+/**
+ * Describes the message tank.agentctl.v1.ListRunsResponse.
+ * Use `create(ListRunsResponseSchema)` to create a new message.
+ */
+export const ListRunsResponseSchema: GenMessage<ListRunsResponse> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 53);
+
+/**
+ * @generated from message tank.agentctl.v1.DecideGateRequest
+ */
+export type DecideGateRequest = Message<"tank.agentctl.v1.DecideGateRequest"> & {
+  /**
+   * @generated from field: string run_id = 1;
+   */
+  runId: string;
+
+  /**
+   * @generated from field: string gate_id = 2;
+   */
+  gateId: string;
+
+  /**
+   * @generated from field: string user_id = 3;
+   */
+  userId: string;
+
+  /**
+   * approved | rejected
+   *
+   * @generated from field: string decision = 4;
+   */
+  decision: string;
+
+  /**
+   * @generated from field: string feedback = 5;
+   */
+  feedback: string;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.DecideGateRequest.
+ * Use `create(DecideGateRequestSchema)` to create a new message.
+ */
+export const DecideGateRequestSchema: GenMessage<DecideGateRequest> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 54);
+
+/**
+ * @generated from message tank.agentctl.v1.DecideGateResponse
+ */
+export type DecideGateResponse = Message<"tank.agentctl.v1.DecideGateResponse"> & {
+  /**
+   * @generated from field: tank.agentctl.v1.Gate gate = 1;
+   */
+  gate?: Gate;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.DecideGateResponse.
+ * Use `create(DecideGateResponseSchema)` to create a new message.
+ */
+export const DecideGateResponseSchema: GenMessage<DecideGateResponse> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 55);
+
+/**
+ * @generated from message tank.agentctl.v1.SteerRunRequest
+ */
+export type SteerRunRequest = Message<"tank.agentctl.v1.SteerRunRequest"> & {
+  /**
+   * @generated from field: string run_id = 1;
+   */
+  runId: string;
+
+  /**
+   * @generated from field: string user_id = 2;
+   */
+  userId: string;
+
+  /**
+   * @generated from field: string text = 3;
+   */
+  text: string;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.SteerRunRequest.
+ * Use `create(SteerRunRequestSchema)` to create a new message.
+ */
+export const SteerRunRequestSchema: GenMessage<SteerRunRequest> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 56);
+
+/**
+ * @generated from message tank.agentctl.v1.SteerRunResponse
+ */
+export type SteerRunResponse = Message<"tank.agentctl.v1.SteerRunResponse"> & {
+};
+
+/**
+ * Describes the message tank.agentctl.v1.SteerRunResponse.
+ * Use `create(SteerRunResponseSchema)` to create a new message.
+ */
+export const SteerRunResponseSchema: GenMessage<SteerRunResponse> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 57);
+
+/**
+ * @generated from message tank.agentctl.v1.CancelRunRequest
+ */
+export type CancelRunRequest = Message<"tank.agentctl.v1.CancelRunRequest"> & {
+  /**
+   * @generated from field: string run_id = 1;
+   */
+  runId: string;
+
+  /**
+   * @generated from field: string user_id = 2;
+   */
+  userId: string;
+
+  /**
+   * @generated from field: string reason = 3;
+   */
+  reason: string;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.CancelRunRequest.
+ * Use `create(CancelRunRequestSchema)` to create a new message.
+ */
+export const CancelRunRequestSchema: GenMessage<CancelRunRequest> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 58);
+
+/**
+ * @generated from message tank.agentctl.v1.CancelRunResponse
+ */
+export type CancelRunResponse = Message<"tank.agentctl.v1.CancelRunResponse"> & {
+};
+
+/**
+ * Describes the message tank.agentctl.v1.CancelRunResponse.
+ * Use `create(CancelRunResponseSchema)` to create a new message.
+ */
+export const CancelRunResponseSchema: GenMessage<CancelRunResponse> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 59);
+
+/**
+ * @generated from message tank.agentctl.v1.ListRunEventsRequest
+ */
+export type ListRunEventsRequest = Message<"tank.agentctl.v1.ListRunEventsRequest"> & {
+  /**
+   * @generated from field: string run_id = 1;
+   */
+  runId: string;
+
+  /**
+   * @generated from field: int64 after_seq = 2;
+   */
+  afterSeq: bigint;
+
+  /**
+   * @generated from field: int32 limit = 3;
+   */
+  limit: number;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.ListRunEventsRequest.
+ * Use `create(ListRunEventsRequestSchema)` to create a new message.
+ */
+export const ListRunEventsRequestSchema: GenMessage<ListRunEventsRequest> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 60);
+
+/**
+ * @generated from message tank.agentctl.v1.ListRunEventsResponse
+ */
+export type ListRunEventsResponse = Message<"tank.agentctl.v1.ListRunEventsResponse"> & {
+  /**
+   * @generated from field: repeated tank.agentctl.v1.RunEvent events = 1;
+   */
+  events: RunEvent[];
+
+  /**
+   * @generated from field: bool has_more = 2;
+   */
+  hasMore: boolean;
+};
+
+/**
+ * Describes the message tank.agentctl.v1.ListRunEventsResponse.
+ * Use `create(ListRunEventsResponseSchema)` to create a new message.
+ */
+export const ListRunEventsResponseSchema: GenMessage<ListRunEventsResponse> = /*@__PURE__*/
+  messageDesc(file_tank_agentctl_v1_agentctl, 61);
+
+/**
  * Phase the runner is being started for. The control plane decides; the runner
  * picks its permission mode from it (planning -> "plan", implementing ->
  * "acceptEdits").
@@ -1373,6 +1910,45 @@ export const RunEventKindSchema: GenEnum<RunEventKind> = /*@__PURE__*/
   enumDesc(file_tank_agentctl_v1_agentctl, 1);
 
 /**
+ * Human -> agent traffic queued by the control plane for the runner: steer
+ * messages, approval decisions, question answers, cancel.
+ *
+ * @generated from enum tank.agentctl.v1.InboxKind
+ */
+export enum InboxKind {
+  /**
+   * @generated from enum value: INBOX_KIND_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: INBOX_KIND_STEER = 1;
+   */
+  STEER = 1,
+
+  /**
+   * @generated from enum value: INBOX_KIND_APPROVAL = 2;
+   */
+  APPROVAL = 2,
+
+  /**
+   * @generated from enum value: INBOX_KIND_ANSWER = 3;
+   */
+  ANSWER = 3,
+
+  /**
+   * @generated from enum value: INBOX_KIND_CANCEL = 4;
+   */
+  CANCEL = 4,
+}
+
+/**
+ * Describes the enum tank.agentctl.v1.InboxKind.
+ */
+export const InboxKindSchema: GenEnum<InboxKind> = /*@__PURE__*/
+  enumDesc(file_tank_agentctl_v1_agentctl, 2);
+
+/**
  * RunnerService is the only network surface the sandbox may reach besides the
  * LLM gateway. Every call carries "Authorization: Bearer <RUN_TOKEN>".
  *
@@ -1452,6 +2028,14 @@ export const RunnerService: GenService<{
     output: typeof ReadThreadResponseSchema;
   },
   /**
+   * @generated from rpc tank.agentctl.v1.RunnerService.PollInbox
+   */
+  pollInbox: {
+    methodKind: "unary";
+    input: typeof PollInboxRequestSchema;
+    output: typeof PollInboxResponseSchema;
+  },
+  /**
    * @generated from rpc tank.agentctl.v1.RunnerService.OpenPullRequest
    */
   openPullRequest: {
@@ -1528,4 +2112,67 @@ export const RunnerService: GenService<{
   },
 }> = /*@__PURE__*/
   serviceDesc(file_tank_agentctl_v1_agentctl, 0);
+
+/**
+ * @generated from service tank.agentctl.v1.ControlService
+ */
+export const ControlService: GenService<{
+  /**
+   * @generated from rpc tank.agentctl.v1.ControlService.StartRun
+   */
+  startRun: {
+    methodKind: "unary";
+    input: typeof StartRunRequestSchema;
+    output: typeof StartRunResponseSchema;
+  },
+  /**
+   * @generated from rpc tank.agentctl.v1.ControlService.GetRun
+   */
+  getRun: {
+    methodKind: "unary";
+    input: typeof GetRunRequestSchema;
+    output: typeof GetRunResponseSchema;
+  },
+  /**
+   * @generated from rpc tank.agentctl.v1.ControlService.ListRuns
+   */
+  listRuns: {
+    methodKind: "unary";
+    input: typeof ListRunsRequestSchema;
+    output: typeof ListRunsResponseSchema;
+  },
+  /**
+   * @generated from rpc tank.agentctl.v1.ControlService.DecideGate
+   */
+  decideGate: {
+    methodKind: "unary";
+    input: typeof DecideGateRequestSchema;
+    output: typeof DecideGateResponseSchema;
+  },
+  /**
+   * @generated from rpc tank.agentctl.v1.ControlService.SteerRun
+   */
+  steerRun: {
+    methodKind: "unary";
+    input: typeof SteerRunRequestSchema;
+    output: typeof SteerRunResponseSchema;
+  },
+  /**
+   * @generated from rpc tank.agentctl.v1.ControlService.CancelRun
+   */
+  cancelRun: {
+    methodKind: "unary";
+    input: typeof CancelRunRequestSchema;
+    output: typeof CancelRunResponseSchema;
+  },
+  /**
+   * @generated from rpc tank.agentctl.v1.ControlService.ListRunEvents
+   */
+  listRunEvents: {
+    methodKind: "unary";
+    input: typeof ListRunEventsRequestSchema;
+    output: typeof ListRunEventsResponseSchema;
+  },
+}> = /*@__PURE__*/
+  serviceDesc(file_tank_agentctl_v1_agentctl, 1);
 
