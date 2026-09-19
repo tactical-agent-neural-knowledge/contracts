@@ -1596,6 +1596,52 @@ func (x *BookmarkChanged) GetRemoved() bool {
 	return false
 }
 
+// member.updated on evt.{ws}.ws: a member changed their profile (display
+// name, avatar, title, timezone).
+type MemberUpdated struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Member        *v16.Member            `protobuf:"bytes,1,opt,name=member,proto3" json:"member,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MemberUpdated) Reset() {
+	*x = MemberUpdated{}
+	mi := &file_tank_events_v1_events_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MemberUpdated) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MemberUpdated) ProtoMessage() {}
+
+func (x *MemberUpdated) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_events_v1_events_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MemberUpdated.ProtoReflect.Descriptor instead.
+func (*MemberUpdated) Descriptor() ([]byte, []int) {
+	return file_tank_events_v1_events_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *MemberUpdated) GetMember() *v16.Member {
+	if x != nil {
+		return x.Member
+	}
+	return nil
+}
+
 var File_tank_events_v1_events_proto protoreflect.FileDescriptor
 
 var file_tank_events_v1_events_proto_rawDesc = string([]byte{
@@ -1806,21 +1852,25 @@ var file_tank_events_v1_events_proto_rawDesc = string([]byte{
 	0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c,
 	0x42, 0x6f, 0x6f, 0x6b, 0x6d, 0x61, 0x72, 0x6b, 0x52, 0x08, 0x62, 0x6f, 0x6f, 0x6b, 0x6d, 0x61,
 	0x72, 0x6b, 0x12, 0x18, 0x0a, 0x07, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x07, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x42, 0xd0, 0x01, 0x0a,
-	0x12, 0x63, 0x6f, 0x6d, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73,
-	0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f,
-	0x50, 0x01, 0x5a, 0x53, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x74,
-	0x61, 0x63, 0x74, 0x69, 0x63, 0x61, 0x6c, 0x2d, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2d, 0x6e, 0x65,
-	0x75, 0x72, 0x61, 0x6c, 0x2d, 0x6b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x2f, 0x63,
-	0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x67, 0x6f, 0x2f,
-	0x74, 0x61, 0x6e, 0x6b, 0x2f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2f, 0x76, 0x31, 0x3b, 0x65,
-	0x76, 0x65, 0x6e, 0x74, 0x73, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x54, 0x45, 0x58, 0xaa, 0x02, 0x0e,
-	0x54, 0x61, 0x6e, 0x6b, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x56, 0x31, 0xca, 0x02,
-	0x0e, 0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x5c, 0x56, 0x31, 0xe2,
-	0x02, 0x1a, 0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x5c, 0x56, 0x31,
-	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x54,
-	0x61, 0x6e, 0x6b, 0x3a, 0x3a, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x3a, 0x3a, 0x56, 0x31, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x01, 0x28, 0x08, 0x52, 0x07, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x22, 0x42, 0x0a, 0x0d,
+	0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12, 0x31, 0x0a,
+	0x06, 0x6d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e,
+	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x76,
+	0x31, 0x2e, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x52, 0x06, 0x6d, 0x65, 0x6d, 0x62, 0x65, 0x72,
+	0x42, 0xd0, 0x01, 0x0a, 0x12, 0x63, 0x6f, 0x6d, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x65, 0x76,
+	0x65, 0x6e, 0x74, 0x73, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x53, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x74, 0x61, 0x63, 0x74, 0x69, 0x63, 0x61, 0x6c, 0x2d, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x2d, 0x6e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x2d, 0x6b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64,
+	0x67, 0x65, 0x2f, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x65, 0x6e,
+	0x2f, 0x67, 0x6f, 0x2f, 0x74, 0x61, 0x6e, 0x6b, 0x2f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2f,
+	0x76, 0x31, 0x3b, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x54, 0x45,
+	0x58, 0xaa, 0x02, 0x0e, 0x54, 0x61, 0x6e, 0x6b, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e,
+	0x56, 0x31, 0xca, 0x02, 0x0e, 0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73,
+	0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1a, 0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x45, 0x76, 0x65, 0x6e, 0x74,
+	0x73, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0xea, 0x02, 0x10, 0x54, 0x61, 0x6e, 0x6b, 0x3a, 0x3a, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x3a,
+	0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
@@ -1835,7 +1885,7 @@ func file_tank_events_v1_events_proto_rawDescGZIP() []byte {
 	return file_tank_events_v1_events_proto_rawDescData
 }
 
-var file_tank_events_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
+var file_tank_events_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
 var file_tank_events_v1_events_proto_goTypes = []any{
 	(*Envelope)(nil),                 // 0: tank.events.v1.Envelope
 	(*MessageCreated)(nil),           // 1: tank.events.v1.MessageCreated
@@ -1864,45 +1914,48 @@ var file_tank_events_v1_events_proto_goTypes = []any{
 	(*ScheduledMessageSent)(nil),     // 24: tank.events.v1.ScheduledMessageSent
 	(*UserGroupUpdated)(nil),         // 25: tank.events.v1.UserGroupUpdated
 	(*BookmarkChanged)(nil),          // 26: tank.events.v1.BookmarkChanged
-	(*timestamppb.Timestamp)(nil),    // 27: google.protobuf.Timestamp
-	(*anypb.Any)(nil),                // 28: google.protobuf.Any
-	(*v1.Message)(nil),               // 29: tank.message.v1.Message
-	(*v11.Channel)(nil),              // 30: tank.channel.v1.Channel
-	(*v12.BlockAction)(nil),          // 31: tank.blocks.v1.BlockAction
-	(*v13.Presence)(nil),             // 32: tank.presence.v1.Presence
-	(*v14.File)(nil),                 // 33: tank.files.v1.File
-	(*v15.Run)(nil),                  // 34: tank.agent.v1.Run
-	(*v16.CustomEmoji)(nil),          // 35: tank.workspace.v1.CustomEmoji
-	(*v16.Preferences)(nil),          // 36: tank.workspace.v1.Preferences
-	(*v11.ChannelReadState)(nil),     // 37: tank.channel.v1.ChannelReadState
-	(*v16.Draft)(nil),                // 38: tank.workspace.v1.Draft
-	(*v16.ScheduledMessage)(nil),     // 39: tank.workspace.v1.ScheduledMessage
-	(*v16.UserGroup)(nil),            // 40: tank.workspace.v1.UserGroup
-	(*v16.ChannelBookmark)(nil),      // 41: tank.workspace.v1.ChannelBookmark
+	(*MemberUpdated)(nil),            // 27: tank.events.v1.MemberUpdated
+	(*timestamppb.Timestamp)(nil),    // 28: google.protobuf.Timestamp
+	(*anypb.Any)(nil),                // 29: google.protobuf.Any
+	(*v1.Message)(nil),               // 30: tank.message.v1.Message
+	(*v11.Channel)(nil),              // 31: tank.channel.v1.Channel
+	(*v12.BlockAction)(nil),          // 32: tank.blocks.v1.BlockAction
+	(*v13.Presence)(nil),             // 33: tank.presence.v1.Presence
+	(*v14.File)(nil),                 // 34: tank.files.v1.File
+	(*v15.Run)(nil),                  // 35: tank.agent.v1.Run
+	(*v16.CustomEmoji)(nil),          // 36: tank.workspace.v1.CustomEmoji
+	(*v16.Preferences)(nil),          // 37: tank.workspace.v1.Preferences
+	(*v11.ChannelReadState)(nil),     // 38: tank.channel.v1.ChannelReadState
+	(*v16.Draft)(nil),                // 39: tank.workspace.v1.Draft
+	(*v16.ScheduledMessage)(nil),     // 40: tank.workspace.v1.ScheduledMessage
+	(*v16.UserGroup)(nil),            // 41: tank.workspace.v1.UserGroup
+	(*v16.ChannelBookmark)(nil),      // 42: tank.workspace.v1.ChannelBookmark
+	(*v16.Member)(nil),               // 43: tank.workspace.v1.Member
 }
 var file_tank_events_v1_events_proto_depIdxs = []int32{
-	27, // 0: tank.events.v1.Envelope.occurred_at:type_name -> google.protobuf.Timestamp
-	28, // 1: tank.events.v1.Envelope.payload:type_name -> google.protobuf.Any
-	29, // 2: tank.events.v1.MessageCreated.message:type_name -> tank.message.v1.Message
-	29, // 3: tank.events.v1.MessageUpdated.message:type_name -> tank.message.v1.Message
-	30, // 4: tank.events.v1.ChannelUpdated.channel:type_name -> tank.channel.v1.Channel
-	31, // 5: tank.events.v1.CardAction.action:type_name -> tank.blocks.v1.BlockAction
-	32, // 6: tank.events.v1.PresenceChanged.presence:type_name -> tank.presence.v1.Presence
-	33, // 7: tank.events.v1.FileReady.file:type_name -> tank.files.v1.File
-	29, // 8: tank.events.v1.MessageEphemeral.message:type_name -> tank.message.v1.Message
-	34, // 9: tank.events.v1.AgentRunUpdated.run:type_name -> tank.agent.v1.Run
-	35, // 10: tank.events.v1.EmojiChanged.emoji:type_name -> tank.workspace.v1.CustomEmoji
-	36, // 11: tank.events.v1.PreferencesUpdated.preferences:type_name -> tank.workspace.v1.Preferences
-	37, // 12: tank.events.v1.ChannelPreferenceUpdated.read_state:type_name -> tank.channel.v1.ChannelReadState
-	38, // 13: tank.events.v1.DraftUpdated.draft:type_name -> tank.workspace.v1.Draft
-	39, // 14: tank.events.v1.ScheduledMessageSent.scheduled:type_name -> tank.workspace.v1.ScheduledMessage
-	40, // 15: tank.events.v1.UserGroupUpdated.group:type_name -> tank.workspace.v1.UserGroup
-	41, // 16: tank.events.v1.BookmarkChanged.bookmark:type_name -> tank.workspace.v1.ChannelBookmark
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	28, // 0: tank.events.v1.Envelope.occurred_at:type_name -> google.protobuf.Timestamp
+	29, // 1: tank.events.v1.Envelope.payload:type_name -> google.protobuf.Any
+	30, // 2: tank.events.v1.MessageCreated.message:type_name -> tank.message.v1.Message
+	30, // 3: tank.events.v1.MessageUpdated.message:type_name -> tank.message.v1.Message
+	31, // 4: tank.events.v1.ChannelUpdated.channel:type_name -> tank.channel.v1.Channel
+	32, // 5: tank.events.v1.CardAction.action:type_name -> tank.blocks.v1.BlockAction
+	33, // 6: tank.events.v1.PresenceChanged.presence:type_name -> tank.presence.v1.Presence
+	34, // 7: tank.events.v1.FileReady.file:type_name -> tank.files.v1.File
+	30, // 8: tank.events.v1.MessageEphemeral.message:type_name -> tank.message.v1.Message
+	35, // 9: tank.events.v1.AgentRunUpdated.run:type_name -> tank.agent.v1.Run
+	36, // 10: tank.events.v1.EmojiChanged.emoji:type_name -> tank.workspace.v1.CustomEmoji
+	37, // 11: tank.events.v1.PreferencesUpdated.preferences:type_name -> tank.workspace.v1.Preferences
+	38, // 12: tank.events.v1.ChannelPreferenceUpdated.read_state:type_name -> tank.channel.v1.ChannelReadState
+	39, // 13: tank.events.v1.DraftUpdated.draft:type_name -> tank.workspace.v1.Draft
+	40, // 14: tank.events.v1.ScheduledMessageSent.scheduled:type_name -> tank.workspace.v1.ScheduledMessage
+	41, // 15: tank.events.v1.UserGroupUpdated.group:type_name -> tank.workspace.v1.UserGroup
+	42, // 16: tank.events.v1.BookmarkChanged.bookmark:type_name -> tank.workspace.v1.ChannelBookmark
+	43, // 17: tank.events.v1.MemberUpdated.member:type_name -> tank.workspace.v1.Member
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_tank_events_v1_events_proto_init() }
@@ -1916,7 +1969,7 @@ func file_tank_events_v1_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tank_events_v1_events_proto_rawDesc), len(file_tank_events_v1_events_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   27,
+			NumMessages:   28,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

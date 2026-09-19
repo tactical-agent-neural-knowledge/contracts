@@ -157,3 +157,8 @@ message BookmarkChanged {
   tank.workspace.v1.ChannelBookmark bookmark = 1;
   bool removed = 2;
 }
+// member.updated on evt.{ws}.ws: a member changed their profile (display
+// name, avatar, title, timezone).
+message MemberUpdated {
+  tank.workspace.v1.Member member = 1;
+}

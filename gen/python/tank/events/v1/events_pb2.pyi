@@ -265,3 +265,9 @@ class BookmarkChanged(_message.Message):
     bookmark: _workspace_pb2.ChannelBookmark
     removed: bool
     def __init__(self, bookmark: _Optional[_Union[_workspace_pb2.ChannelBookmark, _Mapping]] = ..., removed: bool = ...) -> None: ...
+
+class MemberUpdated(_message.Message):
+    __slots__ = ("member",)
+    MEMBER_FIELD_NUMBER: _ClassVar[int]
+    member: _workspace_pb2.Member
+    def __init__(self, member: _Optional[_Union[_workspace_pb2.Member, _Mapping]] = ...) -> None: ...
