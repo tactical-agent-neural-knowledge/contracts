@@ -1,5 +1,6 @@
 from google.protobuf import any_pb2 as _any_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from tank.admin.v1 import admin_pb2 as _admin_pb2
 from tank.agent.v1 import agent_pb2 as _agent_pb2
 from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
 from tank.channel.v1 import channel_pb2 as _channel_pb2
@@ -290,3 +291,45 @@ class HuddleParticipantsChanged(_message.Message):
     HUDDLE_FIELD_NUMBER: _ClassVar[int]
     huddle: _huddle_pb2.Huddle
     def __init__(self, huddle: _Optional[_Union[_huddle_pb2.Huddle, _Mapping]] = ...) -> None: ...
+
+class MemberRoleChanged(_message.Message):
+    __slots__ = ("member", "previous_role", "actor_id")
+    MEMBER_FIELD_NUMBER: _ClassVar[int]
+    PREVIOUS_ROLE_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    member: _workspace_pb2.Member
+    previous_role: _workspace_pb2.Role
+    actor_id: str
+    def __init__(self, member: _Optional[_Union[_workspace_pb2.Member, _Mapping]] = ..., previous_role: _Optional[_Union[_workspace_pb2.Role, str]] = ..., actor_id: _Optional[str] = ...) -> None: ...
+
+class MemberDeactivated(_message.Message):
+    __slots__ = ("member", "reactivated", "removed", "actor_id")
+    MEMBER_FIELD_NUMBER: _ClassVar[int]
+    REACTIVATED_FIELD_NUMBER: _ClassVar[int]
+    REMOVED_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    member: _workspace_pb2.Member
+    reactivated: bool
+    removed: bool
+    actor_id: str
+    def __init__(self, member: _Optional[_Union[_workspace_pb2.Member, _Mapping]] = ..., reactivated: bool = ..., removed: bool = ..., actor_id: _Optional[str] = ...) -> None: ...
+
+class WorkspaceSettingsUpdated(_message.Message):
+    __slots__ = ("settings", "actor_id")
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    settings: _admin_pb2.WorkspaceSettings
+    actor_id: str
+    def __init__(self, settings: _Optional[_Union[_admin_pb2.WorkspaceSettings, _Mapping]] = ..., actor_id: _Optional[str] = ...) -> None: ...
+
+class AuditLogged(_message.Message):
+    __slots__ = ("entry",)
+    ENTRY_FIELD_NUMBER: _ClassVar[int]
+    entry: _admin_pb2.AuditEntry
+    def __init__(self, entry: _Optional[_Union[_admin_pb2.AuditEntry, _Mapping]] = ...) -> None: ...
+
+class ExportReady(_message.Message):
+    __slots__ = ("job",)
+    JOB_FIELD_NUMBER: _ClassVar[int]
+    job: _admin_pb2.ExportJob
+    def __init__(self, job: _Optional[_Union[_admin_pb2.ExportJob, _Mapping]] = ...) -> None: ...

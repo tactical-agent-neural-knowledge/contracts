@@ -51,6 +51,25 @@ const (
 	AuthServiceMintGatewayTokenProcedure = "/tank.auth.v1.AuthService/MintGatewayToken"
 	// AuthServiceGetMeProcedure is the fully-qualified name of the AuthService's GetMe RPC.
 	AuthServiceGetMeProcedure = "/tank.auth.v1.AuthService/GetMe"
+	// AuthServiceListSessionsProcedure is the fully-qualified name of the AuthService's ListSessions
+	// RPC.
+	AuthServiceListSessionsProcedure = "/tank.auth.v1.AuthService/ListSessions"
+	// AuthServiceRevokeSessionProcedure is the fully-qualified name of the AuthService's RevokeSession
+	// RPC.
+	AuthServiceRevokeSessionProcedure = "/tank.auth.v1.AuthService/RevokeSession"
+	// AuthServiceAdminRevokeUserSessionsProcedure is the fully-qualified name of the AuthService's
+	// AdminRevokeUserSessions RPC.
+	AuthServiceAdminRevokeUserSessionsProcedure = "/tank.auth.v1.AuthService/AdminRevokeUserSessions"
+	// AuthServiceGetSsoConfigProcedure is the fully-qualified name of the AuthService's GetSsoConfig
+	// RPC.
+	AuthServiceGetSsoConfigProcedure = "/tank.auth.v1.AuthService/GetSsoConfig"
+	// AuthServiceSetSsoConfigProcedure is the fully-qualified name of the AuthService's SetSsoConfig
+	// RPC.
+	AuthServiceSetSsoConfigProcedure = "/tank.auth.v1.AuthService/SetSsoConfig"
+	// AuthServiceStartSsoProcedure is the fully-qualified name of the AuthService's StartSso RPC.
+	AuthServiceStartSsoProcedure = "/tank.auth.v1.AuthService/StartSso"
+	// AuthServiceCompleteSsoProcedure is the fully-qualified name of the AuthService's CompleteSso RPC.
+	AuthServiceCompleteSsoProcedure = "/tank.auth.v1.AuthService/CompleteSso"
 )
 
 // AuthServiceClient is a client for the tank.auth.v1.AuthService service.
@@ -62,6 +81,13 @@ type AuthServiceClient interface {
 	Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error)
 	MintGatewayToken(context.Context, *connect.Request[v1.MintGatewayTokenRequest]) (*connect.Response[v1.MintGatewayTokenResponse], error)
 	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
+	ListSessions(context.Context, *connect.Request[v1.ListSessionsRequest]) (*connect.Response[v1.ListSessionsResponse], error)
+	RevokeSession(context.Context, *connect.Request[v1.RevokeSessionRequest]) (*connect.Response[v1.RevokeSessionResponse], error)
+	AdminRevokeUserSessions(context.Context, *connect.Request[v1.AdminRevokeUserSessionsRequest]) (*connect.Response[v1.AdminRevokeUserSessionsResponse], error)
+	GetSsoConfig(context.Context, *connect.Request[v1.GetSsoConfigRequest]) (*connect.Response[v1.GetSsoConfigResponse], error)
+	SetSsoConfig(context.Context, *connect.Request[v1.SetSsoConfigRequest]) (*connect.Response[v1.SetSsoConfigResponse], error)
+	StartSso(context.Context, *connect.Request[v1.StartSsoRequest]) (*connect.Response[v1.StartSsoResponse], error)
+	CompleteSso(context.Context, *connect.Request[v1.CompleteSsoRequest]) (*connect.Response[v1.CompleteSsoResponse], error)
 }
 
 // NewAuthServiceClient constructs a client for the tank.auth.v1.AuthService service. By default, it
@@ -117,18 +143,67 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(authServiceMethods.ByName("GetMe")),
 			connect.WithClientOptions(opts...),
 		),
+		listSessions: connect.NewClient[v1.ListSessionsRequest, v1.ListSessionsResponse](
+			httpClient,
+			baseURL+AuthServiceListSessionsProcedure,
+			connect.WithSchema(authServiceMethods.ByName("ListSessions")),
+			connect.WithClientOptions(opts...),
+		),
+		revokeSession: connect.NewClient[v1.RevokeSessionRequest, v1.RevokeSessionResponse](
+			httpClient,
+			baseURL+AuthServiceRevokeSessionProcedure,
+			connect.WithSchema(authServiceMethods.ByName("RevokeSession")),
+			connect.WithClientOptions(opts...),
+		),
+		adminRevokeUserSessions: connect.NewClient[v1.AdminRevokeUserSessionsRequest, v1.AdminRevokeUserSessionsResponse](
+			httpClient,
+			baseURL+AuthServiceAdminRevokeUserSessionsProcedure,
+			connect.WithSchema(authServiceMethods.ByName("AdminRevokeUserSessions")),
+			connect.WithClientOptions(opts...),
+		),
+		getSsoConfig: connect.NewClient[v1.GetSsoConfigRequest, v1.GetSsoConfigResponse](
+			httpClient,
+			baseURL+AuthServiceGetSsoConfigProcedure,
+			connect.WithSchema(authServiceMethods.ByName("GetSsoConfig")),
+			connect.WithClientOptions(opts...),
+		),
+		setSsoConfig: connect.NewClient[v1.SetSsoConfigRequest, v1.SetSsoConfigResponse](
+			httpClient,
+			baseURL+AuthServiceSetSsoConfigProcedure,
+			connect.WithSchema(authServiceMethods.ByName("SetSsoConfig")),
+			connect.WithClientOptions(opts...),
+		),
+		startSso: connect.NewClient[v1.StartSsoRequest, v1.StartSsoResponse](
+			httpClient,
+			baseURL+AuthServiceStartSsoProcedure,
+			connect.WithSchema(authServiceMethods.ByName("StartSso")),
+			connect.WithClientOptions(opts...),
+		),
+		completeSso: connect.NewClient[v1.CompleteSsoRequest, v1.CompleteSsoResponse](
+			httpClient,
+			baseURL+AuthServiceCompleteSsoProcedure,
+			connect.WithSchema(authServiceMethods.ByName("CompleteSso")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // authServiceClient implements AuthServiceClient.
 type authServiceClient struct {
-	startMagicLink    *connect.Client[v1.StartMagicLinkRequest, v1.StartMagicLinkResponse]
-	completeMagicLink *connect.Client[v1.CompleteMagicLinkRequest, v1.CompleteMagicLinkResponse]
-	exchangeCode      *connect.Client[v1.ExchangeCodeRequest, v1.ExchangeCodeResponse]
-	refresh           *connect.Client[v1.RefreshRequest, v1.RefreshResponse]
-	logout            *connect.Client[v1.LogoutRequest, v1.LogoutResponse]
-	mintGatewayToken  *connect.Client[v1.MintGatewayTokenRequest, v1.MintGatewayTokenResponse]
-	getMe             *connect.Client[v1.GetMeRequest, v1.GetMeResponse]
+	startMagicLink          *connect.Client[v1.StartMagicLinkRequest, v1.StartMagicLinkResponse]
+	completeMagicLink       *connect.Client[v1.CompleteMagicLinkRequest, v1.CompleteMagicLinkResponse]
+	exchangeCode            *connect.Client[v1.ExchangeCodeRequest, v1.ExchangeCodeResponse]
+	refresh                 *connect.Client[v1.RefreshRequest, v1.RefreshResponse]
+	logout                  *connect.Client[v1.LogoutRequest, v1.LogoutResponse]
+	mintGatewayToken        *connect.Client[v1.MintGatewayTokenRequest, v1.MintGatewayTokenResponse]
+	getMe                   *connect.Client[v1.GetMeRequest, v1.GetMeResponse]
+	listSessions            *connect.Client[v1.ListSessionsRequest, v1.ListSessionsResponse]
+	revokeSession           *connect.Client[v1.RevokeSessionRequest, v1.RevokeSessionResponse]
+	adminRevokeUserSessions *connect.Client[v1.AdminRevokeUserSessionsRequest, v1.AdminRevokeUserSessionsResponse]
+	getSsoConfig            *connect.Client[v1.GetSsoConfigRequest, v1.GetSsoConfigResponse]
+	setSsoConfig            *connect.Client[v1.SetSsoConfigRequest, v1.SetSsoConfigResponse]
+	startSso                *connect.Client[v1.StartSsoRequest, v1.StartSsoResponse]
+	completeSso             *connect.Client[v1.CompleteSsoRequest, v1.CompleteSsoResponse]
 }
 
 // StartMagicLink calls tank.auth.v1.AuthService.StartMagicLink.
@@ -166,6 +241,41 @@ func (c *authServiceClient) GetMe(ctx context.Context, req *connect.Request[v1.G
 	return c.getMe.CallUnary(ctx, req)
 }
 
+// ListSessions calls tank.auth.v1.AuthService.ListSessions.
+func (c *authServiceClient) ListSessions(ctx context.Context, req *connect.Request[v1.ListSessionsRequest]) (*connect.Response[v1.ListSessionsResponse], error) {
+	return c.listSessions.CallUnary(ctx, req)
+}
+
+// RevokeSession calls tank.auth.v1.AuthService.RevokeSession.
+func (c *authServiceClient) RevokeSession(ctx context.Context, req *connect.Request[v1.RevokeSessionRequest]) (*connect.Response[v1.RevokeSessionResponse], error) {
+	return c.revokeSession.CallUnary(ctx, req)
+}
+
+// AdminRevokeUserSessions calls tank.auth.v1.AuthService.AdminRevokeUserSessions.
+func (c *authServiceClient) AdminRevokeUserSessions(ctx context.Context, req *connect.Request[v1.AdminRevokeUserSessionsRequest]) (*connect.Response[v1.AdminRevokeUserSessionsResponse], error) {
+	return c.adminRevokeUserSessions.CallUnary(ctx, req)
+}
+
+// GetSsoConfig calls tank.auth.v1.AuthService.GetSsoConfig.
+func (c *authServiceClient) GetSsoConfig(ctx context.Context, req *connect.Request[v1.GetSsoConfigRequest]) (*connect.Response[v1.GetSsoConfigResponse], error) {
+	return c.getSsoConfig.CallUnary(ctx, req)
+}
+
+// SetSsoConfig calls tank.auth.v1.AuthService.SetSsoConfig.
+func (c *authServiceClient) SetSsoConfig(ctx context.Context, req *connect.Request[v1.SetSsoConfigRequest]) (*connect.Response[v1.SetSsoConfigResponse], error) {
+	return c.setSsoConfig.CallUnary(ctx, req)
+}
+
+// StartSso calls tank.auth.v1.AuthService.StartSso.
+func (c *authServiceClient) StartSso(ctx context.Context, req *connect.Request[v1.StartSsoRequest]) (*connect.Response[v1.StartSsoResponse], error) {
+	return c.startSso.CallUnary(ctx, req)
+}
+
+// CompleteSso calls tank.auth.v1.AuthService.CompleteSso.
+func (c *authServiceClient) CompleteSso(ctx context.Context, req *connect.Request[v1.CompleteSsoRequest]) (*connect.Response[v1.CompleteSsoResponse], error) {
+	return c.completeSso.CallUnary(ctx, req)
+}
+
 // AuthServiceHandler is an implementation of the tank.auth.v1.AuthService service.
 type AuthServiceHandler interface {
 	StartMagicLink(context.Context, *connect.Request[v1.StartMagicLinkRequest]) (*connect.Response[v1.StartMagicLinkResponse], error)
@@ -175,6 +285,13 @@ type AuthServiceHandler interface {
 	Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error)
 	MintGatewayToken(context.Context, *connect.Request[v1.MintGatewayTokenRequest]) (*connect.Response[v1.MintGatewayTokenResponse], error)
 	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
+	ListSessions(context.Context, *connect.Request[v1.ListSessionsRequest]) (*connect.Response[v1.ListSessionsResponse], error)
+	RevokeSession(context.Context, *connect.Request[v1.RevokeSessionRequest]) (*connect.Response[v1.RevokeSessionResponse], error)
+	AdminRevokeUserSessions(context.Context, *connect.Request[v1.AdminRevokeUserSessionsRequest]) (*connect.Response[v1.AdminRevokeUserSessionsResponse], error)
+	GetSsoConfig(context.Context, *connect.Request[v1.GetSsoConfigRequest]) (*connect.Response[v1.GetSsoConfigResponse], error)
+	SetSsoConfig(context.Context, *connect.Request[v1.SetSsoConfigRequest]) (*connect.Response[v1.SetSsoConfigResponse], error)
+	StartSso(context.Context, *connect.Request[v1.StartSsoRequest]) (*connect.Response[v1.StartSsoResponse], error)
+	CompleteSso(context.Context, *connect.Request[v1.CompleteSsoRequest]) (*connect.Response[v1.CompleteSsoResponse], error)
 }
 
 // NewAuthServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -226,6 +343,48 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(authServiceMethods.ByName("GetMe")),
 		connect.WithHandlerOptions(opts...),
 	)
+	authServiceListSessionsHandler := connect.NewUnaryHandler(
+		AuthServiceListSessionsProcedure,
+		svc.ListSessions,
+		connect.WithSchema(authServiceMethods.ByName("ListSessions")),
+		connect.WithHandlerOptions(opts...),
+	)
+	authServiceRevokeSessionHandler := connect.NewUnaryHandler(
+		AuthServiceRevokeSessionProcedure,
+		svc.RevokeSession,
+		connect.WithSchema(authServiceMethods.ByName("RevokeSession")),
+		connect.WithHandlerOptions(opts...),
+	)
+	authServiceAdminRevokeUserSessionsHandler := connect.NewUnaryHandler(
+		AuthServiceAdminRevokeUserSessionsProcedure,
+		svc.AdminRevokeUserSessions,
+		connect.WithSchema(authServiceMethods.ByName("AdminRevokeUserSessions")),
+		connect.WithHandlerOptions(opts...),
+	)
+	authServiceGetSsoConfigHandler := connect.NewUnaryHandler(
+		AuthServiceGetSsoConfigProcedure,
+		svc.GetSsoConfig,
+		connect.WithSchema(authServiceMethods.ByName("GetSsoConfig")),
+		connect.WithHandlerOptions(opts...),
+	)
+	authServiceSetSsoConfigHandler := connect.NewUnaryHandler(
+		AuthServiceSetSsoConfigProcedure,
+		svc.SetSsoConfig,
+		connect.WithSchema(authServiceMethods.ByName("SetSsoConfig")),
+		connect.WithHandlerOptions(opts...),
+	)
+	authServiceStartSsoHandler := connect.NewUnaryHandler(
+		AuthServiceStartSsoProcedure,
+		svc.StartSso,
+		connect.WithSchema(authServiceMethods.ByName("StartSso")),
+		connect.WithHandlerOptions(opts...),
+	)
+	authServiceCompleteSsoHandler := connect.NewUnaryHandler(
+		AuthServiceCompleteSsoProcedure,
+		svc.CompleteSso,
+		connect.WithSchema(authServiceMethods.ByName("CompleteSso")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.auth.v1.AuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AuthServiceStartMagicLinkProcedure:
@@ -242,6 +401,20 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 			authServiceMintGatewayTokenHandler.ServeHTTP(w, r)
 		case AuthServiceGetMeProcedure:
 			authServiceGetMeHandler.ServeHTTP(w, r)
+		case AuthServiceListSessionsProcedure:
+			authServiceListSessionsHandler.ServeHTTP(w, r)
+		case AuthServiceRevokeSessionProcedure:
+			authServiceRevokeSessionHandler.ServeHTTP(w, r)
+		case AuthServiceAdminRevokeUserSessionsProcedure:
+			authServiceAdminRevokeUserSessionsHandler.ServeHTTP(w, r)
+		case AuthServiceGetSsoConfigProcedure:
+			authServiceGetSsoConfigHandler.ServeHTTP(w, r)
+		case AuthServiceSetSsoConfigProcedure:
+			authServiceSetSsoConfigHandler.ServeHTTP(w, r)
+		case AuthServiceStartSsoProcedure:
+			authServiceStartSsoHandler.ServeHTTP(w, r)
+		case AuthServiceCompleteSsoProcedure:
+			authServiceCompleteSsoHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -277,4 +450,32 @@ func (UnimplementedAuthServiceHandler) MintGatewayToken(context.Context, *connec
 
 func (UnimplementedAuthServiceHandler) GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.GetMe is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) ListSessions(context.Context, *connect.Request[v1.ListSessionsRequest]) (*connect.Response[v1.ListSessionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.ListSessions is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) RevokeSession(context.Context, *connect.Request[v1.RevokeSessionRequest]) (*connect.Response[v1.RevokeSessionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.RevokeSession is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) AdminRevokeUserSessions(context.Context, *connect.Request[v1.AdminRevokeUserSessionsRequest]) (*connect.Response[v1.AdminRevokeUserSessionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.AdminRevokeUserSessions is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) GetSsoConfig(context.Context, *connect.Request[v1.GetSsoConfigRequest]) (*connect.Response[v1.GetSsoConfigResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.GetSsoConfig is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) SetSsoConfig(context.Context, *connect.Request[v1.SetSsoConfigRequest]) (*connect.Response[v1.SetSsoConfigResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.SetSsoConfig is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) StartSso(context.Context, *connect.Request[v1.StartSsoRequest]) (*connect.Response[v1.StartSsoResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.StartSso is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) CompleteSso(context.Context, *connect.Request[v1.CompleteSsoRequest]) (*connect.Response[v1.CompleteSsoResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.CompleteSso is not implemented"))
 }

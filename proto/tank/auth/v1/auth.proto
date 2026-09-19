@@ -77,6 +77,128 @@ message GetMeResponse {
   Principal me = 1;
 }
 
+// ---- Sessions --------------------------------------------------------------
+
+// One signed-in device: a web cookie session or a mobile refresh session.
+message Session {
+  string id = 1;   // opaque; never the secret
+  string kind = 2; // web | mobile
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp expires_at = 4;
+  string user_agent = 5;
+  string ip = 6;
+  bool current = 7; // the session making this call
+}
+
+message ListSessionsRequest {}
+message ListSessionsResponse {
+  repeated Session sessions = 1;
+}
+
+// Revokes one of the caller's own sessions (the current one included).
+message RevokeSessionRequest {
+  string session_id = 1;
+}
+message RevokeSessionResponse {}
+
+// Workspace admins sign a member out of every device. The user must be a
+// member of workspace_id; every session of theirs is revoked, and so are
+// API tokens bound to that workspace.
+message AdminRevokeUserSessionsRequest {
+  string workspace_id = 1;
+  string user_id = 2;
+}
+message AdminRevokeUserSessionsResponse {
+  int32 revoked = 1;
+}
+
+// ---- SSO (per workspace) ---------------------------------------------------
+
+enum SsoProvider {
+  SSO_PROVIDER_UNSPECIFIED = 0;
+  SSO_PROVIDER_OIDC = 1;
+  SSO_PROVIDER_SAML = 2;
+}
+
+message SsoConfig {
+  string workspace_id = 1;
+  SsoProvider provider = 2;
+  bool enabled = 3;
+  // OIDC: the issuer URL (discovery at <issuer>/.well-known/openid-configuration).
+  // SAML: the IdP metadata URL; metadata_xml may be given instead.
+  string issuer = 4;
+  string metadata_xml = 5;
+  string client_id = 6;
+  // Where the client secret lives (env or secret-manager name); the secret
+  // itself is write-only through SetSsoConfig.client_secret.
+  string client_secret_ref = 7;
+  bool has_client_secret = 8;
+  // Email domain the IdP must assert (e.g. "acme.com"); empty = any.
+  string domain_claim = 9;
+  // Users of domain_claim must sign in through SSO (mirrors
+  // WorkspaceSettings.require_sso).
+  bool enforce = 10;
+  // Read-only helpers for configuring the IdP.
+  string redirect_uri = 11;     // OIDC callback (web)
+  string sp_entity_id = 12;     // SAML SP entity id
+  string sp_metadata_url = 13;  // SAML SP metadata (/saml/{workspace}/metadata)
+  string acs_url = 14;          // SAML ACS (/saml/{workspace}/acs)
+  google.protobuf.Timestamp updated_at = 15;
+}
+
+message GetSsoConfigRequest {
+  string workspace_id = 1;
+}
+message GetSsoConfigResponse {
+  SsoConfig config = 1; // unset when never configured
+}
+
+// Owner or admin. client_secret empty = keep the stored secret.
+message SetSsoConfigRequest {
+  string workspace_id = 1;
+  SsoProvider provider = 2;
+  bool enabled = 3;
+  string issuer = 4;
+  string metadata_xml = 5;
+  string client_id = 6;
+  string client_secret = 7;
+  string client_secret_ref = 8;
+  string domain_claim = 9;
+  bool enforce = 10;
+}
+message SetSsoConfigResponse {
+  SsoConfig config = 1;
+}
+
+// Begins SSO for a workspace: returns the IdP URL to send the browser to.
+// redirect_uri is where the IdP (OIDC) or the ACS (SAML) sends the user
+// back; it must be PUBLIC_WEB_URL or a registered mobile scheme.
+message StartSsoRequest {
+  string workspace_slug = 1;
+  string redirect_uri = 2;
+}
+message StartSsoResponse {
+  string redirect_url = 1;
+  string state = 2;
+  google.protobuf.Timestamp expires_at = 3;
+}
+
+// Finishes SSO. OIDC: state + code from the callback query. SAML: state
+// (RelayState) + code (the one-time ticket the ACS redirected with), or the
+// raw saml_response when the client received the POST itself.
+message CompleteSsoRequest {
+  string state = 1;
+  string code = 2;
+  string saml_response = 3;
+}
+message CompleteSsoResponse {
+  Principal me = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  google.protobuf.Timestamp access_expires_at = 4;
+  string workspace_id = 5;
+}
+
 service AuthService {
   rpc StartMagicLink(StartMagicLinkRequest) returns (StartMagicLinkResponse);
   rpc CompleteMagicLink(CompleteMagicLinkRequest) returns (CompleteMagicLinkResponse);
@@ -85,4 +207,11 @@ service AuthService {
   rpc Logout(LogoutRequest) returns (LogoutResponse);
   rpc MintGatewayToken(MintGatewayTokenRequest) returns (MintGatewayTokenResponse);
   rpc GetMe(GetMeRequest) returns (GetMeResponse);
+  rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);
+  rpc RevokeSession(RevokeSessionRequest) returns (RevokeSessionResponse);
+  rpc AdminRevokeUserSessions(AdminRevokeUserSessionsRequest) returns (AdminRevokeUserSessionsResponse);
+  rpc GetSsoConfig(GetSsoConfigRequest) returns (GetSsoConfigResponse);
+  rpc SetSsoConfig(SetSsoConfigRequest) returns (SetSsoConfigResponse);
+  rpc StartSso(StartSsoRequest) returns (StartSsoResponse);
+  rpc CompleteSso(CompleteSsoRequest) returns (CompleteSsoResponse);
 }
