@@ -1,0 +1,374 @@
+syntax = "proto3";
+
+package tank.admin.v1;
+
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "tank/channel/v1/channel.proto";
+import "tank/workspace/v1/workspace.proto";
+
+// AdminService is the workspace owner / admin console: members, invites,
+// channels, settings, audit log, exports, usage and SCIM tokens. Every RPC
+// requires an active owner or admin membership in workspace_id (bot tokens
+// additionally need the admin:* scope); a few are owner-only, noted below.
+
+// ---- Members ---------------------------------------------------------------
+
+message ListMembersRequest {
+  string workspace_id = 1;
+  string cursor = 2;
+  int32 limit = 3;
+  // Filters. ROLE_UNSPECIFIED = any role; deactivated unset = active and
+  // deactivated; search matches display name or email (case-insensitive).
+  tank.workspace.v1.Role role = 4;
+  optional bool deactivated = 5;
+  string search = 6;
+}
+message ListMembersResponse {
+  repeated tank.workspace.v1.Member members = 1; // email is included for admins
+  string next_cursor = 2;
+  int32 total = 3; // matches for the filters, ignoring the page
+}
+
+// Owner-only when the new or current role is OWNER. A workspace keeps at
+// least one active owner.
+message SetMemberRoleRequest {
+  string workspace_id = 1;
+  string user_id = 2;
+  tank.workspace.v1.Role role = 3;
+}
+message SetMemberRoleResponse {
+  tank.workspace.v1.Member member = 1;
+}
+
+// Deactivation keeps the member's history; sessions and tokens bound to the
+// workspace are revoked. Owners cannot be deactivated by admins.
+message DeactivateMemberRequest {
+  string workspace_id = 1;
+  string user_id = 2;
+}
+message DeactivateMemberResponse {
+  tank.workspace.v1.Member member = 1;
+}
+
+message ReactivateMemberRequest {
+  string workspace_id = 1;
+  string user_id = 2;
+}
+message ReactivateMemberResponse {
+  tank.workspace.v1.Member member = 1;
+}
+
+// Removes the membership row and every channel membership; messages stay.
+message RemoveMemberRequest {
+  string workspace_id = 1;
+  string user_id = 2;
+}
+message RemoveMemberResponse {}
+
+// ---- Invites ---------------------------------------------------------------
+
+message Invite {
+  string id = 1; // matches WorkspaceService.InviteMember.invite_id
+  string workspace_id = 2;
+  string email = 3;
+  tank.workspace.v1.Role role = 4;
+  string invited_by = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp expires_at = 7;
+  google.protobuf.Timestamp consumed_at = 8;
+  google.protobuf.Timestamp revoked_at = 9;
+}
+
+message ListInvitesRequest {
+  string workspace_id = 1;
+  string cursor = 2;
+  int32 limit = 3;
+  bool include_inactive = 4; // consumed, revoked and expired invites too
+}
+message ListInvitesResponse {
+  repeated Invite invites = 1;
+  string next_cursor = 2;
+}
+
+message RevokeInviteRequest {
+  string workspace_id = 1;
+  string invite_id = 2;
+}
+message RevokeInviteResponse {}
+
+// ---- Channels --------------------------------------------------------------
+
+message ChannelCounts {
+  int32 public = 1;
+  int32 private = 2;
+  int32 archived = 3; // public + private channels with archived_at set
+  int32 dm = 4;       // dm + mpdm
+}
+
+message ListChannelsAdminRequest {
+  string workspace_id = 1;
+  string cursor = 2;
+  int32 limit = 3;
+  // Filters. CHANNEL_TYPE_UNSPECIFIED = public and private; DMs are only
+  // listed when asked for explicitly.
+  tank.channel.v1.ChannelType type = 4;
+  bool include_archived = 5;
+  string search = 6; // name substring
+}
+message ListChannelsAdminResponse {
+  repeated tank.channel.v1.Channel channels = 1; // joined reflects the caller
+  string next_cursor = 2;
+  ChannelCounts counts = 3;
+}
+
+// Archives (or unarchives) any public or private channel, member or not.
+message AdminArchiveChannelRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  bool archived = 3; // false = unarchive
+}
+message AdminArchiveChannelResponse {
+  tank.channel.v1.Channel channel = 1;
+}
+
+// Adds and removes members of a public or private channel without being a
+// member. Each change emits channel.membership.changed with the admin as actor.
+message AdminSetChannelMembersRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  repeated string add_user_ids = 3;
+  repeated string remove_user_ids = 4;
+}
+message AdminSetChannelMembersResponse {
+  tank.channel.v1.Channel channel = 1;
+  int32 added = 2;
+  int32 removed = 3;
+}
+
+// ---- Settings --------------------------------------------------------------
+
+// Who may perform an action in the workspace.
+enum Permission {
+  PERMISSION_UNSPECIFIED = 0;
+  PERMISSION_EVERYONE = 1; // every active member including guests
+  PERMISSION_MEMBERS = 2;  // members, admins and owners (not guests)
+  PERMISSION_ADMINS = 3;   // admins and owners
+  PERMISSION_OWNERS = 4;
+}
+
+// Days to keep messages (and the files shared through them) per channel
+// type; 0 = keep forever. Enforced by worker -role retention unless the
+// workspace is under legal hold.
+message RetentionPolicy {
+  int32 public_days = 1;
+  int32 private_days = 2;
+  int32 dm_days = 3;
+  int32 mpdm_days = 4;
+}
+
+message WorkspaceSettings {
+  string workspace_id = 1;
+  string name = 2;
+  string icon_file_id = 3; // an image upload; empty = no icon
+  repeated string default_channel_ids = 4; // new members are added to these (plus #general)
+  Permission who_can_create_channels = 5;
+  Permission who_can_invite = 6;
+  RetentionPolicy retention = 7;
+  bool allow_guests = 8;
+  // Members whose email domain matches the SSO domain claim must sign in
+  // through SSO; magic links for that domain are refused.
+  bool require_sso = 9;
+  // Suspends retention for the whole workspace (owner-only to change).
+  bool legal_hold = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message GetWorkspaceSettingsRequest {
+  string workspace_id = 1;
+}
+message GetWorkspaceSettingsResponse {
+  WorkspaceSettings settings = 1;
+}
+
+// update_mask lists the settings fields to apply (name, icon_file_id,
+// default_channel_ids, who_can_create_channels, who_can_invite, retention,
+// allow_guests, require_sso, legal_hold); empty = every field.
+message UpdateWorkspaceSettingsRequest {
+  string workspace_id = 1;
+  WorkspaceSettings settings = 2;
+  google.protobuf.FieldMask update_mask = 3;
+}
+message UpdateWorkspaceSettingsResponse {
+  WorkspaceSettings settings = 1;
+}
+
+// ---- Audit log -------------------------------------------------------------
+
+// One row per mutating RPC on Admin/Auth/Channel/Workspace, per admin
+// message delete and per SCIM change. action is "<service>.<rpc_snake_case>",
+// e.g. admin.set_member_role, scim.user_deactivated.
+message AuditEntry {
+  string id = 1;
+  string workspace_id = 2;
+  string actor_id = 3;   // user id; empty for system actions
+  string actor_kind = 4; // user | bot | agent | scim | system
+  string action = 5;
+  string target_type = 6; // member | channel | invite | workspace | message | session | sso | scim_token | export | user_group
+  string target_id = 7;
+  string metadata_json = 8; // small JSON object with the request's non-secret fields
+  string ip = 9;
+  string user_agent = 10;
+  google.protobuf.Timestamp created_at = 11;
+}
+
+message ListAuditLogRequest {
+  string workspace_id = 1;
+  string cursor = 2;
+  int32 limit = 3;
+  string actor_id = 4; // filter
+  string action = 5;   // exact action or a "prefix." (e.g. "admin.")
+  google.protobuf.Timestamp since = 6;
+  google.protobuf.Timestamp until = 7;
+}
+message ListAuditLogResponse {
+  repeated AuditEntry entries = 1; // newest first
+  string next_cursor = 2;
+}
+
+// ---- Export ----------------------------------------------------------------
+
+enum ExportState {
+  EXPORT_STATE_UNSPECIFIED = 0;
+  EXPORT_STATE_PENDING = 1;
+  EXPORT_STATE_RUNNING = 2;
+  EXPORT_STATE_READY = 3;
+  EXPORT_STATE_FAILED = 4;
+  EXPORT_STATE_EXPIRED = 5;
+}
+
+// A zip built by worker -role export: workspace.json, members.json,
+// channels/<id>.json (messages, oldest first) and files/ when include_files.
+message ExportJob {
+  string id = 1;
+  string workspace_id = 2;
+  string requested_by = 3;
+  bool include_files = 4;
+  google.protobuf.Timestamp since = 5; // unset = from the beginning
+  google.protobuf.Timestamp until = 6; // unset = now
+  ExportState state = 7;
+  int64 size_bytes = 8;
+  string error = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp completed_at = 11;
+  google.protobuf.Timestamp expires_at = 12; // the object is deleted after this
+}
+
+message RequestExportRequest {
+  string workspace_id = 1;
+  bool include_files = 2;
+  google.protobuf.Timestamp since = 3;
+  google.protobuf.Timestamp until = 4;
+}
+message RequestExportResponse {
+  ExportJob job = 1;
+}
+
+message ListExportsRequest {
+  string workspace_id = 1;
+  string cursor = 2;
+  int32 limit = 3;
+}
+message ListExportsResponse {
+  repeated ExportJob jobs = 1; // newest first
+  string next_cursor = 2;
+}
+
+message GetExportDownloadUrlRequest {
+  string workspace_id = 1;
+  string export_id = 2;
+}
+message GetExportDownloadUrlResponse {
+  string url = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+// ---- Usage -----------------------------------------------------------------
+
+message GetUsageRequest {
+  string workspace_id = 1;
+}
+message GetUsageResponse {
+  int32 members = 1;         // active, humans (owner/admin/member)
+  int32 guests = 2;          // active guests
+  int32 deactivated = 3;
+  int32 bots = 4;
+  int32 channels = 5;        // public + private, not archived
+  int64 messages_30d = 6;
+  int64 files_count = 7;
+  int64 files_bytes = 8;
+  int64 agent_runs_30d = 9;
+  double cost_usd_30d = 10;  // agent run cost + agent.usage_ledger when present
+  google.protobuf.Timestamp computed_at = 11;
+}
+
+// ---- SCIM ------------------------------------------------------------------
+
+// A bearer for the SCIM 2.0 endpoint (/scim/v2/Users, /scim/v2/Groups).
+message ScimToken {
+  string id = 1;
+  string workspace_id = 2;
+  string name = 3;
+  string created_by = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp expires_at = 6;
+  google.protobuf.Timestamp revoked_at = 7;
+  google.protobuf.Timestamp last_used_at = 8;
+}
+
+message CreateScimTokenRequest {
+  string workspace_id = 1;
+  string name = 2;
+  int32 ttl_days = 3; // 0 = never expires
+}
+message CreateScimTokenResponse {
+  ScimToken token = 1;
+  string secret = 2;   // shown once
+  string base_url = 3; // the SCIM base URL to configure at the IdP
+}
+
+message ListScimTokensRequest {
+  string workspace_id = 1;
+}
+message ListScimTokensResponse {
+  repeated ScimToken tokens = 1;
+}
+
+message RevokeScimTokenRequest {
+  string workspace_id = 1;
+  string token_id = 2;
+}
+message RevokeScimTokenResponse {}
+
+service AdminService {
+  rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
+  rpc SetMemberRole(SetMemberRoleRequest) returns (SetMemberRoleResponse);
+  rpc DeactivateMember(DeactivateMemberRequest) returns (DeactivateMemberResponse);
+  rpc ReactivateMember(ReactivateMemberRequest) returns (ReactivateMemberResponse);
+  rpc RemoveMember(RemoveMemberRequest) returns (RemoveMemberResponse);
+  rpc ListInvites(ListInvitesRequest) returns (ListInvitesResponse);
+  rpc RevokeInvite(RevokeInviteRequest) returns (RevokeInviteResponse);
+  rpc ListChannelsAdmin(ListChannelsAdminRequest) returns (ListChannelsAdminResponse);
+  rpc AdminArchiveChannel(AdminArchiveChannelRequest) returns (AdminArchiveChannelResponse);
+  rpc AdminSetChannelMembers(AdminSetChannelMembersRequest) returns (AdminSetChannelMembersResponse);
+  rpc GetWorkspaceSettings(GetWorkspaceSettingsRequest) returns (GetWorkspaceSettingsResponse);
+  rpc UpdateWorkspaceSettings(UpdateWorkspaceSettingsRequest) returns (UpdateWorkspaceSettingsResponse);
+  rpc ListAuditLog(ListAuditLogRequest) returns (ListAuditLogResponse);
+  rpc RequestExport(RequestExportRequest) returns (RequestExportResponse);
+  rpc ListExports(ListExportsRequest) returns (ListExportsResponse);
+  rpc GetExportDownloadUrl(GetExportDownloadUrlRequest) returns (GetExportDownloadUrlResponse);
+  rpc GetUsage(GetUsageRequest) returns (GetUsageResponse);
+  rpc CreateScimToken(CreateScimTokenRequest) returns (CreateScimTokenResponse);
+  rpc ListScimTokens(ListScimTokensRequest) returns (ListScimTokensResponse);
+  rpc RevokeScimToken(RevokeScimTokenRequest) returns (RevokeScimTokenResponse);
+}

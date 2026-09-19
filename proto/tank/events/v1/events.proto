@@ -4,6 +4,7 @@ package tank.events.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
+import "tank/admin/v1/admin.proto";
 import "tank/agent/v1/agent.proto";
 import "tank/blocks/v1/blocks.proto";
 import "tank/channel/v1/channel.proto";
@@ -177,4 +178,33 @@ message HuddleEnded {
 // (un)muted; huddle.participants is the full current list (sidebar indicator).
 message HuddleParticipantsChanged {
   tank.huddle.v1.Huddle huddle = 1;
+}
+// member.role_changed on evt.{ws}.ws and on the member's user subject.
+message MemberRoleChanged {
+  tank.workspace.v1.Member member = 1;
+  tank.workspace.v1.Role previous_role = 2;
+  string actor_id = 3;
+}
+// member.deactivated on evt.{ws}.ws (also for reactivation and removal;
+// clients drop removed members and grey out deactivated ones).
+message MemberDeactivated {
+  tank.workspace.v1.Member member = 1;
+  bool reactivated = 2;
+  bool removed = 3;
+  string actor_id = 4;
+}
+// workspace.settings_updated on evt.{ws}.ws.
+message WorkspaceSettingsUpdated {
+  tank.admin.v1.WorkspaceSettings settings = 1;
+  string actor_id = 2;
+}
+// audit.logged on evt.{ws}.audit.{entry}: internal (SIEM forwarders, the
+// knowledge indexer); the gateway never fans it out to clients.
+message AuditLogged {
+  tank.admin.v1.AuditEntry entry = 1;
+}
+// export.ready on the requester's user subject: the zip can be downloaded
+// with AdminService.GetExportDownloadUrl (also sent when the job failed).
+message ExportReady {
+  tank.admin.v1.ExportJob job = 1;
 }
