@@ -11,3 +11,4 @@ export * as files from "./tank/files/v1/files_pb.js";
 export * as events from "./tank/events/v1/events_pb.js";
 export * as realtime from "./tank/realtime/v1/realtime_pb.js";
 export * as agent from "./tank/agent/v1/agent_pb.js";
+export * as agentctl from "./tank/agentctl/v1/agentctl_pb.js";
