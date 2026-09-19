@@ -27,6 +27,8 @@ message SetStatusRequest {
   string custom_status_text = 2;
   string custom_status_emoji = 3;
   google.protobuf.Timestamp expires_at = 4;
+  // When set, only this workspace's presence is written; otherwise every workspace the caller belongs to.
+  string workspace_id = 5;
 }
 message SetStatusResponse {
   Presence presence = 1;
@@ -34,6 +36,8 @@ message SetStatusResponse {
 
 message GetPresenceRequest {
   repeated string user_ids = 1; // max 500
+  // When set, presence is read from this workspace; otherwise from any workspace the caller shares with each user.
+  string workspace_id = 2;
 }
 message GetPresenceResponse {
   repeated Presence presences = 1;

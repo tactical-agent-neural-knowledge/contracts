@@ -46,6 +46,8 @@ const (
 	ChatServiceListMessagesProcedure = "/tank.message.v1.ChatService/ListMessages"
 	// ChatServiceGetThreadProcedure is the fully-qualified name of the ChatService's GetThread RPC.
 	ChatServiceGetThreadProcedure = "/tank.message.v1.ChatService/GetThread"
+	// ChatServiceGetMessageProcedure is the fully-qualified name of the ChatService's GetMessage RPC.
+	ChatServiceGetMessageProcedure = "/tank.message.v1.ChatService/GetMessage"
 	// ChatServiceMarkReadProcedure is the fully-qualified name of the ChatService's MarkRead RPC.
 	ChatServiceMarkReadProcedure = "/tank.message.v1.ChatService/MarkRead"
 	// ChatServiceAddReactionProcedure is the fully-qualified name of the ChatService's AddReaction RPC.
@@ -68,6 +70,7 @@ type ChatServiceClient interface {
 	DeleteMessage(context.Context, *connect.Request[v1.DeleteMessageRequest]) (*connect.Response[v1.DeleteMessageResponse], error)
 	ListMessages(context.Context, *connect.Request[v1.ListMessagesRequest]) (*connect.Response[v1.ListMessagesResponse], error)
 	GetThread(context.Context, *connect.Request[v1.GetThreadRequest]) (*connect.Response[v1.GetThreadResponse], error)
+	GetMessage(context.Context, *connect.Request[v1.GetMessageRequest]) (*connect.Response[v1.GetMessageResponse], error)
 	MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error)
 	AddReaction(context.Context, *connect.Request[v1.AddReactionRequest]) (*connect.Response[v1.AddReactionResponse], error)
 	RemoveReaction(context.Context, *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error)
@@ -116,6 +119,12 @@ func NewChatServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(chatServiceMethods.ByName("GetThread")),
 			connect.WithClientOptions(opts...),
 		),
+		getMessage: connect.NewClient[v1.GetMessageRequest, v1.GetMessageResponse](
+			httpClient,
+			baseURL+ChatServiceGetMessageProcedure,
+			connect.WithSchema(chatServiceMethods.ByName("GetMessage")),
+			connect.WithClientOptions(opts...),
+		),
 		markRead: connect.NewClient[v1.MarkReadRequest, v1.MarkReadResponse](
 			httpClient,
 			baseURL+ChatServiceMarkReadProcedure,
@@ -156,6 +165,7 @@ type chatServiceClient struct {
 	deleteMessage   *connect.Client[v1.DeleteMessageRequest, v1.DeleteMessageResponse]
 	listMessages    *connect.Client[v1.ListMessagesRequest, v1.ListMessagesResponse]
 	getThread       *connect.Client[v1.GetThreadRequest, v1.GetThreadResponse]
+	getMessage      *connect.Client[v1.GetMessageRequest, v1.GetMessageResponse]
 	markRead        *connect.Client[v1.MarkReadRequest, v1.MarkReadResponse]
 	addReaction     *connect.Client[v1.AddReactionRequest, v1.AddReactionResponse]
 	removeReaction  *connect.Client[v1.RemoveReactionRequest, v1.RemoveReactionResponse]
@@ -186,6 +196,11 @@ func (c *chatServiceClient) ListMessages(ctx context.Context, req *connect.Reque
 // GetThread calls tank.message.v1.ChatService.GetThread.
 func (c *chatServiceClient) GetThread(ctx context.Context, req *connect.Request[v1.GetThreadRequest]) (*connect.Response[v1.GetThreadResponse], error) {
 	return c.getThread.CallUnary(ctx, req)
+}
+
+// GetMessage calls tank.message.v1.ChatService.GetMessage.
+func (c *chatServiceClient) GetMessage(ctx context.Context, req *connect.Request[v1.GetMessageRequest]) (*connect.Response[v1.GetMessageResponse], error) {
+	return c.getMessage.CallUnary(ctx, req)
 }
 
 // MarkRead calls tank.message.v1.ChatService.MarkRead.
@@ -220,6 +235,7 @@ type ChatServiceHandler interface {
 	DeleteMessage(context.Context, *connect.Request[v1.DeleteMessageRequest]) (*connect.Response[v1.DeleteMessageResponse], error)
 	ListMessages(context.Context, *connect.Request[v1.ListMessagesRequest]) (*connect.Response[v1.ListMessagesResponse], error)
 	GetThread(context.Context, *connect.Request[v1.GetThreadRequest]) (*connect.Response[v1.GetThreadResponse], error)
+	GetMessage(context.Context, *connect.Request[v1.GetMessageRequest]) (*connect.Response[v1.GetMessageResponse], error)
 	MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error)
 	AddReaction(context.Context, *connect.Request[v1.AddReactionRequest]) (*connect.Response[v1.AddReactionResponse], error)
 	RemoveReaction(context.Context, *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error)
@@ -264,6 +280,12 @@ func NewChatServiceHandler(svc ChatServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(chatServiceMethods.ByName("GetThread")),
 		connect.WithHandlerOptions(opts...),
 	)
+	chatServiceGetMessageHandler := connect.NewUnaryHandler(
+		ChatServiceGetMessageProcedure,
+		svc.GetMessage,
+		connect.WithSchema(chatServiceMethods.ByName("GetMessage")),
+		connect.WithHandlerOptions(opts...),
+	)
 	chatServiceMarkReadHandler := connect.NewUnaryHandler(
 		ChatServiceMarkReadProcedure,
 		svc.MarkRead,
@@ -306,6 +328,8 @@ func NewChatServiceHandler(svc ChatServiceHandler, opts ...connect.HandlerOption
 			chatServiceListMessagesHandler.ServeHTTP(w, r)
 		case ChatServiceGetThreadProcedure:
 			chatServiceGetThreadHandler.ServeHTTP(w, r)
+		case ChatServiceGetMessageProcedure:
+			chatServiceGetMessageHandler.ServeHTTP(w, r)
 		case ChatServiceMarkReadProcedure:
 			chatServiceMarkReadHandler.ServeHTTP(w, r)
 		case ChatServiceAddReactionProcedure:
@@ -343,6 +367,10 @@ func (UnimplementedChatServiceHandler) ListMessages(context.Context, *connect.Re
 
 func (UnimplementedChatServiceHandler) GetThread(context.Context, *connect.Request[v1.GetThreadRequest]) (*connect.Response[v1.GetThreadResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.GetThread is not implemented"))
+}
+
+func (UnimplementedChatServiceHandler) GetMessage(context.Context, *connect.Request[v1.GetMessageRequest]) (*connect.Response[v1.GetMessageResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.GetMessage is not implemented"))
 }
 
 func (UnimplementedChatServiceHandler) MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error) {

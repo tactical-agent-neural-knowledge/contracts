@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package tank.notification.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// A notification is written by the core's notify worker from bus events and
+// read back here. kind: mention | dm | thread_reply | reaction |
+// channel_invite | agent_needs_input.
+message Notification {
+  string id = 1;
+  string workspace_id = 2;
+  string user_id = 3;
+  string kind = 4;
+  string message_id = 5;
+  string channel_id = 6;
+  string actor_id = 7;
+  google.protobuf.Timestamp read_at = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+message ListNotificationsRequest {
+  string workspace_id = 1;
+  bool unread_only = 2;
+  string cursor = 3; // opaque; newest first
+  int32 limit = 4;
+}
+message ListNotificationsResponse {
+  repeated Notification notifications = 1;
+  string next_cursor = 2;
+  int32 unread_count = 3; // total unread in the workspace, independent of paging
+}
+
+message MarkNotificationsReadRequest {
+  string workspace_id = 1;
+  repeated string notification_ids = 2; // empty = every unread notification in the workspace
+}
+message MarkNotificationsReadResponse {}
+
+service NotificationService {
+  rpc ListNotifications(ListNotificationsRequest) returns (ListNotificationsResponse);
+  rpc MarkNotificationsRead(MarkNotificationsReadRequest) returns (MarkNotificationsReadResponse);
+}

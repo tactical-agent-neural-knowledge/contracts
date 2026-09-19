@@ -45,6 +45,8 @@ const (
 	AgentServiceGetRunProcedure = "/tank.agent.v1.AgentService/GetRun"
 	// AgentServiceListRunsProcedure is the fully-qualified name of the AgentService's ListRuns RPC.
 	AgentServiceListRunsProcedure = "/tank.agent.v1.AgentService/ListRuns"
+	// AgentServiceListAgentsProcedure is the fully-qualified name of the AgentService's ListAgents RPC.
+	AgentServiceListAgentsProcedure = "/tank.agent.v1.AgentService/ListAgents"
 )
 
 // AgentServiceClient is a client for the tank.agent.v1.AgentService service.
@@ -55,6 +57,7 @@ type AgentServiceClient interface {
 	SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
+	ListAgents(context.Context, *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error)
 }
 
 // NewAgentServiceClient constructs a client for the tank.agent.v1.AgentService service. By default,
@@ -104,17 +107,24 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("ListRuns")),
 			connect.WithClientOptions(opts...),
 		),
+		listAgents: connect.NewClient[v1.ListAgentsRequest, v1.ListAgentsResponse](
+			httpClient,
+			baseURL+AgentServiceListAgentsProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("ListAgents")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // agentServiceClient implements AgentServiceClient.
 type agentServiceClient struct {
-	startRun  *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
-	stopRun   *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
-	heartbeat *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
-	setStatus *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
-	getRun    *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
-	listRuns  *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
+	startRun   *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	stopRun    *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
+	heartbeat  *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
+	setStatus  *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
+	getRun     *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	listRuns   *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
+	listAgents *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
 }
 
 // StartRun calls tank.agent.v1.AgentService.StartRun.
@@ -147,6 +157,11 @@ func (c *agentServiceClient) ListRuns(ctx context.Context, req *connect.Request[
 	return c.listRuns.CallUnary(ctx, req)
 }
 
+// ListAgents calls tank.agent.v1.AgentService.ListAgents.
+func (c *agentServiceClient) ListAgents(ctx context.Context, req *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error) {
+	return c.listAgents.CallUnary(ctx, req)
+}
+
 // AgentServiceHandler is an implementation of the tank.agent.v1.AgentService service.
 type AgentServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
@@ -155,6 +170,7 @@ type AgentServiceHandler interface {
 	SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
+	ListAgents(context.Context, *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error)
 }
 
 // NewAgentServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -200,6 +216,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("ListRuns")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceListAgentsHandler := connect.NewUnaryHandler(
+		AgentServiceListAgentsProcedure,
+		svc.ListAgents,
+		connect.WithSchema(agentServiceMethods.ByName("ListAgents")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agent.v1.AgentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AgentServiceStartRunProcedure:
@@ -214,6 +236,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceGetRunHandler.ServeHTTP(w, r)
 		case AgentServiceListRunsProcedure:
 			agentServiceListRunsHandler.ServeHTTP(w, r)
+		case AgentServiceListAgentsProcedure:
+			agentServiceListAgentsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -245,4 +269,8 @@ func (UnimplementedAgentServiceHandler) GetRun(context.Context, *connect.Request
 
 func (UnimplementedAgentServiceHandler) ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.ListRuns is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) ListAgents(context.Context, *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.ListAgents is not implemented"))
 }
