@@ -85,20 +85,22 @@ class GetBootstrapRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
 
 class GetBootstrapResponse(_message.Message):
-    __slots__ = ("workspace", "me", "channels", "read_states", "members", "custom_emoji_hash")
+    __slots__ = ("workspace", "me", "channels", "read_states", "members", "custom_emoji_hash", "unread_notification_count")
     WORKSPACE_FIELD_NUMBER: _ClassVar[int]
     ME_FIELD_NUMBER: _ClassVar[int]
     CHANNELS_FIELD_NUMBER: _ClassVar[int]
     READ_STATES_FIELD_NUMBER: _ClassVar[int]
     MEMBERS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_EMOJI_HASH_FIELD_NUMBER: _ClassVar[int]
+    UNREAD_NOTIFICATION_COUNT_FIELD_NUMBER: _ClassVar[int]
     workspace: Workspace
     me: Member
     channels: _containers.RepeatedCompositeFieldContainer[_channel_pb2.Channel]
     read_states: _containers.RepeatedCompositeFieldContainer[_channel_pb2.ChannelReadState]
     members: _containers.RepeatedCompositeFieldContainer[Member]
     custom_emoji_hash: str
-    def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ..., me: _Optional[_Union[Member, _Mapping]] = ..., channels: _Optional[_Iterable[_Union[_channel_pb2.Channel, _Mapping]]] = ..., read_states: _Optional[_Iterable[_Union[_channel_pb2.ChannelReadState, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., custom_emoji_hash: _Optional[str] = ...) -> None: ...
+    unread_notification_count: int
+    def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ..., me: _Optional[_Union[Member, _Mapping]] = ..., channels: _Optional[_Iterable[_Union[_channel_pb2.Channel, _Mapping]]] = ..., read_states: _Optional[_Iterable[_Union[_channel_pb2.ChannelReadState, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., custom_emoji_hash: _Optional[str] = ..., unread_notification_count: _Optional[int] = ...) -> None: ...
 
 class ListMembersRequest(_message.Message):
     __slots__ = ("workspace_id", "cursor", "limit")

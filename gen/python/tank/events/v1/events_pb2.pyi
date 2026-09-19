@@ -1,11 +1,14 @@
 from google.protobuf import any_pb2 as _any_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from tank.agent.v1 import agent_pb2 as _agent_pb2
 from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
+from tank.files.v1 import files_pb2 as _files_pb2
 from tank.message.v1 import message_pb2 as _message_pb2
 from tank.presence.v1 import presence_pb2 as _presence_pb2
+from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -90,14 +93,16 @@ class ChannelUpdated(_message.Message):
     def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
 
 class ChannelMembershipChanged(_message.Message):
-    __slots__ = ("channel_id", "user_id", "joined")
+    __slots__ = ("channel_id", "user_id", "joined", "actor_id")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     JOINED_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
     user_id: str
     joined: bool
-    def __init__(self, channel_id: _Optional[str] = ..., user_id: _Optional[str] = ..., joined: bool = ...) -> None: ...
+    actor_id: str
+    def __init__(self, channel_id: _Optional[str] = ..., user_id: _Optional[str] = ..., joined: bool = ..., actor_id: _Optional[str] = ...) -> None: ...
 
 class CardAction(_message.Message):
     __slots__ = ("action",)
@@ -146,6 +151,32 @@ class AgentStatus(_message.Message):
     run_id: str
     status: str
     def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., run_id: _Optional[str] = ..., status: _Optional[str] = ...) -> None: ...
+
+class FileReady(_message.Message):
+    __slots__ = ("file",)
+    FILE_FIELD_NUMBER: _ClassVar[int]
+    file: _files_pb2.File
+    def __init__(self, file: _Optional[_Union[_files_pb2.File, _Mapping]] = ...) -> None: ...
+
+class MessageEphemeral(_message.Message):
+    __slots__ = ("message", "user_id")
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    message: _message_pb2.Message
+    user_id: str
+    def __init__(self, message: _Optional[_Union[_message_pb2.Message, _Mapping]] = ..., user_id: _Optional[str] = ...) -> None: ...
+
+class NotificationsRead(_message.Message):
+    __slots__ = ("notification_ids",)
+    NOTIFICATION_IDS_FIELD_NUMBER: _ClassVar[int]
+    notification_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, notification_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class AgentRunUpdated(_message.Message):
+    __slots__ = ("run",)
+    RUN_FIELD_NUMBER: _ClassVar[int]
+    run: _agent_pb2.Run
+    def __init__(self, run: _Optional[_Union[_agent_pb2.Run, _Mapping]] = ...) -> None: ...
 
 class NotificationCreated(_message.Message):
     __slots__ = ("notification_id", "kind", "message_id", "channel_id", "actor_id")

@@ -56,6 +56,7 @@ message GetBootstrapResponse {
   repeated tank.channel.v1.ChannelReadState read_states = 4;
   repeated Member members = 5; // capped; ListMembers pages the rest
   string custom_emoji_hash = 6;
+  int32 unread_notification_count = 7;
 }
 
 message ListMembersRequest {

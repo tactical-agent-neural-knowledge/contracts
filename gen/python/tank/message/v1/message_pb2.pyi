@@ -194,6 +194,18 @@ class GetThreadResponse(_message.Message):
     has_more: bool
     def __init__(self, root: _Optional[_Union[Message, _Mapping]] = ..., replies: _Optional[_Iterable[_Union[Message, _Mapping]]] = ..., has_more: bool = ...) -> None: ...
 
+class GetMessageRequest(_message.Message):
+    __slots__ = ("message_id",)
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    def __init__(self, message_id: _Optional[str] = ...) -> None: ...
+
+class GetMessageResponse(_message.Message):
+    __slots__ = ("message",)
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    message: Message
+    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ...) -> None: ...
+
 class MarkReadRequest(_message.Message):
     __slots__ = ("channel_id", "seq", "thread_root_id", "thread_seq")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]

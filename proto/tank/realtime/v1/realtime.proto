@@ -72,6 +72,7 @@ message Resumed {
 
 message ResyncRequired {
   string reason = 1;
+  string workspace_id = 2; // the workspace whose cursor could not be replayed
 }
 
 message Event {

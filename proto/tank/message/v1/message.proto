@@ -109,6 +109,13 @@ message GetThreadResponse {
   bool has_more = 3;
 }
 
+message GetMessageRequest {
+  string message_id = 1;
+}
+message GetMessageResponse {
+  Message message = 1;
+}
+
 message MarkReadRequest {
   string channel_id = 1;
   int64 seq = 2;
@@ -146,6 +153,7 @@ service ChatService {
   rpc DeleteMessage(DeleteMessageRequest) returns (DeleteMessageResponse);
   rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
   rpc GetThread(GetThreadRequest) returns (GetThreadResponse);
+  rpc GetMessage(GetMessageRequest) returns (GetMessageResponse);
   rpc MarkRead(MarkReadRequest) returns (MarkReadResponse);
   rpc AddReaction(AddReactionRequest) returns (AddReactionResponse);
   rpc RemoveReaction(RemoveReactionRequest) returns (RemoveReactionResponse);

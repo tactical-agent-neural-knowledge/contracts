@@ -37,16 +37,18 @@ class Presence(_message.Message):
     def __init__(self, user_id: _Optional[str] = ..., status: _Optional[_Union[PresenceStatus, str]] = ..., last_seen: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., custom_status_text: _Optional[str] = ..., custom_status_emoji: _Optional[str] = ..., status_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class SetStatusRequest(_message.Message):
-    __slots__ = ("status", "custom_status_text", "custom_status_emoji", "expires_at")
+    __slots__ = ("status", "custom_status_text", "custom_status_emoji", "expires_at", "workspace_id")
     STATUS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_STATUS_TEXT_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_STATUS_EMOJI_FIELD_NUMBER: _ClassVar[int]
     EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     status: PresenceStatus
     custom_status_text: str
     custom_status_emoji: str
     expires_at: _timestamp_pb2.Timestamp
-    def __init__(self, status: _Optional[_Union[PresenceStatus, str]] = ..., custom_status_text: _Optional[str] = ..., custom_status_emoji: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    workspace_id: str
+    def __init__(self, status: _Optional[_Union[PresenceStatus, str]] = ..., custom_status_text: _Optional[str] = ..., custom_status_emoji: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., workspace_id: _Optional[str] = ...) -> None: ...
 
 class SetStatusResponse(_message.Message):
     __slots__ = ("presence",)
@@ -55,10 +57,12 @@ class SetStatusResponse(_message.Message):
     def __init__(self, presence: _Optional[_Union[Presence, _Mapping]] = ...) -> None: ...
 
 class GetPresenceRequest(_message.Message):
-    __slots__ = ("user_ids",)
+    __slots__ = ("user_ids", "workspace_id")
     USER_IDS_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     user_ids: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, user_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+    workspace_id: str
+    def __init__(self, user_ids: _Optional[_Iterable[str]] = ..., workspace_id: _Optional[str] = ...) -> None: ...
 
 class GetPresenceResponse(_message.Message):
     __slots__ = ("presences",)

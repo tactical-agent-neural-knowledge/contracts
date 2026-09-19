@@ -40,6 +40,8 @@ message Channel {
   TreadGoal goal = 12;
   // DM / MPDM participants.
   repeated string member_ids = 13;
+  // Whether the caller is a member (public channels are listed even when not joined).
+  bool joined = 14;
 }
 
 message ChannelReadState {

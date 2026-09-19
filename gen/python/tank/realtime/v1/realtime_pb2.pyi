@@ -127,10 +127,12 @@ class Resumed(_message.Message):
     def __init__(self, replayed: _Optional[int] = ...) -> None: ...
 
 class ResyncRequired(_message.Message):
-    __slots__ = ("reason",)
+    __slots__ = ("reason", "workspace_id")
     REASON_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     reason: str
-    def __init__(self, reason: _Optional[str] = ...) -> None: ...
+    workspace_id: str
+    def __init__(self, reason: _Optional[str] = ..., workspace_id: _Optional[str] = ...) -> None: ...
 
 class Event(_message.Message):
     __slots__ = ("cursor", "envelope")

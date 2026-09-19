@@ -4,7 +4,9 @@ package tank.events.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
+import "tank/agent/v1/agent.proto";
 import "tank/blocks/v1/blocks.proto";
+import "tank/files/v1/files.proto";
 import "tank/message/v1/message.proto";
 import "tank/presence/v1/presence.proto";
 
@@ -56,6 +58,7 @@ message ChannelMembershipChanged {
   string channel_id = 1;
   string user_id = 2;
   bool joined = 3;
+  string actor_id = 4; // who added or removed the member; empty when they acted on themselves
 }
 message CardAction {
   tank.blocks.v1.BlockAction action = 1;
@@ -80,6 +83,23 @@ message AgentStatus {
   string thread_root_id = 2;
   string run_id = 3;
   string status = 4; // "reading repo", "running tests", ...
+}
+// file.ready on evt.{ws}.user.{uploader}: the upload is verified and readable.
+message FileReady {
+  tank.files.v1.File file = 1;
+}
+// message.ephemeral on evt.{ws}.user.{uid}: never stored, shown only to user_id.
+message MessageEphemeral {
+  tank.message.v1.Message message = 1;
+  string user_id = 2;
+}
+// notifications.read on evt.{ws}.user.{uid}: cross-device badge sync.
+message NotificationsRead {
+  repeated string notification_ids = 1; // empty = every notification in the workspace
+}
+// agent.run.updated on evt.{ws}.thread.{root}: state, status message or cost changed.
+message AgentRunUpdated {
+  tank.agent.v1.Run run = 1;
 }
 message NotificationCreated {
   string notification_id = 1;
