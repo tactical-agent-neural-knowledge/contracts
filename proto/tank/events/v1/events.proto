@@ -6,9 +6,11 @@ import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
 import "tank/agent/v1/agent.proto";
 import "tank/blocks/v1/blocks.proto";
+import "tank/channel/v1/channel.proto";
 import "tank/files/v1/files.proto";
 import "tank/message/v1/message.proto";
 import "tank/presence/v1/presence.proto";
+import "tank/workspace/v1/workspace.proto";
 
 // Every durable event on the bus and every realtime frame payload is one of
 // these, wrapped in an Envelope. Subjects: evt.{ws}.ch.{channel},
@@ -53,6 +55,8 @@ message ReadStateUpdated {
 }
 message ChannelUpdated {
   string channel_id = 1;
+  // The channel after the change (name/topic/purpose/goal/archived_at).
+  tank.channel.v1.Channel channel = 2;
 }
 message ChannelMembershipChanged {
   string channel_id = 1;
@@ -107,4 +111,49 @@ message NotificationCreated {
   string message_id = 3;
   string channel_id = 4;
   string actor_id = 5;
+}
+// pin.changed on evt.{ws}.ch.{channel}.
+message PinChanged {
+  string message_id = 1;
+  string channel_id = 2;
+  string user_id = 3;
+  bool pinned = 4;
+}
+// emoji.changed on evt.{ws}.ws: the custom emoji set changed; hash matches
+// GetBootstrap.custom_emoji_hash after the change.
+message EmojiChanged {
+  tank.workspace.v1.CustomEmoji emoji = 1;
+  bool deleted = 2;
+  string hash = 3;
+}
+// preferences.updated on evt.{ws}.user.{uid}: cross-device sync.
+message PreferencesUpdated {
+  string user_id = 1;
+  tank.workspace.v1.Preferences preferences = 2;
+}
+// channel_preference.updated on evt.{ws}.user.{uid}.
+message ChannelPreferenceUpdated {
+  string user_id = 1;
+  tank.channel.v1.ChannelReadState read_state = 2;
+}
+// draft.updated on evt.{ws}.user.{uid}: cross-device draft sync.
+message DraftUpdated {
+  string user_id = 1;
+  tank.workspace.v1.Draft draft = 2;
+  bool deleted = 3;
+}
+// scheduled_message.sent on evt.{ws}.user.{uid}: the scheduler posted (or
+// failed to post) a scheduled message; message.created follows on the channel.
+message ScheduledMessageSent {
+  tank.workspace.v1.ScheduledMessage scheduled = 1;
+}
+// user_group.updated on evt.{ws}.ws.
+message UserGroupUpdated {
+  tank.workspace.v1.UserGroup group = 1;
+  bool deleted = 2;
+}
+// bookmark.changed on evt.{ws}.ch.{channel}.
+message BookmarkChanged {
+  tank.workspace.v1.ChannelBookmark bookmark = 1;
+  bool removed = 2;
 }

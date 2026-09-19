@@ -61,6 +61,20 @@ const (
 	// ChatServicePostBlockActionProcedure is the fully-qualified name of the ChatService's
 	// PostBlockAction RPC.
 	ChatServicePostBlockActionProcedure = "/tank.message.v1.ChatService/PostBlockAction"
+	// ChatServicePinMessageProcedure is the fully-qualified name of the ChatService's PinMessage RPC.
+	ChatServicePinMessageProcedure = "/tank.message.v1.ChatService/PinMessage"
+	// ChatServiceUnpinMessageProcedure is the fully-qualified name of the ChatService's UnpinMessage
+	// RPC.
+	ChatServiceUnpinMessageProcedure = "/tank.message.v1.ChatService/UnpinMessage"
+	// ChatServiceListPinsProcedure is the fully-qualified name of the ChatService's ListPins RPC.
+	ChatServiceListPinsProcedure = "/tank.message.v1.ChatService/ListPins"
+	// ChatServiceSaveMessageProcedure is the fully-qualified name of the ChatService's SaveMessage RPC.
+	ChatServiceSaveMessageProcedure = "/tank.message.v1.ChatService/SaveMessage"
+	// ChatServiceUnsaveMessageProcedure is the fully-qualified name of the ChatService's UnsaveMessage
+	// RPC.
+	ChatServiceUnsaveMessageProcedure = "/tank.message.v1.ChatService/UnsaveMessage"
+	// ChatServiceListSavedProcedure is the fully-qualified name of the ChatService's ListSaved RPC.
+	ChatServiceListSavedProcedure = "/tank.message.v1.ChatService/ListSaved"
 )
 
 // ChatServiceClient is a client for the tank.message.v1.ChatService service.
@@ -76,6 +90,12 @@ type ChatServiceClient interface {
 	RemoveReaction(context.Context, *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error)
 	SubscribeThread(context.Context, *connect.Request[v1.SubscribeThreadRequest]) (*connect.Response[v1.SubscribeThreadResponse], error)
 	PostBlockAction(context.Context, *connect.Request[v1.PostBlockActionRequest]) (*connect.Response[v1.PostBlockActionResponse], error)
+	PinMessage(context.Context, *connect.Request[v1.PinMessageRequest]) (*connect.Response[v1.PinMessageResponse], error)
+	UnpinMessage(context.Context, *connect.Request[v1.UnpinMessageRequest]) (*connect.Response[v1.UnpinMessageResponse], error)
+	ListPins(context.Context, *connect.Request[v1.ListPinsRequest]) (*connect.Response[v1.ListPinsResponse], error)
+	SaveMessage(context.Context, *connect.Request[v1.SaveMessageRequest]) (*connect.Response[v1.SaveMessageResponse], error)
+	UnsaveMessage(context.Context, *connect.Request[v1.UnsaveMessageRequest]) (*connect.Response[v1.UnsaveMessageResponse], error)
+	ListSaved(context.Context, *connect.Request[v1.ListSavedRequest]) (*connect.Response[v1.ListSavedResponse], error)
 }
 
 // NewChatServiceClient constructs a client for the tank.message.v1.ChatService service. By default,
@@ -155,6 +175,42 @@ func NewChatServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(chatServiceMethods.ByName("PostBlockAction")),
 			connect.WithClientOptions(opts...),
 		),
+		pinMessage: connect.NewClient[v1.PinMessageRequest, v1.PinMessageResponse](
+			httpClient,
+			baseURL+ChatServicePinMessageProcedure,
+			connect.WithSchema(chatServiceMethods.ByName("PinMessage")),
+			connect.WithClientOptions(opts...),
+		),
+		unpinMessage: connect.NewClient[v1.UnpinMessageRequest, v1.UnpinMessageResponse](
+			httpClient,
+			baseURL+ChatServiceUnpinMessageProcedure,
+			connect.WithSchema(chatServiceMethods.ByName("UnpinMessage")),
+			connect.WithClientOptions(opts...),
+		),
+		listPins: connect.NewClient[v1.ListPinsRequest, v1.ListPinsResponse](
+			httpClient,
+			baseURL+ChatServiceListPinsProcedure,
+			connect.WithSchema(chatServiceMethods.ByName("ListPins")),
+			connect.WithClientOptions(opts...),
+		),
+		saveMessage: connect.NewClient[v1.SaveMessageRequest, v1.SaveMessageResponse](
+			httpClient,
+			baseURL+ChatServiceSaveMessageProcedure,
+			connect.WithSchema(chatServiceMethods.ByName("SaveMessage")),
+			connect.WithClientOptions(opts...),
+		),
+		unsaveMessage: connect.NewClient[v1.UnsaveMessageRequest, v1.UnsaveMessageResponse](
+			httpClient,
+			baseURL+ChatServiceUnsaveMessageProcedure,
+			connect.WithSchema(chatServiceMethods.ByName("UnsaveMessage")),
+			connect.WithClientOptions(opts...),
+		),
+		listSaved: connect.NewClient[v1.ListSavedRequest, v1.ListSavedResponse](
+			httpClient,
+			baseURL+ChatServiceListSavedProcedure,
+			connect.WithSchema(chatServiceMethods.ByName("ListSaved")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -171,6 +227,12 @@ type chatServiceClient struct {
 	removeReaction  *connect.Client[v1.RemoveReactionRequest, v1.RemoveReactionResponse]
 	subscribeThread *connect.Client[v1.SubscribeThreadRequest, v1.SubscribeThreadResponse]
 	postBlockAction *connect.Client[v1.PostBlockActionRequest, v1.PostBlockActionResponse]
+	pinMessage      *connect.Client[v1.PinMessageRequest, v1.PinMessageResponse]
+	unpinMessage    *connect.Client[v1.UnpinMessageRequest, v1.UnpinMessageResponse]
+	listPins        *connect.Client[v1.ListPinsRequest, v1.ListPinsResponse]
+	saveMessage     *connect.Client[v1.SaveMessageRequest, v1.SaveMessageResponse]
+	unsaveMessage   *connect.Client[v1.UnsaveMessageRequest, v1.UnsaveMessageResponse]
+	listSaved       *connect.Client[v1.ListSavedRequest, v1.ListSavedResponse]
 }
 
 // PostMessage calls tank.message.v1.ChatService.PostMessage.
@@ -228,6 +290,36 @@ func (c *chatServiceClient) PostBlockAction(ctx context.Context, req *connect.Re
 	return c.postBlockAction.CallUnary(ctx, req)
 }
 
+// PinMessage calls tank.message.v1.ChatService.PinMessage.
+func (c *chatServiceClient) PinMessage(ctx context.Context, req *connect.Request[v1.PinMessageRequest]) (*connect.Response[v1.PinMessageResponse], error) {
+	return c.pinMessage.CallUnary(ctx, req)
+}
+
+// UnpinMessage calls tank.message.v1.ChatService.UnpinMessage.
+func (c *chatServiceClient) UnpinMessage(ctx context.Context, req *connect.Request[v1.UnpinMessageRequest]) (*connect.Response[v1.UnpinMessageResponse], error) {
+	return c.unpinMessage.CallUnary(ctx, req)
+}
+
+// ListPins calls tank.message.v1.ChatService.ListPins.
+func (c *chatServiceClient) ListPins(ctx context.Context, req *connect.Request[v1.ListPinsRequest]) (*connect.Response[v1.ListPinsResponse], error) {
+	return c.listPins.CallUnary(ctx, req)
+}
+
+// SaveMessage calls tank.message.v1.ChatService.SaveMessage.
+func (c *chatServiceClient) SaveMessage(ctx context.Context, req *connect.Request[v1.SaveMessageRequest]) (*connect.Response[v1.SaveMessageResponse], error) {
+	return c.saveMessage.CallUnary(ctx, req)
+}
+
+// UnsaveMessage calls tank.message.v1.ChatService.UnsaveMessage.
+func (c *chatServiceClient) UnsaveMessage(ctx context.Context, req *connect.Request[v1.UnsaveMessageRequest]) (*connect.Response[v1.UnsaveMessageResponse], error) {
+	return c.unsaveMessage.CallUnary(ctx, req)
+}
+
+// ListSaved calls tank.message.v1.ChatService.ListSaved.
+func (c *chatServiceClient) ListSaved(ctx context.Context, req *connect.Request[v1.ListSavedRequest]) (*connect.Response[v1.ListSavedResponse], error) {
+	return c.listSaved.CallUnary(ctx, req)
+}
+
 // ChatServiceHandler is an implementation of the tank.message.v1.ChatService service.
 type ChatServiceHandler interface {
 	PostMessage(context.Context, *connect.Request[v1.PostMessageRequest]) (*connect.Response[v1.PostMessageResponse], error)
@@ -241,6 +333,12 @@ type ChatServiceHandler interface {
 	RemoveReaction(context.Context, *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error)
 	SubscribeThread(context.Context, *connect.Request[v1.SubscribeThreadRequest]) (*connect.Response[v1.SubscribeThreadResponse], error)
 	PostBlockAction(context.Context, *connect.Request[v1.PostBlockActionRequest]) (*connect.Response[v1.PostBlockActionResponse], error)
+	PinMessage(context.Context, *connect.Request[v1.PinMessageRequest]) (*connect.Response[v1.PinMessageResponse], error)
+	UnpinMessage(context.Context, *connect.Request[v1.UnpinMessageRequest]) (*connect.Response[v1.UnpinMessageResponse], error)
+	ListPins(context.Context, *connect.Request[v1.ListPinsRequest]) (*connect.Response[v1.ListPinsResponse], error)
+	SaveMessage(context.Context, *connect.Request[v1.SaveMessageRequest]) (*connect.Response[v1.SaveMessageResponse], error)
+	UnsaveMessage(context.Context, *connect.Request[v1.UnsaveMessageRequest]) (*connect.Response[v1.UnsaveMessageResponse], error)
+	ListSaved(context.Context, *connect.Request[v1.ListSavedRequest]) (*connect.Response[v1.ListSavedResponse], error)
 }
 
 // NewChatServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -316,6 +414,42 @@ func NewChatServiceHandler(svc ChatServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(chatServiceMethods.ByName("PostBlockAction")),
 		connect.WithHandlerOptions(opts...),
 	)
+	chatServicePinMessageHandler := connect.NewUnaryHandler(
+		ChatServicePinMessageProcedure,
+		svc.PinMessage,
+		connect.WithSchema(chatServiceMethods.ByName("PinMessage")),
+		connect.WithHandlerOptions(opts...),
+	)
+	chatServiceUnpinMessageHandler := connect.NewUnaryHandler(
+		ChatServiceUnpinMessageProcedure,
+		svc.UnpinMessage,
+		connect.WithSchema(chatServiceMethods.ByName("UnpinMessage")),
+		connect.WithHandlerOptions(opts...),
+	)
+	chatServiceListPinsHandler := connect.NewUnaryHandler(
+		ChatServiceListPinsProcedure,
+		svc.ListPins,
+		connect.WithSchema(chatServiceMethods.ByName("ListPins")),
+		connect.WithHandlerOptions(opts...),
+	)
+	chatServiceSaveMessageHandler := connect.NewUnaryHandler(
+		ChatServiceSaveMessageProcedure,
+		svc.SaveMessage,
+		connect.WithSchema(chatServiceMethods.ByName("SaveMessage")),
+		connect.WithHandlerOptions(opts...),
+	)
+	chatServiceUnsaveMessageHandler := connect.NewUnaryHandler(
+		ChatServiceUnsaveMessageProcedure,
+		svc.UnsaveMessage,
+		connect.WithSchema(chatServiceMethods.ByName("UnsaveMessage")),
+		connect.WithHandlerOptions(opts...),
+	)
+	chatServiceListSavedHandler := connect.NewUnaryHandler(
+		ChatServiceListSavedProcedure,
+		svc.ListSaved,
+		connect.WithSchema(chatServiceMethods.ByName("ListSaved")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.message.v1.ChatService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ChatServicePostMessageProcedure:
@@ -340,6 +474,18 @@ func NewChatServiceHandler(svc ChatServiceHandler, opts ...connect.HandlerOption
 			chatServiceSubscribeThreadHandler.ServeHTTP(w, r)
 		case ChatServicePostBlockActionProcedure:
 			chatServicePostBlockActionHandler.ServeHTTP(w, r)
+		case ChatServicePinMessageProcedure:
+			chatServicePinMessageHandler.ServeHTTP(w, r)
+		case ChatServiceUnpinMessageProcedure:
+			chatServiceUnpinMessageHandler.ServeHTTP(w, r)
+		case ChatServiceListPinsProcedure:
+			chatServiceListPinsHandler.ServeHTTP(w, r)
+		case ChatServiceSaveMessageProcedure:
+			chatServiceSaveMessageHandler.ServeHTTP(w, r)
+		case ChatServiceUnsaveMessageProcedure:
+			chatServiceUnsaveMessageHandler.ServeHTTP(w, r)
+		case ChatServiceListSavedProcedure:
+			chatServiceListSavedHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -391,4 +537,28 @@ func (UnimplementedChatServiceHandler) SubscribeThread(context.Context, *connect
 
 func (UnimplementedChatServiceHandler) PostBlockAction(context.Context, *connect.Request[v1.PostBlockActionRequest]) (*connect.Response[v1.PostBlockActionResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.PostBlockAction is not implemented"))
+}
+
+func (UnimplementedChatServiceHandler) PinMessage(context.Context, *connect.Request[v1.PinMessageRequest]) (*connect.Response[v1.PinMessageResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.PinMessage is not implemented"))
+}
+
+func (UnimplementedChatServiceHandler) UnpinMessage(context.Context, *connect.Request[v1.UnpinMessageRequest]) (*connect.Response[v1.UnpinMessageResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.UnpinMessage is not implemented"))
+}
+
+func (UnimplementedChatServiceHandler) ListPins(context.Context, *connect.Request[v1.ListPinsRequest]) (*connect.Response[v1.ListPinsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.ListPins is not implemented"))
+}
+
+func (UnimplementedChatServiceHandler) SaveMessage(context.Context, *connect.Request[v1.SaveMessageRequest]) (*connect.Response[v1.SaveMessageResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.SaveMessage is not implemented"))
+}
+
+func (UnimplementedChatServiceHandler) UnsaveMessage(context.Context, *connect.Request[v1.UnsaveMessageRequest]) (*connect.Response[v1.UnsaveMessageResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.UnsaveMessage is not implemented"))
+}
+
+func (UnimplementedChatServiceHandler) ListSaved(context.Context, *connect.Request[v1.ListSavedRequest]) (*connect.Response[v1.ListSavedResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.ListSaved is not implemented"))
 }

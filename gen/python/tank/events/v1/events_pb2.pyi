@@ -2,9 +2,11 @@ from google.protobuf import any_pb2 as _any_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from tank.agent.v1 import agent_pb2 as _agent_pb2
 from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
+from tank.channel.v1 import channel_pb2 as _channel_pb2
 from tank.files.v1 import files_pb2 as _files_pb2
 from tank.message.v1 import message_pb2 as _message_pb2
 from tank.presence.v1 import presence_pb2 as _presence_pb2
+from tank.workspace.v1 import workspace_pb2 as _workspace_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
@@ -87,10 +89,12 @@ class ReadStateUpdated(_message.Message):
     def __init__(self, user_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., last_read_seq: _Optional[int] = ..., thread_root_id: _Optional[str] = ..., last_read_thread_seq: _Optional[int] = ...) -> None: ...
 
 class ChannelUpdated(_message.Message):
-    __slots__ = ("channel_id",)
+    __slots__ = ("channel_id", "channel")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
-    def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
+    channel: _channel_pb2.Channel
+    def __init__(self, channel_id: _Optional[str] = ..., channel: _Optional[_Union[_channel_pb2.Channel, _Mapping]] = ...) -> None: ...
 
 class ChannelMembershipChanged(_message.Message):
     __slots__ = ("channel_id", "user_id", "joined", "actor_id")
@@ -191,3 +195,73 @@ class NotificationCreated(_message.Message):
     channel_id: str
     actor_id: str
     def __init__(self, notification_id: _Optional[str] = ..., kind: _Optional[str] = ..., message_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., actor_id: _Optional[str] = ...) -> None: ...
+
+class PinChanged(_message.Message):
+    __slots__ = ("message_id", "channel_id", "user_id", "pinned")
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    PINNED_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    channel_id: str
+    user_id: str
+    pinned: bool
+    def __init__(self, message_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., user_id: _Optional[str] = ..., pinned: bool = ...) -> None: ...
+
+class EmojiChanged(_message.Message):
+    __slots__ = ("emoji", "deleted", "hash")
+    EMOJI_FIELD_NUMBER: _ClassVar[int]
+    DELETED_FIELD_NUMBER: _ClassVar[int]
+    HASH_FIELD_NUMBER: _ClassVar[int]
+    emoji: _workspace_pb2.CustomEmoji
+    deleted: bool
+    hash: str
+    def __init__(self, emoji: _Optional[_Union[_workspace_pb2.CustomEmoji, _Mapping]] = ..., deleted: bool = ..., hash: _Optional[str] = ...) -> None: ...
+
+class PreferencesUpdated(_message.Message):
+    __slots__ = ("user_id", "preferences")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    PREFERENCES_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    preferences: _workspace_pb2.Preferences
+    def __init__(self, user_id: _Optional[str] = ..., preferences: _Optional[_Union[_workspace_pb2.Preferences, _Mapping]] = ...) -> None: ...
+
+class ChannelPreferenceUpdated(_message.Message):
+    __slots__ = ("user_id", "read_state")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    READ_STATE_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    read_state: _channel_pb2.ChannelReadState
+    def __init__(self, user_id: _Optional[str] = ..., read_state: _Optional[_Union[_channel_pb2.ChannelReadState, _Mapping]] = ...) -> None: ...
+
+class DraftUpdated(_message.Message):
+    __slots__ = ("user_id", "draft", "deleted")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    DRAFT_FIELD_NUMBER: _ClassVar[int]
+    DELETED_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    draft: _workspace_pb2.Draft
+    deleted: bool
+    def __init__(self, user_id: _Optional[str] = ..., draft: _Optional[_Union[_workspace_pb2.Draft, _Mapping]] = ..., deleted: bool = ...) -> None: ...
+
+class ScheduledMessageSent(_message.Message):
+    __slots__ = ("scheduled",)
+    SCHEDULED_FIELD_NUMBER: _ClassVar[int]
+    scheduled: _workspace_pb2.ScheduledMessage
+    def __init__(self, scheduled: _Optional[_Union[_workspace_pb2.ScheduledMessage, _Mapping]] = ...) -> None: ...
+
+class UserGroupUpdated(_message.Message):
+    __slots__ = ("group", "deleted")
+    GROUP_FIELD_NUMBER: _ClassVar[int]
+    DELETED_FIELD_NUMBER: _ClassVar[int]
+    group: _workspace_pb2.UserGroup
+    deleted: bool
+    def __init__(self, group: _Optional[_Union[_workspace_pb2.UserGroup, _Mapping]] = ..., deleted: bool = ...) -> None: ...
+
+class BookmarkChanged(_message.Message):
+    __slots__ = ("bookmark", "removed")
+    BOOKMARK_FIELD_NUMBER: _ClassVar[int]
+    REMOVED_FIELD_NUMBER: _ClassVar[int]
+    bookmark: _workspace_pb2.ChannelBookmark
+    removed: bool
+    def __init__(self, bookmark: _Optional[_Union[_workspace_pb2.ChannelBookmark, _Mapping]] = ..., removed: bool = ...) -> None: ...

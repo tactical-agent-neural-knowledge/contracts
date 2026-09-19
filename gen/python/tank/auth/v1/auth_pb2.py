@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17tank/auth/v1/auth.proto\x12\x0ctank.auth.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa4\x01\n\tPrincipal\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12/\n\x04kind\x18\x02 \x01(\x0e\x32\x1b.tank.auth.v1.PrincipalKindR\x04kind\x12!\n\x0c\x64isplay_name\x18\x03 \x01(\tR\x0b\x64isplayName\x12\x1d\n\navatar_url\x18\x04 \x01(\tR\tavatarUrl\x12\x14\n\x05\x65mail\x18\x05 \x01(\tR\x05\x65mail\"-\n\x15StartMagicLinkRequest\x12\x14\n\x05\x65mail\x18\x01 \x01(\tR\x05\x65mail\"\x18\n\x16StartMagicLinkResponse\"0\n\x18\x43ompleteMagicLinkRequest\x12\x14\n\x05token\x18\x01 \x01(\tR\x05token\"\xd4\x01\n\x19\x43ompleteMagicLinkResponse\x12\'\n\x02me\x18\x01 \x01(\x0b\x32\x17.tank.auth.v1.PrincipalR\x02me\x12!\n\x0c\x61\x63\x63\x65ss_token\x18\x02 \x01(\tR\x0b\x61\x63\x63\x65ssToken\x12#\n\rrefresh_token\x18\x03 \x01(\tR\x0crefreshToken\x12\x46\n\x11\x61\x63\x63\x65ss_expires_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x0f\x61\x63\x63\x65ssExpiresAt\"\x8d\x01\n\x13\x45xchangeCodeRequest\x12\x1a\n\x08provider\x18\x01 \x01(\tR\x08provider\x12\x12\n\x04\x63ode\x18\x02 \x01(\tR\x04\x63ode\x12#\n\rcode_verifier\x18\x03 \x01(\tR\x0c\x63odeVerifier\x12!\n\x0credirect_uri\x18\x04 \x01(\tR\x0bredirectUri\"\xcf\x01\n\x14\x45xchangeCodeResponse\x12\'\n\x02me\x18\x01 \x01(\x0b\x32\x17.tank.auth.v1.PrincipalR\x02me\x12!\n\x0c\x61\x63\x63\x65ss_token\x18\x02 \x01(\tR\x0b\x61\x63\x63\x65ssToken\x12#\n\rrefresh_token\x18\x03 \x01(\tR\x0crefreshToken\x12\x46\n\x11\x61\x63\x63\x65ss_expires_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x0f\x61\x63\x63\x65ssExpiresAt\"5\n\x0eRefreshRequest\x12#\n\rrefresh_token\x18\x01 \x01(\tR\x0crefreshToken\"\xa1\x01\n\x0fRefreshResponse\x12!\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\tR\x0b\x61\x63\x63\x65ssToken\x12#\n\rrefresh_token\x18\x02 \x01(\tR\x0crefreshToken\x12\x46\n\x11\x61\x63\x63\x65ss_expires_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x0f\x61\x63\x63\x65ssExpiresAt\"\x0f\n\rLogoutRequest\"\x10\n\x0eLogoutResponse\"\x19\n\x17MintGatewayTokenRequest\"k\n\x18MintGatewayTokenResponse\x12\x14\n\x05token\x18\x01 \x01(\tR\x05token\x12\x39\n\nexpires_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\texpiresAt\"\x0e\n\x0cGetMeRequest\"8\n\rGetMeResponse\x12\'\n\x02me\x18\x01 \x01(\x0b\x32\x17.tank.auth.v1.PrincipalR\x02me*z\n\rPrincipalKind\x12\x1e\n\x1aPRINCIPAL_KIND_UNSPECIFIED\x10\x00\x12\x17\n\x13PRINCIPAL_KIND_USER\x10\x01\x12\x16\n\x12PRINCIPAL_KIND_BOT\x10\x02\x12\x18\n\x14PRINCIPAL_KIND_AGENT\x10\x03\x32\xd9\x04\n\x0b\x41uthService\x12[\n\x0eStartMagicLink\x12#.tank.auth.v1.StartMagicLinkRequest\x1a$.tank.auth.v1.StartMagicLinkResponse\x12\x64\n\x11\x43ompleteMagicLink\x12&.tank.auth.v1.CompleteMagicLinkRequest\x1a\'.tank.auth.v1.CompleteMagicLinkResponse\x12U\n\x0c\x45xchangeCode\x12!.tank.auth.v1.ExchangeCodeRequest\x1a\".tank.auth.v1.ExchangeCodeResponse\x12\x46\n\x07Refresh\x12\x1c.tank.auth.v1.RefreshRequest\x1a\x1d.tank.auth.v1.RefreshResponse\x12\x43\n\x06Logout\x12\x1b.tank.auth.v1.LogoutRequest\x1a\x1c.tank.auth.v1.LogoutResponse\x12\x61\n\x10MintGatewayToken\x12%.tank.auth.v1.MintGatewayTokenRequest\x1a&.tank.auth.v1.MintGatewayTokenResponse\x12@\n\x05GetMe\x12\x1a.tank.auth.v1.GetMeRequest\x1a\x1b.tank.auth.v1.GetMeResponseB\xc0\x01\n\x10\x63om.tank.auth.v1B\tAuthProtoP\x01ZOgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/auth/v1;authv1\xa2\x02\x03TAX\xaa\x02\x0cTank.Auth.V1\xca\x02\x0cTank\\Auth\\V1\xe2\x02\x18Tank\\Auth\\V1\\GPBMetadata\xea\x02\x0eTank::Auth::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17tank/auth/v1/auth.proto\x12\x0ctank.auth.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xca\x01\n\tPrincipal\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12/\n\x04kind\x18\x02 \x01(\x0e\x32\x1b.tank.auth.v1.PrincipalKindR\x04kind\x12!\n\x0c\x64isplay_name\x18\x03 \x01(\tR\x0b\x64isplayName\x12\x1d\n\navatar_url\x18\x04 \x01(\tR\tavatarUrl\x12\x14\n\x05\x65mail\x18\x05 \x01(\tR\x05\x65mail\x12$\n\x0e\x61vatar_file_id\x18\x06 \x01(\tR\x0c\x61vatarFileId\"-\n\x15StartMagicLinkRequest\x12\x14\n\x05\x65mail\x18\x01 \x01(\tR\x05\x65mail\"\x18\n\x16StartMagicLinkResponse\"0\n\x18\x43ompleteMagicLinkRequest\x12\x14\n\x05token\x18\x01 \x01(\tR\x05token\"\xd4\x01\n\x19\x43ompleteMagicLinkResponse\x12\'\n\x02me\x18\x01 \x01(\x0b\x32\x17.tank.auth.v1.PrincipalR\x02me\x12!\n\x0c\x61\x63\x63\x65ss_token\x18\x02 \x01(\tR\x0b\x61\x63\x63\x65ssToken\x12#\n\rrefresh_token\x18\x03 \x01(\tR\x0crefreshToken\x12\x46\n\x11\x61\x63\x63\x65ss_expires_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x0f\x61\x63\x63\x65ssExpiresAt\"\x8d\x01\n\x13\x45xchangeCodeRequest\x12\x1a\n\x08provider\x18\x01 \x01(\tR\x08provider\x12\x12\n\x04\x63ode\x18\x02 \x01(\tR\x04\x63ode\x12#\n\rcode_verifier\x18\x03 \x01(\tR\x0c\x63odeVerifier\x12!\n\x0credirect_uri\x18\x04 \x01(\tR\x0bredirectUri\"\xcf\x01\n\x14\x45xchangeCodeResponse\x12\'\n\x02me\x18\x01 \x01(\x0b\x32\x17.tank.auth.v1.PrincipalR\x02me\x12!\n\x0c\x61\x63\x63\x65ss_token\x18\x02 \x01(\tR\x0b\x61\x63\x63\x65ssToken\x12#\n\rrefresh_token\x18\x03 \x01(\tR\x0crefreshToken\x12\x46\n\x11\x61\x63\x63\x65ss_expires_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x0f\x61\x63\x63\x65ssExpiresAt\"5\n\x0eRefreshRequest\x12#\n\rrefresh_token\x18\x01 \x01(\tR\x0crefreshToken\"\xa1\x01\n\x0fRefreshResponse\x12!\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\tR\x0b\x61\x63\x63\x65ssToken\x12#\n\rrefresh_token\x18\x02 \x01(\tR\x0crefreshToken\x12\x46\n\x11\x61\x63\x63\x65ss_expires_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x0f\x61\x63\x63\x65ssExpiresAt\"\x0f\n\rLogoutRequest\"\x10\n\x0eLogoutResponse\"\x19\n\x17MintGatewayTokenRequest\"k\n\x18MintGatewayTokenResponse\x12\x14\n\x05token\x18\x01 \x01(\tR\x05token\x12\x39\n\nexpires_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\texpiresAt\"\x0e\n\x0cGetMeRequest\"8\n\rGetMeResponse\x12\'\n\x02me\x18\x01 \x01(\x0b\x32\x17.tank.auth.v1.PrincipalR\x02me*z\n\rPrincipalKind\x12\x1e\n\x1aPRINCIPAL_KIND_UNSPECIFIED\x10\x00\x12\x17\n\x13PRINCIPAL_KIND_USER\x10\x01\x12\x16\n\x12PRINCIPAL_KIND_BOT\x10\x02\x12\x18\n\x14PRINCIPAL_KIND_AGENT\x10\x03\x32\xd9\x04\n\x0b\x41uthService\x12[\n\x0eStartMagicLink\x12#.tank.auth.v1.StartMagicLinkRequest\x1a$.tank.auth.v1.StartMagicLinkResponse\x12\x64\n\x11\x43ompleteMagicLink\x12&.tank.auth.v1.CompleteMagicLinkRequest\x1a\'.tank.auth.v1.CompleteMagicLinkResponse\x12U\n\x0c\x45xchangeCode\x12!.tank.auth.v1.ExchangeCodeRequest\x1a\".tank.auth.v1.ExchangeCodeResponse\x12\x46\n\x07Refresh\x12\x1c.tank.auth.v1.RefreshRequest\x1a\x1d.tank.auth.v1.RefreshResponse\x12\x43\n\x06Logout\x12\x1b.tank.auth.v1.LogoutRequest\x1a\x1c.tank.auth.v1.LogoutResponse\x12\x61\n\x10MintGatewayToken\x12%.tank.auth.v1.MintGatewayTokenRequest\x1a&.tank.auth.v1.MintGatewayTokenResponse\x12@\n\x05GetMe\x12\x1a.tank.auth.v1.GetMeRequest\x1a\x1b.tank.auth.v1.GetMeResponseB\xc0\x01\n\x10\x63om.tank.auth.v1B\tAuthProtoP\x01ZOgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/auth/v1;authv1\xa2\x02\x03TAX\xaa\x02\x0cTank.Auth.V1\xca\x02\x0cTank\\Auth\\V1\xe2\x02\x18Tank\\Auth\\V1\\GPBMetadata\xea\x02\x0eTank::Auth::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -33,38 +33,38 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'tank.auth.v1.auth_pb2', _gl
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\020com.tank.auth.v1B\tAuthProtoP\001ZOgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/auth/v1;authv1\242\002\003TAX\252\002\014Tank.Auth.V1\312\002\014Tank\\Auth\\V1\342\002\030Tank\\Auth\\V1\\GPBMetadata\352\002\016Tank::Auth::V1'
-  _globals['_PRINCIPALKIND']._serialized_start=1397
-  _globals['_PRINCIPALKIND']._serialized_end=1519
+  _globals['_PRINCIPALKIND']._serialized_start=1435
+  _globals['_PRINCIPALKIND']._serialized_end=1557
   _globals['_PRINCIPAL']._serialized_start=75
-  _globals['_PRINCIPAL']._serialized_end=239
-  _globals['_STARTMAGICLINKREQUEST']._serialized_start=241
-  _globals['_STARTMAGICLINKREQUEST']._serialized_end=286
-  _globals['_STARTMAGICLINKRESPONSE']._serialized_start=288
-  _globals['_STARTMAGICLINKRESPONSE']._serialized_end=312
-  _globals['_COMPLETEMAGICLINKREQUEST']._serialized_start=314
-  _globals['_COMPLETEMAGICLINKREQUEST']._serialized_end=362
-  _globals['_COMPLETEMAGICLINKRESPONSE']._serialized_start=365
-  _globals['_COMPLETEMAGICLINKRESPONSE']._serialized_end=577
-  _globals['_EXCHANGECODEREQUEST']._serialized_start=580
-  _globals['_EXCHANGECODEREQUEST']._serialized_end=721
-  _globals['_EXCHANGECODERESPONSE']._serialized_start=724
-  _globals['_EXCHANGECODERESPONSE']._serialized_end=931
-  _globals['_REFRESHREQUEST']._serialized_start=933
-  _globals['_REFRESHREQUEST']._serialized_end=986
-  _globals['_REFRESHRESPONSE']._serialized_start=989
-  _globals['_REFRESHRESPONSE']._serialized_end=1150
-  _globals['_LOGOUTREQUEST']._serialized_start=1152
-  _globals['_LOGOUTREQUEST']._serialized_end=1167
-  _globals['_LOGOUTRESPONSE']._serialized_start=1169
-  _globals['_LOGOUTRESPONSE']._serialized_end=1185
-  _globals['_MINTGATEWAYTOKENREQUEST']._serialized_start=1187
-  _globals['_MINTGATEWAYTOKENREQUEST']._serialized_end=1212
-  _globals['_MINTGATEWAYTOKENRESPONSE']._serialized_start=1214
-  _globals['_MINTGATEWAYTOKENRESPONSE']._serialized_end=1321
-  _globals['_GETMEREQUEST']._serialized_start=1323
-  _globals['_GETMEREQUEST']._serialized_end=1337
-  _globals['_GETMERESPONSE']._serialized_start=1339
-  _globals['_GETMERESPONSE']._serialized_end=1395
-  _globals['_AUTHSERVICE']._serialized_start=1522
-  _globals['_AUTHSERVICE']._serialized_end=2123
+  _globals['_PRINCIPAL']._serialized_end=277
+  _globals['_STARTMAGICLINKREQUEST']._serialized_start=279
+  _globals['_STARTMAGICLINKREQUEST']._serialized_end=324
+  _globals['_STARTMAGICLINKRESPONSE']._serialized_start=326
+  _globals['_STARTMAGICLINKRESPONSE']._serialized_end=350
+  _globals['_COMPLETEMAGICLINKREQUEST']._serialized_start=352
+  _globals['_COMPLETEMAGICLINKREQUEST']._serialized_end=400
+  _globals['_COMPLETEMAGICLINKRESPONSE']._serialized_start=403
+  _globals['_COMPLETEMAGICLINKRESPONSE']._serialized_end=615
+  _globals['_EXCHANGECODEREQUEST']._serialized_start=618
+  _globals['_EXCHANGECODEREQUEST']._serialized_end=759
+  _globals['_EXCHANGECODERESPONSE']._serialized_start=762
+  _globals['_EXCHANGECODERESPONSE']._serialized_end=969
+  _globals['_REFRESHREQUEST']._serialized_start=971
+  _globals['_REFRESHREQUEST']._serialized_end=1024
+  _globals['_REFRESHRESPONSE']._serialized_start=1027
+  _globals['_REFRESHRESPONSE']._serialized_end=1188
+  _globals['_LOGOUTREQUEST']._serialized_start=1190
+  _globals['_LOGOUTREQUEST']._serialized_end=1205
+  _globals['_LOGOUTRESPONSE']._serialized_start=1207
+  _globals['_LOGOUTRESPONSE']._serialized_end=1223
+  _globals['_MINTGATEWAYTOKENREQUEST']._serialized_start=1225
+  _globals['_MINTGATEWAYTOKENREQUEST']._serialized_end=1250
+  _globals['_MINTGATEWAYTOKENRESPONSE']._serialized_start=1252
+  _globals['_MINTGATEWAYTOKENRESPONSE']._serialized_end=1359
+  _globals['_GETMEREQUEST']._serialized_start=1361
+  _globals['_GETMEREQUEST']._serialized_end=1375
+  _globals['_GETMERESPONSE']._serialized_start=1377
+  _globals['_GETMERESPONSE']._serialized_end=1433
+  _globals['_AUTHSERVICE']._serialized_start=1560
+  _globals['_AUTHSERVICE']._serialized_end=2161
 # @@protoc_insertion_point(module_scope)

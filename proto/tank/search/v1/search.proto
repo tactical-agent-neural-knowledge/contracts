@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package tank.search.v1;
+
+import "google/protobuf/timestamp.proto";
+import "tank/message/v1/message.proto";
+
+// Neural Vault message search. The wire stays engine-neutral: Postgres FTS
+// today, OpenSearch behind the same service later.
+
+enum HasFilter {
+  HAS_FILTER_UNSPECIFIED = 0;
+  HAS_FILTER_FILES = 1;
+  HAS_FILTER_LINKS = 2;
+  HAS_FILTER_REACTIONS = 3;
+  HAS_FILTER_BLOCKS = 4;
+}
+
+message SearchFilters {
+  repeated string from_user_ids = 1;
+  repeated string in_channel_ids = 2;
+  repeated HasFilter has = 3;
+  google.protobuf.Timestamp before = 4;
+  google.protobuf.Timestamp after = 5;
+}
+
+message SearchRequest {
+  string workspace_id = 1;
+  // Free-text terms (websearch syntax: quoted phrases, -exclusions, OR).
+  string query = 2;
+  SearchFilters filters = 3;
+  string cursor = 4;
+  int32 limit = 5;
+  // Raw query with modifiers, parsed server-side and merged into query +
+  // filters: `from:@name in:#tread has:file before:2026-09-01 after:2026-01-01`.
+  string q = 6;
+}
+
+message SearchHit {
+  tank.message.v1.Message message = 1;
+  string channel_id = 2;
+  // Plain-text fragments around the matched terms; no markup.
+  repeated string highlights = 3;
+  double score = 4;
+}
+
+message SearchResponse {
+  repeated SearchHit hits = 1;
+  string next_cursor = 2;
+  int64 total_estimate = 3;
+  // What the server understood from `q` (ids resolved) merged with `filters`.
+  SearchFilters parsed_filters = 4;
+  // The free-text remainder of `q` merged with `query`.
+  string parsed_query = 5;
+}
+
+service SearchService {
+  rpc Search(SearchRequest) returns (SearchResponse);
+}

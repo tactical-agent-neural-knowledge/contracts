@@ -48,6 +48,8 @@ message Message {
   // Opaque per-message metadata returned on every event (run_id, card_type, ...).
   google.protobuf.Struct metadata = 22;
   google.protobuf.Timestamp created_at = 23;
+  bool pinned = 24; // pinned in its channel
+  bool saved = 25;  // saved by the caller
 }
 
 message PostMessageRequest {
@@ -63,6 +65,9 @@ message PostMessageRequest {
   bool also_send_to_channel = 10;
   bool ephemeral = 11;      // visible only to ephemeral_user_id, never stored
   string ephemeral_user_id = 12;
+  // Explicit @user mentions merged with those found in rich_text; honoured by
+  // the notify worker even when the client sends plain text.
+  repeated string mention_ids = 13;
 }
 message PostMessageResponse {
   Message message = 1;
@@ -147,6 +152,63 @@ message PostBlockActionRequest {
 }
 message PostBlockActionResponse {}
 
+// A channel pin. Anyone who can post in the channel may pin or unpin.
+message Pin {
+  tank.message.v1.Message message = 1;
+  string pinned_by = 2;
+  google.protobuf.Timestamp pinned_at = 3;
+}
+
+message PinMessageRequest {
+  string message_id = 1;
+}
+message PinMessageResponse {
+  Pin pin = 1;
+}
+
+message UnpinMessageRequest {
+  string message_id = 1;
+}
+message UnpinMessageResponse {}
+
+message ListPinsRequest {
+  string channel_id = 1;
+  string cursor = 2; // opaque; newest pin first
+  int32 limit = 3;
+}
+message ListPinsResponse {
+  repeated Pin pins = 1;
+  string next_cursor = 2;
+}
+
+// A message saved by the caller ("Saved items"); private to them.
+message SavedItem {
+  tank.message.v1.Message message = 1;
+  google.protobuf.Timestamp saved_at = 2;
+}
+
+message SaveMessageRequest {
+  string message_id = 1;
+}
+message SaveMessageResponse {
+  SavedItem item = 1;
+}
+
+message UnsaveMessageRequest {
+  string message_id = 1;
+}
+message UnsaveMessageResponse {}
+
+message ListSavedRequest {
+  string workspace_id = 1;
+  string cursor = 2; // opaque; newest first
+  int32 limit = 3;
+}
+message ListSavedResponse {
+  repeated SavedItem items = 1;
+  string next_cursor = 2;
+}
+
 service ChatService {
   rpc PostMessage(PostMessageRequest) returns (PostMessageResponse);
   rpc UpdateMessage(UpdateMessageRequest) returns (UpdateMessageResponse);
@@ -159,4 +221,10 @@ service ChatService {
   rpc RemoveReaction(RemoveReactionRequest) returns (RemoveReactionResponse);
   rpc SubscribeThread(SubscribeThreadRequest) returns (SubscribeThreadResponse);
   rpc PostBlockAction(PostBlockActionRequest) returns (PostBlockActionResponse);
+  rpc PinMessage(PinMessageRequest) returns (PinMessageResponse);
+  rpc UnpinMessage(UnpinMessageRequest) returns (UnpinMessageResponse);
+  rpc ListPins(ListPinsRequest) returns (ListPinsResponse);
+  rpc SaveMessage(SaveMessageRequest) returns (SaveMessageResponse);
+  rpc UnsaveMessage(UnsaveMessageRequest) returns (UnsaveMessageResponse);
+  rpc ListSaved(ListSavedRequest) returns (ListSavedResponse);
 }
