@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19tank/files/v1/files.proto\x12\rtank.files.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\x03\n\x04\x46ile\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12!\n\x0cworkspace_id\x18\x02 \x01(\tR\x0bworkspaceId\x12\x1f\n\x0buploader_id\x18\x03 \x01(\tR\nuploaderId\x12\x12\n\x04name\x18\x04 \x01(\tR\x04name\x12\x12\n\x04mime\x18\x05 \x01(\tR\x04mime\x12\x12\n\x04size\x18\x06 \x01(\x03R\x04size\x12:\n\x0bscan_status\x18\x07 \x01(\x0e\x32\x19.tank.files.v1.ScanStatusR\nscanStatus\x12\x14\n\x05width\x18\x08 \x01(\x05R\x05width\x12\x16\n\x06height\x18\t \x01(\x05R\x06height\x12\x1f\n\x0b\x64uration_ms\x18\n \x01(\x03R\ndurationMs\x12\x43\n\nthumbnails\x18\x0b \x03(\x0b\x32#.tank.files.v1.File.ThumbnailsEntryR\nthumbnails\x12\x39\n\ncreated_at\x18\x0c \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tcreatedAt\x1a=\n\x0fThumbnailsEntry\x12\x10\n\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n\x05value\x18\x02 \x01(\tR\x05value:\x02\x38\x01\"\x93\x01\n\x13\x43reateUploadRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n\x04mime\x18\x03 \x01(\tR\x04mime\x12\x12\n\x04size\x18\x04 \x01(\x03R\x04size\x12\x1d\n\nchannel_id\x18\x05 \x01(\tR\tchannelId\"\xb5\x01\n\x14\x43reateUploadResponse\x12\'\n\x04\x66ile\x18\x01 \x01(\x0b\x32\x13.tank.files.v1.FileR\x04\x66ile\x12\x1d\n\nupload_url\x18\x02 \x01(\tR\tuploadUrl\x12\x1b\n\tupload_id\x18\x03 \x01(\tR\x08uploadId\x12\x1b\n\tpart_urls\x18\x04 \x03(\tR\x08partUrls\x12\x1b\n\tpart_size\x18\x05 \x01(\x03R\x08partSize\"c\n\x15\x43ompleteUploadRequest\x12\x17\n\x07\x66ile_id\x18\x01 \x01(\tR\x06\x66ileId\x12\x1b\n\tupload_id\x18\x02 \x01(\tR\x08uploadId\x12\x14\n\x05\x65tags\x18\x03 \x03(\tR\x05\x65tags\"A\n\x16\x43ompleteUploadResponse\x12\'\n\x04\x66ile\x18\x01 \x01(\x0b\x32\x13.tank.files.v1.FileR\x04\x66ile\"0\n\x15GetDownloadUrlRequest\x12\x17\n\x07\x66ile_id\x18\x01 \x01(\tR\x06\x66ileId\"e\n\x16GetDownloadUrlResponse\x12\x10\n\x03url\x18\x01 \x01(\tR\x03url\x12\x39\n\nexpires_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\texpiresAt*\x8b\x01\n\nScanStatus\x12\x1b\n\x17SCAN_STATUS_UNSPECIFIED\x10\x00\x12\x17\n\x13SCAN_STATUS_PENDING\x10\x01\x12\x15\n\x11SCAN_STATUS_CLEAN\x10\x02\x12\x18\n\x14SCAN_STATUS_INFECTED\x10\x03\x12\x16\n\x12SCAN_STATUS_FAILED\x10\x04\x32\xa5\x02\n\x0c\x46ilesService\x12W\n\x0c\x43reateUpload\x12\".tank.files.v1.CreateUploadRequest\x1a#.tank.files.v1.CreateUploadResponse\x12]\n\x0e\x43ompleteUpload\x12$.tank.files.v1.CompleteUploadRequest\x1a%.tank.files.v1.CompleteUploadResponse\x12]\n\x0eGetDownloadUrl\x12$.tank.files.v1.GetDownloadUrlRequest\x1a%.tank.files.v1.GetDownloadUrlResponseB\xc8\x01\n\x11\x63om.tank.files.v1B\nFilesProtoP\x01ZQgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/files/v1;filesv1\xa2\x02\x03TFX\xaa\x02\rTank.Files.V1\xca\x02\rTank\\Files\\V1\xe2\x02\x19Tank\\Files\\V1\\GPBMetadata\xea\x02\x0fTank::Files::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19tank/files/v1/files.proto\x12\rtank.files.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc7\x04\n\x04\x46ile\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12!\n\x0cworkspace_id\x18\x02 \x01(\tR\x0bworkspaceId\x12\x1f\n\x0buploader_id\x18\x03 \x01(\tR\nuploaderId\x12\x12\n\x04name\x18\x04 \x01(\tR\x04name\x12\x12\n\x04mime\x18\x05 \x01(\tR\x04mime\x12\x12\n\x04size\x18\x06 \x01(\x03R\x04size\x12:\n\x0bscan_status\x18\x07 \x01(\x0e\x32\x19.tank.files.v1.ScanStatusR\nscanStatus\x12\x14\n\x05width\x18\x08 \x01(\x05R\x05width\x12\x16\n\x06height\x18\t \x01(\x05R\x06height\x12\x1f\n\x0b\x64uration_ms\x18\n \x01(\x03R\ndurationMs\x12\x43\n\nthumbnails\x18\x0b \x03(\x0b\x32#.tank.files.v1.File.ThumbnailsEntryR\nthumbnails\x12\x39\n\ncreated_at\x18\x0c \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tcreatedAt\x12\x31\n\x15shared_in_channel_ids\x18\r \x03(\tR\x12sharedInChannelIds\x12\x32\n\x15uploader_display_name\x18\x0e \x01(\tR\x13uploaderDisplayName\x1a=\n\x0fThumbnailsEntry\x12\x10\n\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n\x05value\x18\x02 \x01(\tR\x05value:\x02\x38\x01\"\x93\x01\n\x13\x43reateUploadRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n\x04mime\x18\x03 \x01(\tR\x04mime\x12\x12\n\x04size\x18\x04 \x01(\x03R\x04size\x12\x1d\n\nchannel_id\x18\x05 \x01(\tR\tchannelId\"\xb5\x01\n\x14\x43reateUploadResponse\x12\'\n\x04\x66ile\x18\x01 \x01(\x0b\x32\x13.tank.files.v1.FileR\x04\x66ile\x12\x1d\n\nupload_url\x18\x02 \x01(\tR\tuploadUrl\x12\x1b\n\tupload_id\x18\x03 \x01(\tR\x08uploadId\x12\x1b\n\tpart_urls\x18\x04 \x03(\tR\x08partUrls\x12\x1b\n\tpart_size\x18\x05 \x01(\x03R\x08partSize\"c\n\x15\x43ompleteUploadRequest\x12\x17\n\x07\x66ile_id\x18\x01 \x01(\tR\x06\x66ileId\x12\x1b\n\tupload_id\x18\x02 \x01(\tR\x08uploadId\x12\x14\n\x05\x65tags\x18\x03 \x03(\tR\x05\x65tags\"A\n\x16\x43ompleteUploadResponse\x12\'\n\x04\x66ile\x18\x01 \x01(\x0b\x32\x13.tank.files.v1.FileR\x04\x66ile\"0\n\x15GetDownloadUrlRequest\x12\x17\n\x07\x66ile_id\x18\x01 \x01(\tR\x06\x66ileId\"e\n\x16GetDownloadUrlResponse\x12\x10\n\x03url\x18\x01 \x01(\tR\x03url\x12\x39\n\nexpires_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\texpiresAt\")\n\x0eGetFileRequest\x12\x17\n\x07\x66ile_id\x18\x01 \x01(\tR\x06\x66ileId\":\n\x0fGetFileResponse\x12\'\n\x04\x66ile\x18\x01 \x01(\x0b\x32\x13.tank.files.v1.FileR\x04\x66ile\"\x82\x01\n\x10ListFilesRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x1d\n\nchannel_id\x18\x02 \x01(\tR\tchannelId\x12\x16\n\x06\x63ursor\x18\x03 \x01(\tR\x06\x63ursor\x12\x14\n\x05limit\x18\x04 \x01(\x05R\x05limit\"_\n\x11ListFilesResponse\x12)\n\x05\x66iles\x18\x01 \x03(\x0b\x32\x13.tank.files.v1.FileR\x05\x66iles\x12\x1f\n\x0bnext_cursor\x18\x02 \x01(\tR\nnextCursor*\x8b\x01\n\nScanStatus\x12\x1b\n\x17SCAN_STATUS_UNSPECIFIED\x10\x00\x12\x17\n\x13SCAN_STATUS_PENDING\x10\x01\x12\x15\n\x11SCAN_STATUS_CLEAN\x10\x02\x12\x18\n\x14SCAN_STATUS_INFECTED\x10\x03\x12\x16\n\x12SCAN_STATUS_FAILED\x10\x04\x32\xbf\x03\n\x0c\x46ilesService\x12W\n\x0c\x43reateUpload\x12\".tank.files.v1.CreateUploadRequest\x1a#.tank.files.v1.CreateUploadResponse\x12]\n\x0e\x43ompleteUpload\x12$.tank.files.v1.CompleteUploadRequest\x1a%.tank.files.v1.CompleteUploadResponse\x12]\n\x0eGetDownloadUrl\x12$.tank.files.v1.GetDownloadUrlRequest\x1a%.tank.files.v1.GetDownloadUrlResponse\x12H\n\x07GetFile\x12\x1d.tank.files.v1.GetFileRequest\x1a\x1e.tank.files.v1.GetFileResponse\x12N\n\tListFiles\x12\x1f.tank.files.v1.ListFilesRequest\x1a .tank.files.v1.ListFilesResponseB\xc8\x01\n\x11\x63om.tank.files.v1B\nFilesProtoP\x01ZQgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/files/v1;filesv1\xa2\x02\x03TFX\xaa\x02\rTank.Files.V1\xca\x02\rTank\\Files\\V1\xe2\x02\x19Tank\\Files\\V1\\GPBMetadata\xea\x02\x0fTank::Files::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -35,24 +35,32 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._serialized_options = b'\n\021com.tank.files.v1B\nFilesProtoP\001ZQgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/files/v1;filesv1\242\002\003TFX\252\002\rTank.Files.V1\312\002\rTank\\Files\\V1\342\002\031Tank\\Files\\V1\\GPBMetadata\352\002\017Tank::Files::V1'
   _globals['_FILE_THUMBNAILSENTRY']._loaded_options = None
   _globals['_FILE_THUMBNAILSENTRY']._serialized_options = b'8\001'
-  _globals['_SCANSTATUS']._serialized_start=1216
-  _globals['_SCANSTATUS']._serialized_end=1355
+  _globals['_SCANSTATUS']._serialized_start=1652
+  _globals['_SCANSTATUS']._serialized_end=1791
   _globals['_FILE']._serialized_start=78
-  _globals['_FILE']._serialized_end=558
-  _globals['_FILE_THUMBNAILSENTRY']._serialized_start=497
-  _globals['_FILE_THUMBNAILSENTRY']._serialized_end=558
-  _globals['_CREATEUPLOADREQUEST']._serialized_start=561
-  _globals['_CREATEUPLOADREQUEST']._serialized_end=708
-  _globals['_CREATEUPLOADRESPONSE']._serialized_start=711
-  _globals['_CREATEUPLOADRESPONSE']._serialized_end=892
-  _globals['_COMPLETEUPLOADREQUEST']._serialized_start=894
-  _globals['_COMPLETEUPLOADREQUEST']._serialized_end=993
-  _globals['_COMPLETEUPLOADRESPONSE']._serialized_start=995
-  _globals['_COMPLETEUPLOADRESPONSE']._serialized_end=1060
-  _globals['_GETDOWNLOADURLREQUEST']._serialized_start=1062
-  _globals['_GETDOWNLOADURLREQUEST']._serialized_end=1110
-  _globals['_GETDOWNLOADURLRESPONSE']._serialized_start=1112
-  _globals['_GETDOWNLOADURLRESPONSE']._serialized_end=1213
-  _globals['_FILESSERVICE']._serialized_start=1358
-  _globals['_FILESSERVICE']._serialized_end=1651
+  _globals['_FILE']._serialized_end=661
+  _globals['_FILE_THUMBNAILSENTRY']._serialized_start=600
+  _globals['_FILE_THUMBNAILSENTRY']._serialized_end=661
+  _globals['_CREATEUPLOADREQUEST']._serialized_start=664
+  _globals['_CREATEUPLOADREQUEST']._serialized_end=811
+  _globals['_CREATEUPLOADRESPONSE']._serialized_start=814
+  _globals['_CREATEUPLOADRESPONSE']._serialized_end=995
+  _globals['_COMPLETEUPLOADREQUEST']._serialized_start=997
+  _globals['_COMPLETEUPLOADREQUEST']._serialized_end=1096
+  _globals['_COMPLETEUPLOADRESPONSE']._serialized_start=1098
+  _globals['_COMPLETEUPLOADRESPONSE']._serialized_end=1163
+  _globals['_GETDOWNLOADURLREQUEST']._serialized_start=1165
+  _globals['_GETDOWNLOADURLREQUEST']._serialized_end=1213
+  _globals['_GETDOWNLOADURLRESPONSE']._serialized_start=1215
+  _globals['_GETDOWNLOADURLRESPONSE']._serialized_end=1316
+  _globals['_GETFILEREQUEST']._serialized_start=1318
+  _globals['_GETFILEREQUEST']._serialized_end=1359
+  _globals['_GETFILERESPONSE']._serialized_start=1361
+  _globals['_GETFILERESPONSE']._serialized_end=1419
+  _globals['_LISTFILESREQUEST']._serialized_start=1422
+  _globals['_LISTFILESREQUEST']._serialized_end=1552
+  _globals['_LISTFILESRESPONSE']._serialized_start=1554
+  _globals['_LISTFILESRESPONSE']._serialized_end=1649
+  _globals['_FILESSERVICE']._serialized_start=1794
+  _globals['_FILESSERVICE']._serialized_end=2241
 # @@protoc_insertion_point(module_scope)

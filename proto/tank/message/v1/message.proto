@@ -6,6 +6,7 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "tank/auth/v1/auth.proto";
 import "tank/blocks/v1/blocks.proto";
+import "tank/files/v1/files.proto";
 import "tank/richtext/v1/richtext.proto";
 
 enum MessageKind {
@@ -50,6 +51,8 @@ message Message {
   google.protobuf.Timestamp created_at = 23;
   bool pinned = 24; // pinned in its channel
   bool saved = 25;  // saved by the caller
+  // The attached files (same order as file_ids), populated on every read path.
+  repeated tank.files.v1.File files = 26;
 }
 
 message PostMessageRequest {

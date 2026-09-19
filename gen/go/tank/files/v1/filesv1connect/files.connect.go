@@ -42,6 +42,10 @@ const (
 	// FilesServiceGetDownloadUrlProcedure is the fully-qualified name of the FilesService's
 	// GetDownloadUrl RPC.
 	FilesServiceGetDownloadUrlProcedure = "/tank.files.v1.FilesService/GetDownloadUrl"
+	// FilesServiceGetFileProcedure is the fully-qualified name of the FilesService's GetFile RPC.
+	FilesServiceGetFileProcedure = "/tank.files.v1.FilesService/GetFile"
+	// FilesServiceListFilesProcedure is the fully-qualified name of the FilesService's ListFiles RPC.
+	FilesServiceListFilesProcedure = "/tank.files.v1.FilesService/ListFiles"
 )
 
 // FilesServiceClient is a client for the tank.files.v1.FilesService service.
@@ -49,6 +53,8 @@ type FilesServiceClient interface {
 	CreateUpload(context.Context, *connect.Request[v1.CreateUploadRequest]) (*connect.Response[v1.CreateUploadResponse], error)
 	CompleteUpload(context.Context, *connect.Request[v1.CompleteUploadRequest]) (*connect.Response[v1.CompleteUploadResponse], error)
 	GetDownloadUrl(context.Context, *connect.Request[v1.GetDownloadUrlRequest]) (*connect.Response[v1.GetDownloadUrlResponse], error)
+	GetFile(context.Context, *connect.Request[v1.GetFileRequest]) (*connect.Response[v1.GetFileResponse], error)
+	ListFiles(context.Context, *connect.Request[v1.ListFilesRequest]) (*connect.Response[v1.ListFilesResponse], error)
 }
 
 // NewFilesServiceClient constructs a client for the tank.files.v1.FilesService service. By default,
@@ -80,6 +86,18 @@ func NewFilesServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(filesServiceMethods.ByName("GetDownloadUrl")),
 			connect.WithClientOptions(opts...),
 		),
+		getFile: connect.NewClient[v1.GetFileRequest, v1.GetFileResponse](
+			httpClient,
+			baseURL+FilesServiceGetFileProcedure,
+			connect.WithSchema(filesServiceMethods.ByName("GetFile")),
+			connect.WithClientOptions(opts...),
+		),
+		listFiles: connect.NewClient[v1.ListFilesRequest, v1.ListFilesResponse](
+			httpClient,
+			baseURL+FilesServiceListFilesProcedure,
+			connect.WithSchema(filesServiceMethods.ByName("ListFiles")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -88,6 +106,8 @@ type filesServiceClient struct {
 	createUpload   *connect.Client[v1.CreateUploadRequest, v1.CreateUploadResponse]
 	completeUpload *connect.Client[v1.CompleteUploadRequest, v1.CompleteUploadResponse]
 	getDownloadUrl *connect.Client[v1.GetDownloadUrlRequest, v1.GetDownloadUrlResponse]
+	getFile        *connect.Client[v1.GetFileRequest, v1.GetFileResponse]
+	listFiles      *connect.Client[v1.ListFilesRequest, v1.ListFilesResponse]
 }
 
 // CreateUpload calls tank.files.v1.FilesService.CreateUpload.
@@ -105,11 +125,23 @@ func (c *filesServiceClient) GetDownloadUrl(ctx context.Context, req *connect.Re
 	return c.getDownloadUrl.CallUnary(ctx, req)
 }
 
+// GetFile calls tank.files.v1.FilesService.GetFile.
+func (c *filesServiceClient) GetFile(ctx context.Context, req *connect.Request[v1.GetFileRequest]) (*connect.Response[v1.GetFileResponse], error) {
+	return c.getFile.CallUnary(ctx, req)
+}
+
+// ListFiles calls tank.files.v1.FilesService.ListFiles.
+func (c *filesServiceClient) ListFiles(ctx context.Context, req *connect.Request[v1.ListFilesRequest]) (*connect.Response[v1.ListFilesResponse], error) {
+	return c.listFiles.CallUnary(ctx, req)
+}
+
 // FilesServiceHandler is an implementation of the tank.files.v1.FilesService service.
 type FilesServiceHandler interface {
 	CreateUpload(context.Context, *connect.Request[v1.CreateUploadRequest]) (*connect.Response[v1.CreateUploadResponse], error)
 	CompleteUpload(context.Context, *connect.Request[v1.CompleteUploadRequest]) (*connect.Response[v1.CompleteUploadResponse], error)
 	GetDownloadUrl(context.Context, *connect.Request[v1.GetDownloadUrlRequest]) (*connect.Response[v1.GetDownloadUrlResponse], error)
+	GetFile(context.Context, *connect.Request[v1.GetFileRequest]) (*connect.Response[v1.GetFileResponse], error)
+	ListFiles(context.Context, *connect.Request[v1.ListFilesRequest]) (*connect.Response[v1.ListFilesResponse], error)
 }
 
 // NewFilesServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -137,6 +169,18 @@ func NewFilesServiceHandler(svc FilesServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(filesServiceMethods.ByName("GetDownloadUrl")),
 		connect.WithHandlerOptions(opts...),
 	)
+	filesServiceGetFileHandler := connect.NewUnaryHandler(
+		FilesServiceGetFileProcedure,
+		svc.GetFile,
+		connect.WithSchema(filesServiceMethods.ByName("GetFile")),
+		connect.WithHandlerOptions(opts...),
+	)
+	filesServiceListFilesHandler := connect.NewUnaryHandler(
+		FilesServiceListFilesProcedure,
+		svc.ListFiles,
+		connect.WithSchema(filesServiceMethods.ByName("ListFiles")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.files.v1.FilesService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case FilesServiceCreateUploadProcedure:
@@ -145,6 +189,10 @@ func NewFilesServiceHandler(svc FilesServiceHandler, opts ...connect.HandlerOpti
 			filesServiceCompleteUploadHandler.ServeHTTP(w, r)
 		case FilesServiceGetDownloadUrlProcedure:
 			filesServiceGetDownloadUrlHandler.ServeHTTP(w, r)
+		case FilesServiceGetFileProcedure:
+			filesServiceGetFileHandler.ServeHTTP(w, r)
+		case FilesServiceListFilesProcedure:
+			filesServiceListFilesHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -164,4 +212,12 @@ func (UnimplementedFilesServiceHandler) CompleteUpload(context.Context, *connect
 
 func (UnimplementedFilesServiceHandler) GetDownloadUrl(context.Context, *connect.Request[v1.GetDownloadUrlRequest]) (*connect.Response[v1.GetDownloadUrlResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.files.v1.FilesService.GetDownloadUrl is not implemented"))
+}
+
+func (UnimplementedFilesServiceHandler) GetFile(context.Context, *connect.Request[v1.GetFileRequest]) (*connect.Response[v1.GetFileResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.files.v1.FilesService.GetFile is not implemented"))
+}
+
+func (UnimplementedFilesServiceHandler) ListFiles(context.Context, *connect.Request[v1.ListFilesRequest]) (*connect.Response[v1.ListFilesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.files.v1.FilesService.ListFiles is not implemented"))
 }

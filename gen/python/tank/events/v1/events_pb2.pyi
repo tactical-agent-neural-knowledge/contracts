@@ -4,6 +4,7 @@ from tank.agent.v1 import agent_pb2 as _agent_pb2
 from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
 from tank.channel.v1 import channel_pb2 as _channel_pb2
 from tank.files.v1 import files_pb2 as _files_pb2
+from tank.huddle.v1 import huddle_pb2 as _huddle_pb2
 from tank.message.v1 import message_pb2 as _message_pb2
 from tank.presence.v1 import presence_pb2 as _presence_pb2
 from tank.workspace.v1 import workspace_pb2 as _workspace_pb2
@@ -271,3 +272,21 @@ class MemberUpdated(_message.Message):
     MEMBER_FIELD_NUMBER: _ClassVar[int]
     member: _workspace_pb2.Member
     def __init__(self, member: _Optional[_Union[_workspace_pb2.Member, _Mapping]] = ...) -> None: ...
+
+class HuddleStarted(_message.Message):
+    __slots__ = ("huddle",)
+    HUDDLE_FIELD_NUMBER: _ClassVar[int]
+    huddle: _huddle_pb2.Huddle
+    def __init__(self, huddle: _Optional[_Union[_huddle_pb2.Huddle, _Mapping]] = ...) -> None: ...
+
+class HuddleEnded(_message.Message):
+    __slots__ = ("huddle",)
+    HUDDLE_FIELD_NUMBER: _ClassVar[int]
+    huddle: _huddle_pb2.Huddle
+    def __init__(self, huddle: _Optional[_Union[_huddle_pb2.Huddle, _Mapping]] = ...) -> None: ...
+
+class HuddleParticipantsChanged(_message.Message):
+    __slots__ = ("huddle",)
+    HUDDLE_FIELD_NUMBER: _ClassVar[int]
+    huddle: _huddle_pb2.Huddle
+    def __init__(self, huddle: _Optional[_Union[_huddle_pb2.Huddle, _Mapping]] = ...) -> None: ...

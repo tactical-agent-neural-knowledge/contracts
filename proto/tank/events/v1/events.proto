@@ -8,6 +8,7 @@ import "tank/agent/v1/agent.proto";
 import "tank/blocks/v1/blocks.proto";
 import "tank/channel/v1/channel.proto";
 import "tank/files/v1/files.proto";
+import "tank/huddle/v1/huddle.proto";
 import "tank/message/v1/message.proto";
 import "tank/presence/v1/presence.proto";
 import "tank/workspace/v1/workspace.proto";
@@ -89,6 +90,8 @@ message AgentStatus {
   string status = 4; // "reading repo", "running tests", ...
 }
 // file.ready on evt.{ws}.user.{uploader}: the upload is verified and readable.
+// Also published on evt.{ws}.ch.{channel} for every channel the file is
+// shared in, and on evt.{ws}.thread.{root} when the sharing message is a reply.
 message FileReady {
   tank.files.v1.File file = 1;
 }
@@ -161,4 +164,17 @@ message BookmarkChanged {
 // name, avatar, title, timezone).
 message MemberUpdated {
   tank.workspace.v1.Member member = 1;
+}
+// huddle.started on evt.{ws}.ch.{channel} (and evt.{ws}.ws for public channels).
+message HuddleStarted {
+  tank.huddle.v1.Huddle huddle = 1;
+}
+// huddle.ended on the same subjects as huddle.started.
+message HuddleEnded {
+  tank.huddle.v1.Huddle huddle = 1;
+}
+// huddle.participants.changed on the same subjects: someone joined, left or
+// (un)muted; huddle.participants is the full current list (sidebar indicator).
+message HuddleParticipantsChanged {
+  tank.huddle.v1.Huddle huddle = 1;
 }

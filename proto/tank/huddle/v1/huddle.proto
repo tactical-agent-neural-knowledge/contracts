@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package tank.huddle.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// A huddle is the audio/video room of one channel (LiveKit room
+// ws-{workspace_id}-ch-{channel_id}); at most one is active per channel.
+message HuddleParticipant {
+  string user_id = 1;
+  google.protobuf.Timestamp joined_at = 2;
+  bool muted = 3; // microphone muted / no audio track published
+}
+
+message Huddle {
+  string channel_id = 1;
+  string workspace_id = 2;
+  string room_name = 3;
+  string started_by = 4;
+  google.protobuf.Timestamp started_at = 5;
+  google.protobuf.Timestamp ended_at = 6; // set only on huddle.ended
+  repeated HuddleParticipant participants = 7; // currently connected
+}
+
+message JoinHuddleRequest {
+  string channel_id = 1;
+  bool audio_only = 2; // the token may publish only a microphone track
+}
+message JoinHuddleResponse {
+  string url = 1;        // LiveKit server URL (wss://)
+  string token = 2;      // room token for this user
+  string room_name = 3;
+  google.protobuf.Timestamp expires_at = 4;
+  Huddle huddle = 5;
+}
+
+message LeaveHuddleRequest {
+  string channel_id = 1;
+}
+message LeaveHuddleResponse {}
+
+message GetHuddleRequest {
+  string channel_id = 1;
+}
+message GetHuddleResponse {
+  Huddle huddle = 1; // unset when no huddle is active
+}
+
+message ListActiveHuddlesRequest {
+  string workspace_id = 1;
+}
+message ListActiveHuddlesResponse {
+  repeated Huddle huddles = 1; // in channels the caller can see
+}
+
+service HuddleService {
+  rpc JoinHuddle(JoinHuddleRequest) returns (JoinHuddleResponse);
+  rpc LeaveHuddle(LeaveHuddleRequest) returns (LeaveHuddleResponse);
+  rpc GetHuddle(GetHuddleRequest) returns (GetHuddleResponse);
+  rpc ListActiveHuddles(ListActiveHuddlesRequest) returns (ListActiveHuddlesResponse);
+}
