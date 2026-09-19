@@ -28,12 +28,13 @@ from tank.agent.v1 import agent_pb2 as tank_dot_agent_dot_v1_dot_agent__pb2
 from tank.blocks.v1 import blocks_pb2 as tank_dot_blocks_dot_v1_dot_blocks__pb2
 from tank.channel.v1 import channel_pb2 as tank_dot_channel_dot_v1_dot_channel__pb2
 from tank.files.v1 import files_pb2 as tank_dot_files_dot_v1_dot_files__pb2
+from tank.huddle.v1 import huddle_pb2 as tank_dot_huddle_dot_v1_dot_huddle__pb2
 from tank.message.v1 import message_pb2 as tank_dot_message_dot_v1_dot_message__pb2
 from tank.presence.v1 import presence_pb2 as tank_dot_presence_dot_v1_dot_presence__pb2
 from tank.workspace.v1 import workspace_pb2 as tank_dot_workspace_dot_v1_dot_workspace__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1btank/events/v1/events.proto\x12\x0etank.events.v1\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19tank/agent/v1/agent.proto\x1a\x1btank/blocks/v1/blocks.proto\x1a\x1dtank/channel/v1/channel.proto\x1a\x19tank/files/v1/files.proto\x1a\x1dtank/message/v1/message.proto\x1a\x1ftank/presence/v1/presence.proto\x1a!tank/workspace/v1/workspace.proto\"\xfb\x01\n\x08\x45nvelope\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12!\n\x0cworkspace_id\x18\x02 \x01(\tR\x0bworkspaceId\x12\x12\n\x04type\x18\x03 \x01(\tR\x04type\x12\x18\n\x07subject\x18\x04 \x01(\tR\x07subject\x12;\n\x0boccurred_at\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\noccurredAt\x12!\n\x0ctrace_parent\x18\x06 \x01(\tR\x0btraceParent\x12.\n\x07payload\x18\x07 \x01(\x0b\x32\x14.google.protobuf.AnyR\x07payload\"D\n\x0eMessageCreated\x12\x32\n\x07message\x18\x01 \x01(\x0b\x32\x18.tank.message.v1.MessageR\x07message\"D\n\x0eMessageUpdated\x12\x32\n\x07message\x18\x01 \x01(\x0b\x32\x18.tank.message.v1.MessageR\x07message\"t\n\x0eMessageDeleted\x12\x1d\n\nmessage_id\x18\x01 \x01(\tR\tmessageId\x12\x1d\n\nchannel_id\x18\x02 \x01(\tR\tchannelId\x12$\n\x0ethread_root_id\x18\x03 \x01(\tR\x0cthreadRootId\"]\n\rReactionAdded\x12\x1d\n\nmessage_id\x18\x01 \x01(\tR\tmessageId\x12\x17\n\x07user_id\x18\x02 \x01(\tR\x06userId\x12\x14\n\x05\x65moji\x18\x03 \x01(\tR\x05\x65moji\"_\n\x0fReactionRemoved\x12\x1d\n\nmessage_id\x18\x01 \x01(\tR\tmessageId\x12\x17\n\x07user_id\x18\x02 \x01(\tR\x06userId\x12\x14\n\x05\x65moji\x18\x03 \x01(\tR\x05\x65moji\"\xc5\x01\n\x10ReadStateUpdated\x12\x17\n\x07user_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n\nchannel_id\x18\x02 \x01(\tR\tchannelId\x12\"\n\rlast_read_seq\x18\x03 \x01(\x03R\x0blastReadSeq\x12$\n\x0ethread_root_id\x18\x04 \x01(\tR\x0cthreadRootId\x12/\n\x14last_read_thread_seq\x18\x05 \x01(\x03R\x11lastReadThreadSeq\"c\n\x0e\x43hannelUpdated\x12\x1d\n\nchannel_id\x18\x01 \x01(\tR\tchannelId\x12\x32\n\x07\x63hannel\x18\x02 \x01(\x0b\x32\x18.tank.channel.v1.ChannelR\x07\x63hannel\"\x85\x01\n\x18\x43hannelMembershipChanged\x12\x1d\n\nchannel_id\x18\x01 \x01(\tR\tchannelId\x12\x17\n\x07user_id\x18\x02 \x01(\tR\x06userId\x12\x16\n\x06joined\x18\x03 \x01(\x08R\x06joined\x12\x19\n\x08\x61\x63tor_id\x18\x04 \x01(\tR\x07\x61\x63torId\"A\n\nCardAction\x12\x33\n\x06\x61\x63tion\x18\x01 \x01(\x0b\x32\x1b.tank.blocks.v1.BlockActionR\x06\x61\x63tion\"\x98\x01\n\nAppCommand\x12\x18\n\x07\x63ommand\x18\x01 \x01(\tR\x07\x63ommand\x12\x12\n\x04text\x18\x02 \x01(\tR\x04text\x12\x17\n\x07user_id\x18\x03 \x01(\tR\x06userId\x12\x1d\n\nchannel_id\x18\x04 \x01(\tR\tchannelId\x12$\n\x0ethread_root_id\x18\x05 \x01(\tR\x0cthreadRootId\"I\n\x0fPresenceChanged\x12\x36\n\x08presence\x18\x01 \x01(\x0b\x32\x1a.tank.presence.v1.PresenceR\x08presence\"f\n\x06Typing\x12\x1d\n\nchannel_id\x18\x01 \x01(\tR\tchannelId\x12\x17\n\x07user_id\x18\x02 \x01(\tR\x06userId\x12$\n\x0ethread_root_id\x18\x03 \x01(\tR\x0cthreadRootId\"\x81\x01\n\x0b\x41gentStatus\x12\x1d\n\nchannel_id\x18\x01 \x01(\tR\tchannelId\x12$\n\x0ethread_root_id\x18\x02 \x01(\tR\x0cthreadRootId\x12\x15\n\x06run_id\x18\x03 \x01(\tR\x05runId\x12\x16\n\x06status\x18\x04 \x01(\tR\x06status\"4\n\tFileReady\x12\'\n\x04\x66ile\x18\x01 \x01(\x0b\x32\x13.tank.files.v1.FileR\x04\x66ile\"_\n\x10MessageEphemeral\x12\x32\n\x07message\x18\x01 \x01(\x0b\x32\x18.tank.message.v1.MessageR\x07message\x12\x17\n\x07user_id\x18\x02 \x01(\tR\x06userId\">\n\x11NotificationsRead\x12)\n\x10notification_ids\x18\x01 \x03(\tR\x0fnotificationIds\"7\n\x0f\x41gentRunUpdated\x12$\n\x03run\x18\x01 \x01(\x0b\x32\x12.tank.agent.v1.RunR\x03run\"\xab\x01\n\x13NotificationCreated\x12\'\n\x0fnotification_id\x18\x01 \x01(\tR\x0enotificationId\x12\x12\n\x04kind\x18\x02 \x01(\tR\x04kind\x12\x1d\n\nmessage_id\x18\x03 \x01(\tR\tmessageId\x12\x1d\n\nchannel_id\x18\x04 \x01(\tR\tchannelId\x12\x19\n\x08\x61\x63tor_id\x18\x05 \x01(\tR\x07\x61\x63torId\"{\n\nPinChanged\x12\x1d\n\nmessage_id\x18\x01 \x01(\tR\tmessageId\x12\x1d\n\nchannel_id\x18\x02 \x01(\tR\tchannelId\x12\x17\n\x07user_id\x18\x03 \x01(\tR\x06userId\x12\x16\n\x06pinned\x18\x04 \x01(\x08R\x06pinned\"r\n\x0c\x45mojiChanged\x12\x34\n\x05\x65moji\x18\x01 \x01(\x0b\x32\x1e.tank.workspace.v1.CustomEmojiR\x05\x65moji\x12\x18\n\x07\x64\x65leted\x18\x02 \x01(\x08R\x07\x64\x65leted\x12\x12\n\x04hash\x18\x03 \x01(\tR\x04hash\"o\n\x12PreferencesUpdated\x12\x17\n\x07user_id\x18\x01 \x01(\tR\x06userId\x12@\n\x0bpreferences\x18\x02 \x01(\x0b\x32\x1e.tank.workspace.v1.PreferencesR\x0bpreferences\"u\n\x18\x43hannelPreferenceUpdated\x12\x17\n\x07user_id\x18\x01 \x01(\tR\x06userId\x12@\n\nread_state\x18\x02 \x01(\x0b\x32!.tank.channel.v1.ChannelReadStateR\treadState\"q\n\x0c\x44raftUpdated\x12\x17\n\x07user_id\x18\x01 \x01(\tR\x06userId\x12.\n\x05\x64raft\x18\x02 \x01(\x0b\x32\x18.tank.workspace.v1.DraftR\x05\x64raft\x12\x18\n\x07\x64\x65leted\x18\x03 \x01(\x08R\x07\x64\x65leted\"Y\n\x14ScheduledMessageSent\x12\x41\n\tscheduled\x18\x01 \x01(\x0b\x32#.tank.workspace.v1.ScheduledMessageR\tscheduled\"`\n\x10UserGroupUpdated\x12\x32\n\x05group\x18\x01 \x01(\x0b\x32\x1c.tank.workspace.v1.UserGroupR\x05group\x12\x18\n\x07\x64\x65leted\x18\x02 \x01(\x08R\x07\x64\x65leted\"k\n\x0f\x42ookmarkChanged\x12>\n\x08\x62ookmark\x18\x01 \x01(\x0b\x32\".tank.workspace.v1.ChannelBookmarkR\x08\x62ookmark\x12\x18\n\x07removed\x18\x02 \x01(\x08R\x07removed\"B\n\rMemberUpdated\x12\x31\n\x06member\x18\x01 \x01(\x0b\x32\x19.tank.workspace.v1.MemberR\x06memberB\xd0\x01\n\x12\x63om.tank.events.v1B\x0b\x45ventsProtoP\x01ZSgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/events/v1;eventsv1\xa2\x02\x03TEX\xaa\x02\x0eTank.Events.V1\xca\x02\x0eTank\\Events\\V1\xe2\x02\x1aTank\\Events\\V1\\GPBMetadata\xea\x02\x10Tank::Events::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1btank/events/v1/events.proto\x12\x0etank.events.v1\x1a\x19google/protobuf/any.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19tank/agent/v1/agent.proto\x1a\x1btank/blocks/v1/blocks.proto\x1a\x1dtank/channel/v1/channel.proto\x1a\x19tank/files/v1/files.proto\x1a\x1btank/huddle/v1/huddle.proto\x1a\x1dtank/message/v1/message.proto\x1a\x1ftank/presence/v1/presence.proto\x1a!tank/workspace/v1/workspace.proto\"\xfb\x01\n\x08\x45nvelope\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12!\n\x0cworkspace_id\x18\x02 \x01(\tR\x0bworkspaceId\x12\x12\n\x04type\x18\x03 \x01(\tR\x04type\x12\x18\n\x07subject\x18\x04 \x01(\tR\x07subject\x12;\n\x0boccurred_at\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\noccurredAt\x12!\n\x0ctrace_parent\x18\x06 \x01(\tR\x0btraceParent\x12.\n\x07payload\x18\x07 \x01(\x0b\x32\x14.google.protobuf.AnyR\x07payload\"D\n\x0eMessageCreated\x12\x32\n\x07message\x18\x01 \x01(\x0b\x32\x18.tank.message.v1.MessageR\x07message\"D\n\x0eMessageUpdated\x12\x32\n\x07message\x18\x01 \x01(\x0b\x32\x18.tank.message.v1.MessageR\x07message\"t\n\x0eMessageDeleted\x12\x1d\n\nmessage_id\x18\x01 \x01(\tR\tmessageId\x12\x1d\n\nchannel_id\x18\x02 \x01(\tR\tchannelId\x12$\n\x0ethread_root_id\x18\x03 \x01(\tR\x0cthreadRootId\"]\n\rReactionAdded\x12\x1d\n\nmessage_id\x18\x01 \x01(\tR\tmessageId\x12\x17\n\x07user_id\x18\x02 \x01(\tR\x06userId\x12\x14\n\x05\x65moji\x18\x03 \x01(\tR\x05\x65moji\"_\n\x0fReactionRemoved\x12\x1d\n\nmessage_id\x18\x01 \x01(\tR\tmessageId\x12\x17\n\x07user_id\x18\x02 \x01(\tR\x06userId\x12\x14\n\x05\x65moji\x18\x03 \x01(\tR\x05\x65moji\"\xc5\x01\n\x10ReadStateUpdated\x12\x17\n\x07user_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n\nchannel_id\x18\x02 \x01(\tR\tchannelId\x12\"\n\rlast_read_seq\x18\x03 \x01(\x03R\x0blastReadSeq\x12$\n\x0ethread_root_id\x18\x04 \x01(\tR\x0cthreadRootId\x12/\n\x14last_read_thread_seq\x18\x05 \x01(\x03R\x11lastReadThreadSeq\"c\n\x0e\x43hannelUpdated\x12\x1d\n\nchannel_id\x18\x01 \x01(\tR\tchannelId\x12\x32\n\x07\x63hannel\x18\x02 \x01(\x0b\x32\x18.tank.channel.v1.ChannelR\x07\x63hannel\"\x85\x01\n\x18\x43hannelMembershipChanged\x12\x1d\n\nchannel_id\x18\x01 \x01(\tR\tchannelId\x12\x17\n\x07user_id\x18\x02 \x01(\tR\x06userId\x12\x16\n\x06joined\x18\x03 \x01(\x08R\x06joined\x12\x19\n\x08\x61\x63tor_id\x18\x04 \x01(\tR\x07\x61\x63torId\"A\n\nCardAction\x12\x33\n\x06\x61\x63tion\x18\x01 \x01(\x0b\x32\x1b.tank.blocks.v1.BlockActionR\x06\x61\x63tion\"\x98\x01\n\nAppCommand\x12\x18\n\x07\x63ommand\x18\x01 \x01(\tR\x07\x63ommand\x12\x12\n\x04text\x18\x02 \x01(\tR\x04text\x12\x17\n\x07user_id\x18\x03 \x01(\tR\x06userId\x12\x1d\n\nchannel_id\x18\x04 \x01(\tR\tchannelId\x12$\n\x0ethread_root_id\x18\x05 \x01(\tR\x0cthreadRootId\"I\n\x0fPresenceChanged\x12\x36\n\x08presence\x18\x01 \x01(\x0b\x32\x1a.tank.presence.v1.PresenceR\x08presence\"f\n\x06Typing\x12\x1d\n\nchannel_id\x18\x01 \x01(\tR\tchannelId\x12\x17\n\x07user_id\x18\x02 \x01(\tR\x06userId\x12$\n\x0ethread_root_id\x18\x03 \x01(\tR\x0cthreadRootId\"\x81\x01\n\x0b\x41gentStatus\x12\x1d\n\nchannel_id\x18\x01 \x01(\tR\tchannelId\x12$\n\x0ethread_root_id\x18\x02 \x01(\tR\x0cthreadRootId\x12\x15\n\x06run_id\x18\x03 \x01(\tR\x05runId\x12\x16\n\x06status\x18\x04 \x01(\tR\x06status\"4\n\tFileReady\x12\'\n\x04\x66ile\x18\x01 \x01(\x0b\x32\x13.tank.files.v1.FileR\x04\x66ile\"_\n\x10MessageEphemeral\x12\x32\n\x07message\x18\x01 \x01(\x0b\x32\x18.tank.message.v1.MessageR\x07message\x12\x17\n\x07user_id\x18\x02 \x01(\tR\x06userId\">\n\x11NotificationsRead\x12)\n\x10notification_ids\x18\x01 \x03(\tR\x0fnotificationIds\"7\n\x0f\x41gentRunUpdated\x12$\n\x03run\x18\x01 \x01(\x0b\x32\x12.tank.agent.v1.RunR\x03run\"\xab\x01\n\x13NotificationCreated\x12\'\n\x0fnotification_id\x18\x01 \x01(\tR\x0enotificationId\x12\x12\n\x04kind\x18\x02 \x01(\tR\x04kind\x12\x1d\n\nmessage_id\x18\x03 \x01(\tR\tmessageId\x12\x1d\n\nchannel_id\x18\x04 \x01(\tR\tchannelId\x12\x19\n\x08\x61\x63tor_id\x18\x05 \x01(\tR\x07\x61\x63torId\"{\n\nPinChanged\x12\x1d\n\nmessage_id\x18\x01 \x01(\tR\tmessageId\x12\x1d\n\nchannel_id\x18\x02 \x01(\tR\tchannelId\x12\x17\n\x07user_id\x18\x03 \x01(\tR\x06userId\x12\x16\n\x06pinned\x18\x04 \x01(\x08R\x06pinned\"r\n\x0c\x45mojiChanged\x12\x34\n\x05\x65moji\x18\x01 \x01(\x0b\x32\x1e.tank.workspace.v1.CustomEmojiR\x05\x65moji\x12\x18\n\x07\x64\x65leted\x18\x02 \x01(\x08R\x07\x64\x65leted\x12\x12\n\x04hash\x18\x03 \x01(\tR\x04hash\"o\n\x12PreferencesUpdated\x12\x17\n\x07user_id\x18\x01 \x01(\tR\x06userId\x12@\n\x0bpreferences\x18\x02 \x01(\x0b\x32\x1e.tank.workspace.v1.PreferencesR\x0bpreferences\"u\n\x18\x43hannelPreferenceUpdated\x12\x17\n\x07user_id\x18\x01 \x01(\tR\x06userId\x12@\n\nread_state\x18\x02 \x01(\x0b\x32!.tank.channel.v1.ChannelReadStateR\treadState\"q\n\x0c\x44raftUpdated\x12\x17\n\x07user_id\x18\x01 \x01(\tR\x06userId\x12.\n\x05\x64raft\x18\x02 \x01(\x0b\x32\x18.tank.workspace.v1.DraftR\x05\x64raft\x12\x18\n\x07\x64\x65leted\x18\x03 \x01(\x08R\x07\x64\x65leted\"Y\n\x14ScheduledMessageSent\x12\x41\n\tscheduled\x18\x01 \x01(\x0b\x32#.tank.workspace.v1.ScheduledMessageR\tscheduled\"`\n\x10UserGroupUpdated\x12\x32\n\x05group\x18\x01 \x01(\x0b\x32\x1c.tank.workspace.v1.UserGroupR\x05group\x12\x18\n\x07\x64\x65leted\x18\x02 \x01(\x08R\x07\x64\x65leted\"k\n\x0f\x42ookmarkChanged\x12>\n\x08\x62ookmark\x18\x01 \x01(\x0b\x32\".tank.workspace.v1.ChannelBookmarkR\x08\x62ookmark\x12\x18\n\x07removed\x18\x02 \x01(\x08R\x07removed\"B\n\rMemberUpdated\x12\x31\n\x06member\x18\x01 \x01(\x0b\x32\x19.tank.workspace.v1.MemberR\x06member\"?\n\rHuddleStarted\x12.\n\x06huddle\x18\x01 \x01(\x0b\x32\x16.tank.huddle.v1.HuddleR\x06huddle\"=\n\x0bHuddleEnded\x12.\n\x06huddle\x18\x01 \x01(\x0b\x32\x16.tank.huddle.v1.HuddleR\x06huddle\"K\n\x19HuddleParticipantsChanged\x12.\n\x06huddle\x18\x01 \x01(\x0b\x32\x16.tank.huddle.v1.HuddleR\x06huddleB\xd0\x01\n\x12\x63om.tank.events.v1B\x0b\x45ventsProtoP\x01ZSgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/events/v1;eventsv1\xa2\x02\x03TEX\xaa\x02\x0eTank.Events.V1\xca\x02\x0eTank\\Events\\V1\xe2\x02\x1aTank\\Events\\V1\\GPBMetadata\xea\x02\x10Tank::Events::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -41,60 +42,66 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'tank.events.v1.events_pb2',
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\022com.tank.events.v1B\013EventsProtoP\001ZSgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/events/v1;eventsv1\242\002\003TEX\252\002\016Tank.Events.V1\312\002\016Tank\\Events\\V1\342\002\032Tank\\Events\\V1\\GPBMetadata\352\002\020Tank::Events::V1'
-  _globals['_ENVELOPE']._serialized_start=321
-  _globals['_ENVELOPE']._serialized_end=572
-  _globals['_MESSAGECREATED']._serialized_start=574
-  _globals['_MESSAGECREATED']._serialized_end=642
-  _globals['_MESSAGEUPDATED']._serialized_start=644
-  _globals['_MESSAGEUPDATED']._serialized_end=712
-  _globals['_MESSAGEDELETED']._serialized_start=714
-  _globals['_MESSAGEDELETED']._serialized_end=830
-  _globals['_REACTIONADDED']._serialized_start=832
-  _globals['_REACTIONADDED']._serialized_end=925
-  _globals['_REACTIONREMOVED']._serialized_start=927
-  _globals['_REACTIONREMOVED']._serialized_end=1022
-  _globals['_READSTATEUPDATED']._serialized_start=1025
-  _globals['_READSTATEUPDATED']._serialized_end=1222
-  _globals['_CHANNELUPDATED']._serialized_start=1224
-  _globals['_CHANNELUPDATED']._serialized_end=1323
-  _globals['_CHANNELMEMBERSHIPCHANGED']._serialized_start=1326
-  _globals['_CHANNELMEMBERSHIPCHANGED']._serialized_end=1459
-  _globals['_CARDACTION']._serialized_start=1461
-  _globals['_CARDACTION']._serialized_end=1526
-  _globals['_APPCOMMAND']._serialized_start=1529
-  _globals['_APPCOMMAND']._serialized_end=1681
-  _globals['_PRESENCECHANGED']._serialized_start=1683
-  _globals['_PRESENCECHANGED']._serialized_end=1756
-  _globals['_TYPING']._serialized_start=1758
-  _globals['_TYPING']._serialized_end=1860
-  _globals['_AGENTSTATUS']._serialized_start=1863
-  _globals['_AGENTSTATUS']._serialized_end=1992
-  _globals['_FILEREADY']._serialized_start=1994
-  _globals['_FILEREADY']._serialized_end=2046
-  _globals['_MESSAGEEPHEMERAL']._serialized_start=2048
-  _globals['_MESSAGEEPHEMERAL']._serialized_end=2143
-  _globals['_NOTIFICATIONSREAD']._serialized_start=2145
-  _globals['_NOTIFICATIONSREAD']._serialized_end=2207
-  _globals['_AGENTRUNUPDATED']._serialized_start=2209
-  _globals['_AGENTRUNUPDATED']._serialized_end=2264
-  _globals['_NOTIFICATIONCREATED']._serialized_start=2267
-  _globals['_NOTIFICATIONCREATED']._serialized_end=2438
-  _globals['_PINCHANGED']._serialized_start=2440
-  _globals['_PINCHANGED']._serialized_end=2563
-  _globals['_EMOJICHANGED']._serialized_start=2565
-  _globals['_EMOJICHANGED']._serialized_end=2679
-  _globals['_PREFERENCESUPDATED']._serialized_start=2681
-  _globals['_PREFERENCESUPDATED']._serialized_end=2792
-  _globals['_CHANNELPREFERENCEUPDATED']._serialized_start=2794
-  _globals['_CHANNELPREFERENCEUPDATED']._serialized_end=2911
-  _globals['_DRAFTUPDATED']._serialized_start=2913
-  _globals['_DRAFTUPDATED']._serialized_end=3026
-  _globals['_SCHEDULEDMESSAGESENT']._serialized_start=3028
-  _globals['_SCHEDULEDMESSAGESENT']._serialized_end=3117
-  _globals['_USERGROUPUPDATED']._serialized_start=3119
-  _globals['_USERGROUPUPDATED']._serialized_end=3215
-  _globals['_BOOKMARKCHANGED']._serialized_start=3217
-  _globals['_BOOKMARKCHANGED']._serialized_end=3324
-  _globals['_MEMBERUPDATED']._serialized_start=3326
-  _globals['_MEMBERUPDATED']._serialized_end=3392
+  _globals['_ENVELOPE']._serialized_start=350
+  _globals['_ENVELOPE']._serialized_end=601
+  _globals['_MESSAGECREATED']._serialized_start=603
+  _globals['_MESSAGECREATED']._serialized_end=671
+  _globals['_MESSAGEUPDATED']._serialized_start=673
+  _globals['_MESSAGEUPDATED']._serialized_end=741
+  _globals['_MESSAGEDELETED']._serialized_start=743
+  _globals['_MESSAGEDELETED']._serialized_end=859
+  _globals['_REACTIONADDED']._serialized_start=861
+  _globals['_REACTIONADDED']._serialized_end=954
+  _globals['_REACTIONREMOVED']._serialized_start=956
+  _globals['_REACTIONREMOVED']._serialized_end=1051
+  _globals['_READSTATEUPDATED']._serialized_start=1054
+  _globals['_READSTATEUPDATED']._serialized_end=1251
+  _globals['_CHANNELUPDATED']._serialized_start=1253
+  _globals['_CHANNELUPDATED']._serialized_end=1352
+  _globals['_CHANNELMEMBERSHIPCHANGED']._serialized_start=1355
+  _globals['_CHANNELMEMBERSHIPCHANGED']._serialized_end=1488
+  _globals['_CARDACTION']._serialized_start=1490
+  _globals['_CARDACTION']._serialized_end=1555
+  _globals['_APPCOMMAND']._serialized_start=1558
+  _globals['_APPCOMMAND']._serialized_end=1710
+  _globals['_PRESENCECHANGED']._serialized_start=1712
+  _globals['_PRESENCECHANGED']._serialized_end=1785
+  _globals['_TYPING']._serialized_start=1787
+  _globals['_TYPING']._serialized_end=1889
+  _globals['_AGENTSTATUS']._serialized_start=1892
+  _globals['_AGENTSTATUS']._serialized_end=2021
+  _globals['_FILEREADY']._serialized_start=2023
+  _globals['_FILEREADY']._serialized_end=2075
+  _globals['_MESSAGEEPHEMERAL']._serialized_start=2077
+  _globals['_MESSAGEEPHEMERAL']._serialized_end=2172
+  _globals['_NOTIFICATIONSREAD']._serialized_start=2174
+  _globals['_NOTIFICATIONSREAD']._serialized_end=2236
+  _globals['_AGENTRUNUPDATED']._serialized_start=2238
+  _globals['_AGENTRUNUPDATED']._serialized_end=2293
+  _globals['_NOTIFICATIONCREATED']._serialized_start=2296
+  _globals['_NOTIFICATIONCREATED']._serialized_end=2467
+  _globals['_PINCHANGED']._serialized_start=2469
+  _globals['_PINCHANGED']._serialized_end=2592
+  _globals['_EMOJICHANGED']._serialized_start=2594
+  _globals['_EMOJICHANGED']._serialized_end=2708
+  _globals['_PREFERENCESUPDATED']._serialized_start=2710
+  _globals['_PREFERENCESUPDATED']._serialized_end=2821
+  _globals['_CHANNELPREFERENCEUPDATED']._serialized_start=2823
+  _globals['_CHANNELPREFERENCEUPDATED']._serialized_end=2940
+  _globals['_DRAFTUPDATED']._serialized_start=2942
+  _globals['_DRAFTUPDATED']._serialized_end=3055
+  _globals['_SCHEDULEDMESSAGESENT']._serialized_start=3057
+  _globals['_SCHEDULEDMESSAGESENT']._serialized_end=3146
+  _globals['_USERGROUPUPDATED']._serialized_start=3148
+  _globals['_USERGROUPUPDATED']._serialized_end=3244
+  _globals['_BOOKMARKCHANGED']._serialized_start=3246
+  _globals['_BOOKMARKCHANGED']._serialized_end=3353
+  _globals['_MEMBERUPDATED']._serialized_start=3355
+  _globals['_MEMBERUPDATED']._serialized_end=3421
+  _globals['_HUDDLESTARTED']._serialized_start=3423
+  _globals['_HUDDLESTARTED']._serialized_end=3486
+  _globals['_HUDDLEENDED']._serialized_start=3488
+  _globals['_HUDDLEENDED']._serialized_end=3549
+  _globals['_HUDDLEPARTICIPANTSCHANGED']._serialized_start=3551
+  _globals['_HUDDLEPARTICIPANTSCHANGED']._serialized_end=3626
 # @@protoc_insertion_point(module_scope)

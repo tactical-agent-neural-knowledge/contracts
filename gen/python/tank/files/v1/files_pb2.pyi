@@ -21,7 +21,7 @@ SCAN_STATUS_INFECTED: ScanStatus
 SCAN_STATUS_FAILED: ScanStatus
 
 class File(_message.Message):
-    __slots__ = ("id", "workspace_id", "uploader_id", "name", "mime", "size", "scan_status", "width", "height", "duration_ms", "thumbnails", "created_at")
+    __slots__ = ("id", "workspace_id", "uploader_id", "name", "mime", "size", "scan_status", "width", "height", "duration_ms", "thumbnails", "created_at", "shared_in_channel_ids", "uploader_display_name")
     class ThumbnailsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -41,6 +41,8 @@ class File(_message.Message):
     DURATION_MS_FIELD_NUMBER: _ClassVar[int]
     THUMBNAILS_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    SHARED_IN_CHANNEL_IDS_FIELD_NUMBER: _ClassVar[int]
+    UPLOADER_DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     uploader_id: str
@@ -53,7 +55,9 @@ class File(_message.Message):
     duration_ms: int
     thumbnails: _containers.ScalarMap[str, str]
     created_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., uploader_id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., size: _Optional[int] = ..., scan_status: _Optional[_Union[ScanStatus, str]] = ..., width: _Optional[int] = ..., height: _Optional[int] = ..., duration_ms: _Optional[int] = ..., thumbnails: _Optional[_Mapping[str, str]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    shared_in_channel_ids: _containers.RepeatedScalarFieldContainer[str]
+    uploader_display_name: str
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., uploader_id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., size: _Optional[int] = ..., scan_status: _Optional[_Union[ScanStatus, str]] = ..., width: _Optional[int] = ..., height: _Optional[int] = ..., duration_ms: _Optional[int] = ..., thumbnails: _Optional[_Mapping[str, str]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., shared_in_channel_ids: _Optional[_Iterable[str]] = ..., uploader_display_name: _Optional[str] = ...) -> None: ...
 
 class CreateUploadRequest(_message.Message):
     __slots__ = ("workspace_id", "name", "mime", "size", "channel_id")
@@ -112,3 +116,35 @@ class GetDownloadUrlResponse(_message.Message):
     url: str
     expires_at: _timestamp_pb2.Timestamp
     def __init__(self, url: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class GetFileRequest(_message.Message):
+    __slots__ = ("file_id",)
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    file_id: str
+    def __init__(self, file_id: _Optional[str] = ...) -> None: ...
+
+class GetFileResponse(_message.Message):
+    __slots__ = ("file",)
+    FILE_FIELD_NUMBER: _ClassVar[int]
+    file: File
+    def __init__(self, file: _Optional[_Union[File, _Mapping]] = ...) -> None: ...
+
+class ListFilesRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "cursor", "limit")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    CURSOR_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    cursor: str
+    limit: int
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., cursor: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListFilesResponse(_message.Message):
+    __slots__ = ("files", "next_cursor")
+    FILES_FIELD_NUMBER: _ClassVar[int]
+    NEXT_CURSOR_FIELD_NUMBER: _ClassVar[int]
+    files: _containers.RepeatedCompositeFieldContainer[File]
+    next_cursor: str
+    def __init__(self, files: _Optional[_Iterable[_Union[File, _Mapping]]] = ..., next_cursor: _Optional[str] = ...) -> None: ...

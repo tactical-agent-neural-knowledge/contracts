@@ -25,6 +25,9 @@ message File {
   int64 duration_ms = 10;
   map<string, string> thumbnails = 11; // size -> signed URL
   google.protobuf.Timestamp created_at = 12;
+  // Channels the file has been shared in (through messages) that the caller can see.
+  repeated string shared_in_channel_ids = 13;
+  string uploader_display_name = 14;
 }
 
 message CreateUploadRequest {
@@ -59,8 +62,32 @@ message GetDownloadUrlResponse {
   google.protobuf.Timestamp expires_at = 2;
 }
 
+// GetFile returns metadata for one file the caller may read (uploader, member
+// of a channel it was shared in, or a workspace member for emoji / avatars).
+message GetFileRequest {
+  string file_id = 1;
+}
+message GetFileResponse {
+  File file = 1;
+}
+
+// ListFiles pages the files the caller may read in a workspace, newest first;
+// channel_id narrows to files shared in that channel (caller must be a member).
+message ListFilesRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string cursor = 3; // opaque
+  int32 limit = 4;
+}
+message ListFilesResponse {
+  repeated File files = 1;
+  string next_cursor = 2;
+}
+
 service FilesService {
   rpc CreateUpload(CreateUploadRequest) returns (CreateUploadResponse);
   rpc CompleteUpload(CompleteUploadRequest) returns (CompleteUploadResponse);
   rpc GetDownloadUrl(GetDownloadUrlRequest) returns (GetDownloadUrlResponse);
+  rpc GetFile(GetFileRequest) returns (GetFileResponse);
+  rpc ListFiles(ListFilesRequest) returns (ListFilesResponse);
 }
