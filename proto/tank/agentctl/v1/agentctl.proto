@@ -255,20 +255,28 @@ message StreamEventsResponse {
 
 // ------------------------------------------------------------- session store
 
-// Mirrors the Claude Agent SDK SessionStore contract: append-only entries per
-// (project_key, session_id), listed back in order on resume.
+// Mirrors the Claude Agent SDK SessionStore contract (append/load keyed by
+// projectKey + sessionId + optional subpath for subagent transcripts, plus a
+// per-session summary), so a new pod can resume the session.
 message SessionEntry {
   string session_id = 1;
   string project_key = 2;
-  int64 seq = 3;
-  string parent_id = 4;
-  string entry_type = 5;
+  string subpath = 3;            // "" for the main transcript
+  int64 seq = 4;                 // server-assigned append order
+  string entry_uuid = 5;         // SDK entry uuid, used for de-duplication
   bytes payload = 6;             // the SDK entry, JSON-encoded
   google.protobuf.Timestamp created_at = 7;
 }
 
+message SessionSummary {
+  string session_id = 1;
+  int64 mtime_ms = 2;
+  google.protobuf.Struct data = 3; // SDK-owned, persisted verbatim
+}
+
 message SessionStorePutRequest {
   repeated SessionEntry entries = 1;
+  SessionSummary summary = 2; // optional: replaces the session's summary
 }
 message SessionStorePutResponse {
   int32 written = 1;
@@ -277,20 +285,37 @@ message SessionStorePutResponse {
 message SessionStoreListRequest {
   string session_id = 1;
   string project_key = 2;
-  int64 after_seq = 3;
-  int32 limit = 4;
+  string subpath = 3;
+  int64 after_seq = 4;
+  int32 limit = 5;
 }
 message SessionStoreListResponse {
   repeated SessionEntry entries = 1;
   bool has_more = 2;
+  bool found = 3; // false when no entries exist for the key at all
 }
 
 message SessionStoreListSessionsRequest {
   string project_key = 1;
 }
 message SessionStoreListSessionsResponse {
-  repeated string session_ids = 1;
+  repeated SessionSummary sessions = 1;
 }
+
+message SessionStoreListSubkeysRequest {
+  string session_id = 1;
+  string project_key = 2;
+}
+message SessionStoreListSubkeysResponse {
+  repeated string subpaths = 1;
+}
+
+message SessionStoreDeleteRequest {
+  string session_id = 1;
+  string project_key = 2;
+  string subpath = 3;
+}
+message SessionStoreDeleteResponse {}
 
 // ---------------------------------------------------------------------- inbox
 
@@ -355,6 +380,8 @@ service RunnerService {
   rpc SessionStorePut(SessionStorePutRequest) returns (SessionStorePutResponse);
   rpc SessionStoreList(SessionStoreListRequest) returns (SessionStoreListResponse);
   rpc SessionStoreListSessions(SessionStoreListSessionsRequest) returns (SessionStoreListSessionsResponse);
+  rpc SessionStoreListSubkeys(SessionStoreListSubkeysRequest) returns (SessionStoreListSubkeysResponse);
+  rpc SessionStoreDelete(SessionStoreDeleteRequest) returns (SessionStoreDeleteResponse);
 }
 
 // ------------------------------------------------------------ control service

@@ -89,6 +89,12 @@ const (
 	// RunnerServiceSessionStoreListSessionsProcedure is the fully-qualified name of the RunnerService's
 	// SessionStoreListSessions RPC.
 	RunnerServiceSessionStoreListSessionsProcedure = "/tank.agentctl.v1.RunnerService/SessionStoreListSessions"
+	// RunnerServiceSessionStoreListSubkeysProcedure is the fully-qualified name of the RunnerService's
+	// SessionStoreListSubkeys RPC.
+	RunnerServiceSessionStoreListSubkeysProcedure = "/tank.agentctl.v1.RunnerService/SessionStoreListSubkeys"
+	// RunnerServiceSessionStoreDeleteProcedure is the fully-qualified name of the RunnerService's
+	// SessionStoreDelete RPC.
+	RunnerServiceSessionStoreDeleteProcedure = "/tank.agentctl.v1.RunnerService/SessionStoreDelete"
 	// ControlServiceStartRunProcedure is the fully-qualified name of the ControlService's StartRun RPC.
 	ControlServiceStartRunProcedure = "/tank.agentctl.v1.ControlService/StartRun"
 	// ControlServiceGetRunProcedure is the fully-qualified name of the ControlService's GetRun RPC.
@@ -131,6 +137,8 @@ type RunnerServiceClient interface {
 	SessionStorePut(context.Context, *connect.Request[v1.SessionStorePutRequest]) (*connect.Response[v1.SessionStorePutResponse], error)
 	SessionStoreList(context.Context, *connect.Request[v1.SessionStoreListRequest]) (*connect.Response[v1.SessionStoreListResponse], error)
 	SessionStoreListSessions(context.Context, *connect.Request[v1.SessionStoreListSessionsRequest]) (*connect.Response[v1.SessionStoreListSessionsResponse], error)
+	SessionStoreListSubkeys(context.Context, *connect.Request[v1.SessionStoreListSubkeysRequest]) (*connect.Response[v1.SessionStoreListSubkeysResponse], error)
+	SessionStoreDelete(context.Context, *connect.Request[v1.SessionStoreDeleteRequest]) (*connect.Response[v1.SessionStoreDeleteResponse], error)
 }
 
 // NewRunnerServiceClient constructs a client for the tank.agentctl.v1.RunnerService service. By
@@ -258,6 +266,18 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("SessionStoreListSessions")),
 			connect.WithClientOptions(opts...),
 		),
+		sessionStoreListSubkeys: connect.NewClient[v1.SessionStoreListSubkeysRequest, v1.SessionStoreListSubkeysResponse](
+			httpClient,
+			baseURL+RunnerServiceSessionStoreListSubkeysProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("SessionStoreListSubkeys")),
+			connect.WithClientOptions(opts...),
+		),
+		sessionStoreDelete: connect.NewClient[v1.SessionStoreDeleteRequest, v1.SessionStoreDeleteResponse](
+			httpClient,
+			baseURL+RunnerServiceSessionStoreDeleteProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("SessionStoreDelete")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -282,6 +302,8 @@ type runnerServiceClient struct {
 	sessionStorePut          *connect.Client[v1.SessionStorePutRequest, v1.SessionStorePutResponse]
 	sessionStoreList         *connect.Client[v1.SessionStoreListRequest, v1.SessionStoreListResponse]
 	sessionStoreListSessions *connect.Client[v1.SessionStoreListSessionsRequest, v1.SessionStoreListSessionsResponse]
+	sessionStoreListSubkeys  *connect.Client[v1.SessionStoreListSubkeysRequest, v1.SessionStoreListSubkeysResponse]
+	sessionStoreDelete       *connect.Client[v1.SessionStoreDeleteRequest, v1.SessionStoreDeleteResponse]
 }
 
 // GetRunContext calls tank.agentctl.v1.RunnerService.GetRunContext.
@@ -379,6 +401,16 @@ func (c *runnerServiceClient) SessionStoreListSessions(ctx context.Context, req 
 	return c.sessionStoreListSessions.CallUnary(ctx, req)
 }
 
+// SessionStoreListSubkeys calls tank.agentctl.v1.RunnerService.SessionStoreListSubkeys.
+func (c *runnerServiceClient) SessionStoreListSubkeys(ctx context.Context, req *connect.Request[v1.SessionStoreListSubkeysRequest]) (*connect.Response[v1.SessionStoreListSubkeysResponse], error) {
+	return c.sessionStoreListSubkeys.CallUnary(ctx, req)
+}
+
+// SessionStoreDelete calls tank.agentctl.v1.RunnerService.SessionStoreDelete.
+func (c *runnerServiceClient) SessionStoreDelete(ctx context.Context, req *connect.Request[v1.SessionStoreDeleteRequest]) (*connect.Response[v1.SessionStoreDeleteResponse], error) {
+	return c.sessionStoreDelete.CallUnary(ctx, req)
+}
+
 // RunnerServiceHandler is an implementation of the tank.agentctl.v1.RunnerService service.
 type RunnerServiceHandler interface {
 	GetRunContext(context.Context, *connect.Request[v1.GetRunContextRequest]) (*connect.Response[v1.GetRunContextResponse], error)
@@ -402,6 +434,8 @@ type RunnerServiceHandler interface {
 	SessionStorePut(context.Context, *connect.Request[v1.SessionStorePutRequest]) (*connect.Response[v1.SessionStorePutResponse], error)
 	SessionStoreList(context.Context, *connect.Request[v1.SessionStoreListRequest]) (*connect.Response[v1.SessionStoreListResponse], error)
 	SessionStoreListSessions(context.Context, *connect.Request[v1.SessionStoreListSessionsRequest]) (*connect.Response[v1.SessionStoreListSessionsResponse], error)
+	SessionStoreListSubkeys(context.Context, *connect.Request[v1.SessionStoreListSubkeysRequest]) (*connect.Response[v1.SessionStoreListSubkeysResponse], error)
+	SessionStoreDelete(context.Context, *connect.Request[v1.SessionStoreDeleteRequest]) (*connect.Response[v1.SessionStoreDeleteResponse], error)
 }
 
 // NewRunnerServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -525,6 +559,18 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("SessionStoreListSessions")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceSessionStoreListSubkeysHandler := connect.NewUnaryHandler(
+		RunnerServiceSessionStoreListSubkeysProcedure,
+		svc.SessionStoreListSubkeys,
+		connect.WithSchema(runnerServiceMethods.ByName("SessionStoreListSubkeys")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceSessionStoreDeleteHandler := connect.NewUnaryHandler(
+		RunnerServiceSessionStoreDeleteProcedure,
+		svc.SessionStoreDelete,
+		connect.WithSchema(runnerServiceMethods.ByName("SessionStoreDelete")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agentctl.v1.RunnerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case RunnerServiceGetRunContextProcedure:
@@ -565,6 +611,10 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceSessionStoreListHandler.ServeHTTP(w, r)
 		case RunnerServiceSessionStoreListSessionsProcedure:
 			runnerServiceSessionStoreListSessionsHandler.ServeHTTP(w, r)
+		case RunnerServiceSessionStoreListSubkeysProcedure:
+			runnerServiceSessionStoreListSubkeysHandler.ServeHTTP(w, r)
+		case RunnerServiceSessionStoreDeleteProcedure:
+			runnerServiceSessionStoreDeleteHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -648,6 +698,14 @@ func (UnimplementedRunnerServiceHandler) SessionStoreList(context.Context, *conn
 
 func (UnimplementedRunnerServiceHandler) SessionStoreListSessions(context.Context, *connect.Request[v1.SessionStoreListSessionsRequest]) (*connect.Response[v1.SessionStoreListSessionsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.SessionStoreListSessions is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) SessionStoreListSubkeys(context.Context, *connect.Request[v1.SessionStoreListSubkeysRequest]) (*connect.Response[v1.SessionStoreListSubkeysResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.SessionStoreListSubkeys is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) SessionStoreDelete(context.Context, *connect.Request[v1.SessionStoreDeleteRequest]) (*connect.Response[v1.SessionStoreDeleteResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.SessionStoreDelete is not implemented"))
 }
 
 // ControlServiceClient is a client for the tank.agentctl.v1.ControlService service.

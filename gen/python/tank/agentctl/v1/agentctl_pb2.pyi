@@ -436,28 +436,40 @@ class StreamEventsResponse(_message.Message):
     def __init__(self, accepted: _Optional[int] = ...) -> None: ...
 
 class SessionEntry(_message.Message):
-    __slots__ = ("session_id", "project_key", "seq", "parent_id", "entry_type", "payload", "created_at")
+    __slots__ = ("session_id", "project_key", "subpath", "seq", "entry_uuid", "payload", "created_at")
     SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     PROJECT_KEY_FIELD_NUMBER: _ClassVar[int]
+    SUBPATH_FIELD_NUMBER: _ClassVar[int]
     SEQ_FIELD_NUMBER: _ClassVar[int]
-    PARENT_ID_FIELD_NUMBER: _ClassVar[int]
-    ENTRY_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ENTRY_UUID_FIELD_NUMBER: _ClassVar[int]
     PAYLOAD_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     session_id: str
     project_key: str
+    subpath: str
     seq: int
-    parent_id: str
-    entry_type: str
+    entry_uuid: str
     payload: bytes
     created_at: _timestamp_pb2.Timestamp
-    def __init__(self, session_id: _Optional[str] = ..., project_key: _Optional[str] = ..., seq: _Optional[int] = ..., parent_id: _Optional[str] = ..., entry_type: _Optional[str] = ..., payload: _Optional[bytes] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(self, session_id: _Optional[str] = ..., project_key: _Optional[str] = ..., subpath: _Optional[str] = ..., seq: _Optional[int] = ..., entry_uuid: _Optional[str] = ..., payload: _Optional[bytes] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class SessionSummary(_message.Message):
+    __slots__ = ("session_id", "mtime_ms", "data")
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    MTIME_MS_FIELD_NUMBER: _ClassVar[int]
+    DATA_FIELD_NUMBER: _ClassVar[int]
+    session_id: str
+    mtime_ms: int
+    data: _struct_pb2.Struct
+    def __init__(self, session_id: _Optional[str] = ..., mtime_ms: _Optional[int] = ..., data: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
 
 class SessionStorePutRequest(_message.Message):
-    __slots__ = ("entries",)
+    __slots__ = ("entries", "summary")
     ENTRIES_FIELD_NUMBER: _ClassVar[int]
+    SUMMARY_FIELD_NUMBER: _ClassVar[int]
     entries: _containers.RepeatedCompositeFieldContainer[SessionEntry]
-    def __init__(self, entries: _Optional[_Iterable[_Union[SessionEntry, _Mapping]]] = ...) -> None: ...
+    summary: SessionSummary
+    def __init__(self, entries: _Optional[_Iterable[_Union[SessionEntry, _Mapping]]] = ..., summary: _Optional[_Union[SessionSummary, _Mapping]] = ...) -> None: ...
 
 class SessionStorePutResponse(_message.Message):
     __slots__ = ("written",)
@@ -466,24 +478,28 @@ class SessionStorePutResponse(_message.Message):
     def __init__(self, written: _Optional[int] = ...) -> None: ...
 
 class SessionStoreListRequest(_message.Message):
-    __slots__ = ("session_id", "project_key", "after_seq", "limit")
+    __slots__ = ("session_id", "project_key", "subpath", "after_seq", "limit")
     SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     PROJECT_KEY_FIELD_NUMBER: _ClassVar[int]
+    SUBPATH_FIELD_NUMBER: _ClassVar[int]
     AFTER_SEQ_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
     session_id: str
     project_key: str
+    subpath: str
     after_seq: int
     limit: int
-    def __init__(self, session_id: _Optional[str] = ..., project_key: _Optional[str] = ..., after_seq: _Optional[int] = ..., limit: _Optional[int] = ...) -> None: ...
+    def __init__(self, session_id: _Optional[str] = ..., project_key: _Optional[str] = ..., subpath: _Optional[str] = ..., after_seq: _Optional[int] = ..., limit: _Optional[int] = ...) -> None: ...
 
 class SessionStoreListResponse(_message.Message):
-    __slots__ = ("entries", "has_more")
+    __slots__ = ("entries", "has_more", "found")
     ENTRIES_FIELD_NUMBER: _ClassVar[int]
     HAS_MORE_FIELD_NUMBER: _ClassVar[int]
+    FOUND_FIELD_NUMBER: _ClassVar[int]
     entries: _containers.RepeatedCompositeFieldContainer[SessionEntry]
     has_more: bool
-    def __init__(self, entries: _Optional[_Iterable[_Union[SessionEntry, _Mapping]]] = ..., has_more: bool = ...) -> None: ...
+    found: bool
+    def __init__(self, entries: _Optional[_Iterable[_Union[SessionEntry, _Mapping]]] = ..., has_more: bool = ..., found: bool = ...) -> None: ...
 
 class SessionStoreListSessionsRequest(_message.Message):
     __slots__ = ("project_key",)
@@ -492,10 +508,38 @@ class SessionStoreListSessionsRequest(_message.Message):
     def __init__(self, project_key: _Optional[str] = ...) -> None: ...
 
 class SessionStoreListSessionsResponse(_message.Message):
-    __slots__ = ("session_ids",)
-    SESSION_IDS_FIELD_NUMBER: _ClassVar[int]
-    session_ids: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, session_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+    __slots__ = ("sessions",)
+    SESSIONS_FIELD_NUMBER: _ClassVar[int]
+    sessions: _containers.RepeatedCompositeFieldContainer[SessionSummary]
+    def __init__(self, sessions: _Optional[_Iterable[_Union[SessionSummary, _Mapping]]] = ...) -> None: ...
+
+class SessionStoreListSubkeysRequest(_message.Message):
+    __slots__ = ("session_id", "project_key")
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    PROJECT_KEY_FIELD_NUMBER: _ClassVar[int]
+    session_id: str
+    project_key: str
+    def __init__(self, session_id: _Optional[str] = ..., project_key: _Optional[str] = ...) -> None: ...
+
+class SessionStoreListSubkeysResponse(_message.Message):
+    __slots__ = ("subpaths",)
+    SUBPATHS_FIELD_NUMBER: _ClassVar[int]
+    subpaths: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, subpaths: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class SessionStoreDeleteRequest(_message.Message):
+    __slots__ = ("session_id", "project_key", "subpath")
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    PROJECT_KEY_FIELD_NUMBER: _ClassVar[int]
+    SUBPATH_FIELD_NUMBER: _ClassVar[int]
+    session_id: str
+    project_key: str
+    subpath: str
+    def __init__(self, session_id: _Optional[str] = ..., project_key: _Optional[str] = ..., subpath: _Optional[str] = ...) -> None: ...
+
+class SessionStoreDeleteResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
 
 class InboxItem(_message.Message):
     __slots__ = ("seq", "kind", "user_id", "user_name", "text", "gate_id", "decision", "card_id", "at")
