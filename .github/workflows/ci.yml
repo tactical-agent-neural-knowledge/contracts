@@ -30,9 +30,13 @@ jobs:
       - run: buf lint
       # The check that makes the polyrepo safe: a wire break here would be a
       # production incident in web/mobile/agent-runner, so it is caught at the source.
+      # actions/checkout leaves PRs on a detached merge commit with no local
+      # "main" ref, so materialize it from origin before buf reads .git.
       - name: breaking change check
         if: github.event_name == 'pull_request'
-        run: buf breaking --against ".git#branch=main"
+        run: |
+          git fetch --no-tags origin main:main
+          buf breaking --against ".git#branch=main"
       - name: generated code is current
         run: |
           buf generate
