@@ -1,0 +1,322 @@
+syntax = "proto3";
+
+package tank.agentctl.v1;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "tank/blocks/v1/blocks.proto";
+
+// Runner <-> control-plane contract. The in-sandbox agent runner talks only to
+// agent-control (never to the messaging core directly): every thread post, card
+// edit, GitHub action and approval goes through RunnerService, authenticated
+// with the per-run RUN_TOKEN. All ids are Snowflake decimal strings.
+
+// ---------------------------------------------------------------- run context
+
+// Phase the runner is being started for. The control plane decides; the runner
+// picks its permission mode from it (planning -> "plan", implementing ->
+// "acceptEdits").
+enum RunPhase {
+  RUN_PHASE_UNSPECIFIED = 0;
+  RUN_PHASE_PLANNING = 1;
+  RUN_PHASE_IMPLEMENTING = 2;
+}
+
+message ThreadMessage {
+  string message_id = 1;
+  string author_id = 2;
+  string author_name = 3;
+  string author_kind = 4; // user | bot | agent
+  string text = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+// The subset of policy.v1 the runner enforces locally (deny lists, models,
+// limits). The control plane remains authoritative; this is a mirror.
+message PolicySummary {
+  string mode = 1; // propose_only | can_merge
+  repeated string tools_deny = 2;
+  repeated string network_allowed_hosts = 3;
+  string default_model = 4;
+  string subagent_model = 5;
+  int32 max_turns = 6;
+  double max_budget_usd = 7;
+  repeated string rules = 8; // advisory rules surfaced to the model
+}
+
+message ApprovedPlan {
+  string plan_hash = 1;
+  string summary = 2;
+  repeated tank.blocks.v1.PlanStep steps = 3;
+  repeated string risks = 4;
+  string approved_by = 5;
+  google.protobuf.Timestamp approved_at = 6;
+  string feedback = 7; // approver comments carried into implementation
+}
+
+message RunContext {
+  string run_id = 1;
+  string workspace_id = 2;
+  string channel_id = 3;
+  string thread_root_id = 4;
+  string agent_id = 5;
+  string agent_name = 6;
+  string requested_by = 7;
+  RunPhase phase = 8;
+  string instructions = 9; // the user's ask, e.g. "fix the typo in README"
+  repeated ThreadMessage thread_excerpt = 10;
+  string repo = 11;        // owner/name, or a file:// / https:// URL for local dev
+  string base_branch = 12;
+  string branch = 13;      // agent/<channel>/<run>-<slug>
+  string toolchain = 14;
+  PolicySummary policy = 15;
+  string operating_rules = 16; // TANK.md for the channel/workspace
+  ApprovedPlan approved_plan = 17; // set when resuming after plan approval
+  string sdk_session_id = 18;      // set when resuming an SDK session
+  string workspace_dir = 19;       // deterministic cwd so projectKey matches across pods
+  string git_remote_url = 20;      // clone URL; credentials come from GetGitCredential
+}
+
+message GetRunContextRequest {}
+message GetRunContextResponse {
+  RunContext context = 1;
+}
+
+message GetGitCredentialRequest {
+  string scope = 1; // read | write
+}
+message GetGitCredentialResponse {
+  string username = 1; // x-access-token for GitHub
+  string password = 2;
+  google.protobuf.Timestamp expires_at = 3;
+  string remote_url = 4; // remote to use with these credentials
+}
+
+// ----------------------------------------------------------------- thread I/O
+
+message PostToThreadRequest {
+  string text = 1;
+  string client_msg_id = 2; // idempotency key
+}
+message PostToThreadResponse {
+  string message_id = 1;
+}
+
+message PostPlanRequest {
+  string summary = 1;
+  repeated tank.blocks.v1.PlanStep steps = 2;
+  repeated string risks = 3;
+  repeated string questions = 4;
+}
+message PostPlanResponse {
+  string card_id = 1;   // run_cards.id
+  string gate_id = 2;   // run_gates.id (plan gate)
+  string plan_hash = 3;
+}
+
+message UpdateCardRequest {
+  string card_id = 1;
+  tank.blocks.v1.Blocks blocks = 2;
+  string text = 3; // plain-text fallback
+}
+message UpdateCardResponse {}
+
+message AskForApprovalRequest {
+  tank.blocks.v1.GateKind kind = 1;
+  string subject = 2;  // what is being approved (scope change description, command, ...)
+  string reason = 3;
+}
+message AskForApprovalResponse {
+  string gate_id = 1;
+  string decision = 2; // approved | rejected | expired (empty when async)
+  string feedback = 3;
+}
+
+message AskQuestionRequest {
+  string question = 1;
+  repeated string options = 2;
+  bool multi_select = 3;
+}
+message AskQuestionResponse {
+  string card_id = 1;
+  string answer = 2; // empty when async; the answer arrives as a steer message
+}
+
+message ReportStatusRequest {
+  string status = 1; // "reading repo", "running tests"
+  string detail = 2;
+}
+message ReportStatusResponse {}
+
+message ReadThreadRequest {
+  int64 after_thread_seq = 1;
+  int32 limit = 2;
+}
+message ReadThreadResponse {
+  repeated ThreadMessage messages = 1;
+}
+
+// --------------------------------------------------------------------- GitHub
+
+message OpenPullRequestRequest {
+  string title = 1;
+  string body = 2;
+  string head_sha = 3;
+  bool draft = 4;
+}
+message OpenPullRequestResponse {
+  string pr_url = 1;
+  int32 pr_number = 2;
+}
+
+message RequestCiWatchRequest {
+  string head_sha = 1;
+  repeated string workflows = 2; // empty = binding's watched workflows
+}
+message RequestCiWatchResponse {
+  string watch_id = 1;
+}
+
+message GetCiFailureRequest {
+  string head_sha = 1;
+}
+message GetCiFailureResponse {
+  bool complete = 1; // all watched workflows finished
+  bool green = 2;
+  repeated tank.blocks.v1.Check checks = 3;
+  string failed_log_excerpt = 4;
+}
+
+// ------------------------------------------------------------------ knowledge
+
+message RecordDecisionRequest {
+  string title = 1;
+  string body = 2;
+  repeated string tags = 3;
+}
+message RecordDecisionResponse {
+  string decision_id = 1;
+}
+
+message RememberRequest {
+  string key = 1;
+  string value = 2;
+}
+message RememberResponse {}
+
+// ----------------------------------------------------------------- run events
+
+enum RunEventKind {
+  RUN_EVENT_KIND_UNSPECIFIED = 0;
+  RUN_EVENT_KIND_ASSISTANT_DELTA = 1;
+  RUN_EVENT_KIND_TOOL_CALL = 2;
+  RUN_EVENT_KIND_TOOL_RESULT = 3;
+  RUN_EVENT_KIND_PERMISSION_REQUEST = 4;
+  RUN_EVENT_KIND_RESULT = 5;
+  RUN_EVENT_KIND_USAGE = 6;
+  RUN_EVENT_KIND_STATUS = 7;
+  RUN_EVENT_KIND_LOG = 8;
+}
+
+message Usage {
+  int64 input_tokens = 1;
+  int64 output_tokens = 2;
+  int64 cache_read_input_tokens = 3;
+  int64 cache_creation_input_tokens = 4;
+  double cost_usd = 5;
+  string model = 6;
+}
+
+message RunEvent {
+  int64 seq = 1;                        // runner-assigned, monotonic per run
+  google.protobuf.Timestamp at = 2;
+  RunEventKind kind = 3;
+  string sdk_session_id = 4;
+  string text = 5;                      // assistant_delta text, status, log line
+  string tool_name = 6;                 // tool_call / tool_result / permission_request
+  string tool_use_id = 7;
+  google.protobuf.Struct tool_input = 8;
+  string tool_output = 9;               // truncated
+  string tool_output_sha256 = 10;
+  bool is_error = 11;
+  Usage usage = 12;                     // result / usage
+  string result_subtype = 13;           // success | error_max_turns | ...
+  int32 num_turns = 14;
+  int64 duration_ms = 15;
+}
+
+message StreamEventsRequest {
+  RunEvent event = 1;
+}
+message StreamEventsResponse {
+  int64 accepted = 1;
+}
+
+// ------------------------------------------------------------- session store
+
+// Mirrors the Claude Agent SDK SessionStore contract: append-only entries per
+// (project_key, session_id), listed back in order on resume.
+message SessionEntry {
+  string session_id = 1;
+  string project_key = 2;
+  int64 seq = 3;
+  string parent_id = 4;
+  string entry_type = 5;
+  bytes payload = 6;             // the SDK entry, JSON-encoded
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message SessionStorePutRequest {
+  repeated SessionEntry entries = 1;
+}
+message SessionStorePutResponse {
+  int32 written = 1;
+}
+
+message SessionStoreListRequest {
+  string session_id = 1;
+  string project_key = 2;
+  int64 after_seq = 3;
+  int32 limit = 4;
+}
+message SessionStoreListResponse {
+  repeated SessionEntry entries = 1;
+  bool has_more = 2;
+}
+
+message SessionStoreListSessionsRequest {
+  string project_key = 1;
+}
+message SessionStoreListSessionsResponse {
+  repeated string session_ids = 1;
+}
+
+// RunnerService is the only network surface the sandbox may reach besides the
+// LLM gateway. Every call carries "Authorization: Bearer <RUN_TOKEN>".
+service RunnerService {
+  rpc GetRunContext(GetRunContextRequest) returns (GetRunContextResponse);
+  rpc GetGitCredential(GetGitCredentialRequest) returns (GetGitCredentialResponse);
+
+  rpc PostToThread(PostToThreadRequest) returns (PostToThreadResponse);
+  rpc PostPlan(PostPlanRequest) returns (PostPlanResponse);
+  rpc UpdateCard(UpdateCardRequest) returns (UpdateCardResponse);
+  rpc AskForApproval(AskForApprovalRequest) returns (AskForApprovalResponse);
+  rpc AskQuestion(AskQuestionRequest) returns (AskQuestionResponse);
+  rpc ReportStatus(ReportStatusRequest) returns (ReportStatusResponse);
+  rpc ReadThread(ReadThreadRequest) returns (ReadThreadResponse);
+
+  rpc OpenPullRequest(OpenPullRequestRequest) returns (OpenPullRequestResponse);
+  rpc RequestCiWatch(RequestCiWatchRequest) returns (RequestCiWatchResponse);
+  rpc GetCiFailure(GetCiFailureRequest) returns (GetCiFailureResponse);
+
+  rpc RecordDecision(RecordDecisionRequest) returns (RecordDecisionResponse);
+  rpc Remember(RememberRequest) returns (RememberResponse);
+
+  // Client-streaming transcript: assistant_delta, tool_call, tool_result,
+  // permission_request, result, usage. Persisted to agent.run_events.
+  rpc StreamEvents(stream StreamEventsRequest) returns (StreamEventsResponse);
+
+  rpc SessionStorePut(SessionStorePutRequest) returns (SessionStorePutResponse);
+  rpc SessionStoreList(SessionStoreListRequest) returns (SessionStoreListResponse);
+  rpc SessionStoreListSessions(SessionStoreListSessionsRequest) returns (SessionStoreListSessionsResponse);
+}
