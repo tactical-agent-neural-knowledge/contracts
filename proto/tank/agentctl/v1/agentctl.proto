@@ -108,11 +108,32 @@ message PostPlanRequest {
   repeated tank.blocks.v1.PlanStep steps = 2;
   repeated string risks = 3;
   repeated string questions = 4;
+  // Artifacts from AttachArtifact, rendered above the approve buttons so a
+  // human can see what the agent is proposing to change before approving it:
+  // the page as it looks now, the slide being rewritten, the source image.
+  repeated string preview_file_ids = 5;
 }
 message PostPlanResponse {
   string card_id = 1;   // run_cards.id
   string gate_id = 2;   // run_gates.id (plan gate)
   string plan_hash = 3;
+}
+
+// AttachArtifact publishes one file the sandbox produced (a screenshot, a
+// rendered slide, an exported image) into the run's channel, and returns the
+// file id to put on a card. The sandbox has no storage credentials and no
+// egress to S3: the bytes go through the control plane, which uploads them as
+// the agent principal. Capped at max_artifact_bytes; anything larger belongs
+// in the repo, not in a card.
+message AttachArtifactRequest {
+  string name = 1;
+  string mime = 2;
+  bytes content = 3;
+  // Shown under the preview. Say what the reader is looking at.
+  string caption = 4;
+}
+message AttachArtifactResponse {
+  string file_id = 1;
 }
 
 message UpdateCardRequest {
@@ -358,6 +379,7 @@ service RunnerService {
   rpc GetGitCredential(GetGitCredentialRequest) returns (GetGitCredentialResponse);
 
   rpc PostToThread(PostToThreadRequest) returns (PostToThreadResponse);
+  rpc AttachArtifact(AttachArtifactRequest) returns (AttachArtifactResponse);
   rpc PostPlan(PostPlanRequest) returns (PostPlanResponse);
   rpc UpdateCard(UpdateCardRequest) returns (UpdateCardResponse);
   rpc AskForApproval(AskForApprovalRequest) returns (AskForApprovalResponse);

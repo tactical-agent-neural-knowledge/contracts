@@ -194,16 +194,18 @@ class PostToThreadResponse(_message.Message):
     def __init__(self, message_id: _Optional[str] = ...) -> None: ...
 
 class PostPlanRequest(_message.Message):
-    __slots__ = ("summary", "steps", "risks", "questions")
+    __slots__ = ("summary", "steps", "risks", "questions", "preview_file_ids")
     SUMMARY_FIELD_NUMBER: _ClassVar[int]
     STEPS_FIELD_NUMBER: _ClassVar[int]
     RISKS_FIELD_NUMBER: _ClassVar[int]
     QUESTIONS_FIELD_NUMBER: _ClassVar[int]
+    PREVIEW_FILE_IDS_FIELD_NUMBER: _ClassVar[int]
     summary: str
     steps: _containers.RepeatedCompositeFieldContainer[_blocks_pb2.PlanStep]
     risks: _containers.RepeatedScalarFieldContainer[str]
     questions: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[_blocks_pb2.PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., questions: _Optional[_Iterable[str]] = ...) -> None: ...
+    preview_file_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[_blocks_pb2.PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., questions: _Optional[_Iterable[str]] = ..., preview_file_ids: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class PostPlanResponse(_message.Message):
     __slots__ = ("card_id", "gate_id", "plan_hash")
@@ -214,6 +216,24 @@ class PostPlanResponse(_message.Message):
     gate_id: str
     plan_hash: str
     def __init__(self, card_id: _Optional[str] = ..., gate_id: _Optional[str] = ..., plan_hash: _Optional[str] = ...) -> None: ...
+
+class AttachArtifactRequest(_message.Message):
+    __slots__ = ("name", "mime", "content", "caption")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    MIME_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_FIELD_NUMBER: _ClassVar[int]
+    CAPTION_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    mime: str
+    content: bytes
+    caption: str
+    def __init__(self, name: _Optional[str] = ..., mime: _Optional[str] = ..., content: _Optional[bytes] = ..., caption: _Optional[str] = ...) -> None: ...
+
+class AttachArtifactResponse(_message.Message):
+    __slots__ = ("file_id",)
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    file_id: str
+    def __init__(self, file_id: _Optional[str] = ...) -> None: ...
 
 class UpdateCardRequest(_message.Message):
     __slots__ = ("card_id", "blocks", "text")
