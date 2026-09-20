@@ -44,6 +44,9 @@ const (
 	// RunnerServicePostToThreadProcedure is the fully-qualified name of the RunnerService's
 	// PostToThread RPC.
 	RunnerServicePostToThreadProcedure = "/tank.agentctl.v1.RunnerService/PostToThread"
+	// RunnerServiceAttachArtifactProcedure is the fully-qualified name of the RunnerService's
+	// AttachArtifact RPC.
+	RunnerServiceAttachArtifactProcedure = "/tank.agentctl.v1.RunnerService/AttachArtifact"
 	// RunnerServicePostPlanProcedure is the fully-qualified name of the RunnerService's PostPlan RPC.
 	RunnerServicePostPlanProcedure = "/tank.agentctl.v1.RunnerService/PostPlan"
 	// RunnerServiceUpdateCardProcedure is the fully-qualified name of the RunnerService's UpdateCard
@@ -119,6 +122,7 @@ type RunnerServiceClient interface {
 	GetRunContext(context.Context, *connect.Request[v1.GetRunContextRequest]) (*connect.Response[v1.GetRunContextResponse], error)
 	GetGitCredential(context.Context, *connect.Request[v1.GetGitCredentialRequest]) (*connect.Response[v1.GetGitCredentialResponse], error)
 	PostToThread(context.Context, *connect.Request[v1.PostToThreadRequest]) (*connect.Response[v1.PostToThreadResponse], error)
+	AttachArtifact(context.Context, *connect.Request[v1.AttachArtifactRequest]) (*connect.Response[v1.AttachArtifactResponse], error)
 	PostPlan(context.Context, *connect.Request[v1.PostPlanRequest]) (*connect.Response[v1.PostPlanResponse], error)
 	UpdateCard(context.Context, *connect.Request[v1.UpdateCardRequest]) (*connect.Response[v1.UpdateCardResponse], error)
 	AskForApproval(context.Context, *connect.Request[v1.AskForApprovalRequest]) (*connect.Response[v1.AskForApprovalResponse], error)
@@ -168,6 +172,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServicePostToThreadProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("PostToThread")),
+			connect.WithClientOptions(opts...),
+		),
+		attachArtifact: connect.NewClient[v1.AttachArtifactRequest, v1.AttachArtifactResponse](
+			httpClient,
+			baseURL+RunnerServiceAttachArtifactProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("AttachArtifact")),
 			connect.WithClientOptions(opts...),
 		),
 		postPlan: connect.NewClient[v1.PostPlanRequest, v1.PostPlanResponse](
@@ -286,6 +296,7 @@ type runnerServiceClient struct {
 	getRunContext            *connect.Client[v1.GetRunContextRequest, v1.GetRunContextResponse]
 	getGitCredential         *connect.Client[v1.GetGitCredentialRequest, v1.GetGitCredentialResponse]
 	postToThread             *connect.Client[v1.PostToThreadRequest, v1.PostToThreadResponse]
+	attachArtifact           *connect.Client[v1.AttachArtifactRequest, v1.AttachArtifactResponse]
 	postPlan                 *connect.Client[v1.PostPlanRequest, v1.PostPlanResponse]
 	updateCard               *connect.Client[v1.UpdateCardRequest, v1.UpdateCardResponse]
 	askForApproval           *connect.Client[v1.AskForApprovalRequest, v1.AskForApprovalResponse]
@@ -319,6 +330,11 @@ func (c *runnerServiceClient) GetGitCredential(ctx context.Context, req *connect
 // PostToThread calls tank.agentctl.v1.RunnerService.PostToThread.
 func (c *runnerServiceClient) PostToThread(ctx context.Context, req *connect.Request[v1.PostToThreadRequest]) (*connect.Response[v1.PostToThreadResponse], error) {
 	return c.postToThread.CallUnary(ctx, req)
+}
+
+// AttachArtifact calls tank.agentctl.v1.RunnerService.AttachArtifact.
+func (c *runnerServiceClient) AttachArtifact(ctx context.Context, req *connect.Request[v1.AttachArtifactRequest]) (*connect.Response[v1.AttachArtifactResponse], error) {
+	return c.attachArtifact.CallUnary(ctx, req)
 }
 
 // PostPlan calls tank.agentctl.v1.RunnerService.PostPlan.
@@ -416,6 +432,7 @@ type RunnerServiceHandler interface {
 	GetRunContext(context.Context, *connect.Request[v1.GetRunContextRequest]) (*connect.Response[v1.GetRunContextResponse], error)
 	GetGitCredential(context.Context, *connect.Request[v1.GetGitCredentialRequest]) (*connect.Response[v1.GetGitCredentialResponse], error)
 	PostToThread(context.Context, *connect.Request[v1.PostToThreadRequest]) (*connect.Response[v1.PostToThreadResponse], error)
+	AttachArtifact(context.Context, *connect.Request[v1.AttachArtifactRequest]) (*connect.Response[v1.AttachArtifactResponse], error)
 	PostPlan(context.Context, *connect.Request[v1.PostPlanRequest]) (*connect.Response[v1.PostPlanResponse], error)
 	UpdateCard(context.Context, *connect.Request[v1.UpdateCardRequest]) (*connect.Response[v1.UpdateCardResponse], error)
 	AskForApproval(context.Context, *connect.Request[v1.AskForApprovalRequest]) (*connect.Response[v1.AskForApprovalResponse], error)
@@ -461,6 +478,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServicePostToThreadProcedure,
 		svc.PostToThread,
 		connect.WithSchema(runnerServiceMethods.ByName("PostToThread")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceAttachArtifactHandler := connect.NewUnaryHandler(
+		RunnerServiceAttachArtifactProcedure,
+		svc.AttachArtifact,
+		connect.WithSchema(runnerServiceMethods.ByName("AttachArtifact")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServicePostPlanHandler := connect.NewUnaryHandler(
@@ -579,6 +602,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceGetGitCredentialHandler.ServeHTTP(w, r)
 		case RunnerServicePostToThreadProcedure:
 			runnerServicePostToThreadHandler.ServeHTTP(w, r)
+		case RunnerServiceAttachArtifactProcedure:
+			runnerServiceAttachArtifactHandler.ServeHTTP(w, r)
 		case RunnerServicePostPlanProcedure:
 			runnerServicePostPlanHandler.ServeHTTP(w, r)
 		case RunnerServiceUpdateCardProcedure:
@@ -634,6 +659,10 @@ func (UnimplementedRunnerServiceHandler) GetGitCredential(context.Context, *conn
 
 func (UnimplementedRunnerServiceHandler) PostToThread(context.Context, *connect.Request[v1.PostToThreadRequest]) (*connect.Response[v1.PostToThreadResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.PostToThread is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) AttachArtifact(context.Context, *connect.Request[v1.AttachArtifactRequest]) (*connect.Response[v1.AttachArtifactResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.AttachArtifact is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) PostPlan(context.Context, *connect.Request[v1.PostPlanRequest]) (*connect.Response[v1.PostPlanResponse], error) {
