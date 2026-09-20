@@ -56,6 +56,12 @@ message StartRunRequest {
   string thread_root_id = 1;
   string agent_id = 2;
   string instructions = 3;
+  // Who summoned the agent. The control plane calls this as a bot whose
+  // principal is the agent itself, and an agent is not a member of a private
+  // Tread until it is brought in, so the caller cannot be the authority on
+  // access. This person must be a member of the channel; their membership is
+  // what permits the run and what adds the agent to the Tread.
+  string requested_by = 4;
 }
 message StartRunResponse {
   Run run = 1;
