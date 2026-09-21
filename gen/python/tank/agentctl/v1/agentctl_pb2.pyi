@@ -53,21 +53,37 @@ INBOX_KIND_APPROVAL: InboxKind
 INBOX_KIND_ANSWER: InboxKind
 INBOX_KIND_CANCEL: InboxKind
 
+class Attachment(_message.Message):
+    __slots__ = ("file_id", "name", "mime", "size", "message_id")
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    MIME_FIELD_NUMBER: _ClassVar[int]
+    SIZE_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    file_id: str
+    name: str
+    mime: str
+    size: int
+    message_id: str
+    def __init__(self, file_id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., size: _Optional[int] = ..., message_id: _Optional[str] = ...) -> None: ...
+
 class ThreadMessage(_message.Message):
-    __slots__ = ("message_id", "author_id", "author_name", "author_kind", "text", "created_at")
+    __slots__ = ("message_id", "author_id", "author_name", "author_kind", "text", "created_at", "attachments")
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     AUTHOR_ID_FIELD_NUMBER: _ClassVar[int]
     AUTHOR_NAME_FIELD_NUMBER: _ClassVar[int]
     AUTHOR_KIND_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    ATTACHMENTS_FIELD_NUMBER: _ClassVar[int]
     message_id: str
     author_id: str
     author_name: str
     author_kind: str
     text: str
     created_at: _timestamp_pb2.Timestamp
-    def __init__(self, message_id: _Optional[str] = ..., author_id: _Optional[str] = ..., author_name: _Optional[str] = ..., author_kind: _Optional[str] = ..., text: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    attachments: _containers.RepeatedCompositeFieldContainer[Attachment]
+    def __init__(self, message_id: _Optional[str] = ..., author_id: _Optional[str] = ..., author_name: _Optional[str] = ..., author_kind: _Optional[str] = ..., text: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ...) -> None: ...
 
 class PolicySummary(_message.Message):
     __slots__ = ("mode", "tools_deny", "network_allowed_hosts", "default_model", "subagent_model", "max_turns", "max_budget_usd", "rules")
@@ -108,7 +124,7 @@ class ApprovedPlan(_message.Message):
     def __init__(self, plan_hash: _Optional[str] = ..., summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[_blocks_pb2.PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., approved_by: _Optional[str] = ..., approved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback: _Optional[str] = ...) -> None: ...
 
 class RunContext(_message.Message):
-    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url")
+    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -129,6 +145,7 @@ class RunContext(_message.Message):
     SDK_SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_DIR_FIELD_NUMBER: _ClassVar[int]
     GIT_REMOTE_URL_FIELD_NUMBER: _ClassVar[int]
+    ATTACHMENTS_FIELD_NUMBER: _ClassVar[int]
     run_id: str
     workspace_id: str
     channel_id: str
@@ -149,7 +166,8 @@ class RunContext(_message.Message):
     sdk_session_id: str
     workspace_dir: str
     git_remote_url: str
-    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ...) -> None: ...
+    attachments: _containers.RepeatedCompositeFieldContainer[Attachment]
+    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ...) -> None: ...
 
 class GetRunContextRequest(_message.Message):
     __slots__ = ()
@@ -234,6 +252,20 @@ class AttachArtifactResponse(_message.Message):
     FILE_ID_FIELD_NUMBER: _ClassVar[int]
     file_id: str
     def __init__(self, file_id: _Optional[str] = ...) -> None: ...
+
+class GetAttachmentRequest(_message.Message):
+    __slots__ = ("file_id",)
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    file_id: str
+    def __init__(self, file_id: _Optional[str] = ...) -> None: ...
+
+class GetAttachmentResponse(_message.Message):
+    __slots__ = ("attachment", "chunk")
+    ATTACHMENT_FIELD_NUMBER: _ClassVar[int]
+    CHUNK_FIELD_NUMBER: _ClassVar[int]
+    attachment: Attachment
+    chunk: bytes
+    def __init__(self, attachment: _Optional[_Union[Attachment, _Mapping]] = ..., chunk: _Optional[bytes] = ...) -> None: ...
 
 class UpdateCardRequest(_message.Message):
     __slots__ = ("card_id", "blocks", "text")
