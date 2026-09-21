@@ -147,6 +147,12 @@ message AttachArtifactRequest {
   bytes content = 3;
   // Shown under the preview. Say what the reader is looking at.
   string caption = 4;
+  // This is the finished thing, not something to look at before deciding. The
+  // control plane posts it into the thread on its own message immediately,
+  // which is both how a person gets it and the only way it becomes readable:
+  // file_shares rows come from a message's file_ids and nothing else. A
+  // preview waits instead for the plan card that will carry it.
+  bool deliver = 5;
 }
 message AttachArtifactResponse {
   string file_id = 1;
