@@ -139,15 +139,22 @@ message PendingInvite {
   string workspace_slug = 3;
   Role role = 4;
   google.protobuf.Timestamp expires_at = 5;
-  // Accepts it through JoinWorkspace. Returned only for invites addressed to
-  // the caller's own verified address: signing in proved control of that
-  // mailbox, so this is the same thing their email already holds.
-  string invite_token = 6;
 }
 
 message ListMyInvitesRequest {}
 message ListMyInvitesResponse {
   repeated PendingInvite invites = 1;
+}
+
+// Accepts an invite already addressed to the caller. No token: only the hash is
+// stored, so the emailed one cannot be handed back — and matching on an address
+// the caller proved at sign-in is the stronger check anyway.
+message AcceptInviteRequest {
+  string workspace_id = 1;
+}
+message AcceptInviteResponse {
+  Workspace workspace = 1;
+  Member me = 2;
 }
 
 message JoinWorkspaceRequest {
@@ -411,6 +418,7 @@ service WorkspaceService {
   rpc JoinWorkspace(JoinWorkspaceRequest) returns (JoinWorkspaceResponse);
   rpc ListInvites(ListInvitesRequest) returns (ListInvitesResponse);
   rpc ListMyInvites(ListMyInvitesRequest) returns (ListMyInvitesResponse);
+  rpc AcceptInvite(AcceptInviteRequest) returns (AcceptInviteResponse);
   rpc RevokeInvite(RevokeInviteRequest) returns (RevokeInviteResponse);
   rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
   rpc GetPreferences(GetPreferencesRequest) returns (GetPreferencesResponse);
