@@ -51,6 +51,12 @@ const (
 	// WorkspaceServiceJoinWorkspaceProcedure is the fully-qualified name of the WorkspaceService's
 	// JoinWorkspace RPC.
 	WorkspaceServiceJoinWorkspaceProcedure = "/tank.workspace.v1.WorkspaceService/JoinWorkspace"
+	// WorkspaceServiceListInvitesProcedure is the fully-qualified name of the WorkspaceService's
+	// ListInvites RPC.
+	WorkspaceServiceListInvitesProcedure = "/tank.workspace.v1.WorkspaceService/ListInvites"
+	// WorkspaceServiceRevokeInviteProcedure is the fully-qualified name of the WorkspaceService's
+	// RevokeInvite RPC.
+	WorkspaceServiceRevokeInviteProcedure = "/tank.workspace.v1.WorkspaceService/RevokeInvite"
 	// WorkspaceServiceUpdateProfileProcedure is the fully-qualified name of the WorkspaceService's
 	// UpdateProfile RPC.
 	WorkspaceServiceUpdateProfileProcedure = "/tank.workspace.v1.WorkspaceService/UpdateProfile"
@@ -121,6 +127,8 @@ type WorkspaceServiceClient interface {
 	ListMembers(context.Context, *connect.Request[v1.ListMembersRequest]) (*connect.Response[v1.ListMembersResponse], error)
 	InviteMember(context.Context, *connect.Request[v1.InviteMemberRequest]) (*connect.Response[v1.InviteMemberResponse], error)
 	JoinWorkspace(context.Context, *connect.Request[v1.JoinWorkspaceRequest]) (*connect.Response[v1.JoinWorkspaceResponse], error)
+	ListInvites(context.Context, *connect.Request[v1.ListInvitesRequest]) (*connect.Response[v1.ListInvitesResponse], error)
+	RevokeInvite(context.Context, *connect.Request[v1.RevokeInviteRequest]) (*connect.Response[v1.RevokeInviteResponse], error)
 	UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error)
 	GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error)
 	UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error)
@@ -188,6 +196,18 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			httpClient,
 			baseURL+WorkspaceServiceJoinWorkspaceProcedure,
 			connect.WithSchema(workspaceServiceMethods.ByName("JoinWorkspace")),
+			connect.WithClientOptions(opts...),
+		),
+		listInvites: connect.NewClient[v1.ListInvitesRequest, v1.ListInvitesResponse](
+			httpClient,
+			baseURL+WorkspaceServiceListInvitesProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("ListInvites")),
+			connect.WithClientOptions(opts...),
+		),
+		revokeInvite: connect.NewClient[v1.RevokeInviteRequest, v1.RevokeInviteResponse](
+			httpClient,
+			baseURL+WorkspaceServiceRevokeInviteProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("RevokeInvite")),
 			connect.WithClientOptions(opts...),
 		),
 		updateProfile: connect.NewClient[v1.UpdateProfileRequest, v1.UpdateProfileResponse](
@@ -321,6 +341,8 @@ type workspaceServiceClient struct {
 	listMembers            *connect.Client[v1.ListMembersRequest, v1.ListMembersResponse]
 	inviteMember           *connect.Client[v1.InviteMemberRequest, v1.InviteMemberResponse]
 	joinWorkspace          *connect.Client[v1.JoinWorkspaceRequest, v1.JoinWorkspaceResponse]
+	listInvites            *connect.Client[v1.ListInvitesRequest, v1.ListInvitesResponse]
+	revokeInvite           *connect.Client[v1.RevokeInviteRequest, v1.RevokeInviteResponse]
 	updateProfile          *connect.Client[v1.UpdateProfileRequest, v1.UpdateProfileResponse]
 	getPreferences         *connect.Client[v1.GetPreferencesRequest, v1.GetPreferencesResponse]
 	updatePreferences      *connect.Client[v1.UpdatePreferencesRequest, v1.UpdatePreferencesResponse]
@@ -371,6 +393,16 @@ func (c *workspaceServiceClient) InviteMember(ctx context.Context, req *connect.
 // JoinWorkspace calls tank.workspace.v1.WorkspaceService.JoinWorkspace.
 func (c *workspaceServiceClient) JoinWorkspace(ctx context.Context, req *connect.Request[v1.JoinWorkspaceRequest]) (*connect.Response[v1.JoinWorkspaceResponse], error) {
 	return c.joinWorkspace.CallUnary(ctx, req)
+}
+
+// ListInvites calls tank.workspace.v1.WorkspaceService.ListInvites.
+func (c *workspaceServiceClient) ListInvites(ctx context.Context, req *connect.Request[v1.ListInvitesRequest]) (*connect.Response[v1.ListInvitesResponse], error) {
+	return c.listInvites.CallUnary(ctx, req)
+}
+
+// RevokeInvite calls tank.workspace.v1.WorkspaceService.RevokeInvite.
+func (c *workspaceServiceClient) RevokeInvite(ctx context.Context, req *connect.Request[v1.RevokeInviteRequest]) (*connect.Response[v1.RevokeInviteResponse], error) {
+	return c.revokeInvite.CallUnary(ctx, req)
 }
 
 // UpdateProfile calls tank.workspace.v1.WorkspaceService.UpdateProfile.
@@ -481,6 +513,8 @@ type WorkspaceServiceHandler interface {
 	ListMembers(context.Context, *connect.Request[v1.ListMembersRequest]) (*connect.Response[v1.ListMembersResponse], error)
 	InviteMember(context.Context, *connect.Request[v1.InviteMemberRequest]) (*connect.Response[v1.InviteMemberResponse], error)
 	JoinWorkspace(context.Context, *connect.Request[v1.JoinWorkspaceRequest]) (*connect.Response[v1.JoinWorkspaceResponse], error)
+	ListInvites(context.Context, *connect.Request[v1.ListInvitesRequest]) (*connect.Response[v1.ListInvitesResponse], error)
+	RevokeInvite(context.Context, *connect.Request[v1.RevokeInviteRequest]) (*connect.Response[v1.RevokeInviteResponse], error)
 	UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error)
 	GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error)
 	UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error)
@@ -544,6 +578,18 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 		WorkspaceServiceJoinWorkspaceProcedure,
 		svc.JoinWorkspace,
 		connect.WithSchema(workspaceServiceMethods.ByName("JoinWorkspace")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceListInvitesHandler := connect.NewUnaryHandler(
+		WorkspaceServiceListInvitesProcedure,
+		svc.ListInvites,
+		connect.WithSchema(workspaceServiceMethods.ByName("ListInvites")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceRevokeInviteHandler := connect.NewUnaryHandler(
+		WorkspaceServiceRevokeInviteProcedure,
+		svc.RevokeInvite,
+		connect.WithSchema(workspaceServiceMethods.ByName("RevokeInvite")),
 		connect.WithHandlerOptions(opts...),
 	)
 	workspaceServiceUpdateProfileHandler := connect.NewUnaryHandler(
@@ -680,6 +726,10 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 			workspaceServiceInviteMemberHandler.ServeHTTP(w, r)
 		case WorkspaceServiceJoinWorkspaceProcedure:
 			workspaceServiceJoinWorkspaceHandler.ServeHTTP(w, r)
+		case WorkspaceServiceListInvitesProcedure:
+			workspaceServiceListInvitesHandler.ServeHTTP(w, r)
+		case WorkspaceServiceRevokeInviteProcedure:
+			workspaceServiceRevokeInviteHandler.ServeHTTP(w, r)
 		case WorkspaceServiceUpdateProfileProcedure:
 			workspaceServiceUpdateProfileHandler.ServeHTTP(w, r)
 		case WorkspaceServiceGetPreferencesProcedure:
@@ -751,6 +801,14 @@ func (UnimplementedWorkspaceServiceHandler) InviteMember(context.Context, *conne
 
 func (UnimplementedWorkspaceServiceHandler) JoinWorkspace(context.Context, *connect.Request[v1.JoinWorkspaceRequest]) (*connect.Response[v1.JoinWorkspaceResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.JoinWorkspace is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) ListInvites(context.Context, *connect.Request[v1.ListInvitesRequest]) (*connect.Response[v1.ListInvitesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ListInvites is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) RevokeInvite(context.Context, *connect.Request[v1.RevokeInviteRequest]) (*connect.Response[v1.RevokeInviteResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.RevokeInvite is not implemented"))
 }
 
 func (UnimplementedWorkspaceServiceHandler) UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error) {

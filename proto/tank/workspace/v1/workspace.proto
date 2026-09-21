@@ -103,6 +103,32 @@ message InviteMemberResponse {
   string invite_id = 1;
 }
 
+// An invitation that has been sent and not yet accepted. Members lists these
+// beside real members: inviting five people and seeing the screen unchanged
+// reads as a failure, and there is otherwise no way to tell who is outstanding
+// or to take an invite back.
+message Invite {
+  // Stable handle for revoking. Not the token: that only ever exists in the
+  // email, and anyone who can list invites must not be able to accept them.
+  string invite_id = 1;
+  string email = 2;
+  Role role = 3;
+  google.protobuf.Timestamp expires_at = 4;
+}
+
+message ListInvitesRequest {
+  string workspace_id = 1;
+}
+message ListInvitesResponse {
+  repeated Invite invites = 1;
+}
+
+message RevokeInviteRequest {
+  string workspace_id = 1;
+  string invite_id = 2;
+}
+message RevokeInviteResponse {}
+
 message JoinWorkspaceRequest {
   string invite_token = 1;
 }
@@ -362,6 +388,8 @@ service WorkspaceService {
   rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
   rpc InviteMember(InviteMemberRequest) returns (InviteMemberResponse);
   rpc JoinWorkspace(JoinWorkspaceRequest) returns (JoinWorkspaceResponse);
+  rpc ListInvites(ListInvitesRequest) returns (ListInvitesResponse);
+  rpc RevokeInvite(RevokeInviteRequest) returns (RevokeInviteResponse);
   rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
   rpc GetPreferences(GetPreferencesRequest) returns (GetPreferencesResponse);
   rpc UpdatePreferences(UpdatePreferencesRequest) returns (UpdatePreferencesResponse);
