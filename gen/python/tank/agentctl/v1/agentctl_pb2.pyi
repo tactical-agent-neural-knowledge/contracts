@@ -236,16 +236,18 @@ class PostPlanResponse(_message.Message):
     def __init__(self, card_id: _Optional[str] = ..., gate_id: _Optional[str] = ..., plan_hash: _Optional[str] = ...) -> None: ...
 
 class AttachArtifactRequest(_message.Message):
-    __slots__ = ("name", "mime", "content", "caption")
+    __slots__ = ("name", "mime", "content", "caption", "deliver")
     NAME_FIELD_NUMBER: _ClassVar[int]
     MIME_FIELD_NUMBER: _ClassVar[int]
     CONTENT_FIELD_NUMBER: _ClassVar[int]
     CAPTION_FIELD_NUMBER: _ClassVar[int]
+    DELIVER_FIELD_NUMBER: _ClassVar[int]
     name: str
     mime: str
     content: bytes
     caption: str
-    def __init__(self, name: _Optional[str] = ..., mime: _Optional[str] = ..., content: _Optional[bytes] = ..., caption: _Optional[str] = ...) -> None: ...
+    deliver: bool
+    def __init__(self, name: _Optional[str] = ..., mime: _Optional[str] = ..., content: _Optional[bytes] = ..., caption: _Optional[str] = ..., deliver: bool = ...) -> None: ...
 
 class AttachArtifactResponse(_message.Message):
     __slots__ = ("file_id",)
