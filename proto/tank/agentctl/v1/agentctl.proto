@@ -23,6 +23,17 @@ enum RunPhase {
   RUN_PHASE_IMPLEMENTING = 2;
 }
 
+// A file a human put in the thread. The sandbox has no route to the file
+// store, so the bytes come back through GetAttachment; this is only what the
+// agent needs to decide whether it wants them.
+message Attachment {
+  string file_id = 1;
+  string name = 2;
+  string mime = 3;
+  int64 size = 4;
+  string message_id = 5; // the message it arrived on
+}
+
 message ThreadMessage {
   string message_id = 1;
   string author_id = 2;
@@ -30,6 +41,7 @@ message ThreadMessage {
   string author_kind = 4; // user | bot | agent
   string text = 5;
   google.protobuf.Timestamp created_at = 6;
+  repeated Attachment attachments = 7;
 }
 
 // The subset of policy.v1 the runner enforces locally (deny lists, models,
@@ -76,6 +88,10 @@ message RunContext {
   string sdk_session_id = 18;      // set when resuming an SDK session
   string workspace_dir = 19;       // deterministic cwd so projectKey matches across pods
   string git_remote_url = 20;      // clone URL; credentials come from GetGitCredential
+  // Everything attached in this thread, newest last. Present from the first
+  // turn so the agent knows an image or a video exists without asking for it:
+  // "add a filter to this image" is unanswerable otherwise.
+  repeated Attachment attachments = 21;
 }
 
 message GetRunContextRequest {}
@@ -134,6 +150,19 @@ message AttachArtifactRequest {
 }
 message AttachArtifactResponse {
   string file_id = 1;
+}
+
+// GetAttachment streams one attachment's bytes into the sandbox. Server
+// streaming because a video is not a message-sized thing, and because the
+// runner writes each chunk straight to disk rather than holding the file in
+// memory.
+message GetAttachmentRequest {
+  string file_id = 1;
+}
+message GetAttachmentResponse {
+  // Set on the first response only.
+  Attachment attachment = 1;
+  bytes chunk = 2;
 }
 
 message UpdateCardRequest {
@@ -380,6 +409,7 @@ service RunnerService {
 
   rpc PostToThread(PostToThreadRequest) returns (PostToThreadResponse);
   rpc AttachArtifact(AttachArtifactRequest) returns (AttachArtifactResponse);
+  rpc GetAttachment(GetAttachmentRequest) returns (stream GetAttachmentResponse);
   rpc PostPlan(PostPlanRequest) returns (PostPlanResponse);
   rpc UpdateCard(UpdateCardRequest) returns (UpdateCardResponse);
   rpc AskForApproval(AskForApprovalRequest) returns (AskForApprovalResponse);
