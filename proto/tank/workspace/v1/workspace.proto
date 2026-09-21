@@ -129,6 +129,27 @@ message RevokeInviteRequest {
 }
 message RevokeInviteResponse {}
 
+// An invite waiting for the signed-in person, across every workspace. Someone
+// who signs up instead of opening the emailed link lands with no workspaces and
+// is shown "create one" — so the two people invited to Cache7 each made their
+// own workspace and never joined the one they were invited to.
+message PendingInvite {
+  string workspace_id = 1;
+  string workspace_name = 2;
+  string workspace_slug = 3;
+  Role role = 4;
+  google.protobuf.Timestamp expires_at = 5;
+  // Accepts it through JoinWorkspace. Returned only for invites addressed to
+  // the caller's own verified address: signing in proved control of that
+  // mailbox, so this is the same thing their email already holds.
+  string invite_token = 6;
+}
+
+message ListMyInvitesRequest {}
+message ListMyInvitesResponse {
+  repeated PendingInvite invites = 1;
+}
+
 message JoinWorkspaceRequest {
   string invite_token = 1;
 }
@@ -389,6 +410,7 @@ service WorkspaceService {
   rpc InviteMember(InviteMemberRequest) returns (InviteMemberResponse);
   rpc JoinWorkspace(JoinWorkspaceRequest) returns (JoinWorkspaceResponse);
   rpc ListInvites(ListInvitesRequest) returns (ListInvitesResponse);
+  rpc ListMyInvites(ListMyInvitesRequest) returns (ListMyInvitesResponse);
   rpc RevokeInvite(RevokeInviteRequest) returns (RevokeInviteResponse);
   rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
   rpc GetPreferences(GetPreferencesRequest) returns (GetPreferencesResponse);

@@ -199,6 +199,32 @@ class RevokeInviteResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class PendingInvite(_message.Message):
+    __slots__ = ("workspace_id", "workspace_name", "workspace_slug", "role", "expires_at", "invite_token")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_NAME_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_SLUG_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    INVITE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    workspace_name: str
+    workspace_slug: str
+    role: Role
+    expires_at: _timestamp_pb2.Timestamp
+    invite_token: str
+    def __init__(self, workspace_id: _Optional[str] = ..., workspace_name: _Optional[str] = ..., workspace_slug: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., invite_token: _Optional[str] = ...) -> None: ...
+
+class ListMyInvitesRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListMyInvitesResponse(_message.Message):
+    __slots__ = ("invites",)
+    INVITES_FIELD_NUMBER: _ClassVar[int]
+    invites: _containers.RepeatedCompositeFieldContainer[PendingInvite]
+    def __init__(self, invites: _Optional[_Iterable[_Union[PendingInvite, _Mapping]]] = ...) -> None: ...
+
 class JoinWorkspaceRequest(_message.Message):
     __slots__ = ("invite_token",)
     INVITE_TOKEN_FIELD_NUMBER: _ClassVar[int]
