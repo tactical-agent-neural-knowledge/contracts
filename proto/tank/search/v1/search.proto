@@ -34,6 +34,10 @@ message SearchRequest {
   // Raw query with modifiers, parsed server-side and merged into query +
   // filters: `from:@name in:#tread has:file before:2026-09-01 after:2026-01-01`.
   string q = 6;
+  // Ask for the Neural Vault: keyword results fused with semantic neighbours.
+  // Keyword search is Slack parity and always free; the semantic half is the
+  // paid feature, so it is requested explicitly and metered per request.
+  bool semantic = 7;
 }
 
 message SearchHit {
@@ -52,6 +56,10 @@ message SearchResponse {
   SearchFilters parsed_filters = 4;
   // The free-text remainder of `q` merged with `query`.
   string parsed_query = 5;
+  // Whether semantic neighbours actually contributed. False when the caller
+  // did not ask, on later pages, or when the embedder was unreachable — so a
+  // client never claims the Vault answered when only keywords did.
+  bool semantic_used = 6;
 }
 
 service SearchService {

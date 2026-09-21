@@ -36,20 +36,22 @@ class SearchFilters(_message.Message):
     def __init__(self, from_user_ids: _Optional[_Iterable[str]] = ..., in_channel_ids: _Optional[_Iterable[str]] = ..., has: _Optional[_Iterable[_Union[HasFilter, str]]] = ..., before: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., after: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class SearchRequest(_message.Message):
-    __slots__ = ("workspace_id", "query", "filters", "cursor", "limit", "q")
+    __slots__ = ("workspace_id", "query", "filters", "cursor", "limit", "q", "semantic")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     QUERY_FIELD_NUMBER: _ClassVar[int]
     FILTERS_FIELD_NUMBER: _ClassVar[int]
     CURSOR_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
     Q_FIELD_NUMBER: _ClassVar[int]
+    SEMANTIC_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     query: str
     filters: SearchFilters
     cursor: str
     limit: int
     q: str
-    def __init__(self, workspace_id: _Optional[str] = ..., query: _Optional[str] = ..., filters: _Optional[_Union[SearchFilters, _Mapping]] = ..., cursor: _Optional[str] = ..., limit: _Optional[int] = ..., q: _Optional[str] = ...) -> None: ...
+    semantic: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., query: _Optional[str] = ..., filters: _Optional[_Union[SearchFilters, _Mapping]] = ..., cursor: _Optional[str] = ..., limit: _Optional[int] = ..., q: _Optional[str] = ..., semantic: bool = ...) -> None: ...
 
 class SearchHit(_message.Message):
     __slots__ = ("message", "channel_id", "highlights", "score")
@@ -64,15 +66,17 @@ class SearchHit(_message.Message):
     def __init__(self, message: _Optional[_Union[_message_pb2.Message, _Mapping]] = ..., channel_id: _Optional[str] = ..., highlights: _Optional[_Iterable[str]] = ..., score: _Optional[float] = ...) -> None: ...
 
 class SearchResponse(_message.Message):
-    __slots__ = ("hits", "next_cursor", "total_estimate", "parsed_filters", "parsed_query")
+    __slots__ = ("hits", "next_cursor", "total_estimate", "parsed_filters", "parsed_query", "semantic_used")
     HITS_FIELD_NUMBER: _ClassVar[int]
     NEXT_CURSOR_FIELD_NUMBER: _ClassVar[int]
     TOTAL_ESTIMATE_FIELD_NUMBER: _ClassVar[int]
     PARSED_FILTERS_FIELD_NUMBER: _ClassVar[int]
     PARSED_QUERY_FIELD_NUMBER: _ClassVar[int]
+    SEMANTIC_USED_FIELD_NUMBER: _ClassVar[int]
     hits: _containers.RepeatedCompositeFieldContainer[SearchHit]
     next_cursor: str
     total_estimate: int
     parsed_filters: SearchFilters
     parsed_query: str
-    def __init__(self, hits: _Optional[_Iterable[_Union[SearchHit, _Mapping]]] = ..., next_cursor: _Optional[str] = ..., total_estimate: _Optional[int] = ..., parsed_filters: _Optional[_Union[SearchFilters, _Mapping]] = ..., parsed_query: _Optional[str] = ...) -> None: ...
+    semantic_used: bool
+    def __init__(self, hits: _Optional[_Iterable[_Union[SearchHit, _Mapping]]] = ..., next_cursor: _Optional[str] = ..., total_estimate: _Optional[int] = ..., parsed_filters: _Optional[_Union[SearchFilters, _Mapping]] = ..., parsed_query: _Optional[str] = ..., semantic_used: bool = ...) -> None: ...

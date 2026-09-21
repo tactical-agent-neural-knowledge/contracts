@@ -62,6 +62,26 @@ message GetBootstrapResponse {
   int32 unread_notification_count = 7;
   Preferences preferences = 8;
   repeated UserGroup user_groups = 9;
+  // What this workspace's plan allows, so clients can mark premium surfaces
+  // before anyone hits a wall. The server is still the authority: every gated
+  // call is checked again server-side.
+  Entitlements entitlements = 10;
+}
+
+// Everything Slack does is free. The agent and the Neural Vault are what a
+// subscription buys; a free workspace gets one of each to try.
+message Entitlements {
+  // "free" or "premium".
+  string plan = 1;
+  // Whether another agent run / Neural Vault query is allowed right now.
+  bool agent_runs = 2;
+  bool neural_vault = 3;
+  int32 agent_runs_used = 4;
+  int32 agent_runs_limit = 5;
+  int32 vault_queries_used = 6;
+  int32 vault_queries_limit = 7;
+  // Where to write to upgrade; the clients show it rather than hard-coding it.
+  string contact_email = 8;
 }
 
 message ListMembersRequest {

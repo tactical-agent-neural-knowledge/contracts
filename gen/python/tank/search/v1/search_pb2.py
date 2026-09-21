@@ -26,7 +26,7 @@ from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__
 from tank.message.v1 import message_pb2 as tank_dot_message_dot_v1_dot_message__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1btank/search/v1/search.proto\x12\x0etank.search.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1dtank/message/v1/message.proto\"\xec\x01\n\rSearchFilters\x12\"\n\rfrom_user_ids\x18\x01 \x03(\tR\x0b\x66romUserIds\x12$\n\x0ein_channel_ids\x18\x02 \x03(\tR\x0cinChannelIds\x12+\n\x03has\x18\x03 \x03(\x0e\x32\x19.tank.search.v1.HasFilterR\x03has\x12\x32\n\x06\x62\x65\x66ore\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x06\x62\x65\x66ore\x12\x30\n\x05\x61\x66ter\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x05\x61\x66ter\"\xbd\x01\n\rSearchRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x14\n\x05query\x18\x02 \x01(\tR\x05query\x12\x37\n\x07\x66ilters\x18\x03 \x01(\x0b\x32\x1d.tank.search.v1.SearchFiltersR\x07\x66ilters\x12\x16\n\x06\x63ursor\x18\x04 \x01(\tR\x06\x63ursor\x12\x14\n\x05limit\x18\x05 \x01(\x05R\x05limit\x12\x0c\n\x01q\x18\x06 \x01(\tR\x01q\"\x94\x01\n\tSearchHit\x12\x32\n\x07message\x18\x01 \x01(\x0b\x32\x18.tank.message.v1.MessageR\x07message\x12\x1d\n\nchannel_id\x18\x02 \x01(\tR\tchannelId\x12\x1e\n\nhighlights\x18\x03 \x03(\tR\nhighlights\x12\x14\n\x05score\x18\x04 \x01(\x01R\x05score\"\xf0\x01\n\x0eSearchResponse\x12-\n\x04hits\x18\x01 \x03(\x0b\x32\x19.tank.search.v1.SearchHitR\x04hits\x12\x1f\n\x0bnext_cursor\x18\x02 \x01(\tR\nnextCursor\x12%\n\x0etotal_estimate\x18\x03 \x01(\x03R\rtotalEstimate\x12\x44\n\x0eparsed_filters\x18\x04 \x01(\x0b\x32\x1d.tank.search.v1.SearchFiltersR\rparsedFilters\x12!\n\x0cparsed_query\x18\x05 \x01(\tR\x0bparsedQuery*\x84\x01\n\tHasFilter\x12\x1a\n\x16HAS_FILTER_UNSPECIFIED\x10\x00\x12\x14\n\x10HAS_FILTER_FILES\x10\x01\x12\x14\n\x10HAS_FILTER_LINKS\x10\x02\x12\x18\n\x14HAS_FILTER_REACTIONS\x10\x03\x12\x15\n\x11HAS_FILTER_BLOCKS\x10\x04\x32X\n\rSearchService\x12G\n\x06Search\x12\x1d.tank.search.v1.SearchRequest\x1a\x1e.tank.search.v1.SearchResponseB\xd0\x01\n\x12\x63om.tank.search.v1B\x0bSearchProtoP\x01ZSgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/search/v1;searchv1\xa2\x02\x03TSX\xaa\x02\x0eTank.Search.V1\xca\x02\x0eTank\\Search\\V1\xe2\x02\x1aTank\\Search\\V1\\GPBMetadata\xea\x02\x10Tank::Search::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1btank/search/v1/search.proto\x12\x0etank.search.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1dtank/message/v1/message.proto\"\xec\x01\n\rSearchFilters\x12\"\n\rfrom_user_ids\x18\x01 \x03(\tR\x0b\x66romUserIds\x12$\n\x0ein_channel_ids\x18\x02 \x03(\tR\x0cinChannelIds\x12+\n\x03has\x18\x03 \x03(\x0e\x32\x19.tank.search.v1.HasFilterR\x03has\x12\x32\n\x06\x62\x65\x66ore\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x06\x62\x65\x66ore\x12\x30\n\x05\x61\x66ter\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\x05\x61\x66ter\"\xd9\x01\n\rSearchRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x14\n\x05query\x18\x02 \x01(\tR\x05query\x12\x37\n\x07\x66ilters\x18\x03 \x01(\x0b\x32\x1d.tank.search.v1.SearchFiltersR\x07\x66ilters\x12\x16\n\x06\x63ursor\x18\x04 \x01(\tR\x06\x63ursor\x12\x14\n\x05limit\x18\x05 \x01(\x05R\x05limit\x12\x0c\n\x01q\x18\x06 \x01(\tR\x01q\x12\x1a\n\x08semantic\x18\x07 \x01(\x08R\x08semantic\"\x94\x01\n\tSearchHit\x12\x32\n\x07message\x18\x01 \x01(\x0b\x32\x18.tank.message.v1.MessageR\x07message\x12\x1d\n\nchannel_id\x18\x02 \x01(\tR\tchannelId\x12\x1e\n\nhighlights\x18\x03 \x03(\tR\nhighlights\x12\x14\n\x05score\x18\x04 \x01(\x01R\x05score\"\x95\x02\n\x0eSearchResponse\x12-\n\x04hits\x18\x01 \x03(\x0b\x32\x19.tank.search.v1.SearchHitR\x04hits\x12\x1f\n\x0bnext_cursor\x18\x02 \x01(\tR\nnextCursor\x12%\n\x0etotal_estimate\x18\x03 \x01(\x03R\rtotalEstimate\x12\x44\n\x0eparsed_filters\x18\x04 \x01(\x0b\x32\x1d.tank.search.v1.SearchFiltersR\rparsedFilters\x12!\n\x0cparsed_query\x18\x05 \x01(\tR\x0bparsedQuery\x12#\n\rsemantic_used\x18\x06 \x01(\x08R\x0csemanticUsed*\x84\x01\n\tHasFilter\x12\x1a\n\x16HAS_FILTER_UNSPECIFIED\x10\x00\x12\x14\n\x10HAS_FILTER_FILES\x10\x01\x12\x14\n\x10HAS_FILTER_LINKS\x10\x02\x12\x18\n\x14HAS_FILTER_REACTIONS\x10\x03\x12\x15\n\x11HAS_FILTER_BLOCKS\x10\x04\x32X\n\rSearchService\x12G\n\x06Search\x12\x1d.tank.search.v1.SearchRequest\x1a\x1e.tank.search.v1.SearchResponseB\xd0\x01\n\x12\x63om.tank.search.v1B\x0bSearchProtoP\x01ZSgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/search/v1;searchv1\xa2\x02\x03TSX\xaa\x02\x0eTank.Search.V1\xca\x02\x0eTank\\Search\\V1\xe2\x02\x1aTank\\Search\\V1\\GPBMetadata\xea\x02\x10Tank::Search::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,16 +34,16 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'tank.search.v1.search_pb2',
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\022com.tank.search.v1B\013SearchProtoP\001ZSgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/search/v1;searchv1\242\002\003TSX\252\002\016Tank.Search.V1\312\002\016Tank\\Search\\V1\342\002\032Tank\\Search\\V1\\GPBMetadata\352\002\020Tank::Search::V1'
-  _globals['_HASFILTER']._serialized_start=937
-  _globals['_HASFILTER']._serialized_end=1069
+  _globals['_HASFILTER']._serialized_start=1002
+  _globals['_HASFILTER']._serialized_end=1134
   _globals['_SEARCHFILTERS']._serialized_start=112
   _globals['_SEARCHFILTERS']._serialized_end=348
   _globals['_SEARCHREQUEST']._serialized_start=351
-  _globals['_SEARCHREQUEST']._serialized_end=540
-  _globals['_SEARCHHIT']._serialized_start=543
-  _globals['_SEARCHHIT']._serialized_end=691
-  _globals['_SEARCHRESPONSE']._serialized_start=694
-  _globals['_SEARCHRESPONSE']._serialized_end=934
-  _globals['_SEARCHSERVICE']._serialized_start=1071
-  _globals['_SEARCHSERVICE']._serialized_end=1159
+  _globals['_SEARCHREQUEST']._serialized_end=568
+  _globals['_SEARCHHIT']._serialized_start=571
+  _globals['_SEARCHHIT']._serialized_end=719
+  _globals['_SEARCHRESPONSE']._serialized_start=722
+  _globals['_SEARCHRESPONSE']._serialized_end=999
+  _globals['_SEARCHSERVICE']._serialized_start=1136
+  _globals['_SEARCHSERVICE']._serialized_end=1224
 # @@protoc_insertion_point(module_scope)
