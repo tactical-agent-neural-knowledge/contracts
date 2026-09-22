@@ -543,3 +543,67 @@ class RevokeScimTokenRequest(_message.Message):
 class RevokeScimTokenResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class IncomingWebhook(_message.Message):
+    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "name", "created_by", "created_at", "last_post_at", "url")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    CREATED_BY_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    LAST_POST_AT_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    workspace_id: str
+    channel_id: str
+    thread_root_id: str
+    name: str
+    created_by: str
+    created_at: _timestamp_pb2.Timestamp
+    last_post_at: _timestamp_pb2.Timestamp
+    url: str
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., name: _Optional[str] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_post_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., url: _Optional[str] = ...) -> None: ...
+
+class CreateIncomingWebhookRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "name")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    thread_root_id: str
+    name: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
+
+class CreateIncomingWebhookResponse(_message.Message):
+    __slots__ = ("webhook",)
+    WEBHOOK_FIELD_NUMBER: _ClassVar[int]
+    webhook: IncomingWebhook
+    def __init__(self, webhook: _Optional[_Union[IncomingWebhook, _Mapping]] = ...) -> None: ...
+
+class ListIncomingWebhooksRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class ListIncomingWebhooksResponse(_message.Message):
+    __slots__ = ("webhooks",)
+    WEBHOOKS_FIELD_NUMBER: _ClassVar[int]
+    webhooks: _containers.RepeatedCompositeFieldContainer[IncomingWebhook]
+    def __init__(self, webhooks: _Optional[_Iterable[_Union[IncomingWebhook, _Mapping]]] = ...) -> None: ...
+
+class RevokeIncomingWebhookRequest(_message.Message):
+    __slots__ = ("workspace_id", "id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ...) -> None: ...
+
+class RevokeIncomingWebhookResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...

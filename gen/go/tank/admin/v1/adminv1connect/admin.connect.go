@@ -63,6 +63,15 @@ const (
 	// AdminServiceAdminSetChannelMembersProcedure is the fully-qualified name of the AdminService's
 	// AdminSetChannelMembers RPC.
 	AdminServiceAdminSetChannelMembersProcedure = "/tank.admin.v1.AdminService/AdminSetChannelMembers"
+	// AdminServiceCreateIncomingWebhookProcedure is the fully-qualified name of the AdminService's
+	// CreateIncomingWebhook RPC.
+	AdminServiceCreateIncomingWebhookProcedure = "/tank.admin.v1.AdminService/CreateIncomingWebhook"
+	// AdminServiceListIncomingWebhooksProcedure is the fully-qualified name of the AdminService's
+	// ListIncomingWebhooks RPC.
+	AdminServiceListIncomingWebhooksProcedure = "/tank.admin.v1.AdminService/ListIncomingWebhooks"
+	// AdminServiceRevokeIncomingWebhookProcedure is the fully-qualified name of the AdminService's
+	// RevokeIncomingWebhook RPC.
+	AdminServiceRevokeIncomingWebhookProcedure = "/tank.admin.v1.AdminService/RevokeIncomingWebhook"
 	// AdminServiceGetWorkspaceSettingsProcedure is the fully-qualified name of the AdminService's
 	// GetWorkspaceSettings RPC.
 	AdminServiceGetWorkspaceSettingsProcedure = "/tank.admin.v1.AdminService/GetWorkspaceSettings"
@@ -106,6 +115,9 @@ type AdminServiceClient interface {
 	ListChannelsAdmin(context.Context, *connect.Request[v1.ListChannelsAdminRequest]) (*connect.Response[v1.ListChannelsAdminResponse], error)
 	AdminArchiveChannel(context.Context, *connect.Request[v1.AdminArchiveChannelRequest]) (*connect.Response[v1.AdminArchiveChannelResponse], error)
 	AdminSetChannelMembers(context.Context, *connect.Request[v1.AdminSetChannelMembersRequest]) (*connect.Response[v1.AdminSetChannelMembersResponse], error)
+	CreateIncomingWebhook(context.Context, *connect.Request[v1.CreateIncomingWebhookRequest]) (*connect.Response[v1.CreateIncomingWebhookResponse], error)
+	ListIncomingWebhooks(context.Context, *connect.Request[v1.ListIncomingWebhooksRequest]) (*connect.Response[v1.ListIncomingWebhooksResponse], error)
+	RevokeIncomingWebhook(context.Context, *connect.Request[v1.RevokeIncomingWebhookRequest]) (*connect.Response[v1.RevokeIncomingWebhookResponse], error)
 	GetWorkspaceSettings(context.Context, *connect.Request[v1.GetWorkspaceSettingsRequest]) (*connect.Response[v1.GetWorkspaceSettingsResponse], error)
 	UpdateWorkspaceSettings(context.Context, *connect.Request[v1.UpdateWorkspaceSettingsRequest]) (*connect.Response[v1.UpdateWorkspaceSettingsResponse], error)
 	ListAuditLog(context.Context, *connect.Request[v1.ListAuditLogRequest]) (*connect.Response[v1.ListAuditLogResponse], error)
@@ -189,6 +201,24 @@ func NewAdminServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(adminServiceMethods.ByName("AdminSetChannelMembers")),
 			connect.WithClientOptions(opts...),
 		),
+		createIncomingWebhook: connect.NewClient[v1.CreateIncomingWebhookRequest, v1.CreateIncomingWebhookResponse](
+			httpClient,
+			baseURL+AdminServiceCreateIncomingWebhookProcedure,
+			connect.WithSchema(adminServiceMethods.ByName("CreateIncomingWebhook")),
+			connect.WithClientOptions(opts...),
+		),
+		listIncomingWebhooks: connect.NewClient[v1.ListIncomingWebhooksRequest, v1.ListIncomingWebhooksResponse](
+			httpClient,
+			baseURL+AdminServiceListIncomingWebhooksProcedure,
+			connect.WithSchema(adminServiceMethods.ByName("ListIncomingWebhooks")),
+			connect.WithClientOptions(opts...),
+		),
+		revokeIncomingWebhook: connect.NewClient[v1.RevokeIncomingWebhookRequest, v1.RevokeIncomingWebhookResponse](
+			httpClient,
+			baseURL+AdminServiceRevokeIncomingWebhookProcedure,
+			connect.WithSchema(adminServiceMethods.ByName("RevokeIncomingWebhook")),
+			connect.WithClientOptions(opts...),
+		),
 		getWorkspaceSettings: connect.NewClient[v1.GetWorkspaceSettingsRequest, v1.GetWorkspaceSettingsResponse](
 			httpClient,
 			baseURL+AdminServiceGetWorkspaceSettingsProcedure,
@@ -264,6 +294,9 @@ type adminServiceClient struct {
 	listChannelsAdmin       *connect.Client[v1.ListChannelsAdminRequest, v1.ListChannelsAdminResponse]
 	adminArchiveChannel     *connect.Client[v1.AdminArchiveChannelRequest, v1.AdminArchiveChannelResponse]
 	adminSetChannelMembers  *connect.Client[v1.AdminSetChannelMembersRequest, v1.AdminSetChannelMembersResponse]
+	createIncomingWebhook   *connect.Client[v1.CreateIncomingWebhookRequest, v1.CreateIncomingWebhookResponse]
+	listIncomingWebhooks    *connect.Client[v1.ListIncomingWebhooksRequest, v1.ListIncomingWebhooksResponse]
+	revokeIncomingWebhook   *connect.Client[v1.RevokeIncomingWebhookRequest, v1.RevokeIncomingWebhookResponse]
 	getWorkspaceSettings    *connect.Client[v1.GetWorkspaceSettingsRequest, v1.GetWorkspaceSettingsResponse]
 	updateWorkspaceSettings *connect.Client[v1.UpdateWorkspaceSettingsRequest, v1.UpdateWorkspaceSettingsResponse]
 	listAuditLog            *connect.Client[v1.ListAuditLogRequest, v1.ListAuditLogResponse]
@@ -324,6 +357,21 @@ func (c *adminServiceClient) AdminArchiveChannel(ctx context.Context, req *conne
 // AdminSetChannelMembers calls tank.admin.v1.AdminService.AdminSetChannelMembers.
 func (c *adminServiceClient) AdminSetChannelMembers(ctx context.Context, req *connect.Request[v1.AdminSetChannelMembersRequest]) (*connect.Response[v1.AdminSetChannelMembersResponse], error) {
 	return c.adminSetChannelMembers.CallUnary(ctx, req)
+}
+
+// CreateIncomingWebhook calls tank.admin.v1.AdminService.CreateIncomingWebhook.
+func (c *adminServiceClient) CreateIncomingWebhook(ctx context.Context, req *connect.Request[v1.CreateIncomingWebhookRequest]) (*connect.Response[v1.CreateIncomingWebhookResponse], error) {
+	return c.createIncomingWebhook.CallUnary(ctx, req)
+}
+
+// ListIncomingWebhooks calls tank.admin.v1.AdminService.ListIncomingWebhooks.
+func (c *adminServiceClient) ListIncomingWebhooks(ctx context.Context, req *connect.Request[v1.ListIncomingWebhooksRequest]) (*connect.Response[v1.ListIncomingWebhooksResponse], error) {
+	return c.listIncomingWebhooks.CallUnary(ctx, req)
+}
+
+// RevokeIncomingWebhook calls tank.admin.v1.AdminService.RevokeIncomingWebhook.
+func (c *adminServiceClient) RevokeIncomingWebhook(ctx context.Context, req *connect.Request[v1.RevokeIncomingWebhookRequest]) (*connect.Response[v1.RevokeIncomingWebhookResponse], error) {
+	return c.revokeIncomingWebhook.CallUnary(ctx, req)
 }
 
 // GetWorkspaceSettings calls tank.admin.v1.AdminService.GetWorkspaceSettings.
@@ -388,6 +436,9 @@ type AdminServiceHandler interface {
 	ListChannelsAdmin(context.Context, *connect.Request[v1.ListChannelsAdminRequest]) (*connect.Response[v1.ListChannelsAdminResponse], error)
 	AdminArchiveChannel(context.Context, *connect.Request[v1.AdminArchiveChannelRequest]) (*connect.Response[v1.AdminArchiveChannelResponse], error)
 	AdminSetChannelMembers(context.Context, *connect.Request[v1.AdminSetChannelMembersRequest]) (*connect.Response[v1.AdminSetChannelMembersResponse], error)
+	CreateIncomingWebhook(context.Context, *connect.Request[v1.CreateIncomingWebhookRequest]) (*connect.Response[v1.CreateIncomingWebhookResponse], error)
+	ListIncomingWebhooks(context.Context, *connect.Request[v1.ListIncomingWebhooksRequest]) (*connect.Response[v1.ListIncomingWebhooksResponse], error)
+	RevokeIncomingWebhook(context.Context, *connect.Request[v1.RevokeIncomingWebhookRequest]) (*connect.Response[v1.RevokeIncomingWebhookResponse], error)
 	GetWorkspaceSettings(context.Context, *connect.Request[v1.GetWorkspaceSettingsRequest]) (*connect.Response[v1.GetWorkspaceSettingsResponse], error)
 	UpdateWorkspaceSettings(context.Context, *connect.Request[v1.UpdateWorkspaceSettingsRequest]) (*connect.Response[v1.UpdateWorkspaceSettingsResponse], error)
 	ListAuditLog(context.Context, *connect.Request[v1.ListAuditLogRequest]) (*connect.Response[v1.ListAuditLogResponse], error)
@@ -465,6 +516,24 @@ func NewAdminServiceHandler(svc AdminServiceHandler, opts ...connect.HandlerOpti
 		AdminServiceAdminSetChannelMembersProcedure,
 		svc.AdminSetChannelMembers,
 		connect.WithSchema(adminServiceMethods.ByName("AdminSetChannelMembers")),
+		connect.WithHandlerOptions(opts...),
+	)
+	adminServiceCreateIncomingWebhookHandler := connect.NewUnaryHandler(
+		AdminServiceCreateIncomingWebhookProcedure,
+		svc.CreateIncomingWebhook,
+		connect.WithSchema(adminServiceMethods.ByName("CreateIncomingWebhook")),
+		connect.WithHandlerOptions(opts...),
+	)
+	adminServiceListIncomingWebhooksHandler := connect.NewUnaryHandler(
+		AdminServiceListIncomingWebhooksProcedure,
+		svc.ListIncomingWebhooks,
+		connect.WithSchema(adminServiceMethods.ByName("ListIncomingWebhooks")),
+		connect.WithHandlerOptions(opts...),
+	)
+	adminServiceRevokeIncomingWebhookHandler := connect.NewUnaryHandler(
+		AdminServiceRevokeIncomingWebhookProcedure,
+		svc.RevokeIncomingWebhook,
+		connect.WithSchema(adminServiceMethods.ByName("RevokeIncomingWebhook")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceGetWorkspaceSettingsHandler := connect.NewUnaryHandler(
@@ -549,6 +618,12 @@ func NewAdminServiceHandler(svc AdminServiceHandler, opts ...connect.HandlerOpti
 			adminServiceAdminArchiveChannelHandler.ServeHTTP(w, r)
 		case AdminServiceAdminSetChannelMembersProcedure:
 			adminServiceAdminSetChannelMembersHandler.ServeHTTP(w, r)
+		case AdminServiceCreateIncomingWebhookProcedure:
+			adminServiceCreateIncomingWebhookHandler.ServeHTTP(w, r)
+		case AdminServiceListIncomingWebhooksProcedure:
+			adminServiceListIncomingWebhooksHandler.ServeHTTP(w, r)
+		case AdminServiceRevokeIncomingWebhookProcedure:
+			adminServiceRevokeIncomingWebhookHandler.ServeHTTP(w, r)
 		case AdminServiceGetWorkspaceSettingsProcedure:
 			adminServiceGetWorkspaceSettingsHandler.ServeHTTP(w, r)
 		case AdminServiceUpdateWorkspaceSettingsProcedure:
@@ -616,6 +691,18 @@ func (UnimplementedAdminServiceHandler) AdminArchiveChannel(context.Context, *co
 
 func (UnimplementedAdminServiceHandler) AdminSetChannelMembers(context.Context, *connect.Request[v1.AdminSetChannelMembersRequest]) (*connect.Response[v1.AdminSetChannelMembersResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.admin.v1.AdminService.AdminSetChannelMembers is not implemented"))
+}
+
+func (UnimplementedAdminServiceHandler) CreateIncomingWebhook(context.Context, *connect.Request[v1.CreateIncomingWebhookRequest]) (*connect.Response[v1.CreateIncomingWebhookResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.admin.v1.AdminService.CreateIncomingWebhook is not implemented"))
+}
+
+func (UnimplementedAdminServiceHandler) ListIncomingWebhooks(context.Context, *connect.Request[v1.ListIncomingWebhooksRequest]) (*connect.Response[v1.ListIncomingWebhooksResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.admin.v1.AdminService.ListIncomingWebhooks is not implemented"))
+}
+
+func (UnimplementedAdminServiceHandler) RevokeIncomingWebhook(context.Context, *connect.Request[v1.RevokeIncomingWebhookRequest]) (*connect.Response[v1.RevokeIncomingWebhookResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.admin.v1.AdminService.RevokeIncomingWebhook is not implemented"))
 }
 
 func (UnimplementedAdminServiceHandler) GetWorkspaceSettings(context.Context, *connect.Request[v1.GetWorkspaceSettingsRequest]) (*connect.Response[v1.GetWorkspaceSettingsResponse], error) {
