@@ -141,6 +141,38 @@ class GetMeResponse(_message.Message):
     me: Principal
     def __init__(self, me: _Optional[_Union[Principal, _Mapping]] = ...) -> None: ...
 
+class Identity(_message.Message):
+    __slots__ = ("principal", "is_default", "added_at")
+    PRINCIPAL_FIELD_NUMBER: _ClassVar[int]
+    IS_DEFAULT_FIELD_NUMBER: _ClassVar[int]
+    ADDED_AT_FIELD_NUMBER: _ClassVar[int]
+    principal: Principal
+    is_default: bool
+    added_at: _timestamp_pb2.Timestamp
+    def __init__(self, principal: _Optional[_Union[Principal, _Mapping]] = ..., is_default: bool = ..., added_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ListIdentitiesRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListIdentitiesResponse(_message.Message):
+    __slots__ = ("identities",)
+    IDENTITIES_FIELD_NUMBER: _ClassVar[int]
+    identities: _containers.RepeatedCompositeFieldContainer[Identity]
+    def __init__(self, identities: _Optional[_Iterable[_Union[Identity, _Mapping]]] = ...) -> None: ...
+
+class SignOutIdentityRequest(_message.Message):
+    __slots__ = ("user_id",)
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    def __init__(self, user_id: _Optional[str] = ...) -> None: ...
+
+class SignOutIdentityResponse(_message.Message):
+    __slots__ = ("session_remains",)
+    SESSION_REMAINS_FIELD_NUMBER: _ClassVar[int]
+    session_remains: bool
+    def __init__(self, session_remains: bool = ...) -> None: ...
+
 class Session(_message.Message):
     __slots__ = ("id", "kind", "created_at", "expires_at", "user_agent", "ip", "current")
     ID_FIELD_NUMBER: _ClassVar[int]

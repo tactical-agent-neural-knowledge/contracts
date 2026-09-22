@@ -77,6 +77,38 @@ message GetMeResponse {
   Principal me = 1;
 }
 
+// ---- Identities ------------------------------------------------------------
+
+// One account signed in on this device. A session holds several: the same
+// person often belongs to workspaces under different email addresses, and
+// signing into one must never sign them out of another.
+//
+// Which identity a request acts as is chosen per request by the
+// `x-tank-user` header, not by server-side "active" state, so two tabs can
+// sit in two accounts at once.
+message Identity {
+  Principal principal = 1;
+  // True for the identity used when a request names none.
+  bool is_default = 2;
+  // When this account was added to the session.
+  google.protobuf.Timestamp added_at = 3;
+}
+
+message ListIdentitiesRequest {}
+message ListIdentitiesResponse {
+  repeated Identity identities = 1;
+}
+
+// Removes one account from this device, leaving the others signed in. Removing
+// the last one ends the session, exactly like Logout.
+message SignOutIdentityRequest {
+  string user_id = 1;
+}
+message SignOutIdentityResponse {
+  // False once the session itself is gone, so the client knows to stop.
+  bool session_remains = 1;
+}
+
 // ---- Sessions --------------------------------------------------------------
 
 // One signed-in device: a web cookie session or a mobile refresh session.
@@ -207,6 +239,8 @@ service AuthService {
   rpc Logout(LogoutRequest) returns (LogoutResponse);
   rpc MintGatewayToken(MintGatewayTokenRequest) returns (MintGatewayTokenResponse);
   rpc GetMe(GetMeRequest) returns (GetMeResponse);
+  rpc ListIdentities(ListIdentitiesRequest) returns (ListIdentitiesResponse);
+  rpc SignOutIdentity(SignOutIdentityRequest) returns (SignOutIdentityResponse);
   rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);
   rpc RevokeSession(RevokeSessionRequest) returns (RevokeSessionResponse);
   rpc AdminRevokeUserSessions(AdminRevokeUserSessionsRequest) returns (AdminRevokeUserSessionsResponse);

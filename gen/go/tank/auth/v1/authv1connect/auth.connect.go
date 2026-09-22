@@ -51,6 +51,12 @@ const (
 	AuthServiceMintGatewayTokenProcedure = "/tank.auth.v1.AuthService/MintGatewayToken"
 	// AuthServiceGetMeProcedure is the fully-qualified name of the AuthService's GetMe RPC.
 	AuthServiceGetMeProcedure = "/tank.auth.v1.AuthService/GetMe"
+	// AuthServiceListIdentitiesProcedure is the fully-qualified name of the AuthService's
+	// ListIdentities RPC.
+	AuthServiceListIdentitiesProcedure = "/tank.auth.v1.AuthService/ListIdentities"
+	// AuthServiceSignOutIdentityProcedure is the fully-qualified name of the AuthService's
+	// SignOutIdentity RPC.
+	AuthServiceSignOutIdentityProcedure = "/tank.auth.v1.AuthService/SignOutIdentity"
 	// AuthServiceListSessionsProcedure is the fully-qualified name of the AuthService's ListSessions
 	// RPC.
 	AuthServiceListSessionsProcedure = "/tank.auth.v1.AuthService/ListSessions"
@@ -81,6 +87,8 @@ type AuthServiceClient interface {
 	Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error)
 	MintGatewayToken(context.Context, *connect.Request[v1.MintGatewayTokenRequest]) (*connect.Response[v1.MintGatewayTokenResponse], error)
 	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
+	ListIdentities(context.Context, *connect.Request[v1.ListIdentitiesRequest]) (*connect.Response[v1.ListIdentitiesResponse], error)
+	SignOutIdentity(context.Context, *connect.Request[v1.SignOutIdentityRequest]) (*connect.Response[v1.SignOutIdentityResponse], error)
 	ListSessions(context.Context, *connect.Request[v1.ListSessionsRequest]) (*connect.Response[v1.ListSessionsResponse], error)
 	RevokeSession(context.Context, *connect.Request[v1.RevokeSessionRequest]) (*connect.Response[v1.RevokeSessionResponse], error)
 	AdminRevokeUserSessions(context.Context, *connect.Request[v1.AdminRevokeUserSessionsRequest]) (*connect.Response[v1.AdminRevokeUserSessionsResponse], error)
@@ -143,6 +151,18 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(authServiceMethods.ByName("GetMe")),
 			connect.WithClientOptions(opts...),
 		),
+		listIdentities: connect.NewClient[v1.ListIdentitiesRequest, v1.ListIdentitiesResponse](
+			httpClient,
+			baseURL+AuthServiceListIdentitiesProcedure,
+			connect.WithSchema(authServiceMethods.ByName("ListIdentities")),
+			connect.WithClientOptions(opts...),
+		),
+		signOutIdentity: connect.NewClient[v1.SignOutIdentityRequest, v1.SignOutIdentityResponse](
+			httpClient,
+			baseURL+AuthServiceSignOutIdentityProcedure,
+			connect.WithSchema(authServiceMethods.ByName("SignOutIdentity")),
+			connect.WithClientOptions(opts...),
+		),
 		listSessions: connect.NewClient[v1.ListSessionsRequest, v1.ListSessionsResponse](
 			httpClient,
 			baseURL+AuthServiceListSessionsProcedure,
@@ -197,6 +217,8 @@ type authServiceClient struct {
 	logout                  *connect.Client[v1.LogoutRequest, v1.LogoutResponse]
 	mintGatewayToken        *connect.Client[v1.MintGatewayTokenRequest, v1.MintGatewayTokenResponse]
 	getMe                   *connect.Client[v1.GetMeRequest, v1.GetMeResponse]
+	listIdentities          *connect.Client[v1.ListIdentitiesRequest, v1.ListIdentitiesResponse]
+	signOutIdentity         *connect.Client[v1.SignOutIdentityRequest, v1.SignOutIdentityResponse]
 	listSessions            *connect.Client[v1.ListSessionsRequest, v1.ListSessionsResponse]
 	revokeSession           *connect.Client[v1.RevokeSessionRequest, v1.RevokeSessionResponse]
 	adminRevokeUserSessions *connect.Client[v1.AdminRevokeUserSessionsRequest, v1.AdminRevokeUserSessionsResponse]
@@ -239,6 +261,16 @@ func (c *authServiceClient) MintGatewayToken(ctx context.Context, req *connect.R
 // GetMe calls tank.auth.v1.AuthService.GetMe.
 func (c *authServiceClient) GetMe(ctx context.Context, req *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {
 	return c.getMe.CallUnary(ctx, req)
+}
+
+// ListIdentities calls tank.auth.v1.AuthService.ListIdentities.
+func (c *authServiceClient) ListIdentities(ctx context.Context, req *connect.Request[v1.ListIdentitiesRequest]) (*connect.Response[v1.ListIdentitiesResponse], error) {
+	return c.listIdentities.CallUnary(ctx, req)
+}
+
+// SignOutIdentity calls tank.auth.v1.AuthService.SignOutIdentity.
+func (c *authServiceClient) SignOutIdentity(ctx context.Context, req *connect.Request[v1.SignOutIdentityRequest]) (*connect.Response[v1.SignOutIdentityResponse], error) {
+	return c.signOutIdentity.CallUnary(ctx, req)
 }
 
 // ListSessions calls tank.auth.v1.AuthService.ListSessions.
@@ -285,6 +317,8 @@ type AuthServiceHandler interface {
 	Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error)
 	MintGatewayToken(context.Context, *connect.Request[v1.MintGatewayTokenRequest]) (*connect.Response[v1.MintGatewayTokenResponse], error)
 	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
+	ListIdentities(context.Context, *connect.Request[v1.ListIdentitiesRequest]) (*connect.Response[v1.ListIdentitiesResponse], error)
+	SignOutIdentity(context.Context, *connect.Request[v1.SignOutIdentityRequest]) (*connect.Response[v1.SignOutIdentityResponse], error)
 	ListSessions(context.Context, *connect.Request[v1.ListSessionsRequest]) (*connect.Response[v1.ListSessionsResponse], error)
 	RevokeSession(context.Context, *connect.Request[v1.RevokeSessionRequest]) (*connect.Response[v1.RevokeSessionResponse], error)
 	AdminRevokeUserSessions(context.Context, *connect.Request[v1.AdminRevokeUserSessionsRequest]) (*connect.Response[v1.AdminRevokeUserSessionsResponse], error)
@@ -341,6 +375,18 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 		AuthServiceGetMeProcedure,
 		svc.GetMe,
 		connect.WithSchema(authServiceMethods.ByName("GetMe")),
+		connect.WithHandlerOptions(opts...),
+	)
+	authServiceListIdentitiesHandler := connect.NewUnaryHandler(
+		AuthServiceListIdentitiesProcedure,
+		svc.ListIdentities,
+		connect.WithSchema(authServiceMethods.ByName("ListIdentities")),
+		connect.WithHandlerOptions(opts...),
+	)
+	authServiceSignOutIdentityHandler := connect.NewUnaryHandler(
+		AuthServiceSignOutIdentityProcedure,
+		svc.SignOutIdentity,
+		connect.WithSchema(authServiceMethods.ByName("SignOutIdentity")),
 		connect.WithHandlerOptions(opts...),
 	)
 	authServiceListSessionsHandler := connect.NewUnaryHandler(
@@ -401,6 +447,10 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 			authServiceMintGatewayTokenHandler.ServeHTTP(w, r)
 		case AuthServiceGetMeProcedure:
 			authServiceGetMeHandler.ServeHTTP(w, r)
+		case AuthServiceListIdentitiesProcedure:
+			authServiceListIdentitiesHandler.ServeHTTP(w, r)
+		case AuthServiceSignOutIdentityProcedure:
+			authServiceSignOutIdentityHandler.ServeHTTP(w, r)
 		case AuthServiceListSessionsProcedure:
 			authServiceListSessionsHandler.ServeHTTP(w, r)
 		case AuthServiceRevokeSessionProcedure:
@@ -450,6 +500,14 @@ func (UnimplementedAuthServiceHandler) MintGatewayToken(context.Context, *connec
 
 func (UnimplementedAuthServiceHandler) GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.GetMe is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) ListIdentities(context.Context, *connect.Request[v1.ListIdentitiesRequest]) (*connect.Response[v1.ListIdentitiesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.ListIdentities is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) SignOutIdentity(context.Context, *connect.Request[v1.SignOutIdentityRequest]) (*connect.Response[v1.SignOutIdentityResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.SignOutIdentity is not implemented"))
 }
 
 func (UnimplementedAuthServiceHandler) ListSessions(context.Context, *connect.Request[v1.ListSessionsRequest]) (*connect.Response[v1.ListSessionsResponse], error) {
