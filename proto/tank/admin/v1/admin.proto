@@ -350,6 +350,52 @@ message RevokeScimTokenRequest {
 }
 message RevokeScimTokenResponse {}
 
+// ---------------------------------------------------------------- apps
+
+// An incoming webhook: a URL something outside TANK posts to, so its messages
+// land in one Tread. The first integration point, and deliberately the
+// dumbest one — a URL and a name is the whole contract, which is why every
+// build system and monitor already knows how to use it.
+message IncomingWebhook {
+  string id = 1;
+  string workspace_id = 2;
+  string channel_id = 3;
+  // Optional: post into this thread rather than the channel.
+  string thread_root_id = 4;
+  // Shown as the author of everything it posts, so a Tread says "Deploys"
+  // rather than the name of whoever set it up.
+  string name = 5;
+  string created_by = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp last_post_at = 8;
+  // The full URL including its secret. Returned only when it is created:
+  // only a hash is stored, so this cannot be shown again.
+  string url = 9;
+}
+
+message CreateIncomingWebhookRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string thread_root_id = 3;
+  string name = 4;
+}
+message CreateIncomingWebhookResponse {
+  IncomingWebhook webhook = 1;
+}
+
+message ListIncomingWebhooksRequest {
+  string workspace_id = 1;
+}
+message ListIncomingWebhooksResponse {
+  repeated IncomingWebhook webhooks = 1;
+}
+
+message RevokeIncomingWebhookRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message RevokeIncomingWebhookResponse {}
+
 service AdminService {
   rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
   rpc SetMemberRole(SetMemberRoleRequest) returns (SetMemberRoleResponse);
@@ -361,6 +407,10 @@ service AdminService {
   rpc ListChannelsAdmin(ListChannelsAdminRequest) returns (ListChannelsAdminResponse);
   rpc AdminArchiveChannel(AdminArchiveChannelRequest) returns (AdminArchiveChannelResponse);
   rpc AdminSetChannelMembers(AdminSetChannelMembersRequest) returns (AdminSetChannelMembersResponse);
+  rpc CreateIncomingWebhook(CreateIncomingWebhookRequest) returns (CreateIncomingWebhookResponse);
+  rpc ListIncomingWebhooks(ListIncomingWebhooksRequest) returns (ListIncomingWebhooksResponse);
+  rpc RevokeIncomingWebhook(RevokeIncomingWebhookRequest) returns (RevokeIncomingWebhookResponse);
+
   rpc GetWorkspaceSettings(GetWorkspaceSettingsRequest) returns (GetWorkspaceSettingsResponse);
   rpc UpdateWorkspaceSettings(UpdateWorkspaceSettingsRequest) returns (UpdateWorkspaceSettingsResponse);
   rpc ListAuditLog(ListAuditLogRequest) returns (ListAuditLogResponse);
