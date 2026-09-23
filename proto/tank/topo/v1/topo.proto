@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package tank.topo.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/topo/v1;topov1";
+
+// Topo is the map of a conversation: a strip beside a Tread showing its shape,
+// and later a zoomable view from one message up to the whole organisation.
+//
+// A Mark is anything worth seeing on that map. R1 carries only marks that can
+// be derived from what the server already knows — no extraction, no model — so
+// the strip is useful before any of the agent work exists.
+
+enum MarkType {
+  MARK_TYPE_UNSPECIFIED = 0;
+  // A message mentioning the person asking. Their "error squiggle".
+  MARK_TYPE_MENTION = 1;
+  // A message the person asking wrote.
+  MARK_TYPE_OWN_MESSAGE = 2;
+  // Where they last caught up. At most one per channel, and never for anyone else.
+  MARK_TYPE_READ_HORIZON = 3;
+  // A message matching the current in-channel search (R2).
+  MARK_TYPE_SEARCH_HIT = 4;
+}
+
+// Which vertical strip a mark belongs to. Keeping families apart is what stops
+// a busy Tread reading as one undifferentiated smear.
+enum Lane {
+  LANE_UNSPECIFIED = 0;
+  // Structure and events that happened to the channel rather than in it.
+  LANE_STRUCTURE = 1;
+  // Marks about messages themselves.
+  LANE_MESSAGE = 2;
+  // Marks that exist only for the person asking.
+  LANE_PERSONAL = 3;
+}
+
+message Mark {
+  string id = 1;
+  string channel_id = 2;
+  // The message this mark sits on. Empty for marks that are positional only,
+  // such as the read horizon when the next message has not arrived yet.
+  string message_id = 3;
+  // Position on the message-indexed axis. This is the channel_seq, which is
+  // gapless and stable, so a mark cannot drift when history is paged in.
+  int64 channel_seq = 4;
+  MarkType type = 5;
+  Lane lane = 6;
+  // Importance, 0-100. Benchmarks and incidents sit high, chatter low; the
+  // renderer uses it for opacity and for what survives when marks collide.
+  int32 elevation = 7;
+  // One line for the hover preview. Never the whole message: the strip is a
+  // map, and reading happens in the Tread.
+  string preview = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+message ListMarksRequest {
+  string channel_id = 1;
+  // Empty means every type the server can derive for this caller.
+  repeated MarkType types = 2;
+}
+
+message ListMarksResponse {
+  repeated Mark marks = 1;
+  // The channel's newest seq, so the client can scale the axis without having
+  // loaded the messages. This is what lets the strip render a 10k-message
+  // Tread without paging it in.
+  int64 last_seq = 2;
+}
+
+// Marks are always read through the channel, so a Tread the caller cannot see
+// has no marks, and a mark can never carry content from one that they cannot.
+service TopoService {
+  rpc ListMarks(ListMarksRequest) returns (ListMarksResponse);
+}
