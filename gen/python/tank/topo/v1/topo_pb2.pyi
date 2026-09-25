@@ -16,6 +16,15 @@ class MarkType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     MARK_TYPE_READ_HORIZON: _ClassVar[MarkType]
     MARK_TYPE_SEARCH_HIT: _ClassVar[MarkType]
     MARK_TYPE_WAITING_ON: _ClassVar[MarkType]
+    MARK_TYPE_ARTIFACT: _ClassVar[MarkType]
+    MARK_TYPE_EVENT: _ClassVar[MarkType]
+
+class ArtifactKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    ARTIFACT_KIND_UNSPECIFIED: _ClassVar[ArtifactKind]
+    ARTIFACT_KIND_FILE: _ClassVar[ArtifactKind]
+    ARTIFACT_KIND_LINK: _ClassVar[ArtifactKind]
+    ARTIFACT_KIND_CODE: _ClassVar[ArtifactKind]
 
 class MarkStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -42,6 +51,12 @@ MARK_TYPE_OWN_MESSAGE: MarkType
 MARK_TYPE_READ_HORIZON: MarkType
 MARK_TYPE_SEARCH_HIT: MarkType
 MARK_TYPE_WAITING_ON: MarkType
+MARK_TYPE_ARTIFACT: MarkType
+MARK_TYPE_EVENT: MarkType
+ARTIFACT_KIND_UNSPECIFIED: ArtifactKind
+ARTIFACT_KIND_FILE: ArtifactKind
+ARTIFACT_KIND_LINK: ArtifactKind
+ARTIFACT_KIND_CODE: ArtifactKind
 MARK_STATUS_UNSPECIFIED: MarkStatus
 MARK_STATUS_OPEN: MarkStatus
 MARK_STATUS_RESOLVED: MarkStatus
@@ -55,7 +70,7 @@ WAITING_DIRECTION_ON_ME: WaitingDirection
 WAITING_DIRECTION_BY_ME: WaitingDirection
 
 class Mark(_message.Message):
-    __slots__ = ("id", "channel_id", "message_id", "channel_seq", "type", "lane", "elevation", "preview", "created_at", "status", "waiting_on_user_ids", "created_by_user_id", "resolved_at")
+    __slots__ = ("id", "channel_id", "message_id", "channel_seq", "type", "lane", "elevation", "preview", "created_at", "status", "waiting_on_user_ids", "created_by_user_id", "resolved_at", "detail", "url", "artifact_kind")
     ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
@@ -69,6 +84,9 @@ class Mark(_message.Message):
     WAITING_ON_USER_IDS_FIELD_NUMBER: _ClassVar[int]
     CREATED_BY_USER_ID_FIELD_NUMBER: _ClassVar[int]
     RESOLVED_AT_FIELD_NUMBER: _ClassVar[int]
+    DETAIL_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    ARTIFACT_KIND_FIELD_NUMBER: _ClassVar[int]
     id: str
     channel_id: str
     message_id: str
@@ -82,7 +100,10 @@ class Mark(_message.Message):
     waiting_on_user_ids: _containers.RepeatedScalarFieldContainer[str]
     created_by_user_id: str
     resolved_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., channel_id: _Optional[str] = ..., message_id: _Optional[str] = ..., channel_seq: _Optional[int] = ..., type: _Optional[_Union[MarkType, str]] = ..., lane: _Optional[_Union[Lane, str]] = ..., elevation: _Optional[int] = ..., preview: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., status: _Optional[_Union[MarkStatus, str]] = ..., waiting_on_user_ids: _Optional[_Iterable[str]] = ..., created_by_user_id: _Optional[str] = ..., resolved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    detail: str
+    url: str
+    artifact_kind: ArtifactKind
+    def __init__(self, id: _Optional[str] = ..., channel_id: _Optional[str] = ..., message_id: _Optional[str] = ..., channel_seq: _Optional[int] = ..., type: _Optional[_Union[MarkType, str]] = ..., lane: _Optional[_Union[Lane, str]] = ..., elevation: _Optional[int] = ..., preview: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., status: _Optional[_Union[MarkStatus, str]] = ..., waiting_on_user_ids: _Optional[_Iterable[str]] = ..., created_by_user_id: _Optional[str] = ..., resolved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., detail: _Optional[str] = ..., url: _Optional[str] = ..., artifact_kind: _Optional[_Union[ArtifactKind, str]] = ...) -> None: ...
 
 class ListMarksRequest(_message.Message):
     __slots__ = ("channel_id", "types")

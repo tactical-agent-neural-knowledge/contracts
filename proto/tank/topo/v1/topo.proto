@@ -26,6 +26,22 @@ enum MarkType {
   MARK_TYPE_SEARCH_HIT = 4;
   // A message flagged as needing a reply from specific people.
   MARK_TYPE_WAITING_ON = 5;
+  // A message carrying something durable: a file, a link, a code block. These
+  // are the things people scroll back looking for.
+  MARK_TYPE_ARTIFACT = 6;
+  // Something that happened to the channel rather than in it: a deploy, a
+  // merged PR, an incident. Written by whatever observed it.
+  MARK_TYPE_EVENT = 7;
+}
+
+// What kind of durable thing an artifact mark points at. Kept separate from
+// MarkType so the strip can lane every artifact together while the hover and
+// the legend still say which sort it is.
+enum ArtifactKind {
+  ARTIFACT_KIND_UNSPECIFIED = 0;
+  ARTIFACT_KIND_FILE = 1;
+  ARTIFACT_KIND_LINK = 2;
+  ARTIFACT_KIND_CODE = 3;
 }
 
 // Whether a mark is still live. Derived marks are always open: they exist only
@@ -76,6 +92,14 @@ message Mark {
   string created_by_user_id = 12;
   // When it stopped being open, however it stopped.
   google.protobuf.Timestamp resolved_at = 13;
+  // One extra line for the hover, beyond the preview: "3 files", "Deployed
+  // api@1fbe86c", "PR #24 merged". Empty when the preview says it all.
+  string detail = 14;
+  // Where the mark points outside TANK, if anywhere — a PR, a run, a dashboard.
+  // Never a link to content the caller cannot already reach.
+  string url = 15;
+  // Only meaningful for MARK_TYPE_ARTIFACT.
+  ArtifactKind artifact_kind = 16;
 }
 
 message ListMarksRequest {
