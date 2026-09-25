@@ -46,6 +46,12 @@ const (
 	TopoServiceListWaitingOnProcedure = "/tank.topo.v1.TopoService/ListWaitingOn"
 	// TopoServiceRecordEventProcedure is the fully-qualified name of the TopoService's RecordEvent RPC.
 	TopoServiceRecordEventProcedure = "/tank.topo.v1.TopoService/RecordEvent"
+	// TopoServiceListBenchmarksProcedure is the fully-qualified name of the TopoService's
+	// ListBenchmarks RPC.
+	TopoServiceListBenchmarksProcedure = "/tank.topo.v1.TopoService/ListBenchmarks"
+	// TopoServiceDecideBenchmarkProcedure is the fully-qualified name of the TopoService's
+	// DecideBenchmark RPC.
+	TopoServiceDecideBenchmarkProcedure = "/tank.topo.v1.TopoService/DecideBenchmark"
 )
 
 // TopoServiceClient is a client for the tank.topo.v1.TopoService service.
@@ -63,6 +69,12 @@ type TopoServiceClient interface {
 	// event tick claims something occurred, and a human claim belongs in a
 	// message where it can be argued with.
 	RecordEvent(context.Context, *connect.Request[v1.RecordEventRequest]) (*connect.Response[v1.RecordEventResponse], error)
+	// The channel's decision ledger.
+	ListBenchmarks(context.Context, *connect.Request[v1.ListBenchmarksRequest]) (*connect.Response[v1.ListBenchmarksResponse], error)
+	// Confirm, correct or dismiss a proposed decision. Anyone who can post in the
+	// channel may decide: a decision belongs to the people who made it, not to
+	// whoever happened to be mentioned in the message it was read from.
+	DecideBenchmark(context.Context, *connect.Request[v1.DecideBenchmarkRequest]) (*connect.Response[v1.DecideBenchmarkResponse], error)
 }
 
 // NewTopoServiceClient constructs a client for the tank.topo.v1.TopoService service. By default, it
@@ -106,6 +118,18 @@ func NewTopoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(topoServiceMethods.ByName("RecordEvent")),
 			connect.WithClientOptions(opts...),
 		),
+		listBenchmarks: connect.NewClient[v1.ListBenchmarksRequest, v1.ListBenchmarksResponse](
+			httpClient,
+			baseURL+TopoServiceListBenchmarksProcedure,
+			connect.WithSchema(topoServiceMethods.ByName("ListBenchmarks")),
+			connect.WithClientOptions(opts...),
+		),
+		decideBenchmark: connect.NewClient[v1.DecideBenchmarkRequest, v1.DecideBenchmarkResponse](
+			httpClient,
+			baseURL+TopoServiceDecideBenchmarkProcedure,
+			connect.WithSchema(topoServiceMethods.ByName("DecideBenchmark")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -116,6 +140,8 @@ type topoServiceClient struct {
 	resolveWaitingOn *connect.Client[v1.ResolveWaitingOnRequest, v1.ResolveWaitingOnResponse]
 	listWaitingOn    *connect.Client[v1.ListWaitingOnRequest, v1.ListWaitingOnResponse]
 	recordEvent      *connect.Client[v1.RecordEventRequest, v1.RecordEventResponse]
+	listBenchmarks   *connect.Client[v1.ListBenchmarksRequest, v1.ListBenchmarksResponse]
+	decideBenchmark  *connect.Client[v1.DecideBenchmarkRequest, v1.DecideBenchmarkResponse]
 }
 
 // ListMarks calls tank.topo.v1.TopoService.ListMarks.
@@ -143,6 +169,16 @@ func (c *topoServiceClient) RecordEvent(ctx context.Context, req *connect.Reques
 	return c.recordEvent.CallUnary(ctx, req)
 }
 
+// ListBenchmarks calls tank.topo.v1.TopoService.ListBenchmarks.
+func (c *topoServiceClient) ListBenchmarks(ctx context.Context, req *connect.Request[v1.ListBenchmarksRequest]) (*connect.Response[v1.ListBenchmarksResponse], error) {
+	return c.listBenchmarks.CallUnary(ctx, req)
+}
+
+// DecideBenchmark calls tank.topo.v1.TopoService.DecideBenchmark.
+func (c *topoServiceClient) DecideBenchmark(ctx context.Context, req *connect.Request[v1.DecideBenchmarkRequest]) (*connect.Response[v1.DecideBenchmarkResponse], error) {
+	return c.decideBenchmark.CallUnary(ctx, req)
+}
+
 // TopoServiceHandler is an implementation of the tank.topo.v1.TopoService service.
 type TopoServiceHandler interface {
 	ListMarks(context.Context, *connect.Request[v1.ListMarksRequest]) (*connect.Response[v1.ListMarksResponse], error)
@@ -158,6 +194,12 @@ type TopoServiceHandler interface {
 	// event tick claims something occurred, and a human claim belongs in a
 	// message where it can be argued with.
 	RecordEvent(context.Context, *connect.Request[v1.RecordEventRequest]) (*connect.Response[v1.RecordEventResponse], error)
+	// The channel's decision ledger.
+	ListBenchmarks(context.Context, *connect.Request[v1.ListBenchmarksRequest]) (*connect.Response[v1.ListBenchmarksResponse], error)
+	// Confirm, correct or dismiss a proposed decision. Anyone who can post in the
+	// channel may decide: a decision belongs to the people who made it, not to
+	// whoever happened to be mentioned in the message it was read from.
+	DecideBenchmark(context.Context, *connect.Request[v1.DecideBenchmarkRequest]) (*connect.Response[v1.DecideBenchmarkResponse], error)
 }
 
 // NewTopoServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -197,6 +239,18 @@ func NewTopoServiceHandler(svc TopoServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(topoServiceMethods.ByName("RecordEvent")),
 		connect.WithHandlerOptions(opts...),
 	)
+	topoServiceListBenchmarksHandler := connect.NewUnaryHandler(
+		TopoServiceListBenchmarksProcedure,
+		svc.ListBenchmarks,
+		connect.WithSchema(topoServiceMethods.ByName("ListBenchmarks")),
+		connect.WithHandlerOptions(opts...),
+	)
+	topoServiceDecideBenchmarkHandler := connect.NewUnaryHandler(
+		TopoServiceDecideBenchmarkProcedure,
+		svc.DecideBenchmark,
+		connect.WithSchema(topoServiceMethods.ByName("DecideBenchmark")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.topo.v1.TopoService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case TopoServiceListMarksProcedure:
@@ -209,6 +263,10 @@ func NewTopoServiceHandler(svc TopoServiceHandler, opts ...connect.HandlerOption
 			topoServiceListWaitingOnHandler.ServeHTTP(w, r)
 		case TopoServiceRecordEventProcedure:
 			topoServiceRecordEventHandler.ServeHTTP(w, r)
+		case TopoServiceListBenchmarksProcedure:
+			topoServiceListBenchmarksHandler.ServeHTTP(w, r)
+		case TopoServiceDecideBenchmarkProcedure:
+			topoServiceDecideBenchmarkHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -236,4 +294,12 @@ func (UnimplementedTopoServiceHandler) ListWaitingOn(context.Context, *connect.R
 
 func (UnimplementedTopoServiceHandler) RecordEvent(context.Context, *connect.Request[v1.RecordEventRequest]) (*connect.Response[v1.RecordEventResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.topo.v1.TopoService.RecordEvent is not implemented"))
+}
+
+func (UnimplementedTopoServiceHandler) ListBenchmarks(context.Context, *connect.Request[v1.ListBenchmarksRequest]) (*connect.Response[v1.ListBenchmarksResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.topo.v1.TopoService.ListBenchmarks is not implemented"))
+}
+
+func (UnimplementedTopoServiceHandler) DecideBenchmark(context.Context, *connect.Request[v1.DecideBenchmarkRequest]) (*connect.Response[v1.DecideBenchmarkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.topo.v1.TopoService.DecideBenchmark is not implemented"))
 }

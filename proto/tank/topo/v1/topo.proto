@@ -35,6 +35,8 @@ enum MarkType {
   // A question nobody answered. Proposed by Survey, resolved by an answer
   // arriving rather than by anyone pressing a button.
   MARK_TYPE_UNANSWERED_QUESTION = 8;
+  // A decision, recorded with its sources and the people who made it.
+  MARK_TYPE_BENCHMARK = 9;
 }
 
 // What kind of durable thing an artifact mark points at. Kept separate from
@@ -56,6 +58,13 @@ enum MarkStatus {
   MARK_STATUS_RESOLVED = 2;
   // Called off by a person, answered or not.
   MARK_STATUS_DISMISSED = 3;
+  // Extracted but not yet confirmed by a person. High-stakes extractions start
+  // here: a decision nobody has agreed to is a suggestion, and rendering it as
+  // a fact is how a ledger stops being trustworthy.
+  MARK_STATUS_PROPOSED = 4;
+  // Replaced by a later decision. Kept rather than deleted, because "what did
+  // we decide, and when did that change" is the question a ledger exists for.
+  MARK_STATUS_SUPERSEDED = 5;
 }
 
 // Which vertical strip a mark belongs to. Keeping families apart is what stops
@@ -186,6 +195,64 @@ message WaitingOnItem {
   tank.message.v1.Message message = 2;
 }
 
+// A decision the team made.
+//
+// Every field here exists so a benchmark can be argued with. A decision without
+// its sources is hearsay, and a ledger of hearsay is worse than no ledger —
+// people act on these.
+message Benchmark {
+  string id = 1;
+  string channel_id = 2;
+  // One line: "Ship the rate limiter behind a flag".
+  string statement = 3;
+  // Fuller context, where the statement alone loses the reasoning.
+  string detail = 4;
+  // The messages this was read from. Never empty — an extraction that cannot
+  // point at what it read does not become a benchmark.
+  repeated string source_message_ids = 5;
+  // Who was part of the conversation it came from.
+  repeated string participant_ids = 6;
+  MarkStatus status = 7;
+  // Who confirmed or dismissed it, and when.
+  string decided_by_user_id = 8;
+  google.protobuf.Timestamp decided_at = 9;
+  // The benchmark that replaced this one, when something did.
+  string superseded_by_id = 10;
+  SurveyOrigin survey = 11;
+  google.protobuf.Timestamp created_at = 12;
+}
+
+message ListBenchmarksRequest {
+  string channel_id = 1;
+  // Include dismissed and superseded ones. Off by default: a ledger shows what
+  // stands, and history is something you ask for.
+  bool include_closed = 2;
+}
+
+message ListBenchmarksResponse {
+  repeated Benchmark benchmarks = 1;
+}
+
+// Confirm, edit or dismiss a proposal. The three are one call because they are
+// one decision — a person looking at a proposal is choosing between them.
+message DecideBenchmarkRequest {
+  string benchmark_id = 1;
+  enum Decision {
+    DECISION_UNSPECIFIED = 0;
+    DECISION_CONFIRM = 1;
+    DECISION_DISMISS = 2;
+  }
+  Decision decision = 2;
+  // Optional corrections, applied on confirm. Editing is how a nearly-right
+  // extraction becomes right, instead of being thrown away and retyped.
+  string statement = 3;
+  string detail = 4;
+}
+
+message DecideBenchmarkResponse {
+  Benchmark benchmark = 1;
+}
+
 message RecordEventRequest {
   string channel_id = 1;
   // What happened: "deploy", "pr_merged", "incident". Free-form on purpose, so
@@ -225,4 +292,10 @@ service TopoService {
   // event tick claims something occurred, and a human claim belongs in a
   // message where it can be argued with.
   rpc RecordEvent(RecordEventRequest) returns (RecordEventResponse);
+  // The channel's decision ledger.
+  rpc ListBenchmarks(ListBenchmarksRequest) returns (ListBenchmarksResponse);
+  // Confirm, correct or dismiss a proposed decision. Anyone who can post in the
+  // channel may decide: a decision belongs to the people who made it, not to
+  // whoever happened to be mentioned in the message it was read from.
+  rpc DecideBenchmark(DecideBenchmarkRequest) returns (DecideBenchmarkResponse);
 }
