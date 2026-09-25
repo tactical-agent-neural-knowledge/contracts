@@ -19,6 +19,7 @@ class MarkType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     MARK_TYPE_ARTIFACT: _ClassVar[MarkType]
     MARK_TYPE_EVENT: _ClassVar[MarkType]
     MARK_TYPE_UNANSWERED_QUESTION: _ClassVar[MarkType]
+    MARK_TYPE_BENCHMARK: _ClassVar[MarkType]
 
 class ArtifactKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -33,6 +34,8 @@ class MarkStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     MARK_STATUS_OPEN: _ClassVar[MarkStatus]
     MARK_STATUS_RESOLVED: _ClassVar[MarkStatus]
     MARK_STATUS_DISMISSED: _ClassVar[MarkStatus]
+    MARK_STATUS_PROPOSED: _ClassVar[MarkStatus]
+    MARK_STATUS_SUPERSEDED: _ClassVar[MarkStatus]
 
 class Lane(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -55,6 +58,7 @@ MARK_TYPE_WAITING_ON: MarkType
 MARK_TYPE_ARTIFACT: MarkType
 MARK_TYPE_EVENT: MarkType
 MARK_TYPE_UNANSWERED_QUESTION: MarkType
+MARK_TYPE_BENCHMARK: MarkType
 ARTIFACT_KIND_UNSPECIFIED: ArtifactKind
 ARTIFACT_KIND_FILE: ArtifactKind
 ARTIFACT_KIND_LINK: ArtifactKind
@@ -63,6 +67,8 @@ MARK_STATUS_UNSPECIFIED: MarkStatus
 MARK_STATUS_OPEN: MarkStatus
 MARK_STATUS_RESOLVED: MarkStatus
 MARK_STATUS_DISMISSED: MarkStatus
+MARK_STATUS_PROPOSED: MarkStatus
+MARK_STATUS_SUPERSEDED: MarkStatus
 LANE_UNSPECIFIED: Lane
 LANE_STRUCTURE: Lane
 LANE_MESSAGE: Lane
@@ -182,6 +188,74 @@ class WaitingOnItem(_message.Message):
     mark: Mark
     message: _message_pb2.Message
     def __init__(self, mark: _Optional[_Union[Mark, _Mapping]] = ..., message: _Optional[_Union[_message_pb2.Message, _Mapping]] = ...) -> None: ...
+
+class Benchmark(_message.Message):
+    __slots__ = ("id", "channel_id", "statement", "detail", "source_message_ids", "participant_ids", "status", "decided_by_user_id", "decided_at", "superseded_by_id", "survey", "created_at")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    STATEMENT_FIELD_NUMBER: _ClassVar[int]
+    DETAIL_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_MESSAGE_IDS_FIELD_NUMBER: _ClassVar[int]
+    PARTICIPANT_IDS_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    DECIDED_BY_USER_ID_FIELD_NUMBER: _ClassVar[int]
+    DECIDED_AT_FIELD_NUMBER: _ClassVar[int]
+    SUPERSEDED_BY_ID_FIELD_NUMBER: _ClassVar[int]
+    SURVEY_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    channel_id: str
+    statement: str
+    detail: str
+    source_message_ids: _containers.RepeatedScalarFieldContainer[str]
+    participant_ids: _containers.RepeatedScalarFieldContainer[str]
+    status: MarkStatus
+    decided_by_user_id: str
+    decided_at: _timestamp_pb2.Timestamp
+    superseded_by_id: str
+    survey: SurveyOrigin
+    created_at: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., channel_id: _Optional[str] = ..., statement: _Optional[str] = ..., detail: _Optional[str] = ..., source_message_ids: _Optional[_Iterable[str]] = ..., participant_ids: _Optional[_Iterable[str]] = ..., status: _Optional[_Union[MarkStatus, str]] = ..., decided_by_user_id: _Optional[str] = ..., decided_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., superseded_by_id: _Optional[str] = ..., survey: _Optional[_Union[SurveyOrigin, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ListBenchmarksRequest(_message.Message):
+    __slots__ = ("channel_id", "include_closed")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    INCLUDE_CLOSED_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    include_closed: bool
+    def __init__(self, channel_id: _Optional[str] = ..., include_closed: bool = ...) -> None: ...
+
+class ListBenchmarksResponse(_message.Message):
+    __slots__ = ("benchmarks",)
+    BENCHMARKS_FIELD_NUMBER: _ClassVar[int]
+    benchmarks: _containers.RepeatedCompositeFieldContainer[Benchmark]
+    def __init__(self, benchmarks: _Optional[_Iterable[_Union[Benchmark, _Mapping]]] = ...) -> None: ...
+
+class DecideBenchmarkRequest(_message.Message):
+    __slots__ = ("benchmark_id", "decision", "statement", "detail")
+    class Decision(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+        __slots__ = ()
+        DECISION_UNSPECIFIED: _ClassVar[DecideBenchmarkRequest.Decision]
+        DECISION_CONFIRM: _ClassVar[DecideBenchmarkRequest.Decision]
+        DECISION_DISMISS: _ClassVar[DecideBenchmarkRequest.Decision]
+    DECISION_UNSPECIFIED: DecideBenchmarkRequest.Decision
+    DECISION_CONFIRM: DecideBenchmarkRequest.Decision
+    DECISION_DISMISS: DecideBenchmarkRequest.Decision
+    BENCHMARK_ID_FIELD_NUMBER: _ClassVar[int]
+    DECISION_FIELD_NUMBER: _ClassVar[int]
+    STATEMENT_FIELD_NUMBER: _ClassVar[int]
+    DETAIL_FIELD_NUMBER: _ClassVar[int]
+    benchmark_id: str
+    decision: DecideBenchmarkRequest.Decision
+    statement: str
+    detail: str
+    def __init__(self, benchmark_id: _Optional[str] = ..., decision: _Optional[_Union[DecideBenchmarkRequest.Decision, str]] = ..., statement: _Optional[str] = ..., detail: _Optional[str] = ...) -> None: ...
+
+class DecideBenchmarkResponse(_message.Message):
+    __slots__ = ("benchmark",)
+    BENCHMARK_FIELD_NUMBER: _ClassVar[int]
+    benchmark: Benchmark
+    def __init__(self, benchmark: _Optional[_Union[Benchmark, _Mapping]] = ...) -> None: ...
 
 class RecordEventRequest(_message.Message):
     __slots__ = ("channel_id", "kind", "detail", "url", "dedupe_key")
