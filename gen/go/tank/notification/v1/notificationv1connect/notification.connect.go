@@ -39,12 +39,25 @@ const (
 	// NotificationServiceMarkNotificationsReadProcedure is the fully-qualified name of the
 	// NotificationService's MarkNotificationsRead RPC.
 	NotificationServiceMarkNotificationsReadProcedure = "/tank.notification.v1.NotificationService/MarkNotificationsRead"
+	// NotificationServiceRegisterDeviceProcedure is the fully-qualified name of the
+	// NotificationService's RegisterDevice RPC.
+	NotificationServiceRegisterDeviceProcedure = "/tank.notification.v1.NotificationService/RegisterDevice"
+	// NotificationServiceUnregisterDeviceProcedure is the fully-qualified name of the
+	// NotificationService's UnregisterDevice RPC.
+	NotificationServiceUnregisterDeviceProcedure = "/tank.notification.v1.NotificationService/UnregisterDevice"
 )
 
 // NotificationServiceClient is a client for the tank.notification.v1.NotificationService service.
 type NotificationServiceClient interface {
 	ListNotifications(context.Context, *connect.Request[v1.ListNotificationsRequest]) (*connect.Response[v1.ListNotificationsResponse], error)
 	MarkNotificationsRead(context.Context, *connect.Request[v1.MarkNotificationsReadRequest]) (*connect.Response[v1.MarkNotificationsReadResponse], error)
+	// Register this device to receive pushes. Idempotent on the token, because
+	// the client calls it on every launch — a token is the identity here, not the
+	// row.
+	RegisterDevice(context.Context, *connect.Request[v1.RegisterDeviceRequest]) (*connect.Response[v1.RegisterDeviceResponse], error)
+	// Stop pushing to this device. Called on sign-out, so somebody else using the
+	// phone afterwards does not receive your messages.
+	UnregisterDevice(context.Context, *connect.Request[v1.UnregisterDeviceRequest]) (*connect.Response[v1.UnregisterDeviceResponse], error)
 }
 
 // NewNotificationServiceClient constructs a client for the tank.notification.v1.NotificationService
@@ -70,6 +83,18 @@ func NewNotificationServiceClient(httpClient connect.HTTPClient, baseURL string,
 			connect.WithSchema(notificationServiceMethods.ByName("MarkNotificationsRead")),
 			connect.WithClientOptions(opts...),
 		),
+		registerDevice: connect.NewClient[v1.RegisterDeviceRequest, v1.RegisterDeviceResponse](
+			httpClient,
+			baseURL+NotificationServiceRegisterDeviceProcedure,
+			connect.WithSchema(notificationServiceMethods.ByName("RegisterDevice")),
+			connect.WithClientOptions(opts...),
+		),
+		unregisterDevice: connect.NewClient[v1.UnregisterDeviceRequest, v1.UnregisterDeviceResponse](
+			httpClient,
+			baseURL+NotificationServiceUnregisterDeviceProcedure,
+			connect.WithSchema(notificationServiceMethods.ByName("UnregisterDevice")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -77,6 +102,8 @@ func NewNotificationServiceClient(httpClient connect.HTTPClient, baseURL string,
 type notificationServiceClient struct {
 	listNotifications     *connect.Client[v1.ListNotificationsRequest, v1.ListNotificationsResponse]
 	markNotificationsRead *connect.Client[v1.MarkNotificationsReadRequest, v1.MarkNotificationsReadResponse]
+	registerDevice        *connect.Client[v1.RegisterDeviceRequest, v1.RegisterDeviceResponse]
+	unregisterDevice      *connect.Client[v1.UnregisterDeviceRequest, v1.UnregisterDeviceResponse]
 }
 
 // ListNotifications calls tank.notification.v1.NotificationService.ListNotifications.
@@ -89,11 +116,28 @@ func (c *notificationServiceClient) MarkNotificationsRead(ctx context.Context, r
 	return c.markNotificationsRead.CallUnary(ctx, req)
 }
 
+// RegisterDevice calls tank.notification.v1.NotificationService.RegisterDevice.
+func (c *notificationServiceClient) RegisterDevice(ctx context.Context, req *connect.Request[v1.RegisterDeviceRequest]) (*connect.Response[v1.RegisterDeviceResponse], error) {
+	return c.registerDevice.CallUnary(ctx, req)
+}
+
+// UnregisterDevice calls tank.notification.v1.NotificationService.UnregisterDevice.
+func (c *notificationServiceClient) UnregisterDevice(ctx context.Context, req *connect.Request[v1.UnregisterDeviceRequest]) (*connect.Response[v1.UnregisterDeviceResponse], error) {
+	return c.unregisterDevice.CallUnary(ctx, req)
+}
+
 // NotificationServiceHandler is an implementation of the tank.notification.v1.NotificationService
 // service.
 type NotificationServiceHandler interface {
 	ListNotifications(context.Context, *connect.Request[v1.ListNotificationsRequest]) (*connect.Response[v1.ListNotificationsResponse], error)
 	MarkNotificationsRead(context.Context, *connect.Request[v1.MarkNotificationsReadRequest]) (*connect.Response[v1.MarkNotificationsReadResponse], error)
+	// Register this device to receive pushes. Idempotent on the token, because
+	// the client calls it on every launch — a token is the identity here, not the
+	// row.
+	RegisterDevice(context.Context, *connect.Request[v1.RegisterDeviceRequest]) (*connect.Response[v1.RegisterDeviceResponse], error)
+	// Stop pushing to this device. Called on sign-out, so somebody else using the
+	// phone afterwards does not receive your messages.
+	UnregisterDevice(context.Context, *connect.Request[v1.UnregisterDeviceRequest]) (*connect.Response[v1.UnregisterDeviceResponse], error)
 }
 
 // NewNotificationServiceHandler builds an HTTP handler from the service implementation. It returns
@@ -115,12 +159,28 @@ func NewNotificationServiceHandler(svc NotificationServiceHandler, opts ...conne
 		connect.WithSchema(notificationServiceMethods.ByName("MarkNotificationsRead")),
 		connect.WithHandlerOptions(opts...),
 	)
+	notificationServiceRegisterDeviceHandler := connect.NewUnaryHandler(
+		NotificationServiceRegisterDeviceProcedure,
+		svc.RegisterDevice,
+		connect.WithSchema(notificationServiceMethods.ByName("RegisterDevice")),
+		connect.WithHandlerOptions(opts...),
+	)
+	notificationServiceUnregisterDeviceHandler := connect.NewUnaryHandler(
+		NotificationServiceUnregisterDeviceProcedure,
+		svc.UnregisterDevice,
+		connect.WithSchema(notificationServiceMethods.ByName("UnregisterDevice")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.notification.v1.NotificationService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case NotificationServiceListNotificationsProcedure:
 			notificationServiceListNotificationsHandler.ServeHTTP(w, r)
 		case NotificationServiceMarkNotificationsReadProcedure:
 			notificationServiceMarkNotificationsReadHandler.ServeHTTP(w, r)
+		case NotificationServiceRegisterDeviceProcedure:
+			notificationServiceRegisterDeviceHandler.ServeHTTP(w, r)
+		case NotificationServiceUnregisterDeviceProcedure:
+			notificationServiceUnregisterDeviceHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -136,4 +196,12 @@ func (UnimplementedNotificationServiceHandler) ListNotifications(context.Context
 
 func (UnimplementedNotificationServiceHandler) MarkNotificationsRead(context.Context, *connect.Request[v1.MarkNotificationsReadRequest]) (*connect.Response[v1.MarkNotificationsReadResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.notification.v1.NotificationService.MarkNotificationsRead is not implemented"))
+}
+
+func (UnimplementedNotificationServiceHandler) RegisterDevice(context.Context, *connect.Request[v1.RegisterDeviceRequest]) (*connect.Response[v1.RegisterDeviceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.notification.v1.NotificationService.RegisterDevice is not implemented"))
+}
+
+func (UnimplementedNotificationServiceHandler) UnregisterDevice(context.Context, *connect.Request[v1.UnregisterDeviceRequest]) (*connect.Response[v1.UnregisterDeviceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.notification.v1.NotificationService.UnregisterDevice is not implemented"))
 }
