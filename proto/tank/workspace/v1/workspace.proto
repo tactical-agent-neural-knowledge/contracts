@@ -5,6 +5,7 @@ package tank.workspace.v1;
 import "google/protobuf/timestamp.proto";
 import "tank/auth/v1/auth.proto";
 import "tank/channel/v1/channel.proto";
+import "tank/topo/v1/topo.proto";
 import "tank/richtext/v1/richtext.proto";
 
 enum Role {
@@ -198,6 +199,19 @@ message Preferences {
   bool email_digest = 5;
   bool desktop_sound = 6;
   bool push_on_mention_only = 7;
+  TopoPreferences topo = 8;
+}
+
+// Which Topo mark families the strip draws for this person.
+//
+// `configured` exists because an empty `visible` has two meanings otherwise —
+// "never chosen" and "turned everything off" — and UpdatePreferences replaces
+// the whole message, so the difference cannot be recovered from the wire.
+message TopoPreferences {
+  bool configured = 1;
+  repeated tank.topo.v1.MarkType visible = 2;
+  // Message-indexed (the default) or time-indexed scaling. R6.
+  bool time_axis = 3;
 }
 
 message GetPreferencesRequest {
