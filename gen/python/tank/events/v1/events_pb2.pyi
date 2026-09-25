@@ -8,6 +8,7 @@ from tank.files.v1 import files_pb2 as _files_pb2
 from tank.huddle.v1 import huddle_pb2 as _huddle_pb2
 from tank.message.v1 import message_pb2 as _message_pb2
 from tank.presence.v1 import presence_pb2 as _presence_pb2
+from tank.topo.v1 import topo_pb2 as _topo_pb2
 from tank.workspace.v1 import workspace_pb2 as _workspace_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
@@ -333,3 +334,9 @@ class ExportReady(_message.Message):
     JOB_FIELD_NUMBER: _ClassVar[int]
     job: _admin_pb2.ExportJob
     def __init__(self, job: _Optional[_Union[_admin_pb2.ExportJob, _Mapping]] = ...) -> None: ...
+
+class TopoMarkUpdated(_message.Message):
+    __slots__ = ("mark",)
+    MARK_FIELD_NUMBER: _ClassVar[int]
+    mark: _topo_pb2.Mark
+    def __init__(self, mark: _Optional[_Union[_topo_pb2.Mark, _Mapping]] = ...) -> None: ...
