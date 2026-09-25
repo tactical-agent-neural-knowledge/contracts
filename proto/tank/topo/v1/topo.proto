@@ -159,6 +159,25 @@ message WaitingOnItem {
   tank.message.v1.Message message = 2;
 }
 
+message RecordEventRequest {
+  string channel_id = 1;
+  // What happened: "deploy", "pr_merged", "incident". Free-form on purpose, so
+  // a new source of events needs no contract change; the strip lanes them all
+  // together and the hover reads `detail`.
+  string kind = 2;
+  // The one line a human reads: "Deployed api@1fbe86c", "PR #24 merged".
+  string detail = 3;
+  // Where to go for the whole story. Optional.
+  string url = 4;
+  // Idempotency. A webhook redelivered, or a workflow retried, must not tick
+  // the strip twice.
+  string dedupe_key = 5;
+}
+
+message RecordEventResponse {
+  Mark mark = 1;
+}
+
 message ListWaitingOnResponse {
   repeated WaitingOnItem items = 1;
 }
@@ -174,4 +193,9 @@ service TopoService {
   // waited on: both of them know when it is done.
   rpc ResolveWaitingOn(ResolveWaitingOnRequest) returns (ResolveWaitingOnResponse);
   rpc ListWaitingOn(ListWaitingOnRequest) returns (ListWaitingOnResponse);
+  // Record something that happened to a channel rather than in it. For the
+  // control plane and other first-party observers, never for a person: an
+  // event tick claims something occurred, and a human claim belongs in a
+  // message where it can be argued with.
+  rpc RecordEvent(RecordEventRequest) returns (RecordEventResponse);
 }
