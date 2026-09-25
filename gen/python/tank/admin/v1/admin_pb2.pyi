@@ -263,7 +263,7 @@ class RetentionPolicy(_message.Message):
     def __init__(self, public_days: _Optional[int] = ..., private_days: _Optional[int] = ..., dm_days: _Optional[int] = ..., mpdm_days: _Optional[int] = ...) -> None: ...
 
 class WorkspaceSettings(_message.Message):
-    __slots__ = ("workspace_id", "name", "icon_file_id", "default_channel_ids", "who_can_create_channels", "who_can_invite", "retention", "allow_guests", "require_sso", "legal_hold", "updated_at")
+    __slots__ = ("workspace_id", "name", "icon_file_id", "default_channel_ids", "who_can_create_channels", "who_can_invite", "retention", "allow_guests", "require_sso", "legal_hold", "updated_at", "survey_disabled")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     ICON_FILE_ID_FIELD_NUMBER: _ClassVar[int]
@@ -275,6 +275,7 @@ class WorkspaceSettings(_message.Message):
     REQUIRE_SSO_FIELD_NUMBER: _ClassVar[int]
     LEGAL_HOLD_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    SURVEY_DISABLED_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     name: str
     icon_file_id: str
@@ -286,7 +287,8 @@ class WorkspaceSettings(_message.Message):
     require_sso: bool
     legal_hold: bool
     updated_at: _timestamp_pb2.Timestamp
-    def __init__(self, workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., icon_file_id: _Optional[str] = ..., default_channel_ids: _Optional[_Iterable[str]] = ..., who_can_create_channels: _Optional[_Union[Permission, str]] = ..., who_can_invite: _Optional[_Union[Permission, str]] = ..., retention: _Optional[_Union[RetentionPolicy, _Mapping]] = ..., allow_guests: bool = ..., require_sso: bool = ..., legal_hold: bool = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    survey_disabled: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., icon_file_id: _Optional[str] = ..., default_channel_ids: _Optional[_Iterable[str]] = ..., who_can_create_channels: _Optional[_Union[Permission, str]] = ..., who_can_invite: _Optional[_Union[Permission, str]] = ..., retention: _Optional[_Union[RetentionPolicy, _Mapping]] = ..., allow_guests: bool = ..., require_sso: bool = ..., legal_hold: bool = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., survey_disabled: bool = ...) -> None: ...
 
 class GetWorkspaceSettingsRequest(_message.Message):
     __slots__ = ("workspace_id",)

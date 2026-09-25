@@ -14,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tank/topo/v1/topo.proto.
  */
 export const file_tank_topo_v1_topo: GenFile = /*@__PURE__*/
-  fileDesc("Chd0YW5rL3RvcG8vdjEvdG9wby5wcm90bxIMdGFuay50b3BvLnYxIs8DCgRNYXJrEgoKAmlkGAEgASgJEhIKCmNoYW5uZWxfaWQYAiABKAkSEgoKbWVzc2FnZV9pZBgDIAEoCRITCgtjaGFubmVsX3NlcRgEIAEoAxIkCgR0eXBlGAUgASgOMhYudGFuay50b3BvLnYxLk1hcmtUeXBlEiAKBGxhbmUYBiABKA4yEi50YW5rLnRvcG8udjEuTGFuZRIRCgllbGV2YXRpb24YByABKAUSDwoHcHJldmlldxgIIAEoCRIuCgpjcmVhdGVkX2F0GAkgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIoCgZzdGF0dXMYCiABKA4yGC50YW5rLnRvcG8udjEuTWFya1N0YXR1cxIbChN3YWl0aW5nX29uX3VzZXJfaWRzGAsgAygJEhoKEmNyZWF0ZWRfYnlfdXNlcl9pZBgMIAEoCRIvCgtyZXNvbHZlZF9hdBgNIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASDgoGZGV0YWlsGA4gASgJEgsKA3VybBgPIAEoCRIxCg1hcnRpZmFjdF9raW5kGBAgASgOMhoudGFuay50b3BvLnYxLkFydGlmYWN0S2luZCJNChBMaXN0TWFya3NSZXF1ZXN0EhIKCmNoYW5uZWxfaWQYASABKAkSJQoFdHlwZXMYAiADKA4yFi50YW5rLnRvcG8udjEuTWFya1R5cGUiSAoRTGlzdE1hcmtzUmVzcG9uc2USIQoFbWFya3MYASADKAsyEi50YW5rLnRvcG8udjEuTWFyaxIQCghsYXN0X3NlcRgCIAEoAyI8ChRGbGFnV2FpdGluZ09uUmVxdWVzdBISCgptZXNzYWdlX2lkGAEgASgJEhAKCHVzZXJfaWRzGAIgAygJIjkKFUZsYWdXYWl0aW5nT25SZXNwb25zZRIgCgRtYXJrGAEgASgLMhIudGFuay50b3BvLnYxLk1hcmsiOwoXUmVzb2x2ZVdhaXRpbmdPblJlcXVlc3QSDwoHbWFya19pZBgBIAEoCRIPCgdkaXNtaXNzGAIgASgIIjwKGFJlc29sdmVXYWl0aW5nT25SZXNwb25zZRIgCgRtYXJrGAEgASgLMhIudGFuay50b3BvLnYxLk1hcmsidwoUTGlzdFdhaXRpbmdPblJlcXVlc3QSFAoMd29ya3NwYWNlX2lkGAEgASgJEjEKCWRpcmVjdGlvbhgCIAEoDjIeLnRhbmsudG9wby52MS5XYWl0aW5nRGlyZWN0aW9uEhYKDmluY2x1ZGVfY2xvc2VkGAMgASgIIlwKDVdhaXRpbmdPbkl0ZW0SIAoEbWFyaxgBIAEoCzISLnRhbmsudG9wby52MS5NYXJrEikKB21lc3NhZ2UYAiABKAsyGC50YW5rLm1lc3NhZ2UudjEuTWVzc2FnZSJnChJSZWNvcmRFdmVudFJlcXVlc3QSEgoKY2hhbm5lbF9pZBgBIAEoCRIMCgRraW5kGAIgASgJEg4KBmRldGFpbBgDIAEoCRILCgN1cmwYBCABKAkSEgoKZGVkdXBlX2tleRgFIAEoCSI3ChNSZWNvcmRFdmVudFJlc3BvbnNlEiAKBG1hcmsYASABKAsyEi50YW5rLnRvcG8udjEuTWFyayJDChVMaXN0V2FpdGluZ09uUmVzcG9uc2USKgoFaXRlbXMYASADKAsyGy50YW5rLnRvcG8udjEuV2FpdGluZ09uSXRlbSrUAQoITWFya1R5cGUSGQoVTUFSS19UWVBFX1VOU1BFQ0lGSUVEEAASFQoRTUFSS19UWVBFX01FTlRJT04QARIZChVNQVJLX1RZUEVfT1dOX01FU1NBR0UQAhIaChZNQVJLX1RZUEVfUkVBRF9IT1JJWk9OEAMSGAoUTUFSS19UWVBFX1NFQVJDSF9ISVQQBBIYChRNQVJLX1RZUEVfV0FJVElOR19PThAFEhYKEk1BUktfVFlQRV9BUlRJRkFDVBAGEhMKD01BUktfVFlQRV9FVkVOVBAHKnUKDEFydGlmYWN0S2luZBIdChlBUlRJRkFDVF9LSU5EX1VOU1BFQ0lGSUVEEAASFgoSQVJUSUZBQ1RfS0lORF9GSUxFEAESFgoSQVJUSUZBQ1RfS0lORF9MSU5LEAISFgoSQVJUSUZBQ1RfS0lORF9DT0RFEAMqdAoKTWFya1N0YXR1cxIbChdNQVJLX1NUQVRVU19VTlNQRUNJRklFRBAAEhQKEE1BUktfU1RBVFVTX09QRU4QARIYChRNQVJLX1NUQVRVU19SRVNPTFZFRBACEhkKFU1BUktfU1RBVFVTX0RJU01JU1NFRBADKlUKBExhbmUSFAoQTEFORV9VTlNQRUNJRklFRBAAEhIKDkxBTkVfU1RSVUNUVVJFEAESEAoMTEFORV9NRVNTQUdFEAISEQoNTEFORV9QRVJTT05BTBADKm8KEFdhaXRpbmdEaXJlY3Rpb24SIQodV0FJVElOR19ESVJFQ1RJT05fVU5TUEVDSUZJRUQQABIbChdXQUlUSU5HX0RJUkVDVElPTl9PTl9NRRABEhsKF1dBSVRJTkdfRElSRUNUSU9OX0JZX01FEAIyxgMKC1RvcG9TZXJ2aWNlEkwKCUxpc3RNYXJrcxIeLnRhbmsudG9wby52MS5MaXN0TWFya3NSZXF1ZXN0Gh8udGFuay50b3BvLnYxLkxpc3RNYXJrc1Jlc3BvbnNlElgKDUZsYWdXYWl0aW5nT24SIi50YW5rLnRvcG8udjEuRmxhZ1dhaXRpbmdPblJlcXVlc3QaIy50YW5rLnRvcG8udjEuRmxhZ1dhaXRpbmdPblJlc3BvbnNlEmEKEFJlc29sdmVXYWl0aW5nT24SJS50YW5rLnRvcG8udjEuUmVzb2x2ZVdhaXRpbmdPblJlcXVlc3QaJi50YW5rLnRvcG8udjEuUmVzb2x2ZVdhaXRpbmdPblJlc3BvbnNlElgKDUxpc3RXYWl0aW5nT24SIi50YW5rLnRvcG8udjEuTGlzdFdhaXRpbmdPblJlcXVlc3QaIy50YW5rLnRvcG8udjEuTGlzdFdhaXRpbmdPblJlc3BvbnNlElIKC1JlY29yZEV2ZW50EiAudGFuay50b3BvLnYxLlJlY29yZEV2ZW50UmVxdWVzdBohLnRhbmsudG9wby52MS5SZWNvcmRFdmVudFJlc3BvbnNlQsABChBjb20udGFuay50b3BvLnYxQglUb3BvUHJvdG9QAVpPZ2l0aHViLmNvbS90YWN0aWNhbC1hZ2VudC1uZXVyYWwta25vd2xlZGdlL2NvbnRyYWN0cy9nZW4vZ28vdGFuay90b3BvL3YxO3RvcG92MaICA1RUWKoCDFRhbmsuVG9wby5WMcoCDFRhbmtcVG9wb1xWMeICGFRhbmtcVG9wb1xWMVxHUEJNZXRhZGF0YeoCDlRhbms6OlRvcG86OlYxYgZwcm90bzM", [file_google_protobuf_timestamp, file_tank_message_v1_message]);
+  fileDesc("Chd0YW5rL3RvcG8vdjEvdG9wby5wcm90bxIMdGFuay50b3BvLnYxIvsDCgRNYXJrEgoKAmlkGAEgASgJEhIKCmNoYW5uZWxfaWQYAiABKAkSEgoKbWVzc2FnZV9pZBgDIAEoCRITCgtjaGFubmVsX3NlcRgEIAEoAxIkCgR0eXBlGAUgASgOMhYudGFuay50b3BvLnYxLk1hcmtUeXBlEiAKBGxhbmUYBiABKA4yEi50YW5rLnRvcG8udjEuTGFuZRIRCgllbGV2YXRpb24YByABKAUSDwoHcHJldmlldxgIIAEoCRIuCgpjcmVhdGVkX2F0GAkgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIoCgZzdGF0dXMYCiABKA4yGC50YW5rLnRvcG8udjEuTWFya1N0YXR1cxIbChN3YWl0aW5nX29uX3VzZXJfaWRzGAsgAygJEhoKEmNyZWF0ZWRfYnlfdXNlcl9pZBgMIAEoCRIvCgtyZXNvbHZlZF9hdBgNIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASDgoGZGV0YWlsGA4gASgJEgsKA3VybBgPIAEoCRIxCg1hcnRpZmFjdF9raW5kGBAgASgOMhoudGFuay50b3BvLnYxLkFydGlmYWN0S2luZBIqCgZzdXJ2ZXkYESABKAsyGi50YW5rLnRvcG8udjEuU3VydmV5T3JpZ2luIlUKDFN1cnZleU9yaWdpbhIRCglleHRyYWN0b3IYASABKAkSDwoHdmVyc2lvbhgCIAEoCRINCgVtb2RlbBgDIAEoCRISCgpjb25maWRlbmNlGAQgASgCIk0KEExpc3RNYXJrc1JlcXVlc3QSEgoKY2hhbm5lbF9pZBgBIAEoCRIlCgV0eXBlcxgCIAMoDjIWLnRhbmsudG9wby52MS5NYXJrVHlwZSJIChFMaXN0TWFya3NSZXNwb25zZRIhCgVtYXJrcxgBIAMoCzISLnRhbmsudG9wby52MS5NYXJrEhAKCGxhc3Rfc2VxGAIgASgDIjwKFEZsYWdXYWl0aW5nT25SZXF1ZXN0EhIKCm1lc3NhZ2VfaWQYASABKAkSEAoIdXNlcl9pZHMYAiADKAkiOQoVRmxhZ1dhaXRpbmdPblJlc3BvbnNlEiAKBG1hcmsYASABKAsyEi50YW5rLnRvcG8udjEuTWFyayI7ChdSZXNvbHZlV2FpdGluZ09uUmVxdWVzdBIPCgdtYXJrX2lkGAEgASgJEg8KB2Rpc21pc3MYAiABKAgiPAoYUmVzb2x2ZVdhaXRpbmdPblJlc3BvbnNlEiAKBG1hcmsYASABKAsyEi50YW5rLnRvcG8udjEuTWFyayJ3ChRMaXN0V2FpdGluZ09uUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSMQoJZGlyZWN0aW9uGAIgASgOMh4udGFuay50b3BvLnYxLldhaXRpbmdEaXJlY3Rpb24SFgoOaW5jbHVkZV9jbG9zZWQYAyABKAgiXAoNV2FpdGluZ09uSXRlbRIgCgRtYXJrGAEgASgLMhIudGFuay50b3BvLnYxLk1hcmsSKQoHbWVzc2FnZRgCIAEoCzIYLnRhbmsubWVzc2FnZS52MS5NZXNzYWdlImcKElJlY29yZEV2ZW50UmVxdWVzdBISCgpjaGFubmVsX2lkGAEgASgJEgwKBGtpbmQYAiABKAkSDgoGZGV0YWlsGAMgASgJEgsKA3VybBgEIAEoCRISCgpkZWR1cGVfa2V5GAUgASgJIjcKE1JlY29yZEV2ZW50UmVzcG9uc2USIAoEbWFyaxgBIAEoCzISLnRhbmsudG9wby52MS5NYXJrIkMKFUxpc3RXYWl0aW5nT25SZXNwb25zZRIqCgVpdGVtcxgBIAMoCzIbLnRhbmsudG9wby52MS5XYWl0aW5nT25JdGVtKvcBCghNYXJrVHlwZRIZChVNQVJLX1RZUEVfVU5TUEVDSUZJRUQQABIVChFNQVJLX1RZUEVfTUVOVElPThABEhkKFU1BUktfVFlQRV9PV05fTUVTU0FHRRACEhoKFk1BUktfVFlQRV9SRUFEX0hPUklaT04QAxIYChRNQVJLX1RZUEVfU0VBUkNIX0hJVBAEEhgKFE1BUktfVFlQRV9XQUlUSU5HX09OEAUSFgoSTUFSS19UWVBFX0FSVElGQUNUEAYSEwoPTUFSS19UWVBFX0VWRU5UEAcSIQodTUFSS19UWVBFX1VOQU5TV0VSRURfUVVFU1RJT04QCCp1CgxBcnRpZmFjdEtpbmQSHQoZQVJUSUZBQ1RfS0lORF9VTlNQRUNJRklFRBAAEhYKEkFSVElGQUNUX0tJTkRfRklMRRABEhYKEkFSVElGQUNUX0tJTkRfTElOSxACEhYKEkFSVElGQUNUX0tJTkRfQ09ERRADKnQKCk1hcmtTdGF0dXMSGwoXTUFSS19TVEFUVVNfVU5TUEVDSUZJRUQQABIUChBNQVJLX1NUQVRVU19PUEVOEAESGAoUTUFSS19TVEFUVVNfUkVTT0xWRUQQAhIZChVNQVJLX1NUQVRVU19ESVNNSVNTRUQQAypVCgRMYW5lEhQKEExBTkVfVU5TUEVDSUZJRUQQABISCg5MQU5FX1NUUlVDVFVSRRABEhAKDExBTkVfTUVTU0FHRRACEhEKDUxBTkVfUEVSU09OQUwQAypvChBXYWl0aW5nRGlyZWN0aW9uEiEKHVdBSVRJTkdfRElSRUNUSU9OX1VOU1BFQ0lGSUVEEAASGwoXV0FJVElOR19ESVJFQ1RJT05fT05fTUUQARIbChdXQUlUSU5HX0RJUkVDVElPTl9CWV9NRRACMsYDCgtUb3BvU2VydmljZRJMCglMaXN0TWFya3MSHi50YW5rLnRvcG8udjEuTGlzdE1hcmtzUmVxdWVzdBofLnRhbmsudG9wby52MS5MaXN0TWFya3NSZXNwb25zZRJYCg1GbGFnV2FpdGluZ09uEiIudGFuay50b3BvLnYxLkZsYWdXYWl0aW5nT25SZXF1ZXN0GiMudGFuay50b3BvLnYxLkZsYWdXYWl0aW5nT25SZXNwb25zZRJhChBSZXNvbHZlV2FpdGluZ09uEiUudGFuay50b3BvLnYxLlJlc29sdmVXYWl0aW5nT25SZXF1ZXN0GiYudGFuay50b3BvLnYxLlJlc29sdmVXYWl0aW5nT25SZXNwb25zZRJYCg1MaXN0V2FpdGluZ09uEiIudGFuay50b3BvLnYxLkxpc3RXYWl0aW5nT25SZXF1ZXN0GiMudGFuay50b3BvLnYxLkxpc3RXYWl0aW5nT25SZXNwb25zZRJSCgtSZWNvcmRFdmVudBIgLnRhbmsudG9wby52MS5SZWNvcmRFdmVudFJlcXVlc3QaIS50YW5rLnRvcG8udjEuUmVjb3JkRXZlbnRSZXNwb25zZULAAQoQY29tLnRhbmsudG9wby52MUIJVG9wb1Byb3RvUAFaT2dpdGh1Yi5jb20vdGFjdGljYWwtYWdlbnQtbmV1cmFsLWtub3dsZWRnZS9jb250cmFjdHMvZ2VuL2dvL3RhbmsvdG9wby92MTt0b3BvdjGiAgNUVFiqAgxUYW5rLlRvcG8uVjHKAgxUYW5rXFRvcG9cVjHiAhhUYW5rXFRvcG9cVjFcR1BCTWV0YWRhdGHqAg5UYW5rOjpUb3BvOjpWMWIGcHJvdG8z", [file_google_protobuf_timestamp, file_tank_message_v1_message]);
 
 /**
  * @generated from message tank.topo.v1.Mark
@@ -125,6 +125,15 @@ export type Mark = Message<"tank.topo.v1.Mark"> & {
    * @generated from field: tank.topo.v1.ArtifactKind artifact_kind = 16;
    */
   artifactKind: ArtifactKind;
+
+  /**
+   * Set on anything Survey proposed, so a mark can always say which extractor
+   * and which version of it produced the claim — and so a later version can
+   * supersede an earlier one rather than duplicating it.
+   *
+   * @generated from field: tank.topo.v1.SurveyOrigin survey = 17;
+   */
+  survey?: SurveyOrigin;
 };
 
 /**
@@ -133,6 +142,56 @@ export type Mark = Message<"tank.topo.v1.Mark"> & {
  */
 export const MarkSchema: GenMessage<Mark> = /*@__PURE__*/
   messageDesc(file_tank_topo_v1_topo, 0);
+
+/**
+ * Where an extracted mark came from.
+ *
+ * Every field here exists to answer "why am I seeing this?" after the fact. A
+ * mark whose provenance cannot be reconstructed is one nobody can debug, retire
+ * or trust, and Survey will eventually be proposing things people act on.
+ *
+ * @generated from message tank.topo.v1.SurveyOrigin
+ */
+export type SurveyOrigin = Message<"tank.topo.v1.SurveyOrigin"> & {
+  /**
+   * Which extractor produced it, e.g. "unanswered_question".
+   *
+   * @generated from field: string extractor = 1;
+   */
+  extractor: string;
+
+  /**
+   * The extractor's version. Changing prompt, model or logic changes this, and
+   * a new version supersedes the marks the old one wrote.
+   *
+   * @generated from field: string version = 2;
+   */
+  version: string;
+
+  /**
+   * The model, where one was involved. Empty for a deterministic extractor —
+   * which is worth being able to tell apart from a model that happened to
+   * agree.
+   *
+   * @generated from field: string model = 3;
+   */
+  model: string;
+
+  /**
+   * 0-1. The runner drops anything under the configured threshold before it
+   * ever becomes a mark, so what reaches a person has already cleared the bar.
+   *
+   * @generated from field: float confidence = 4;
+   */
+  confidence: number;
+};
+
+/**
+ * Describes the message tank.topo.v1.SurveyOrigin.
+ * Use `create(SurveyOriginSchema)` to create a new message.
+ */
+export const SurveyOriginSchema: GenMessage<SurveyOrigin> = /*@__PURE__*/
+  messageDesc(file_tank_topo_v1_topo, 1);
 
 /**
  * @generated from message tank.topo.v1.ListMarksRequest
@@ -156,7 +215,7 @@ export type ListMarksRequest = Message<"tank.topo.v1.ListMarksRequest"> & {
  * Use `create(ListMarksRequestSchema)` to create a new message.
  */
 export const ListMarksRequestSchema: GenMessage<ListMarksRequest> = /*@__PURE__*/
-  messageDesc(file_tank_topo_v1_topo, 1);
+  messageDesc(file_tank_topo_v1_topo, 2);
 
 /**
  * @generated from message tank.topo.v1.ListMarksResponse
@@ -182,7 +241,7 @@ export type ListMarksResponse = Message<"tank.topo.v1.ListMarksResponse"> & {
  * Use `create(ListMarksResponseSchema)` to create a new message.
  */
 export const ListMarksResponseSchema: GenMessage<ListMarksResponse> = /*@__PURE__*/
-  messageDesc(file_tank_topo_v1_topo, 2);
+  messageDesc(file_tank_topo_v1_topo, 3);
 
 /**
  * @generated from message tank.topo.v1.FlagWaitingOnRequest
@@ -206,7 +265,7 @@ export type FlagWaitingOnRequest = Message<"tank.topo.v1.FlagWaitingOnRequest"> 
  * Use `create(FlagWaitingOnRequestSchema)` to create a new message.
  */
 export const FlagWaitingOnRequestSchema: GenMessage<FlagWaitingOnRequest> = /*@__PURE__*/
-  messageDesc(file_tank_topo_v1_topo, 3);
+  messageDesc(file_tank_topo_v1_topo, 4);
 
 /**
  * @generated from message tank.topo.v1.FlagWaitingOnResponse
@@ -223,7 +282,7 @@ export type FlagWaitingOnResponse = Message<"tank.topo.v1.FlagWaitingOnResponse"
  * Use `create(FlagWaitingOnResponseSchema)` to create a new message.
  */
 export const FlagWaitingOnResponseSchema: GenMessage<FlagWaitingOnResponse> = /*@__PURE__*/
-  messageDesc(file_tank_topo_v1_topo, 4);
+  messageDesc(file_tank_topo_v1_topo, 5);
 
 /**
  * @generated from message tank.topo.v1.ResolveWaitingOnRequest
@@ -247,7 +306,7 @@ export type ResolveWaitingOnRequest = Message<"tank.topo.v1.ResolveWaitingOnRequ
  * Use `create(ResolveWaitingOnRequestSchema)` to create a new message.
  */
 export const ResolveWaitingOnRequestSchema: GenMessage<ResolveWaitingOnRequest> = /*@__PURE__*/
-  messageDesc(file_tank_topo_v1_topo, 5);
+  messageDesc(file_tank_topo_v1_topo, 6);
 
 /**
  * @generated from message tank.topo.v1.ResolveWaitingOnResponse
@@ -264,7 +323,7 @@ export type ResolveWaitingOnResponse = Message<"tank.topo.v1.ResolveWaitingOnRes
  * Use `create(ResolveWaitingOnResponseSchema)` to create a new message.
  */
 export const ResolveWaitingOnResponseSchema: GenMessage<ResolveWaitingOnResponse> = /*@__PURE__*/
-  messageDesc(file_tank_topo_v1_topo, 6);
+  messageDesc(file_tank_topo_v1_topo, 7);
 
 /**
  * @generated from message tank.topo.v1.ListWaitingOnRequest
@@ -294,7 +353,7 @@ export type ListWaitingOnRequest = Message<"tank.topo.v1.ListWaitingOnRequest"> 
  * Use `create(ListWaitingOnRequestSchema)` to create a new message.
  */
 export const ListWaitingOnRequestSchema: GenMessage<ListWaitingOnRequest> = /*@__PURE__*/
-  messageDesc(file_tank_topo_v1_topo, 7);
+  messageDesc(file_tank_topo_v1_topo, 8);
 
 /**
  * @generated from message tank.topo.v1.WaitingOnItem
@@ -318,7 +377,7 @@ export type WaitingOnItem = Message<"tank.topo.v1.WaitingOnItem"> & {
  * Use `create(WaitingOnItemSchema)` to create a new message.
  */
 export const WaitingOnItemSchema: GenMessage<WaitingOnItem> = /*@__PURE__*/
-  messageDesc(file_tank_topo_v1_topo, 8);
+  messageDesc(file_tank_topo_v1_topo, 9);
 
 /**
  * @generated from message tank.topo.v1.RecordEventRequest
@@ -366,7 +425,7 @@ export type RecordEventRequest = Message<"tank.topo.v1.RecordEventRequest"> & {
  * Use `create(RecordEventRequestSchema)` to create a new message.
  */
 export const RecordEventRequestSchema: GenMessage<RecordEventRequest> = /*@__PURE__*/
-  messageDesc(file_tank_topo_v1_topo, 9);
+  messageDesc(file_tank_topo_v1_topo, 10);
 
 /**
  * @generated from message tank.topo.v1.RecordEventResponse
@@ -383,7 +442,7 @@ export type RecordEventResponse = Message<"tank.topo.v1.RecordEventResponse"> & 
  * Use `create(RecordEventResponseSchema)` to create a new message.
  */
 export const RecordEventResponseSchema: GenMessage<RecordEventResponse> = /*@__PURE__*/
-  messageDesc(file_tank_topo_v1_topo, 10);
+  messageDesc(file_tank_topo_v1_topo, 11);
 
 /**
  * @generated from message tank.topo.v1.ListWaitingOnResponse
@@ -400,7 +459,7 @@ export type ListWaitingOnResponse = Message<"tank.topo.v1.ListWaitingOnResponse"
  * Use `create(ListWaitingOnResponseSchema)` to create a new message.
  */
 export const ListWaitingOnResponseSchema: GenMessage<ListWaitingOnResponse> = /*@__PURE__*/
-  messageDesc(file_tank_topo_v1_topo, 11);
+  messageDesc(file_tank_topo_v1_topo, 12);
 
 /**
  * @generated from enum tank.topo.v1.MarkType
@@ -461,6 +520,14 @@ export enum MarkType {
    * @generated from enum value: MARK_TYPE_EVENT = 7;
    */
   EVENT = 7,
+
+  /**
+   * A question nobody answered. Proposed by Survey, resolved by an answer
+   * arriving rather than by anyone pressing a button.
+   *
+   * @generated from enum value: MARK_TYPE_UNANSWERED_QUESTION = 8;
+   */
+  UNANSWERED_QUESTION = 8,
 }
 
 /**
