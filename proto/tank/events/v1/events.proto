@@ -12,6 +12,7 @@ import "tank/files/v1/files.proto";
 import "tank/huddle/v1/huddle.proto";
 import "tank/message/v1/message.proto";
 import "tank/presence/v1/presence.proto";
+import "tank/topo/v1/topo.proto";
 import "tank/workspace/v1/workspace.proto";
 
 // Every durable event on the bus and every realtime frame payload is one of
@@ -207,4 +208,10 @@ message AuditLogged {
 // with AdminService.GetExportDownloadUrl (also sent when the job failed).
 message ExportReady {
   tank.admin.v1.ExportJob job = 1;
+}
+// topo.mark.updated on the channel subject: a stored mark was created,
+// resolved or dismissed. Derived marks never appear here — they have no
+// lifecycle to report, and the client recomputes them on its next read.
+message TopoMarkUpdated {
+  tank.topo.v1.Mark mark = 1;
 }
