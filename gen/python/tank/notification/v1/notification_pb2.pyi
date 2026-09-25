@@ -75,20 +75,22 @@ class MarkNotificationsReadResponse(_message.Message):
     def __init__(self) -> None: ...
 
 class RegisterDeviceRequest(_message.Message):
-    __slots__ = ("platform", "token", "p256dh", "auth", "bundle_id", "description")
+    __slots__ = ("platform", "token", "p256dh", "auth", "bundle_id", "description", "apns_production")
     PLATFORM_FIELD_NUMBER: _ClassVar[int]
     TOKEN_FIELD_NUMBER: _ClassVar[int]
     P256DH_FIELD_NUMBER: _ClassVar[int]
     AUTH_FIELD_NUMBER: _ClassVar[int]
     BUNDLE_ID_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    APNS_PRODUCTION_FIELD_NUMBER: _ClassVar[int]
     platform: PushPlatform
     token: str
     p256dh: str
     auth: str
     bundle_id: str
     description: str
-    def __init__(self, platform: _Optional[_Union[PushPlatform, str]] = ..., token: _Optional[str] = ..., p256dh: _Optional[str] = ..., auth: _Optional[str] = ..., bundle_id: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
+    apns_production: bool
+    def __init__(self, platform: _Optional[_Union[PushPlatform, str]] = ..., token: _Optional[str] = ..., p256dh: _Optional[str] = ..., auth: _Optional[str] = ..., bundle_id: _Optional[str] = ..., description: _Optional[str] = ..., apns_production: bool = ...) -> None: ...
 
 class RegisterDeviceResponse(_message.Message):
     __slots__ = ("device_id",)

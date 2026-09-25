@@ -72,11 +72,21 @@ message RegisterDeviceRequest {
   // still per-subscription secrets.
   string p256dh = 3;
   string auth = 4;
-  // For the Apple side: which build, so a token from a TestFlight build is not
-  // pushed through the production certificate.
+  // For the Apple side: which build, so a token is pushed through the right
+  // topic.
   string bundle_id = 5;
   // Free-form, for support: "iPhone 15 Pro, iOS 18.2".
   string description = 6;
+  // Apple only: whether this token came from a build signed with the production
+  // push entitlement.
+  //
+  // It is a property of the build, not of the account, and both kinds exist at
+  // once: a dev-client build's token is only valid on Apple's sandbox gateway,
+  // and a TestFlight or App Store build's token only on production. Sending to
+  // the wrong one is accepted and silently dropped, which is indistinguishable
+  // from push being broken — so the device says which it is rather than the
+  // server guessing.
+  bool apns_production = 7;
 }
 
 message RegisterDeviceResponse {
