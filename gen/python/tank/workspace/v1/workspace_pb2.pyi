@@ -1,6 +1,7 @@
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from tank.auth.v1 import auth_pb2 as _auth_pb2
 from tank.channel.v1 import channel_pb2 as _channel_pb2
+from tank.topo.v1 import topo_pb2 as _topo_pb2
 from tank.richtext.v1 import richtext_pb2 as _richtext_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
@@ -288,7 +289,7 @@ class ArmorModeSchedule(_message.Message):
     def __init__(self, enabled: bool = ..., start: _Optional[str] = ..., end: _Optional[str] = ..., days: _Optional[_Iterable[int]] = ..., timezone: _Optional[str] = ..., allow_critical: bool = ...) -> None: ...
 
 class Preferences(_message.Message):
-    __slots__ = ("notify_default", "dm_notify_default", "theme", "armor_mode_schedule", "email_digest", "desktop_sound", "push_on_mention_only")
+    __slots__ = ("notify_default", "dm_notify_default", "theme", "armor_mode_schedule", "email_digest", "desktop_sound", "push_on_mention_only", "topo")
     NOTIFY_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     DM_NOTIFY_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     THEME_FIELD_NUMBER: _ClassVar[int]
@@ -296,6 +297,7 @@ class Preferences(_message.Message):
     EMAIL_DIGEST_FIELD_NUMBER: _ClassVar[int]
     DESKTOP_SOUND_FIELD_NUMBER: _ClassVar[int]
     PUSH_ON_MENTION_ONLY_FIELD_NUMBER: _ClassVar[int]
+    TOPO_FIELD_NUMBER: _ClassVar[int]
     notify_default: _channel_pb2.NotifyPref
     dm_notify_default: _channel_pb2.NotifyPref
     theme: str
@@ -303,7 +305,18 @@ class Preferences(_message.Message):
     email_digest: bool
     desktop_sound: bool
     push_on_mention_only: bool
-    def __init__(self, notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., dm_notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., theme: _Optional[str] = ..., armor_mode_schedule: _Optional[_Union[ArmorModeSchedule, _Mapping]] = ..., email_digest: bool = ..., desktop_sound: bool = ..., push_on_mention_only: bool = ...) -> None: ...
+    topo: TopoPreferences
+    def __init__(self, notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., dm_notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., theme: _Optional[str] = ..., armor_mode_schedule: _Optional[_Union[ArmorModeSchedule, _Mapping]] = ..., email_digest: bool = ..., desktop_sound: bool = ..., push_on_mention_only: bool = ..., topo: _Optional[_Union[TopoPreferences, _Mapping]] = ...) -> None: ...
+
+class TopoPreferences(_message.Message):
+    __slots__ = ("configured", "visible", "time_axis")
+    CONFIGURED_FIELD_NUMBER: _ClassVar[int]
+    VISIBLE_FIELD_NUMBER: _ClassVar[int]
+    TIME_AXIS_FIELD_NUMBER: _ClassVar[int]
+    configured: bool
+    visible: _containers.RepeatedScalarFieldContainer[_topo_pb2.MarkType]
+    time_axis: bool
+    def __init__(self, configured: bool = ..., visible: _Optional[_Iterable[_Union[_topo_pb2.MarkType, str]]] = ..., time_axis: bool = ...) -> None: ...
 
 class GetPreferencesRequest(_message.Message):
     __slots__ = ("workspace_id",)
