@@ -190,7 +190,7 @@ class WaitingOnItem(_message.Message):
     def __init__(self, mark: _Optional[_Union[Mark, _Mapping]] = ..., message: _Optional[_Union[_message_pb2.Message, _Mapping]] = ...) -> None: ...
 
 class Benchmark(_message.Message):
-    __slots__ = ("id", "channel_id", "statement", "detail", "source_message_ids", "participant_ids", "status", "decided_by_user_id", "decided_at", "superseded_by_id", "survey", "created_at")
+    __slots__ = ("id", "channel_id", "statement", "detail", "source_message_ids", "participant_ids", "status", "decided_by_user_id", "decided_at", "superseded_by_id", "survey", "created_at", "supersedes_id")
     ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     STATEMENT_FIELD_NUMBER: _ClassVar[int]
@@ -203,6 +203,7 @@ class Benchmark(_message.Message):
     SUPERSEDED_BY_ID_FIELD_NUMBER: _ClassVar[int]
     SURVEY_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    SUPERSEDES_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
     channel_id: str
     statement: str
@@ -215,7 +216,8 @@ class Benchmark(_message.Message):
     superseded_by_id: str
     survey: SurveyOrigin
     created_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., channel_id: _Optional[str] = ..., statement: _Optional[str] = ..., detail: _Optional[str] = ..., source_message_ids: _Optional[_Iterable[str]] = ..., participant_ids: _Optional[_Iterable[str]] = ..., status: _Optional[_Union[MarkStatus, str]] = ..., decided_by_user_id: _Optional[str] = ..., decided_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., superseded_by_id: _Optional[str] = ..., survey: _Optional[_Union[SurveyOrigin, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    supersedes_id: str
+    def __init__(self, id: _Optional[str] = ..., channel_id: _Optional[str] = ..., statement: _Optional[str] = ..., detail: _Optional[str] = ..., source_message_ids: _Optional[_Iterable[str]] = ..., participant_ids: _Optional[_Iterable[str]] = ..., status: _Optional[_Union[MarkStatus, str]] = ..., decided_by_user_id: _Optional[str] = ..., decided_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., superseded_by_id: _Optional[str] = ..., survey: _Optional[_Union[SurveyOrigin, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., supersedes_id: _Optional[str] = ...) -> None: ...
 
 class ListBenchmarksRequest(_message.Message):
     __slots__ = ("channel_id", "include_closed")
@@ -232,7 +234,7 @@ class ListBenchmarksResponse(_message.Message):
     def __init__(self, benchmarks: _Optional[_Iterable[_Union[Benchmark, _Mapping]]] = ...) -> None: ...
 
 class DecideBenchmarkRequest(_message.Message):
-    __slots__ = ("benchmark_id", "decision", "statement", "detail")
+    __slots__ = ("benchmark_id", "decision", "statement", "detail", "supersedes_id")
     class Decision(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
         __slots__ = ()
         DECISION_UNSPECIFIED: _ClassVar[DecideBenchmarkRequest.Decision]
@@ -245,11 +247,13 @@ class DecideBenchmarkRequest(_message.Message):
     DECISION_FIELD_NUMBER: _ClassVar[int]
     STATEMENT_FIELD_NUMBER: _ClassVar[int]
     DETAIL_FIELD_NUMBER: _ClassVar[int]
+    SUPERSEDES_ID_FIELD_NUMBER: _ClassVar[int]
     benchmark_id: str
     decision: DecideBenchmarkRequest.Decision
     statement: str
     detail: str
-    def __init__(self, benchmark_id: _Optional[str] = ..., decision: _Optional[_Union[DecideBenchmarkRequest.Decision, str]] = ..., statement: _Optional[str] = ..., detail: _Optional[str] = ...) -> None: ...
+    supersedes_id: str
+    def __init__(self, benchmark_id: _Optional[str] = ..., decision: _Optional[_Union[DecideBenchmarkRequest.Decision, str]] = ..., statement: _Optional[str] = ..., detail: _Optional[str] = ..., supersedes_id: _Optional[str] = ...) -> None: ...
 
 class DecideBenchmarkResponse(_message.Message):
     __slots__ = ("benchmark",)
