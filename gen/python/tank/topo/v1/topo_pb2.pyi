@@ -167,6 +167,26 @@ class WaitingOnItem(_message.Message):
     message: _message_pb2.Message
     def __init__(self, mark: _Optional[_Union[Mark, _Mapping]] = ..., message: _Optional[_Union[_message_pb2.Message, _Mapping]] = ...) -> None: ...
 
+class RecordEventRequest(_message.Message):
+    __slots__ = ("channel_id", "kind", "detail", "url", "dedupe_key")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    DETAIL_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    DEDUPE_KEY_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    kind: str
+    detail: str
+    url: str
+    dedupe_key: str
+    def __init__(self, channel_id: _Optional[str] = ..., kind: _Optional[str] = ..., detail: _Optional[str] = ..., url: _Optional[str] = ..., dedupe_key: _Optional[str] = ...) -> None: ...
+
+class RecordEventResponse(_message.Message):
+    __slots__ = ("mark",)
+    MARK_FIELD_NUMBER: _ClassVar[int]
+    mark: Mark
+    def __init__(self, mark: _Optional[_Union[Mark, _Mapping]] = ...) -> None: ...
+
 class ListWaitingOnResponse(_message.Message):
     __slots__ = ("items",)
     ITEMS_FIELD_NUMBER: _ClassVar[int]

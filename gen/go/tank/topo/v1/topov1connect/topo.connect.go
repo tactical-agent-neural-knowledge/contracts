@@ -44,6 +44,8 @@ const (
 	// TopoServiceListWaitingOnProcedure is the fully-qualified name of the TopoService's ListWaitingOn
 	// RPC.
 	TopoServiceListWaitingOnProcedure = "/tank.topo.v1.TopoService/ListWaitingOn"
+	// TopoServiceRecordEventProcedure is the fully-qualified name of the TopoService's RecordEvent RPC.
+	TopoServiceRecordEventProcedure = "/tank.topo.v1.TopoService/RecordEvent"
 )
 
 // TopoServiceClient is a client for the tank.topo.v1.TopoService service.
@@ -56,6 +58,11 @@ type TopoServiceClient interface {
 	// waited on: both of them know when it is done.
 	ResolveWaitingOn(context.Context, *connect.Request[v1.ResolveWaitingOnRequest]) (*connect.Response[v1.ResolveWaitingOnResponse], error)
 	ListWaitingOn(context.Context, *connect.Request[v1.ListWaitingOnRequest]) (*connect.Response[v1.ListWaitingOnResponse], error)
+	// Record something that happened to a channel rather than in it. For the
+	// control plane and other first-party observers, never for a person: an
+	// event tick claims something occurred, and a human claim belongs in a
+	// message where it can be argued with.
+	RecordEvent(context.Context, *connect.Request[v1.RecordEventRequest]) (*connect.Response[v1.RecordEventResponse], error)
 }
 
 // NewTopoServiceClient constructs a client for the tank.topo.v1.TopoService service. By default, it
@@ -93,6 +100,12 @@ func NewTopoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(topoServiceMethods.ByName("ListWaitingOn")),
 			connect.WithClientOptions(opts...),
 		),
+		recordEvent: connect.NewClient[v1.RecordEventRequest, v1.RecordEventResponse](
+			httpClient,
+			baseURL+TopoServiceRecordEventProcedure,
+			connect.WithSchema(topoServiceMethods.ByName("RecordEvent")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -102,6 +115,7 @@ type topoServiceClient struct {
 	flagWaitingOn    *connect.Client[v1.FlagWaitingOnRequest, v1.FlagWaitingOnResponse]
 	resolveWaitingOn *connect.Client[v1.ResolveWaitingOnRequest, v1.ResolveWaitingOnResponse]
 	listWaitingOn    *connect.Client[v1.ListWaitingOnRequest, v1.ListWaitingOnResponse]
+	recordEvent      *connect.Client[v1.RecordEventRequest, v1.RecordEventResponse]
 }
 
 // ListMarks calls tank.topo.v1.TopoService.ListMarks.
@@ -124,6 +138,11 @@ func (c *topoServiceClient) ListWaitingOn(ctx context.Context, req *connect.Requ
 	return c.listWaitingOn.CallUnary(ctx, req)
 }
 
+// RecordEvent calls tank.topo.v1.TopoService.RecordEvent.
+func (c *topoServiceClient) RecordEvent(ctx context.Context, req *connect.Request[v1.RecordEventRequest]) (*connect.Response[v1.RecordEventResponse], error) {
+	return c.recordEvent.CallUnary(ctx, req)
+}
+
 // TopoServiceHandler is an implementation of the tank.topo.v1.TopoService service.
 type TopoServiceHandler interface {
 	ListMarks(context.Context, *connect.Request[v1.ListMarksRequest]) (*connect.Response[v1.ListMarksResponse], error)
@@ -134,6 +153,11 @@ type TopoServiceHandler interface {
 	// waited on: both of them know when it is done.
 	ResolveWaitingOn(context.Context, *connect.Request[v1.ResolveWaitingOnRequest]) (*connect.Response[v1.ResolveWaitingOnResponse], error)
 	ListWaitingOn(context.Context, *connect.Request[v1.ListWaitingOnRequest]) (*connect.Response[v1.ListWaitingOnResponse], error)
+	// Record something that happened to a channel rather than in it. For the
+	// control plane and other first-party observers, never for a person: an
+	// event tick claims something occurred, and a human claim belongs in a
+	// message where it can be argued with.
+	RecordEvent(context.Context, *connect.Request[v1.RecordEventRequest]) (*connect.Response[v1.RecordEventResponse], error)
 }
 
 // NewTopoServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -167,6 +191,12 @@ func NewTopoServiceHandler(svc TopoServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(topoServiceMethods.ByName("ListWaitingOn")),
 		connect.WithHandlerOptions(opts...),
 	)
+	topoServiceRecordEventHandler := connect.NewUnaryHandler(
+		TopoServiceRecordEventProcedure,
+		svc.RecordEvent,
+		connect.WithSchema(topoServiceMethods.ByName("RecordEvent")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.topo.v1.TopoService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case TopoServiceListMarksProcedure:
@@ -177,6 +207,8 @@ func NewTopoServiceHandler(svc TopoServiceHandler, opts ...connect.HandlerOption
 			topoServiceResolveWaitingOnHandler.ServeHTTP(w, r)
 		case TopoServiceListWaitingOnProcedure:
 			topoServiceListWaitingOnHandler.ServeHTTP(w, r)
+		case TopoServiceRecordEventProcedure:
+			topoServiceRecordEventHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -200,4 +232,8 @@ func (UnimplementedTopoServiceHandler) ResolveWaitingOn(context.Context, *connec
 
 func (UnimplementedTopoServiceHandler) ListWaitingOn(context.Context, *connect.Request[v1.ListWaitingOnRequest]) (*connect.Response[v1.ListWaitingOnResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.topo.v1.TopoService.ListWaitingOn is not implemented"))
+}
+
+func (UnimplementedTopoServiceHandler) RecordEvent(context.Context, *connect.Request[v1.RecordEventRequest]) (*connect.Response[v1.RecordEventResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.topo.v1.TopoService.RecordEvent is not implemented"))
 }
