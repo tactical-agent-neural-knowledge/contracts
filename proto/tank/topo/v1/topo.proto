@@ -3,6 +3,7 @@ syntax = "proto3";
 package tank.topo.v1;
 
 import "google/protobuf/timestamp.proto";
+import "tank/message/v1/message.proto";
 
 option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/topo/v1;topov1";
 
@@ -23,6 +24,19 @@ enum MarkType {
   MARK_TYPE_READ_HORIZON = 3;
   // A message matching the current in-channel search (R2).
   MARK_TYPE_SEARCH_HIT = 4;
+  // A message flagged as needing a reply from specific people.
+  MARK_TYPE_WAITING_ON = 5;
+}
+
+// Whether a mark is still live. Derived marks are always open: they exist only
+// while the thing they describe is true. Stored marks carry a real lifecycle.
+enum MarkStatus {
+  MARK_STATUS_UNSPECIFIED = 0;
+  MARK_STATUS_OPEN = 1;
+  // Answered: the people being waited on replied.
+  MARK_STATUS_RESOLVED = 2;
+  // Called off by a person, answered or not.
+  MARK_STATUS_DISMISSED = 3;
 }
 
 // Which vertical strip a mark belongs to. Keeping families apart is what stops
@@ -55,6 +69,13 @@ message Mark {
   // map, and reading happens in the Tread.
   string preview = 8;
   google.protobuf.Timestamp created_at = 9;
+  MarkStatus status = 10;
+  // Who this is waiting on. Only set for MARK_TYPE_WAITING_ON.
+  repeated string waiting_on_user_ids = 11;
+  // Who created the mark. Empty for anything derived rather than stored.
+  string created_by_user_id = 12;
+  // When it stopped being open, however it stopped.
+  google.protobuf.Timestamp resolved_at = 13;
 }
 
 message ListMarksRequest {
@@ -71,8 +92,62 @@ message ListMarksResponse {
   int64 last_seq = 2;
 }
 
+// Which side of a waiting-on the caller is on.
+enum WaitingDirection {
+  WAITING_DIRECTION_UNSPECIFIED = 0;
+  // Things other people are waiting on the caller for.
+  WAITING_DIRECTION_ON_ME = 1;
+  // Things the caller is waiting on other people for.
+  WAITING_DIRECTION_BY_ME = 2;
+}
+
+message FlagWaitingOnRequest {
+  string message_id = 1;
+  // Who owes a reply. Must be members of the message's channel.
+  repeated string user_ids = 2;
+}
+
+message FlagWaitingOnResponse {
+  Mark mark = 1;
+}
+
+message ResolveWaitingOnRequest {
+  string mark_id = 1;
+  // Called off rather than answered. Either way it stops being open.
+  bool dismiss = 2;
+}
+
+message ResolveWaitingOnResponse {
+  Mark mark = 1;
+}
+
+message ListWaitingOnRequest {
+  string workspace_id = 1;
+  WaitingDirection direction = 2;
+  // Include marks that are no longer open. Off by default: a queue is what is
+  // still outstanding, not a history.
+  bool include_closed = 3;
+}
+
+message WaitingOnItem {
+  Mark mark = 1;
+  // The message being waited on, so a queue renders without a second call.
+  tank.message.v1.Message message = 2;
+}
+
+message ListWaitingOnResponse {
+  repeated WaitingOnItem items = 1;
+}
+
 // Marks are always read through the channel, so a Tread the caller cannot see
 // has no marks, and a mark can never carry content from one that they cannot.
 service TopoService {
   rpc ListMarks(ListMarksRequest) returns (ListMarksResponse);
+  // Flag a message as waiting on specific people. The caller must be able to
+  // post in the channel; you cannot make a demand of a Tread you only read.
+  rpc FlagWaitingOn(FlagWaitingOnRequest) returns (FlagWaitingOnResponse);
+  // Resolve or dismiss. Allowed to whoever flagged it and to anybody being
+  // waited on: both of them know when it is done.
+  rpc ResolveWaitingOn(ResolveWaitingOnRequest) returns (ResolveWaitingOnResponse);
+  rpc ListWaitingOn(ListWaitingOnRequest) returns (ListWaitingOnResponse);
 }

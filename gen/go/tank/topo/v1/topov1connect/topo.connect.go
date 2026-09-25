@@ -35,11 +35,27 @@ const (
 const (
 	// TopoServiceListMarksProcedure is the fully-qualified name of the TopoService's ListMarks RPC.
 	TopoServiceListMarksProcedure = "/tank.topo.v1.TopoService/ListMarks"
+	// TopoServiceFlagWaitingOnProcedure is the fully-qualified name of the TopoService's FlagWaitingOn
+	// RPC.
+	TopoServiceFlagWaitingOnProcedure = "/tank.topo.v1.TopoService/FlagWaitingOn"
+	// TopoServiceResolveWaitingOnProcedure is the fully-qualified name of the TopoService's
+	// ResolveWaitingOn RPC.
+	TopoServiceResolveWaitingOnProcedure = "/tank.topo.v1.TopoService/ResolveWaitingOn"
+	// TopoServiceListWaitingOnProcedure is the fully-qualified name of the TopoService's ListWaitingOn
+	// RPC.
+	TopoServiceListWaitingOnProcedure = "/tank.topo.v1.TopoService/ListWaitingOn"
 )
 
 // TopoServiceClient is a client for the tank.topo.v1.TopoService service.
 type TopoServiceClient interface {
 	ListMarks(context.Context, *connect.Request[v1.ListMarksRequest]) (*connect.Response[v1.ListMarksResponse], error)
+	// Flag a message as waiting on specific people. The caller must be able to
+	// post in the channel; you cannot make a demand of a Tread you only read.
+	FlagWaitingOn(context.Context, *connect.Request[v1.FlagWaitingOnRequest]) (*connect.Response[v1.FlagWaitingOnResponse], error)
+	// Resolve or dismiss. Allowed to whoever flagged it and to anybody being
+	// waited on: both of them know when it is done.
+	ResolveWaitingOn(context.Context, *connect.Request[v1.ResolveWaitingOnRequest]) (*connect.Response[v1.ResolveWaitingOnResponse], error)
+	ListWaitingOn(context.Context, *connect.Request[v1.ListWaitingOnRequest]) (*connect.Response[v1.ListWaitingOnResponse], error)
 }
 
 // NewTopoServiceClient constructs a client for the tank.topo.v1.TopoService service. By default, it
@@ -59,12 +75,33 @@ func NewTopoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(topoServiceMethods.ByName("ListMarks")),
 			connect.WithClientOptions(opts...),
 		),
+		flagWaitingOn: connect.NewClient[v1.FlagWaitingOnRequest, v1.FlagWaitingOnResponse](
+			httpClient,
+			baseURL+TopoServiceFlagWaitingOnProcedure,
+			connect.WithSchema(topoServiceMethods.ByName("FlagWaitingOn")),
+			connect.WithClientOptions(opts...),
+		),
+		resolveWaitingOn: connect.NewClient[v1.ResolveWaitingOnRequest, v1.ResolveWaitingOnResponse](
+			httpClient,
+			baseURL+TopoServiceResolveWaitingOnProcedure,
+			connect.WithSchema(topoServiceMethods.ByName("ResolveWaitingOn")),
+			connect.WithClientOptions(opts...),
+		),
+		listWaitingOn: connect.NewClient[v1.ListWaitingOnRequest, v1.ListWaitingOnResponse](
+			httpClient,
+			baseURL+TopoServiceListWaitingOnProcedure,
+			connect.WithSchema(topoServiceMethods.ByName("ListWaitingOn")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // topoServiceClient implements TopoServiceClient.
 type topoServiceClient struct {
-	listMarks *connect.Client[v1.ListMarksRequest, v1.ListMarksResponse]
+	listMarks        *connect.Client[v1.ListMarksRequest, v1.ListMarksResponse]
+	flagWaitingOn    *connect.Client[v1.FlagWaitingOnRequest, v1.FlagWaitingOnResponse]
+	resolveWaitingOn *connect.Client[v1.ResolveWaitingOnRequest, v1.ResolveWaitingOnResponse]
+	listWaitingOn    *connect.Client[v1.ListWaitingOnRequest, v1.ListWaitingOnResponse]
 }
 
 // ListMarks calls tank.topo.v1.TopoService.ListMarks.
@@ -72,9 +109,31 @@ func (c *topoServiceClient) ListMarks(ctx context.Context, req *connect.Request[
 	return c.listMarks.CallUnary(ctx, req)
 }
 
+// FlagWaitingOn calls tank.topo.v1.TopoService.FlagWaitingOn.
+func (c *topoServiceClient) FlagWaitingOn(ctx context.Context, req *connect.Request[v1.FlagWaitingOnRequest]) (*connect.Response[v1.FlagWaitingOnResponse], error) {
+	return c.flagWaitingOn.CallUnary(ctx, req)
+}
+
+// ResolveWaitingOn calls tank.topo.v1.TopoService.ResolveWaitingOn.
+func (c *topoServiceClient) ResolveWaitingOn(ctx context.Context, req *connect.Request[v1.ResolveWaitingOnRequest]) (*connect.Response[v1.ResolveWaitingOnResponse], error) {
+	return c.resolveWaitingOn.CallUnary(ctx, req)
+}
+
+// ListWaitingOn calls tank.topo.v1.TopoService.ListWaitingOn.
+func (c *topoServiceClient) ListWaitingOn(ctx context.Context, req *connect.Request[v1.ListWaitingOnRequest]) (*connect.Response[v1.ListWaitingOnResponse], error) {
+	return c.listWaitingOn.CallUnary(ctx, req)
+}
+
 // TopoServiceHandler is an implementation of the tank.topo.v1.TopoService service.
 type TopoServiceHandler interface {
 	ListMarks(context.Context, *connect.Request[v1.ListMarksRequest]) (*connect.Response[v1.ListMarksResponse], error)
+	// Flag a message as waiting on specific people. The caller must be able to
+	// post in the channel; you cannot make a demand of a Tread you only read.
+	FlagWaitingOn(context.Context, *connect.Request[v1.FlagWaitingOnRequest]) (*connect.Response[v1.FlagWaitingOnResponse], error)
+	// Resolve or dismiss. Allowed to whoever flagged it and to anybody being
+	// waited on: both of them know when it is done.
+	ResolveWaitingOn(context.Context, *connect.Request[v1.ResolveWaitingOnRequest]) (*connect.Response[v1.ResolveWaitingOnResponse], error)
+	ListWaitingOn(context.Context, *connect.Request[v1.ListWaitingOnRequest]) (*connect.Response[v1.ListWaitingOnResponse], error)
 }
 
 // NewTopoServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -90,10 +149,34 @@ func NewTopoServiceHandler(svc TopoServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(topoServiceMethods.ByName("ListMarks")),
 		connect.WithHandlerOptions(opts...),
 	)
+	topoServiceFlagWaitingOnHandler := connect.NewUnaryHandler(
+		TopoServiceFlagWaitingOnProcedure,
+		svc.FlagWaitingOn,
+		connect.WithSchema(topoServiceMethods.ByName("FlagWaitingOn")),
+		connect.WithHandlerOptions(opts...),
+	)
+	topoServiceResolveWaitingOnHandler := connect.NewUnaryHandler(
+		TopoServiceResolveWaitingOnProcedure,
+		svc.ResolveWaitingOn,
+		connect.WithSchema(topoServiceMethods.ByName("ResolveWaitingOn")),
+		connect.WithHandlerOptions(opts...),
+	)
+	topoServiceListWaitingOnHandler := connect.NewUnaryHandler(
+		TopoServiceListWaitingOnProcedure,
+		svc.ListWaitingOn,
+		connect.WithSchema(topoServiceMethods.ByName("ListWaitingOn")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.topo.v1.TopoService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case TopoServiceListMarksProcedure:
 			topoServiceListMarksHandler.ServeHTTP(w, r)
+		case TopoServiceFlagWaitingOnProcedure:
+			topoServiceFlagWaitingOnHandler.ServeHTTP(w, r)
+		case TopoServiceResolveWaitingOnProcedure:
+			topoServiceResolveWaitingOnHandler.ServeHTTP(w, r)
+		case TopoServiceListWaitingOnProcedure:
+			topoServiceListWaitingOnHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -105,4 +188,16 @@ type UnimplementedTopoServiceHandler struct{}
 
 func (UnimplementedTopoServiceHandler) ListMarks(context.Context, *connect.Request[v1.ListMarksRequest]) (*connect.Response[v1.ListMarksResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.topo.v1.TopoService.ListMarks is not implemented"))
+}
+
+func (UnimplementedTopoServiceHandler) FlagWaitingOn(context.Context, *connect.Request[v1.FlagWaitingOnRequest]) (*connect.Response[v1.FlagWaitingOnResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.topo.v1.TopoService.FlagWaitingOn is not implemented"))
+}
+
+func (UnimplementedTopoServiceHandler) ResolveWaitingOn(context.Context, *connect.Request[v1.ResolveWaitingOnRequest]) (*connect.Response[v1.ResolveWaitingOnResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.topo.v1.TopoService.ResolveWaitingOn is not implemented"))
+}
+
+func (UnimplementedTopoServiceHandler) ListWaitingOn(context.Context, *connect.Request[v1.ListWaitingOnRequest]) (*connect.Response[v1.ListWaitingOnResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.topo.v1.TopoService.ListWaitingOn is not implemented"))
 }
