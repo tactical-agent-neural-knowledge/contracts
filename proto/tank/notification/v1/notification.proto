@@ -40,4 +40,53 @@ message MarkNotificationsReadResponse {}
 service NotificationService {
   rpc ListNotifications(ListNotificationsRequest) returns (ListNotificationsResponse);
   rpc MarkNotificationsRead(MarkNotificationsReadRequest) returns (MarkNotificationsReadResponse);
+  // Register this device to receive pushes. Idempotent on the token, because
+  // the client calls it on every launch — a token is the identity here, not the
+  // row.
+  rpc RegisterDevice(RegisterDeviceRequest) returns (RegisterDeviceResponse);
+  // Stop pushing to this device. Called on sign-out, so somebody else using the
+  // phone afterwards does not receive your messages.
+  rpc UnregisterDevice(UnregisterDeviceRequest) returns (UnregisterDeviceResponse);
 }
+
+// How a device is reached.
+enum PushPlatform {
+  PUSH_PLATFORM_UNSPECIFIED = 0;
+  // Apple, via APNs. The token is the native device token, not an Expo one:
+  // Expo's push service would put a third party between us and every message
+  // people receive.
+  PUSH_PLATFORM_APNS = 1;
+  // Android, via FCM v1.
+  PUSH_PLATFORM_FCM = 2;
+  // A browser, via the Web Push protocol. The "token" is the subscription's
+  // endpoint; keys travel in the fields below.
+  PUSH_PLATFORM_WEB = 3;
+}
+
+message RegisterDeviceRequest {
+  PushPlatform platform = 1;
+  // APNs/FCM: the device token. Web: the subscription endpoint URL.
+  string token = 2;
+  // Web Push only: the subscription's p256dh and auth keys, which are what
+  // encrypt the payload to that browser. Useless to anyone else, but they are
+  // still per-subscription secrets.
+  string p256dh = 3;
+  string auth = 4;
+  // For the Apple side: which build, so a token from a TestFlight build is not
+  // pushed through the production certificate.
+  string bundle_id = 5;
+  // Free-form, for support: "iPhone 15 Pro, iOS 18.2".
+  string description = 6;
+}
+
+message RegisterDeviceResponse {
+  string device_id = 1;
+}
+
+message UnregisterDeviceRequest {
+  // The token to forget. Taken rather than a device id so a client that has
+  // lost its local state can still clean up after itself.
+  string token = 1;
+}
+
+message UnregisterDeviceResponse {}

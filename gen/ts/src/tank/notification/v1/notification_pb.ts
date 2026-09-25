@@ -2,8 +2,8 @@
 // @generated from file tank/notification/v1/notification.proto (package tank.notification.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
-import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1";
+import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
+import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tank/notification/v1/notification.proto.
  */
 export const file_tank_notification_v1_notification: GenFile = /*@__PURE__*/
-  fileDesc("Cid0YW5rL25vdGlmaWNhdGlvbi92MS9ub3RpZmljYXRpb24ucHJvdG8SFHRhbmsubm90aWZpY2F0aW9uLnYxIuYBCgxOb3RpZmljYXRpb24SCgoCaWQYASABKAkSFAoMd29ya3NwYWNlX2lkGAIgASgJEg8KB3VzZXJfaWQYAyABKAkSDAoEa2luZBgEIAEoCRISCgptZXNzYWdlX2lkGAUgASgJEhIKCmNoYW5uZWxfaWQYBiABKAkSEAoIYWN0b3JfaWQYByABKAkSKwoHcmVhZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLgoKY3JlYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiZAoYTGlzdE5vdGlmaWNhdGlvbnNSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRITCgt1bnJlYWRfb25seRgCIAEoCBIOCgZjdXJzb3IYAyABKAkSDQoFbGltaXQYBCABKAUigQEKGUxpc3ROb3RpZmljYXRpb25zUmVzcG9uc2USOQoNbm90aWZpY2F0aW9ucxgBIAMoCzIiLnRhbmsubm90aWZpY2F0aW9uLnYxLk5vdGlmaWNhdGlvbhITCgtuZXh0X2N1cnNvchgCIAEoCRIUCgx1bnJlYWRfY291bnQYAyABKAUiTgocTWFya05vdGlmaWNhdGlvbnNSZWFkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSGAoQbm90aWZpY2F0aW9uX2lkcxgCIAMoCSIfCh1NYXJrTm90aWZpY2F0aW9uc1JlYWRSZXNwb25zZTKOAgoTTm90aWZpY2F0aW9uU2VydmljZRJ0ChFMaXN0Tm90aWZpY2F0aW9ucxIuLnRhbmsubm90aWZpY2F0aW9uLnYxLkxpc3ROb3RpZmljYXRpb25zUmVxdWVzdBovLnRhbmsubm90aWZpY2F0aW9uLnYxLkxpc3ROb3RpZmljYXRpb25zUmVzcG9uc2USgAEKFU1hcmtOb3RpZmljYXRpb25zUmVhZBIyLnRhbmsubm90aWZpY2F0aW9uLnYxLk1hcmtOb3RpZmljYXRpb25zUmVhZFJlcXVlc3QaMy50YW5rLm5vdGlmaWNhdGlvbi52MS5NYXJrTm90aWZpY2F0aW9uc1JlYWRSZXNwb25zZUKAAgoYY29tLnRhbmsubm90aWZpY2F0aW9uLnYxQhFOb3RpZmljYXRpb25Qcm90b1ABWl9naXRodWIuY29tL3RhY3RpY2FsLWFnZW50LW5ldXJhbC1rbm93bGVkZ2UvY29udHJhY3RzL2dlbi9nby90YW5rL25vdGlmaWNhdGlvbi92MTtub3RpZmljYXRpb252MaICA1ROWKoCFFRhbmsuTm90aWZpY2F0aW9uLlYxygIUVGFua1xOb3RpZmljYXRpb25cVjHiAiBUYW5rXE5vdGlmaWNhdGlvblxWMVxHUEJNZXRhZGF0YeoCFlRhbms6Ok5vdGlmaWNhdGlvbjo6VjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("Cid0YW5rL25vdGlmaWNhdGlvbi92MS9ub3RpZmljYXRpb24ucHJvdG8SFHRhbmsubm90aWZpY2F0aW9uLnYxIuYBCgxOb3RpZmljYXRpb24SCgoCaWQYASABKAkSFAoMd29ya3NwYWNlX2lkGAIgASgJEg8KB3VzZXJfaWQYAyABKAkSDAoEa2luZBgEIAEoCRISCgptZXNzYWdlX2lkGAUgASgJEhIKCmNoYW5uZWxfaWQYBiABKAkSEAoIYWN0b3JfaWQYByABKAkSKwoHcmVhZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLgoKY3JlYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiZAoYTGlzdE5vdGlmaWNhdGlvbnNSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRITCgt1bnJlYWRfb25seRgCIAEoCBIOCgZjdXJzb3IYAyABKAkSDQoFbGltaXQYBCABKAUigQEKGUxpc3ROb3RpZmljYXRpb25zUmVzcG9uc2USOQoNbm90aWZpY2F0aW9ucxgBIAMoCzIiLnRhbmsubm90aWZpY2F0aW9uLnYxLk5vdGlmaWNhdGlvbhITCgtuZXh0X2N1cnNvchgCIAEoCRIUCgx1bnJlYWRfY291bnQYAyABKAUiTgocTWFya05vdGlmaWNhdGlvbnNSZWFkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSGAoQbm90aWZpY2F0aW9uX2lkcxgCIAMoCSIfCh1NYXJrTm90aWZpY2F0aW9uc1JlYWRSZXNwb25zZSKiAQoVUmVnaXN0ZXJEZXZpY2VSZXF1ZXN0EjQKCHBsYXRmb3JtGAEgASgOMiIudGFuay5ub3RpZmljYXRpb24udjEuUHVzaFBsYXRmb3JtEg0KBXRva2VuGAIgASgJEg4KBnAyNTZkaBgDIAEoCRIMCgRhdXRoGAQgASgJEhEKCWJ1bmRsZV9pZBgFIAEoCRITCgtkZXNjcmlwdGlvbhgGIAEoCSIrChZSZWdpc3RlckRldmljZVJlc3BvbnNlEhEKCWRldmljZV9pZBgBIAEoCSIoChdVbnJlZ2lzdGVyRGV2aWNlUmVxdWVzdBINCgV0b2tlbhgBIAEoCSIaChhVbnJlZ2lzdGVyRGV2aWNlUmVzcG9uc2UqcwoMUHVzaFBsYXRmb3JtEh0KGVBVU0hfUExBVEZPUk1fVU5TUEVDSUZJRUQQABIWChJQVVNIX1BMQVRGT1JNX0FQTlMQARIVChFQVVNIX1BMQVRGT1JNX0ZDTRACEhUKEVBVU0hfUExBVEZPUk1fV0VCEAMy7gMKE05vdGlmaWNhdGlvblNlcnZpY2USdAoRTGlzdE5vdGlmaWNhdGlvbnMSLi50YW5rLm5vdGlmaWNhdGlvbi52MS5MaXN0Tm90aWZpY2F0aW9uc1JlcXVlc3QaLy50YW5rLm5vdGlmaWNhdGlvbi52MS5MaXN0Tm90aWZpY2F0aW9uc1Jlc3BvbnNlEoABChVNYXJrTm90aWZpY2F0aW9uc1JlYWQSMi50YW5rLm5vdGlmaWNhdGlvbi52MS5NYXJrTm90aWZpY2F0aW9uc1JlYWRSZXF1ZXN0GjMudGFuay5ub3RpZmljYXRpb24udjEuTWFya05vdGlmaWNhdGlvbnNSZWFkUmVzcG9uc2USawoOUmVnaXN0ZXJEZXZpY2USKy50YW5rLm5vdGlmaWNhdGlvbi52MS5SZWdpc3RlckRldmljZVJlcXVlc3QaLC50YW5rLm5vdGlmaWNhdGlvbi52MS5SZWdpc3RlckRldmljZVJlc3BvbnNlEnEKEFVucmVnaXN0ZXJEZXZpY2USLS50YW5rLm5vdGlmaWNhdGlvbi52MS5VbnJlZ2lzdGVyRGV2aWNlUmVxdWVzdBouLnRhbmsubm90aWZpY2F0aW9uLnYxLlVucmVnaXN0ZXJEZXZpY2VSZXNwb25zZUKAAgoYY29tLnRhbmsubm90aWZpY2F0aW9uLnYxQhFOb3RpZmljYXRpb25Qcm90b1ABWl9naXRodWIuY29tL3RhY3RpY2FsLWFnZW50LW5ldXJhbC1rbm93bGVkZ2UvY29udHJhY3RzL2dlbi9nby90YW5rL25vdGlmaWNhdGlvbi92MTtub3RpZmljYXRpb252MaICA1ROWKoCFFRhbmsuTm90aWZpY2F0aW9uLlYxygIUVGFua1xOb3RpZmljYXRpb25cVjHiAiBUYW5rXE5vdGlmaWNhdGlvblxWMVxHUEJNZXRhZGF0YeoCFlRhbms6Ok5vdGlmaWNhdGlvbjo6VjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * A notification is written by the core's notify worker from bus events and
@@ -176,6 +176,151 @@ export const MarkNotificationsReadResponseSchema: GenMessage<MarkNotificationsRe
   messageDesc(file_tank_notification_v1_notification, 4);
 
 /**
+ * @generated from message tank.notification.v1.RegisterDeviceRequest
+ */
+export type RegisterDeviceRequest = Message<"tank.notification.v1.RegisterDeviceRequest"> & {
+  /**
+   * @generated from field: tank.notification.v1.PushPlatform platform = 1;
+   */
+  platform: PushPlatform;
+
+  /**
+   * APNs/FCM: the device token. Web: the subscription endpoint URL.
+   *
+   * @generated from field: string token = 2;
+   */
+  token: string;
+
+  /**
+   * Web Push only: the subscription's p256dh and auth keys, which are what
+   * encrypt the payload to that browser. Useless to anyone else, but they are
+   * still per-subscription secrets.
+   *
+   * @generated from field: string p256dh = 3;
+   */
+  p256dh: string;
+
+  /**
+   * @generated from field: string auth = 4;
+   */
+  auth: string;
+
+  /**
+   * For the Apple side: which build, so a token from a TestFlight build is not
+   * pushed through the production certificate.
+   *
+   * @generated from field: string bundle_id = 5;
+   */
+  bundleId: string;
+
+  /**
+   * Free-form, for support: "iPhone 15 Pro, iOS 18.2".
+   *
+   * @generated from field: string description = 6;
+   */
+  description: string;
+};
+
+/**
+ * Describes the message tank.notification.v1.RegisterDeviceRequest.
+ * Use `create(RegisterDeviceRequestSchema)` to create a new message.
+ */
+export const RegisterDeviceRequestSchema: GenMessage<RegisterDeviceRequest> = /*@__PURE__*/
+  messageDesc(file_tank_notification_v1_notification, 5);
+
+/**
+ * @generated from message tank.notification.v1.RegisterDeviceResponse
+ */
+export type RegisterDeviceResponse = Message<"tank.notification.v1.RegisterDeviceResponse"> & {
+  /**
+   * @generated from field: string device_id = 1;
+   */
+  deviceId: string;
+};
+
+/**
+ * Describes the message tank.notification.v1.RegisterDeviceResponse.
+ * Use `create(RegisterDeviceResponseSchema)` to create a new message.
+ */
+export const RegisterDeviceResponseSchema: GenMessage<RegisterDeviceResponse> = /*@__PURE__*/
+  messageDesc(file_tank_notification_v1_notification, 6);
+
+/**
+ * @generated from message tank.notification.v1.UnregisterDeviceRequest
+ */
+export type UnregisterDeviceRequest = Message<"tank.notification.v1.UnregisterDeviceRequest"> & {
+  /**
+   * The token to forget. Taken rather than a device id so a client that has
+   * lost its local state can still clean up after itself.
+   *
+   * @generated from field: string token = 1;
+   */
+  token: string;
+};
+
+/**
+ * Describes the message tank.notification.v1.UnregisterDeviceRequest.
+ * Use `create(UnregisterDeviceRequestSchema)` to create a new message.
+ */
+export const UnregisterDeviceRequestSchema: GenMessage<UnregisterDeviceRequest> = /*@__PURE__*/
+  messageDesc(file_tank_notification_v1_notification, 7);
+
+/**
+ * @generated from message tank.notification.v1.UnregisterDeviceResponse
+ */
+export type UnregisterDeviceResponse = Message<"tank.notification.v1.UnregisterDeviceResponse"> & {
+};
+
+/**
+ * Describes the message tank.notification.v1.UnregisterDeviceResponse.
+ * Use `create(UnregisterDeviceResponseSchema)` to create a new message.
+ */
+export const UnregisterDeviceResponseSchema: GenMessage<UnregisterDeviceResponse> = /*@__PURE__*/
+  messageDesc(file_tank_notification_v1_notification, 8);
+
+/**
+ * How a device is reached.
+ *
+ * @generated from enum tank.notification.v1.PushPlatform
+ */
+export enum PushPlatform {
+  /**
+   * @generated from enum value: PUSH_PLATFORM_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * Apple, via APNs. The token is the native device token, not an Expo one:
+   * Expo's push service would put a third party between us and every message
+   * people receive.
+   *
+   * @generated from enum value: PUSH_PLATFORM_APNS = 1;
+   */
+  APNS = 1,
+
+  /**
+   * Android, via FCM v1.
+   *
+   * @generated from enum value: PUSH_PLATFORM_FCM = 2;
+   */
+  FCM = 2,
+
+  /**
+   * A browser, via the Web Push protocol. The "token" is the subscription's
+   * endpoint; keys travel in the fields below.
+   *
+   * @generated from enum value: PUSH_PLATFORM_WEB = 3;
+   */
+  WEB = 3,
+}
+
+/**
+ * Describes the enum tank.notification.v1.PushPlatform.
+ */
+export const PushPlatformSchema: GenEnum<PushPlatform> = /*@__PURE__*/
+  enumDesc(file_tank_notification_v1_notification, 0);
+
+/**
  * @generated from service tank.notification.v1.NotificationService
  */
 export const NotificationService: GenService<{
@@ -194,6 +339,29 @@ export const NotificationService: GenService<{
     methodKind: "unary";
     input: typeof MarkNotificationsReadRequestSchema;
     output: typeof MarkNotificationsReadResponseSchema;
+  },
+  /**
+   * Register this device to receive pushes. Idempotent on the token, because
+   * the client calls it on every launch — a token is the identity here, not the
+   * row.
+   *
+   * @generated from rpc tank.notification.v1.NotificationService.RegisterDevice
+   */
+  registerDevice: {
+    methodKind: "unary";
+    input: typeof RegisterDeviceRequestSchema;
+    output: typeof RegisterDeviceResponseSchema;
+  },
+  /**
+   * Stop pushing to this device. Called on sign-out, so somebody else using the
+   * phone afterwards does not receive your messages.
+   *
+   * @generated from rpc tank.notification.v1.NotificationService.UnregisterDevice
+   */
+  unregisterDevice: {
+    methodKind: "unary";
+    input: typeof UnregisterDeviceRequestSchema;
+    output: typeof UnregisterDeviceResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_tank_notification_v1_notification, 0);
