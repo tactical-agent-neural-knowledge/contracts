@@ -57,6 +57,16 @@ class MessageDeleted(_message.Message):
     thread_root_id: str
     def __init__(self, message_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ...) -> None: ...
 
+class FileDeleted(_message.Message):
+    __slots__ = ("file_id", "workspace_id", "message_ids")
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_IDS_FIELD_NUMBER: _ClassVar[int]
+    file_id: str
+    workspace_id: str
+    message_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, file_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., message_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+
 class ReactionAdded(_message.Message):
     __slots__ = ("message_id", "user_id", "emoji")
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]

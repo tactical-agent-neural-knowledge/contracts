@@ -148,3 +148,15 @@ class ListFilesResponse(_message.Message):
     files: _containers.RepeatedCompositeFieldContainer[File]
     next_cursor: str
     def __init__(self, files: _Optional[_Iterable[_Union[File, _Mapping]]] = ..., next_cursor: _Optional[str] = ...) -> None: ...
+
+class DeleteFileRequest(_message.Message):
+    __slots__ = ("file_id",)
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    file_id: str
+    def __init__(self, file_id: _Optional[str] = ...) -> None: ...
+
+class DeleteFileResponse(_message.Message):
+    __slots__ = ("message_ids",)
+    MESSAGE_IDS_FIELD_NUMBER: _ClassVar[int]
+    message_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, message_ids: _Optional[_Iterable[str]] = ...) -> None: ...
