@@ -89,6 +89,12 @@ message ListMembersRequest {
   string workspace_id = 1;
   string cursor = 2;
   int32 limit = 3;
+  // Narrow to members whose name, handle or email contains this, case-insensitively.
+  //
+  // Bootstrap loads at most 200 members, and mention suggestions filtered only
+  // that set — so in a larger workspace the person you meant was simply absent
+  // from the list, with nothing to say why. Typing @ should ask the server.
+  string query = 4;
 }
 message ListMembersResponse {
   repeated Member members = 1;
