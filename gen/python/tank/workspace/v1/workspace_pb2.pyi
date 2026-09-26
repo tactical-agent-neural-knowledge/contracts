@@ -131,14 +131,16 @@ class Entitlements(_message.Message):
     def __init__(self, plan: _Optional[str] = ..., agent_runs: bool = ..., neural_vault: bool = ..., agent_runs_used: _Optional[int] = ..., agent_runs_limit: _Optional[int] = ..., vault_queries_used: _Optional[int] = ..., vault_queries_limit: _Optional[int] = ..., contact_email: _Optional[str] = ...) -> None: ...
 
 class ListMembersRequest(_message.Message):
-    __slots__ = ("workspace_id", "cursor", "limit")
+    __slots__ = ("workspace_id", "cursor", "limit", "query")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CURSOR_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
+    QUERY_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     cursor: str
     limit: int
-    def __init__(self, workspace_id: _Optional[str] = ..., cursor: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+    query: str
+    def __init__(self, workspace_id: _Optional[str] = ..., cursor: _Optional[str] = ..., limit: _Optional[int] = ..., query: _Optional[str] = ...) -> None: ...
 
 class ListMembersResponse(_message.Message):
     __slots__ = ("members", "next_cursor")
