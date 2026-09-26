@@ -603,7 +603,7 @@ class ListDraftsResponse(_message.Message):
     def __init__(self, drafts: _Optional[_Iterable[_Union[Draft, _Mapping]]] = ...) -> None: ...
 
 class ScheduledMessage(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "text", "rich_text", "file_ids", "send_at", "created_at", "sent_at", "sent_message_id", "error")
+    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "text", "rich_text", "file_ids", "send_at", "created_at", "sent_at", "sent_message_id", "error", "quiet_for_seconds", "no_later_than")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -616,6 +616,8 @@ class ScheduledMessage(_message.Message):
     SENT_AT_FIELD_NUMBER: _ClassVar[int]
     SENT_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     ERROR_FIELD_NUMBER: _ClassVar[int]
+    QUIET_FOR_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    NO_LATER_THAN_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -628,23 +630,29 @@ class ScheduledMessage(_message.Message):
     sent_at: _timestamp_pb2.Timestamp
     sent_message_id: str
     error: str
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., text: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., file_ids: _Optional[_Iterable[str]] = ..., send_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., sent_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., sent_message_id: _Optional[str] = ..., error: _Optional[str] = ...) -> None: ...
+    quiet_for_seconds: int
+    no_later_than: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., text: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., file_ids: _Optional[_Iterable[str]] = ..., send_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., sent_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., sent_message_id: _Optional[str] = ..., error: _Optional[str] = ..., quiet_for_seconds: _Optional[int] = ..., no_later_than: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class ScheduleMessageRequest(_message.Message):
-    __slots__ = ("channel_id", "thread_root_id", "text", "rich_text", "file_ids", "send_at")
+    __slots__ = ("channel_id", "thread_root_id", "text", "rich_text", "file_ids", "send_at", "quiet_for_seconds", "no_later_than")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
     RICH_TEXT_FIELD_NUMBER: _ClassVar[int]
     FILE_IDS_FIELD_NUMBER: _ClassVar[int]
     SEND_AT_FIELD_NUMBER: _ClassVar[int]
+    QUIET_FOR_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    NO_LATER_THAN_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
     thread_root_id: str
     text: str
     rich_text: _richtext_pb2.RichText
     file_ids: _containers.RepeatedScalarFieldContainer[str]
     send_at: _timestamp_pb2.Timestamp
-    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., text: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., file_ids: _Optional[_Iterable[str]] = ..., send_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    quiet_for_seconds: int
+    no_later_than: _timestamp_pb2.Timestamp
+    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., text: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., file_ids: _Optional[_Iterable[str]] = ..., send_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., quiet_for_seconds: _Optional[int] = ..., no_later_than: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class ScheduleMessageResponse(_message.Message):
     __slots__ = ("scheduled",)
