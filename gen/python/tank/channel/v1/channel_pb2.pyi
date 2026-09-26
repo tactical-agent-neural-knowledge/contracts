@@ -78,20 +78,22 @@ class Channel(_message.Message):
     def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., type: _Optional[_Union[ChannelType, str]] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., last_seq: _Optional[int] = ..., member_count: _Optional[int] = ..., last_message_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., archived_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., goal: _Optional[_Union[TreadGoal, _Mapping]] = ..., member_ids: _Optional[_Iterable[str]] = ..., joined: bool = ...) -> None: ...
 
 class ChannelReadState(_message.Message):
-    __slots__ = ("channel_id", "last_read_seq", "mention_count", "muted", "starred", "notify_pref")
+    __slots__ = ("channel_id", "last_read_seq", "mention_count", "muted", "starred", "notify_pref", "unread_count")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     LAST_READ_SEQ_FIELD_NUMBER: _ClassVar[int]
     MENTION_COUNT_FIELD_NUMBER: _ClassVar[int]
     MUTED_FIELD_NUMBER: _ClassVar[int]
     STARRED_FIELD_NUMBER: _ClassVar[int]
     NOTIFY_PREF_FIELD_NUMBER: _ClassVar[int]
+    UNREAD_COUNT_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
     last_read_seq: int
     mention_count: int
     muted: bool
     starred: bool
     notify_pref: NotifyPref
-    def __init__(self, channel_id: _Optional[str] = ..., last_read_seq: _Optional[int] = ..., mention_count: _Optional[int] = ..., muted: bool = ..., starred: bool = ..., notify_pref: _Optional[_Union[NotifyPref, str]] = ...) -> None: ...
+    unread_count: int
+    def __init__(self, channel_id: _Optional[str] = ..., last_read_seq: _Optional[int] = ..., mention_count: _Optional[int] = ..., muted: bool = ..., starred: bool = ..., notify_pref: _Optional[_Union[NotifyPref, str]] = ..., unread_count: _Optional[int] = ...) -> None: ...
 
 class CreateChannelRequest(_message.Message):
     __slots__ = ("workspace_id", "type", "name", "purpose", "member_ids")
