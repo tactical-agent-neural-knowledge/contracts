@@ -39,6 +39,14 @@ message MessageDeleted {
   string channel_id = 2;
   string thread_root_id = 3;
 }
+// A file was removed. Sent on every channel it was shared in, so each open
+// Tread drops the chip; the messages are re-sent as MessageUpdated with the id
+// gone, and this exists for clients that keep a files index of their own.
+message FileDeleted {
+  string file_id = 1;
+  string workspace_id = 2;
+  repeated string message_ids = 3;
+}
 message ReactionAdded {
   string message_id = 1;
   string user_id = 2;

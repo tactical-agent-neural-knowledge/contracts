@@ -46,6 +46,8 @@ const (
 	FilesServiceGetFileProcedure = "/tank.files.v1.FilesService/GetFile"
 	// FilesServiceListFilesProcedure is the fully-qualified name of the FilesService's ListFiles RPC.
 	FilesServiceListFilesProcedure = "/tank.files.v1.FilesService/ListFiles"
+	// FilesServiceDeleteFileProcedure is the fully-qualified name of the FilesService's DeleteFile RPC.
+	FilesServiceDeleteFileProcedure = "/tank.files.v1.FilesService/DeleteFile"
 )
 
 // FilesServiceClient is a client for the tank.files.v1.FilesService service.
@@ -55,6 +57,10 @@ type FilesServiceClient interface {
 	GetDownloadUrl(context.Context, *connect.Request[v1.GetDownloadUrlRequest]) (*connect.Response[v1.GetDownloadUrlResponse], error)
 	GetFile(context.Context, *connect.Request[v1.GetFileRequest]) (*connect.Response[v1.GetFileResponse], error)
 	ListFiles(context.Context, *connect.Request[v1.ListFilesRequest]) (*connect.Response[v1.ListFilesResponse], error)
+	// Remove a file: its bytes, its record, and its place in every message that
+	// carried it. The uploader may, and so may a workspace admin — a file
+	// someone else attached is still the workspace's to take down.
+	DeleteFile(context.Context, *connect.Request[v1.DeleteFileRequest]) (*connect.Response[v1.DeleteFileResponse], error)
 }
 
 // NewFilesServiceClient constructs a client for the tank.files.v1.FilesService service. By default,
@@ -98,6 +104,12 @@ func NewFilesServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(filesServiceMethods.ByName("ListFiles")),
 			connect.WithClientOptions(opts...),
 		),
+		deleteFile: connect.NewClient[v1.DeleteFileRequest, v1.DeleteFileResponse](
+			httpClient,
+			baseURL+FilesServiceDeleteFileProcedure,
+			connect.WithSchema(filesServiceMethods.ByName("DeleteFile")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -108,6 +120,7 @@ type filesServiceClient struct {
 	getDownloadUrl *connect.Client[v1.GetDownloadUrlRequest, v1.GetDownloadUrlResponse]
 	getFile        *connect.Client[v1.GetFileRequest, v1.GetFileResponse]
 	listFiles      *connect.Client[v1.ListFilesRequest, v1.ListFilesResponse]
+	deleteFile     *connect.Client[v1.DeleteFileRequest, v1.DeleteFileResponse]
 }
 
 // CreateUpload calls tank.files.v1.FilesService.CreateUpload.
@@ -135,6 +148,11 @@ func (c *filesServiceClient) ListFiles(ctx context.Context, req *connect.Request
 	return c.listFiles.CallUnary(ctx, req)
 }
 
+// DeleteFile calls tank.files.v1.FilesService.DeleteFile.
+func (c *filesServiceClient) DeleteFile(ctx context.Context, req *connect.Request[v1.DeleteFileRequest]) (*connect.Response[v1.DeleteFileResponse], error) {
+	return c.deleteFile.CallUnary(ctx, req)
+}
+
 // FilesServiceHandler is an implementation of the tank.files.v1.FilesService service.
 type FilesServiceHandler interface {
 	CreateUpload(context.Context, *connect.Request[v1.CreateUploadRequest]) (*connect.Response[v1.CreateUploadResponse], error)
@@ -142,6 +160,10 @@ type FilesServiceHandler interface {
 	GetDownloadUrl(context.Context, *connect.Request[v1.GetDownloadUrlRequest]) (*connect.Response[v1.GetDownloadUrlResponse], error)
 	GetFile(context.Context, *connect.Request[v1.GetFileRequest]) (*connect.Response[v1.GetFileResponse], error)
 	ListFiles(context.Context, *connect.Request[v1.ListFilesRequest]) (*connect.Response[v1.ListFilesResponse], error)
+	// Remove a file: its bytes, its record, and its place in every message that
+	// carried it. The uploader may, and so may a workspace admin — a file
+	// someone else attached is still the workspace's to take down.
+	DeleteFile(context.Context, *connect.Request[v1.DeleteFileRequest]) (*connect.Response[v1.DeleteFileResponse], error)
 }
 
 // NewFilesServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -181,6 +203,12 @@ func NewFilesServiceHandler(svc FilesServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(filesServiceMethods.ByName("ListFiles")),
 		connect.WithHandlerOptions(opts...),
 	)
+	filesServiceDeleteFileHandler := connect.NewUnaryHandler(
+		FilesServiceDeleteFileProcedure,
+		svc.DeleteFile,
+		connect.WithSchema(filesServiceMethods.ByName("DeleteFile")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.files.v1.FilesService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case FilesServiceCreateUploadProcedure:
@@ -193,6 +221,8 @@ func NewFilesServiceHandler(svc FilesServiceHandler, opts ...connect.HandlerOpti
 			filesServiceGetFileHandler.ServeHTTP(w, r)
 		case FilesServiceListFilesProcedure:
 			filesServiceListFilesHandler.ServeHTTP(w, r)
+		case FilesServiceDeleteFileProcedure:
+			filesServiceDeleteFileHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -220,4 +250,8 @@ func (UnimplementedFilesServiceHandler) GetFile(context.Context, *connect.Reques
 
 func (UnimplementedFilesServiceHandler) ListFiles(context.Context, *connect.Request[v1.ListFilesRequest]) (*connect.Response[v1.ListFilesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.files.v1.FilesService.ListFiles is not implemented"))
+}
+
+func (UnimplementedFilesServiceHandler) DeleteFile(context.Context, *connect.Request[v1.DeleteFileRequest]) (*connect.Response[v1.DeleteFileResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.files.v1.FilesService.DeleteFile is not implemented"))
 }
