@@ -403,6 +403,9 @@ message ScheduledMessage {
   google.protobuf.Timestamp sent_at = 10;
   string sent_message_id = 11;
   string error = 12; // set when sending failed (archived channel, left channel, ...)
+  // Calm send: waits for this much quiet in the channel after send_at, never past no_later_than.
+  int32 quiet_for_seconds = 13;
+  google.protobuf.Timestamp no_later_than = 14;
 }
 
 message ScheduleMessageRequest {
@@ -411,7 +414,15 @@ message ScheduleMessageRequest {
   string text = 3;
   tank.richtext.v1.RichText rich_text = 4;
   repeated string file_ids = 5;
+  // When to send. With quiet_for_seconds set this is the earliest moment and
+  // may be omitted (now); otherwise it is the moment itself.
   google.protobuf.Timestamp send_at = 6;
+  // Send when things are calm: once the channel has had no new message for
+  // this long (and send_at has passed). 0 = send at send_at exactly.
+  int32 quiet_for_seconds = 7;
+  // The latest moment a calm send waits for; it goes out then regardless.
+  // Defaults to 24 hours after send_at.
+  google.protobuf.Timestamp no_later_than = 8;
 }
 message ScheduleMessageResponse {
   ScheduledMessage scheduled = 1;
