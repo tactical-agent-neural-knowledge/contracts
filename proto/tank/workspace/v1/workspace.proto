@@ -83,6 +83,9 @@ message Entitlements {
   int32 vault_queries_limit = 7;
   // Where to write to upgrade; the clients show it rather than hard-coding it.
   string contact_email = 8;
+  // Scheduling around people and quiet (send when calm, when they are here,
+  // nudge unless answered) is premium; plain "send at a time" is free.
+  bool conditional_sends = 9;
 }
 
 message ListMembersRequest {
