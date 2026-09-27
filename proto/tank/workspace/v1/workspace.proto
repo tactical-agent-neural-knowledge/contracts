@@ -406,6 +406,8 @@ message ScheduledMessage {
   // Calm send: waits for this much quiet in the channel after send_at, never past no_later_than.
   int32 quiet_for_seconds = 13;
   google.protobuf.Timestamp no_later_than = 14;
+  repeated string wait_for_user_ids = 15;
+  string unless_replied_to_message_id = 16;
 }
 
 message ScheduleMessageRequest {
@@ -420,9 +422,15 @@ message ScheduleMessageRequest {
   // Send when things are calm: once the channel has had no new message for
   // this long (and send_at has passed). 0 = send at send_at exactly.
   int32 quiet_for_seconds = 7;
-  // The latest moment a calm send waits for; it goes out then regardless.
-  // Defaults to 24 hours after send_at.
+  // The latest moment a conditional send (calm, or waiting for people) waits
+  // for; it goes out then regardless. Defaults to 24 hours after send_at.
   google.protobuf.Timestamp no_later_than = 8;
+  // Send when they are here: once every one of these people is active (after
+  // send_at, no later than no_later_than). Members of the workspace.
+  repeated string wait_for_user_ids = 9;
+  // A nudge with a fuse: skip the send if this message has been replied to by
+  // someone other than its author before the send is due.
+  string unless_replied_to_message_id = 10;
 }
 message ScheduleMessageResponse {
   ScheduledMessage scheduled = 1;
