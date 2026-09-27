@@ -236,6 +236,18 @@ message Preferences {
   HomeLayout home = 10;
   // One sentence that styles the "while you were away" narrative ("like a naval log"). Empty means TANK's voice.
   string digest_voice = 11;
+  // Which notification sounds play; unset means TANK's own set.
+  SoundChoice sounds = 12;
+}
+
+// A notification sound set, chosen from TANK's packs by a vibe. Each field names
+// a sound id the clients ship ("arcade-mention"); empty means silent for that event.
+message SoundChoice {
+  string pack = 1;        // the pack the sounds come from
+  string mention = 2;     // @mentions and DMs addressed to me
+  string dm = 3;          // direct messages
+  string agent = 4;       // an agent finished or needs me
+  string description = 5; // the vibe it was picked from
 }
 
 // The order Home shows its sections in, and which are hidden. Section keys:
@@ -510,6 +522,8 @@ service WorkspaceService {
   rpc SetWorkspaceIcon(SetWorkspaceIconRequest) returns (SetWorkspaceIconResponse);
   rpc DescribeHomeLayout(DescribeHomeLayoutRequest) returns (DescribeHomeLayoutResponse);
   rpc RewriteText(RewriteTextRequest) returns (RewriteTextResponse);
+  rpc DescribeSoundPack(DescribeSoundPackRequest) returns (DescribeSoundPackResponse);
+  rpc ListSoundPacks(ListSoundPacksRequest) returns (ListSoundPacksResponse);
   rpc ListEmoji(ListEmojiRequest) returns (ListEmojiResponse);
   rpc CreateEmoji(CreateEmojiRequest) returns (CreateEmojiResponse);
   rpc DeleteEmoji(DeleteEmojiRequest) returns (DeleteEmojiResponse);
@@ -588,4 +602,23 @@ message RewriteTextRequest {
 }
 message RewriteTextResponse {
   string text = 1;
+}
+// "Arcade cabinet, quiet" → a SoundChoice to review; nothing is saved.
+message DescribeSoundPackRequest {
+  string workspace_id = 1;
+  string description = 2; // at most 15 words
+}
+message DescribeSoundPackResponse {
+  SoundChoice sounds = 1;
+}
+// One pack in TANK's library, so a client can offer them without a model call.
+message SoundPack {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  repeated string sound_ids = 4; // mention, dm, agent, in that order
+}
+message ListSoundPacksRequest {}
+message ListSoundPacksResponse {
+  repeated SoundPack packs = 1;
 }

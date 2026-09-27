@@ -90,6 +90,12 @@ const (
 	// WorkspaceServiceRewriteTextProcedure is the fully-qualified name of the WorkspaceService's
 	// RewriteText RPC.
 	WorkspaceServiceRewriteTextProcedure = "/tank.workspace.v1.WorkspaceService/RewriteText"
+	// WorkspaceServiceDescribeSoundPackProcedure is the fully-qualified name of the WorkspaceService's
+	// DescribeSoundPack RPC.
+	WorkspaceServiceDescribeSoundPackProcedure = "/tank.workspace.v1.WorkspaceService/DescribeSoundPack"
+	// WorkspaceServiceListSoundPacksProcedure is the fully-qualified name of the WorkspaceService's
+	// ListSoundPacks RPC.
+	WorkspaceServiceListSoundPacksProcedure = "/tank.workspace.v1.WorkspaceService/ListSoundPacks"
 	// WorkspaceServiceListEmojiProcedure is the fully-qualified name of the WorkspaceService's
 	// ListEmoji RPC.
 	WorkspaceServiceListEmojiProcedure = "/tank.workspace.v1.WorkspaceService/ListEmoji"
@@ -168,6 +174,8 @@ type WorkspaceServiceClient interface {
 	SetWorkspaceIcon(context.Context, *connect.Request[v1.SetWorkspaceIconRequest]) (*connect.Response[v1.SetWorkspaceIconResponse], error)
 	DescribeHomeLayout(context.Context, *connect.Request[v1.DescribeHomeLayoutRequest]) (*connect.Response[v1.DescribeHomeLayoutResponse], error)
 	RewriteText(context.Context, *connect.Request[v1.RewriteTextRequest]) (*connect.Response[v1.RewriteTextResponse], error)
+	DescribeSoundPack(context.Context, *connect.Request[v1.DescribeSoundPackRequest]) (*connect.Response[v1.DescribeSoundPackResponse], error)
+	ListSoundPacks(context.Context, *connect.Request[v1.ListSoundPacksRequest]) (*connect.Response[v1.ListSoundPacksResponse], error)
 	ListEmoji(context.Context, *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error)
 	CreateEmoji(context.Context, *connect.Request[v1.CreateEmojiRequest]) (*connect.Response[v1.CreateEmojiResponse], error)
 	DeleteEmoji(context.Context, *connect.Request[v1.DeleteEmojiRequest]) (*connect.Response[v1.DeleteEmojiResponse], error)
@@ -312,6 +320,18 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(workspaceServiceMethods.ByName("RewriteText")),
 			connect.WithClientOptions(opts...),
 		),
+		describeSoundPack: connect.NewClient[v1.DescribeSoundPackRequest, v1.DescribeSoundPackResponse](
+			httpClient,
+			baseURL+WorkspaceServiceDescribeSoundPackProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("DescribeSoundPack")),
+			connect.WithClientOptions(opts...),
+		),
+		listSoundPacks: connect.NewClient[v1.ListSoundPacksRequest, v1.ListSoundPacksResponse](
+			httpClient,
+			baseURL+WorkspaceServiceListSoundPacksProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("ListSoundPacks")),
+			connect.WithClientOptions(opts...),
+		),
 		listEmoji: connect.NewClient[v1.ListEmojiRequest, v1.ListEmojiResponse](
 			httpClient,
 			baseURL+WorkspaceServiceListEmojiProcedure,
@@ -438,6 +458,8 @@ type workspaceServiceClient struct {
 	setWorkspaceIcon       *connect.Client[v1.SetWorkspaceIconRequest, v1.SetWorkspaceIconResponse]
 	describeHomeLayout     *connect.Client[v1.DescribeHomeLayoutRequest, v1.DescribeHomeLayoutResponse]
 	rewriteText            *connect.Client[v1.RewriteTextRequest, v1.RewriteTextResponse]
+	describeSoundPack      *connect.Client[v1.DescribeSoundPackRequest, v1.DescribeSoundPackResponse]
+	listSoundPacks         *connect.Client[v1.ListSoundPacksRequest, v1.ListSoundPacksResponse]
 	listEmoji              *connect.Client[v1.ListEmojiRequest, v1.ListEmojiResponse]
 	createEmoji            *connect.Client[v1.CreateEmojiRequest, v1.CreateEmojiResponse]
 	deleteEmoji            *connect.Client[v1.DeleteEmojiRequest, v1.DeleteEmojiResponse]
@@ -552,6 +574,16 @@ func (c *workspaceServiceClient) RewriteText(ctx context.Context, req *connect.R
 	return c.rewriteText.CallUnary(ctx, req)
 }
 
+// DescribeSoundPack calls tank.workspace.v1.WorkspaceService.DescribeSoundPack.
+func (c *workspaceServiceClient) DescribeSoundPack(ctx context.Context, req *connect.Request[v1.DescribeSoundPackRequest]) (*connect.Response[v1.DescribeSoundPackResponse], error) {
+	return c.describeSoundPack.CallUnary(ctx, req)
+}
+
+// ListSoundPacks calls tank.workspace.v1.WorkspaceService.ListSoundPacks.
+func (c *workspaceServiceClient) ListSoundPacks(ctx context.Context, req *connect.Request[v1.ListSoundPacksRequest]) (*connect.Response[v1.ListSoundPacksResponse], error) {
+	return c.listSoundPacks.CallUnary(ctx, req)
+}
+
 // ListEmoji calls tank.workspace.v1.WorkspaceService.ListEmoji.
 func (c *workspaceServiceClient) ListEmoji(ctx context.Context, req *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error) {
 	return c.listEmoji.CallUnary(ctx, req)
@@ -662,6 +694,8 @@ type WorkspaceServiceHandler interface {
 	SetWorkspaceIcon(context.Context, *connect.Request[v1.SetWorkspaceIconRequest]) (*connect.Response[v1.SetWorkspaceIconResponse], error)
 	DescribeHomeLayout(context.Context, *connect.Request[v1.DescribeHomeLayoutRequest]) (*connect.Response[v1.DescribeHomeLayoutResponse], error)
 	RewriteText(context.Context, *connect.Request[v1.RewriteTextRequest]) (*connect.Response[v1.RewriteTextResponse], error)
+	DescribeSoundPack(context.Context, *connect.Request[v1.DescribeSoundPackRequest]) (*connect.Response[v1.DescribeSoundPackResponse], error)
+	ListSoundPacks(context.Context, *connect.Request[v1.ListSoundPacksRequest]) (*connect.Response[v1.ListSoundPacksResponse], error)
 	ListEmoji(context.Context, *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error)
 	CreateEmoji(context.Context, *connect.Request[v1.CreateEmojiRequest]) (*connect.Response[v1.CreateEmojiResponse], error)
 	DeleteEmoji(context.Context, *connect.Request[v1.DeleteEmojiRequest]) (*connect.Response[v1.DeleteEmojiResponse], error)
@@ -800,6 +834,18 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 		WorkspaceServiceRewriteTextProcedure,
 		svc.RewriteText,
 		connect.WithSchema(workspaceServiceMethods.ByName("RewriteText")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceDescribeSoundPackHandler := connect.NewUnaryHandler(
+		WorkspaceServiceDescribeSoundPackProcedure,
+		svc.DescribeSoundPack,
+		connect.WithSchema(workspaceServiceMethods.ByName("DescribeSoundPack")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceListSoundPacksHandler := connect.NewUnaryHandler(
+		WorkspaceServiceListSoundPacksProcedure,
+		svc.ListSoundPacks,
+		connect.WithSchema(workspaceServiceMethods.ByName("ListSoundPacks")),
 		connect.WithHandlerOptions(opts...),
 	)
 	workspaceServiceListEmojiHandler := connect.NewUnaryHandler(
@@ -944,6 +990,10 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 			workspaceServiceDescribeHomeLayoutHandler.ServeHTTP(w, r)
 		case WorkspaceServiceRewriteTextProcedure:
 			workspaceServiceRewriteTextHandler.ServeHTTP(w, r)
+		case WorkspaceServiceDescribeSoundPackProcedure:
+			workspaceServiceDescribeSoundPackHandler.ServeHTTP(w, r)
+		case WorkspaceServiceListSoundPacksProcedure:
+			workspaceServiceListSoundPacksHandler.ServeHTTP(w, r)
 		case WorkspaceServiceListEmojiProcedure:
 			workspaceServiceListEmojiHandler.ServeHTTP(w, r)
 		case WorkspaceServiceCreateEmojiProcedure:
@@ -1061,6 +1111,14 @@ func (UnimplementedWorkspaceServiceHandler) DescribeHomeLayout(context.Context, 
 
 func (UnimplementedWorkspaceServiceHandler) RewriteText(context.Context, *connect.Request[v1.RewriteTextRequest]) (*connect.Response[v1.RewriteTextResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.RewriteText is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) DescribeSoundPack(context.Context, *connect.Request[v1.DescribeSoundPackRequest]) (*connect.Response[v1.DescribeSoundPackResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.DescribeSoundPack is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) ListSoundPacks(context.Context, *connect.Request[v1.ListSoundPacksRequest]) (*connect.Response[v1.ListSoundPacksResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ListSoundPacks is not implemented"))
 }
 
 func (UnimplementedWorkspaceServiceHandler) ListEmoji(context.Context, *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error) {

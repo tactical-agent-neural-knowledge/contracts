@@ -328,7 +328,7 @@ class ArmorModeSchedule(_message.Message):
     def __init__(self, enabled: bool = ..., start: _Optional[str] = ..., end: _Optional[str] = ..., days: _Optional[_Iterable[int]] = ..., timezone: _Optional[str] = ..., allow_critical: bool = ...) -> None: ...
 
 class Preferences(_message.Message):
-    __slots__ = ("notify_default", "dm_notify_default", "theme", "armor_mode_schedule", "email_digest", "desktop_sound", "push_on_mention_only", "topo", "custom_theme", "home", "digest_voice")
+    __slots__ = ("notify_default", "dm_notify_default", "theme", "armor_mode_schedule", "email_digest", "desktop_sound", "push_on_mention_only", "topo", "custom_theme", "home", "digest_voice", "sounds")
     NOTIFY_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     DM_NOTIFY_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     THEME_FIELD_NUMBER: _ClassVar[int]
@@ -340,6 +340,7 @@ class Preferences(_message.Message):
     CUSTOM_THEME_FIELD_NUMBER: _ClassVar[int]
     HOME_FIELD_NUMBER: _ClassVar[int]
     DIGEST_VOICE_FIELD_NUMBER: _ClassVar[int]
+    SOUNDS_FIELD_NUMBER: _ClassVar[int]
     notify_default: _channel_pb2.NotifyPref
     dm_notify_default: _channel_pb2.NotifyPref
     theme: str
@@ -351,7 +352,22 @@ class Preferences(_message.Message):
     custom_theme: Theme
     home: HomeLayout
     digest_voice: str
-    def __init__(self, notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., dm_notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., theme: _Optional[str] = ..., armor_mode_schedule: _Optional[_Union[ArmorModeSchedule, _Mapping]] = ..., email_digest: bool = ..., desktop_sound: bool = ..., push_on_mention_only: bool = ..., topo: _Optional[_Union[TopoPreferences, _Mapping]] = ..., custom_theme: _Optional[_Union[Theme, _Mapping]] = ..., home: _Optional[_Union[HomeLayout, _Mapping]] = ..., digest_voice: _Optional[str] = ...) -> None: ...
+    sounds: SoundChoice
+    def __init__(self, notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., dm_notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., theme: _Optional[str] = ..., armor_mode_schedule: _Optional[_Union[ArmorModeSchedule, _Mapping]] = ..., email_digest: bool = ..., desktop_sound: bool = ..., push_on_mention_only: bool = ..., topo: _Optional[_Union[TopoPreferences, _Mapping]] = ..., custom_theme: _Optional[_Union[Theme, _Mapping]] = ..., home: _Optional[_Union[HomeLayout, _Mapping]] = ..., digest_voice: _Optional[str] = ..., sounds: _Optional[_Union[SoundChoice, _Mapping]] = ...) -> None: ...
+
+class SoundChoice(_message.Message):
+    __slots__ = ("pack", "mention", "dm", "agent", "description")
+    PACK_FIELD_NUMBER: _ClassVar[int]
+    MENTION_FIELD_NUMBER: _ClassVar[int]
+    DM_FIELD_NUMBER: _ClassVar[int]
+    AGENT_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    pack: str
+    mention: str
+    dm: str
+    agent: str
+    description: str
+    def __init__(self, pack: _Optional[str] = ..., mention: _Optional[str] = ..., dm: _Optional[str] = ..., agent: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
 
 class HomeLayout(_message.Message):
     __slots__ = ("order", "hidden", "description")
@@ -832,3 +848,39 @@ class RewriteTextResponse(_message.Message):
     TEXT_FIELD_NUMBER: _ClassVar[int]
     text: str
     def __init__(self, text: _Optional[str] = ...) -> None: ...
+
+class DescribeSoundPackRequest(_message.Message):
+    __slots__ = ("workspace_id", "description")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    description: str
+    def __init__(self, workspace_id: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
+
+class DescribeSoundPackResponse(_message.Message):
+    __slots__ = ("sounds",)
+    SOUNDS_FIELD_NUMBER: _ClassVar[int]
+    sounds: SoundChoice
+    def __init__(self, sounds: _Optional[_Union[SoundChoice, _Mapping]] = ...) -> None: ...
+
+class SoundPack(_message.Message):
+    __slots__ = ("id", "name", "description", "sound_ids")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    SOUND_IDS_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    name: str
+    description: str
+    sound_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., sound_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ListSoundPacksRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListSoundPacksResponse(_message.Message):
+    __slots__ = ("packs",)
+    PACKS_FIELD_NUMBER: _ClassVar[int]
+    packs: _containers.RepeatedCompositeFieldContainer[SoundPack]
+    def __init__(self, packs: _Optional[_Iterable[_Union[SoundPack, _Mapping]]] = ...) -> None: ...

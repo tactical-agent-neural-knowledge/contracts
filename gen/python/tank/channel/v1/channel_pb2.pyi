@@ -215,6 +215,64 @@ class SetChannelIconResponse(_message.Message):
     channel: Channel
     def __init__(self, channel: _Optional[_Union[Channel, _Mapping]] = ...) -> None: ...
 
+class TreadPlan(_message.Message):
+    __slots__ = ("name", "purpose", "goal", "pins", "radar", "radar_metrics", "description")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    PURPOSE_FIELD_NUMBER: _ClassVar[int]
+    GOAL_FIELD_NUMBER: _ClassVar[int]
+    PINS_FIELD_NUMBER: _ClassVar[int]
+    RADAR_FIELD_NUMBER: _ClassVar[int]
+    RADAR_METRICS_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    purpose: str
+    goal: str
+    pins: _containers.RepeatedCompositeFieldContainer[PlannedPost]
+    radar: bool
+    radar_metrics: _containers.RepeatedScalarFieldContainer[str]
+    description: str
+    def __init__(self, name: _Optional[str] = ..., purpose: _Optional[str] = ..., goal: _Optional[str] = ..., pins: _Optional[_Iterable[_Union[PlannedPost, _Mapping]]] = ..., radar: bool = ..., radar_metrics: _Optional[_Iterable[str]] = ..., description: _Optional[str] = ...) -> None: ...
+
+class PlannedPost(_message.Message):
+    __slots__ = ("title", "body")
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    BODY_FIELD_NUMBER: _ClassVar[int]
+    title: str
+    body: str
+    def __init__(self, title: _Optional[str] = ..., body: _Optional[str] = ...) -> None: ...
+
+class DescribeTreadRequest(_message.Message):
+    __slots__ = ("workspace_id", "description")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    description: str
+    def __init__(self, workspace_id: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
+
+class DescribeTreadResponse(_message.Message):
+    __slots__ = ("plan",)
+    PLAN_FIELD_NUMBER: _ClassVar[int]
+    plan: TreadPlan
+    def __init__(self, plan: _Optional[_Union[TreadPlan, _Mapping]] = ...) -> None: ...
+
+class CreateTreadFromPlanRequest(_message.Message):
+    __slots__ = ("workspace_id", "plan", "private")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    PLAN_FIELD_NUMBER: _ClassVar[int]
+    PRIVATE_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    plan: TreadPlan
+    private: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., plan: _Optional[_Union[TreadPlan, _Mapping]] = ..., private: bool = ...) -> None: ...
+
+class CreateTreadFromPlanResponse(_message.Message):
+    __slots__ = ("channel", "radar")
+    CHANNEL_FIELD_NUMBER: _ClassVar[int]
+    RADAR_FIELD_NUMBER: _ClassVar[int]
+    channel: Channel
+    radar: Channel
+    def __init__(self, channel: _Optional[_Union[Channel, _Mapping]] = ..., radar: _Optional[_Union[Channel, _Mapping]] = ...) -> None: ...
+
 class ListChannelMembersRequest(_message.Message):
     __slots__ = ("channel_id", "cursor", "limit")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]

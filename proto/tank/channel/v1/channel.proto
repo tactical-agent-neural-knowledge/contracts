@@ -138,6 +138,39 @@ message SetChannelIconRequest {
 message SetChannelIconResponse {
   Channel channel = 1;
 }
+// What "a Tread for the Q4 launch with a checklist and a Radar on signups" becomes:
+// a name, a purpose, a goal header, posts to pin, and optionally a Radar.
+message TreadPlan {
+  string name = 1;    // the slug, lowercase-dashes
+  string purpose = 2;
+  string goal = 3;
+  repeated PlannedPost pins = 4;
+  bool radar = 5;
+  repeated string radar_metrics = 6; // internal metric keys the Radar starts with
+  string description = 7;            // what it was made from
+}
+message PlannedPost {
+  string title = 1;
+  string body = 2; // plain text, may hold a checklist as lines starting with "- [ ] "
+}
+// A sentence → a plan to review; nothing is created.
+message DescribeTreadRequest {
+  string workspace_id = 1;
+  string description = 2; // at most 15 words
+}
+message DescribeTreadResponse {
+  TreadPlan plan = 1;
+}
+// Creates the Tread (and Radar) the plan describes, as the caller.
+message CreateTreadFromPlanRequest {
+  string workspace_id = 1;
+  TreadPlan plan = 2;
+  bool private = 3;
+}
+message CreateTreadFromPlanResponse {
+  Channel channel = 1;
+  Channel radar = 2; // unset when the plan had none
+}
 
 message ListChannelMembersRequest {
   string channel_id = 1;
@@ -195,6 +228,8 @@ service ChannelService {
   rpc InviteToChannel(InviteToChannelRequest) returns (InviteToChannelResponse);
   rpc SetGoal(SetGoalRequest) returns (SetGoalResponse);
   rpc SetChannelIcon(SetChannelIconRequest) returns (SetChannelIconResponse);
+  rpc DescribeTread(DescribeTreadRequest) returns (DescribeTreadResponse);
+  rpc CreateTreadFromPlan(CreateTreadFromPlanRequest) returns (CreateTreadFromPlanResponse);
   rpc ListChannelMembers(ListChannelMembersRequest) returns (ListChannelMembersResponse);
   rpc UpdateChannel(UpdateChannelRequest) returns (UpdateChannelResponse);
   rpc ArchiveChannel(ArchiveChannelRequest) returns (ArchiveChannelResponse);

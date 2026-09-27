@@ -56,6 +56,12 @@ const (
 	// ChannelServiceSetChannelIconProcedure is the fully-qualified name of the ChannelService's
 	// SetChannelIcon RPC.
 	ChannelServiceSetChannelIconProcedure = "/tank.channel.v1.ChannelService/SetChannelIcon"
+	// ChannelServiceDescribeTreadProcedure is the fully-qualified name of the ChannelService's
+	// DescribeTread RPC.
+	ChannelServiceDescribeTreadProcedure = "/tank.channel.v1.ChannelService/DescribeTread"
+	// ChannelServiceCreateTreadFromPlanProcedure is the fully-qualified name of the ChannelService's
+	// CreateTreadFromPlan RPC.
+	ChannelServiceCreateTreadFromPlanProcedure = "/tank.channel.v1.ChannelService/CreateTreadFromPlan"
 	// ChannelServiceListChannelMembersProcedure is the fully-qualified name of the ChannelService's
 	// ListChannelMembers RPC.
 	ChannelServiceListChannelMembersProcedure = "/tank.channel.v1.ChannelService/ListChannelMembers"
@@ -83,6 +89,8 @@ type ChannelServiceClient interface {
 	InviteToChannel(context.Context, *connect.Request[v1.InviteToChannelRequest]) (*connect.Response[v1.InviteToChannelResponse], error)
 	SetGoal(context.Context, *connect.Request[v1.SetGoalRequest]) (*connect.Response[v1.SetGoalResponse], error)
 	SetChannelIcon(context.Context, *connect.Request[v1.SetChannelIconRequest]) (*connect.Response[v1.SetChannelIconResponse], error)
+	DescribeTread(context.Context, *connect.Request[v1.DescribeTreadRequest]) (*connect.Response[v1.DescribeTreadResponse], error)
+	CreateTreadFromPlan(context.Context, *connect.Request[v1.CreateTreadFromPlanRequest]) (*connect.Response[v1.CreateTreadFromPlanResponse], error)
 	ListChannelMembers(context.Context, *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error)
 	UpdateChannel(context.Context, *connect.Request[v1.UpdateChannelRequest]) (*connect.Response[v1.UpdateChannelResponse], error)
 	ArchiveChannel(context.Context, *connect.Request[v1.ArchiveChannelRequest]) (*connect.Response[v1.ArchiveChannelResponse], error)
@@ -149,6 +157,18 @@ func NewChannelServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(channelServiceMethods.ByName("SetChannelIcon")),
 			connect.WithClientOptions(opts...),
 		),
+		describeTread: connect.NewClient[v1.DescribeTreadRequest, v1.DescribeTreadResponse](
+			httpClient,
+			baseURL+ChannelServiceDescribeTreadProcedure,
+			connect.WithSchema(channelServiceMethods.ByName("DescribeTread")),
+			connect.WithClientOptions(opts...),
+		),
+		createTreadFromPlan: connect.NewClient[v1.CreateTreadFromPlanRequest, v1.CreateTreadFromPlanResponse](
+			httpClient,
+			baseURL+ChannelServiceCreateTreadFromPlanProcedure,
+			connect.WithSchema(channelServiceMethods.ByName("CreateTreadFromPlan")),
+			connect.WithClientOptions(opts...),
+		),
 		listChannelMembers: connect.NewClient[v1.ListChannelMembersRequest, v1.ListChannelMembersResponse](
 			httpClient,
 			baseURL+ChannelServiceListChannelMembersProcedure,
@@ -192,6 +212,8 @@ type channelServiceClient struct {
 	inviteToChannel      *connect.Client[v1.InviteToChannelRequest, v1.InviteToChannelResponse]
 	setGoal              *connect.Client[v1.SetGoalRequest, v1.SetGoalResponse]
 	setChannelIcon       *connect.Client[v1.SetChannelIconRequest, v1.SetChannelIconResponse]
+	describeTread        *connect.Client[v1.DescribeTreadRequest, v1.DescribeTreadResponse]
+	createTreadFromPlan  *connect.Client[v1.CreateTreadFromPlanRequest, v1.CreateTreadFromPlanResponse]
 	listChannelMembers   *connect.Client[v1.ListChannelMembersRequest, v1.ListChannelMembersResponse]
 	updateChannel        *connect.Client[v1.UpdateChannelRequest, v1.UpdateChannelResponse]
 	archiveChannel       *connect.Client[v1.ArchiveChannelRequest, v1.ArchiveChannelResponse]
@@ -239,6 +261,16 @@ func (c *channelServiceClient) SetChannelIcon(ctx context.Context, req *connect.
 	return c.setChannelIcon.CallUnary(ctx, req)
 }
 
+// DescribeTread calls tank.channel.v1.ChannelService.DescribeTread.
+func (c *channelServiceClient) DescribeTread(ctx context.Context, req *connect.Request[v1.DescribeTreadRequest]) (*connect.Response[v1.DescribeTreadResponse], error) {
+	return c.describeTread.CallUnary(ctx, req)
+}
+
+// CreateTreadFromPlan calls tank.channel.v1.ChannelService.CreateTreadFromPlan.
+func (c *channelServiceClient) CreateTreadFromPlan(ctx context.Context, req *connect.Request[v1.CreateTreadFromPlanRequest]) (*connect.Response[v1.CreateTreadFromPlanResponse], error) {
+	return c.createTreadFromPlan.CallUnary(ctx, req)
+}
+
 // ListChannelMembers calls tank.channel.v1.ChannelService.ListChannelMembers.
 func (c *channelServiceClient) ListChannelMembers(ctx context.Context, req *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error) {
 	return c.listChannelMembers.CallUnary(ctx, req)
@@ -274,6 +306,8 @@ type ChannelServiceHandler interface {
 	InviteToChannel(context.Context, *connect.Request[v1.InviteToChannelRequest]) (*connect.Response[v1.InviteToChannelResponse], error)
 	SetGoal(context.Context, *connect.Request[v1.SetGoalRequest]) (*connect.Response[v1.SetGoalResponse], error)
 	SetChannelIcon(context.Context, *connect.Request[v1.SetChannelIconRequest]) (*connect.Response[v1.SetChannelIconResponse], error)
+	DescribeTread(context.Context, *connect.Request[v1.DescribeTreadRequest]) (*connect.Response[v1.DescribeTreadResponse], error)
+	CreateTreadFromPlan(context.Context, *connect.Request[v1.CreateTreadFromPlanRequest]) (*connect.Response[v1.CreateTreadFromPlanResponse], error)
 	ListChannelMembers(context.Context, *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error)
 	UpdateChannel(context.Context, *connect.Request[v1.UpdateChannelRequest]) (*connect.Response[v1.UpdateChannelResponse], error)
 	ArchiveChannel(context.Context, *connect.Request[v1.ArchiveChannelRequest]) (*connect.Response[v1.ArchiveChannelResponse], error)
@@ -336,6 +370,18 @@ func NewChannelServiceHandler(svc ChannelServiceHandler, opts ...connect.Handler
 		connect.WithSchema(channelServiceMethods.ByName("SetChannelIcon")),
 		connect.WithHandlerOptions(opts...),
 	)
+	channelServiceDescribeTreadHandler := connect.NewUnaryHandler(
+		ChannelServiceDescribeTreadProcedure,
+		svc.DescribeTread,
+		connect.WithSchema(channelServiceMethods.ByName("DescribeTread")),
+		connect.WithHandlerOptions(opts...),
+	)
+	channelServiceCreateTreadFromPlanHandler := connect.NewUnaryHandler(
+		ChannelServiceCreateTreadFromPlanProcedure,
+		svc.CreateTreadFromPlan,
+		connect.WithSchema(channelServiceMethods.ByName("CreateTreadFromPlan")),
+		connect.WithHandlerOptions(opts...),
+	)
 	channelServiceListChannelMembersHandler := connect.NewUnaryHandler(
 		ChannelServiceListChannelMembersProcedure,
 		svc.ListChannelMembers,
@@ -384,6 +430,10 @@ func NewChannelServiceHandler(svc ChannelServiceHandler, opts ...connect.Handler
 			channelServiceSetGoalHandler.ServeHTTP(w, r)
 		case ChannelServiceSetChannelIconProcedure:
 			channelServiceSetChannelIconHandler.ServeHTTP(w, r)
+		case ChannelServiceDescribeTreadProcedure:
+			channelServiceDescribeTreadHandler.ServeHTTP(w, r)
+		case ChannelServiceCreateTreadFromPlanProcedure:
+			channelServiceCreateTreadFromPlanHandler.ServeHTTP(w, r)
 		case ChannelServiceListChannelMembersProcedure:
 			channelServiceListChannelMembersHandler.ServeHTTP(w, r)
 		case ChannelServiceUpdateChannelProcedure:
@@ -433,6 +483,14 @@ func (UnimplementedChannelServiceHandler) SetGoal(context.Context, *connect.Requ
 
 func (UnimplementedChannelServiceHandler) SetChannelIcon(context.Context, *connect.Request[v1.SetChannelIconRequest]) (*connect.Response[v1.SetChannelIconResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.channel.v1.ChannelService.SetChannelIcon is not implemented"))
+}
+
+func (UnimplementedChannelServiceHandler) DescribeTread(context.Context, *connect.Request[v1.DescribeTreadRequest]) (*connect.Response[v1.DescribeTreadResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.channel.v1.ChannelService.DescribeTread is not implemented"))
+}
+
+func (UnimplementedChannelServiceHandler) CreateTreadFromPlan(context.Context, *connect.Request[v1.CreateTreadFromPlanRequest]) (*connect.Response[v1.CreateTreadFromPlanResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.channel.v1.ChannelService.CreateTreadFromPlan is not implemented"))
 }
 
 func (UnimplementedChannelServiceHandler) ListChannelMembers(context.Context, *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error) {
