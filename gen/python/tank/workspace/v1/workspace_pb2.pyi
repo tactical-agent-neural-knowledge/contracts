@@ -111,7 +111,7 @@ class GetBootstrapResponse(_message.Message):
     def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ..., me: _Optional[_Union[Member, _Mapping]] = ..., channels: _Optional[_Iterable[_Union[_channel_pb2.Channel, _Mapping]]] = ..., read_states: _Optional[_Iterable[_Union[_channel_pb2.ChannelReadState, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., custom_emoji_hash: _Optional[str] = ..., unread_notification_count: _Optional[int] = ..., preferences: _Optional[_Union[Preferences, _Mapping]] = ..., user_groups: _Optional[_Iterable[_Union[UserGroup, _Mapping]]] = ..., entitlements: _Optional[_Union[Entitlements, _Mapping]] = ...) -> None: ...
 
 class Entitlements(_message.Message):
-    __slots__ = ("plan", "agent_runs", "neural_vault", "agent_runs_used", "agent_runs_limit", "vault_queries_used", "vault_queries_limit", "contact_email")
+    __slots__ = ("plan", "agent_runs", "neural_vault", "agent_runs_used", "agent_runs_limit", "vault_queries_used", "vault_queries_limit", "contact_email", "conditional_sends")
     PLAN_FIELD_NUMBER: _ClassVar[int]
     AGENT_RUNS_FIELD_NUMBER: _ClassVar[int]
     NEURAL_VAULT_FIELD_NUMBER: _ClassVar[int]
@@ -120,6 +120,7 @@ class Entitlements(_message.Message):
     VAULT_QUERIES_USED_FIELD_NUMBER: _ClassVar[int]
     VAULT_QUERIES_LIMIT_FIELD_NUMBER: _ClassVar[int]
     CONTACT_EMAIL_FIELD_NUMBER: _ClassVar[int]
+    CONDITIONAL_SENDS_FIELD_NUMBER: _ClassVar[int]
     plan: str
     agent_runs: bool
     neural_vault: bool
@@ -128,7 +129,8 @@ class Entitlements(_message.Message):
     vault_queries_used: int
     vault_queries_limit: int
     contact_email: str
-    def __init__(self, plan: _Optional[str] = ..., agent_runs: bool = ..., neural_vault: bool = ..., agent_runs_used: _Optional[int] = ..., agent_runs_limit: _Optional[int] = ..., vault_queries_used: _Optional[int] = ..., vault_queries_limit: _Optional[int] = ..., contact_email: _Optional[str] = ...) -> None: ...
+    conditional_sends: bool
+    def __init__(self, plan: _Optional[str] = ..., agent_runs: bool = ..., neural_vault: bool = ..., agent_runs_used: _Optional[int] = ..., agent_runs_limit: _Optional[int] = ..., vault_queries_used: _Optional[int] = ..., vault_queries_limit: _Optional[int] = ..., contact_email: _Optional[str] = ..., conditional_sends: bool = ...) -> None: ...
 
 class ListMembersRequest(_message.Message):
     __slots__ = ("workspace_id", "cursor", "limit", "query")
