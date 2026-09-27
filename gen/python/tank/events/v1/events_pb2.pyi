@@ -7,6 +7,7 @@ from tank.channel.v1 import channel_pb2 as _channel_pb2
 from tank.files.v1 import files_pb2 as _files_pb2
 from tank.huddle.v1 import huddle_pb2 as _huddle_pb2
 from tank.message.v1 import message_pb2 as _message_pb2
+from tank.monitor.v1 import monitor_pb2 as _monitor_pb2
 from tank.presence.v1 import presence_pb2 as _presence_pb2
 from tank.topo.v1 import topo_pb2 as _topo_pb2
 from tank.workspace.v1 import workspace_pb2 as _workspace_pb2
@@ -350,3 +351,9 @@ class TopoMarkUpdated(_message.Message):
     MARK_FIELD_NUMBER: _ClassVar[int]
     mark: _topo_pb2.Mark
     def __init__(self, mark: _Optional[_Union[_topo_pb2.Mark, _Mapping]] = ...) -> None: ...
+
+class MonitorWidgetUpdated(_message.Message):
+    __slots__ = ("widget",)
+    WIDGET_FIELD_NUMBER: _ClassVar[int]
+    widget: _monitor_pb2.Widget
+    def __init__(self, widget: _Optional[_Union[_monitor_pb2.Widget, _Mapping]] = ...) -> None: ...

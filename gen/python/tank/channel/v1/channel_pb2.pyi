@@ -14,6 +14,7 @@ class ChannelType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     CHANNEL_TYPE_PRIVATE: _ClassVar[ChannelType]
     CHANNEL_TYPE_DM: _ClassVar[ChannelType]
     CHANNEL_TYPE_MPDM: _ClassVar[ChannelType]
+    CHANNEL_TYPE_MONITOR: _ClassVar[ChannelType]
 
 class NotifyPref(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -26,6 +27,7 @@ CHANNEL_TYPE_PUBLIC: ChannelType
 CHANNEL_TYPE_PRIVATE: ChannelType
 CHANNEL_TYPE_DM: ChannelType
 CHANNEL_TYPE_MPDM: ChannelType
+CHANNEL_TYPE_MONITOR: ChannelType
 NOTIFY_PREF_UNSPECIFIED: NotifyPref
 NOTIFY_PREF_ALL: NotifyPref
 NOTIFY_PREF_MENTIONS: NotifyPref
