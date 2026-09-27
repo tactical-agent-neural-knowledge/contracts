@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tank/presence/v1/presence.proto.
  */
 export const file_tank_presence_v1_presence: GenFile = /*@__PURE__*/
-  fileDesc("Ch90YW5rL3ByZXNlbmNlL3YxL3ByZXNlbmNlLnByb3RvEhB0YW5rLnByZXNlbmNlLnYxIuwBCghQcmVzZW5jZRIPCgd1c2VyX2lkGAEgASgJEjAKBnN0YXR1cxgCIAEoDjIgLnRhbmsucHJlc2VuY2UudjEuUHJlc2VuY2VTdGF0dXMSLQoJbGFzdF9zZWVuGAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIaChJjdXN0b21fc3RhdHVzX3RleHQYBCABKAkSGwoTY3VzdG9tX3N0YXR1c19lbW9qaRgFIAEoCRI1ChFzdGF0dXNfZXhwaXJlc19hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiwwEKEFNldFN0YXR1c1JlcXVlc3QSMAoGc3RhdHVzGAEgASgOMiAudGFuay5wcmVzZW5jZS52MS5QcmVzZW5jZVN0YXR1cxIaChJjdXN0b21fc3RhdHVzX3RleHQYAiABKAkSGwoTY3VzdG9tX3N0YXR1c19lbW9qaRgDIAEoCRIuCgpleHBpcmVzX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIUCgx3b3Jrc3BhY2VfaWQYBSABKAkiQQoRU2V0U3RhdHVzUmVzcG9uc2USLAoIcHJlc2VuY2UYASABKAsyGi50YW5rLnByZXNlbmNlLnYxLlByZXNlbmNlIjwKEkdldFByZXNlbmNlUmVxdWVzdBIQCgh1c2VyX2lkcxgBIAMoCRIUCgx3b3Jrc3BhY2VfaWQYAiABKAkiRAoTR2V0UHJlc2VuY2VSZXNwb25zZRItCglwcmVzZW5jZXMYASADKAsyGi50YW5rLnByZXNlbmNlLnYxLlByZXNlbmNlKpsBCg5QcmVzZW5jZVN0YXR1cxIfChtQUkVTRU5DRV9TVEFUVVNfVU5TUEVDSUZJRUQQABIaChZQUkVTRU5DRV9TVEFUVVNfQUNUSVZFEAESGAoUUFJFU0VOQ0VfU1RBVFVTX0FXQVkQAhIXChNQUkVTRU5DRV9TVEFUVVNfRE5EEAMSGQoVUFJFU0VOQ0VfU1RBVFVTX0FSTU9SEAQywwEKD1ByZXNlbmNlU2VydmljZRJUCglTZXRTdGF0dXMSIi50YW5rLnByZXNlbmNlLnYxLlNldFN0YXR1c1JlcXVlc3QaIy50YW5rLnByZXNlbmNlLnYxLlNldFN0YXR1c1Jlc3BvbnNlEloKC0dldFByZXNlbmNlEiQudGFuay5wcmVzZW5jZS52MS5HZXRQcmVzZW5jZVJlcXVlc3QaJS50YW5rLnByZXNlbmNlLnYxLkdldFByZXNlbmNlUmVzcG9uc2VC4AEKFGNvbS50YW5rLnByZXNlbmNlLnYxQg1QcmVzZW5jZVByb3RvUAFaV2dpdGh1Yi5jb20vdGFjdGljYWwtYWdlbnQtbmV1cmFsLWtub3dsZWRnZS9jb250cmFjdHMvZ2VuL2dvL3RhbmsvcHJlc2VuY2UvdjE7cHJlc2VuY2V2MaICA1RQWKoCEFRhbmsuUHJlc2VuY2UuVjHKAhBUYW5rXFByZXNlbmNlXFYx4gIcVGFua1xQcmVzZW5jZVxWMVxHUEJNZXRhZGF0YeoCElRhbms6OlByZXNlbmNlOjpWMWIGcHJvdG8z", [file_google_protobuf_timestamp]);
+  fileDesc("Ch90YW5rL3ByZXNlbmNlL3YxL3ByZXNlbmNlLnByb3RvEhB0YW5rLnByZXNlbmNlLnYxIoACCghQcmVzZW5jZRIPCgd1c2VyX2lkGAEgASgJEjAKBnN0YXR1cxgCIAEoDjIgLnRhbmsucHJlc2VuY2UudjEuUHJlc2VuY2VTdGF0dXMSLQoJbGFzdF9zZWVuGAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIaChJjdXN0b21fc3RhdHVzX3RleHQYBCABKAkSGwoTY3VzdG9tX3N0YXR1c19lbW9qaRgFIAEoCRI1ChFzdGF0dXNfZXhwaXJlc19hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKYXV0b19yZXBseRgHIAEoCSLXAQoQU2V0U3RhdHVzUmVxdWVzdBIwCgZzdGF0dXMYASABKA4yIC50YW5rLnByZXNlbmNlLnYxLlByZXNlbmNlU3RhdHVzEhoKEmN1c3RvbV9zdGF0dXNfdGV4dBgCIAEoCRIbChNjdXN0b21fc3RhdHVzX2Vtb2ppGAMgASgJEi4KCmV4cGlyZXNfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhQKDHdvcmtzcGFjZV9pZBgFIAEoCRISCgphdXRvX3JlcGx5GAYgASgJIkEKEVNldFN0YXR1c1Jlc3BvbnNlEiwKCHByZXNlbmNlGAEgASgLMhoudGFuay5wcmVzZW5jZS52MS5QcmVzZW5jZSI8ChJHZXRQcmVzZW5jZVJlcXVlc3QSEAoIdXNlcl9pZHMYASADKAkSFAoMd29ya3NwYWNlX2lkGAIgASgJIkQKE0dldFByZXNlbmNlUmVzcG9uc2USLQoJcHJlc2VuY2VzGAEgAygLMhoudGFuay5wcmVzZW5jZS52MS5QcmVzZW5jZSIsChVEZXNjcmliZVN0YXR1c1JlcXVlc3QSEwoLZGVzY3JpcHRpb24YASABKAkiswEKFkRlc2NyaWJlU3RhdHVzUmVzcG9uc2USMAoGc3RhdHVzGAEgASgOMiAudGFuay5wcmVzZW5jZS52MS5QcmVzZW5jZVN0YXR1cxIaChJjdXN0b21fc3RhdHVzX3RleHQYAiABKAkSGwoTY3VzdG9tX3N0YXR1c19lbW9qaRgDIAEoCRIaChJleHBpcmVzX2luX21pbnV0ZXMYBCABKAUSEgoKYXV0b19yZXBseRgFIAEoCSqbAQoOUHJlc2VuY2VTdGF0dXMSHwobUFJFU0VOQ0VfU1RBVFVTX1VOU1BFQ0lGSUVEEAASGgoWUFJFU0VOQ0VfU1RBVFVTX0FDVElWRRABEhgKFFBSRVNFTkNFX1NUQVRVU19BV0FZEAISFwoTUFJFU0VOQ0VfU1RBVFVTX0RORBADEhkKFVBSRVNFTkNFX1NUQVRVU19BUk1PUhAEMqgCCg9QcmVzZW5jZVNlcnZpY2USVAoJU2V0U3RhdHVzEiIudGFuay5wcmVzZW5jZS52MS5TZXRTdGF0dXNSZXF1ZXN0GiMudGFuay5wcmVzZW5jZS52MS5TZXRTdGF0dXNSZXNwb25zZRJjCg5EZXNjcmliZVN0YXR1cxInLnRhbmsucHJlc2VuY2UudjEuRGVzY3JpYmVTdGF0dXNSZXF1ZXN0GigudGFuay5wcmVzZW5jZS52MS5EZXNjcmliZVN0YXR1c1Jlc3BvbnNlEloKC0dldFByZXNlbmNlEiQudGFuay5wcmVzZW5jZS52MS5HZXRQcmVzZW5jZVJlcXVlc3QaJS50YW5rLnByZXNlbmNlLnYxLkdldFByZXNlbmNlUmVzcG9uc2VC4AEKFGNvbS50YW5rLnByZXNlbmNlLnYxQg1QcmVzZW5jZVByb3RvUAFaV2dpdGh1Yi5jb20vdGFjdGljYWwtYWdlbnQtbmV1cmFsLWtub3dsZWRnZS9jb250cmFjdHMvZ2VuL2dvL3RhbmsvcHJlc2VuY2UvdjE7cHJlc2VuY2V2MaICA1RQWKoCEFRhbmsuUHJlc2VuY2UuVjHKAhBUYW5rXFByZXNlbmNlXFYx4gIcVGFua1xQcmVzZW5jZVxWMVxHUEJNZXRhZGF0YeoCElRhbms6OlByZXNlbmNlOjpWMWIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message tank.presence.v1.Presence
@@ -47,6 +47,13 @@ export type Presence = Message<"tank.presence.v1.Presence"> & {
    * @generated from field: google.protobuf.Timestamp status_expires_at = 6;
    */
   statusExpiresAt?: Timestamp;
+
+  /**
+   * When set, TANK answers anyone who @mentions this person with this text, on their behalf.
+   *
+   * @generated from field: string auto_reply = 7;
+   */
+  autoReply: string;
 };
 
 /**
@@ -86,6 +93,13 @@ export type SetStatusRequest = Message<"tank.presence.v1.SetStatusRequest"> & {
    * @generated from field: string workspace_id = 5;
    */
   workspaceId: string;
+
+  /**
+   * Answer @mentions with this text while the status lasts. Empty turns it off.
+   *
+   * @generated from field: string auto_reply = 6;
+   */
+  autoReply: string;
 };
 
 /**
@@ -156,6 +170,66 @@ export const GetPresenceResponseSchema: GenMessage<GetPresenceResponse> = /*@__P
   messageDesc(file_tank_presence_v1_presence, 4);
 
 /**
+ * "Deep in a Rust refactor until 3" → a status, an emoji, when it clears, and an auto-reply.
+ *
+ * @generated from message tank.presence.v1.DescribeStatusRequest
+ */
+export type DescribeStatusRequest = Message<"tank.presence.v1.DescribeStatusRequest"> & {
+  /**
+   * at most 15 words
+   *
+   * @generated from field: string description = 1;
+   */
+  description: string;
+};
+
+/**
+ * Describes the message tank.presence.v1.DescribeStatusRequest.
+ * Use `create(DescribeStatusRequestSchema)` to create a new message.
+ */
+export const DescribeStatusRequestSchema: GenMessage<DescribeStatusRequest> = /*@__PURE__*/
+  messageDesc(file_tank_presence_v1_presence, 5);
+
+/**
+ * @generated from message tank.presence.v1.DescribeStatusResponse
+ */
+export type DescribeStatusResponse = Message<"tank.presence.v1.DescribeStatusResponse"> & {
+  /**
+   * @generated from field: tank.presence.v1.PresenceStatus status = 1;
+   */
+  status: PresenceStatus;
+
+  /**
+   * @generated from field: string custom_status_text = 2;
+   */
+  customStatusText: string;
+
+  /**
+   * @generated from field: string custom_status_emoji = 3;
+   */
+  customStatusEmoji: string;
+
+  /**
+   * Minutes from now until the status clears; 0 means it does not.
+   *
+   * @generated from field: int32 expires_in_minutes = 4;
+   */
+  expiresInMinutes: number;
+
+  /**
+   * @generated from field: string auto_reply = 5;
+   */
+  autoReply: string;
+};
+
+/**
+ * Describes the message tank.presence.v1.DescribeStatusResponse.
+ * Use `create(DescribeStatusResponseSchema)` to create a new message.
+ */
+export const DescribeStatusResponseSchema: GenMessage<DescribeStatusResponse> = /*@__PURE__*/
+  messageDesc(file_tank_presence_v1_presence, 6);
+
+/**
  * @generated from enum tank.presence.v1.PresenceStatus
  */
 export enum PresenceStatus {
@@ -204,6 +278,16 @@ export const PresenceService: GenService<{
     methodKind: "unary";
     input: typeof SetStatusRequestSchema;
     output: typeof SetStatusResponseSchema;
+  },
+  /**
+   * Turns a sentence into a status to review before saving; nothing is written.
+   *
+   * @generated from rpc tank.presence.v1.PresenceService.DescribeStatus
+   */
+  describeStatus: {
+    methodKind: "unary";
+    input: typeof DescribeStatusRequestSchema;
+    output: typeof DescribeStatusResponseSchema;
   },
   /**
    * @generated from rpc tank.presence.v1.PresenceService.GetPresence

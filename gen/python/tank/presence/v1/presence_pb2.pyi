@@ -21,34 +21,38 @@ PRESENCE_STATUS_DND: PresenceStatus
 PRESENCE_STATUS_ARMOR: PresenceStatus
 
 class Presence(_message.Message):
-    __slots__ = ("user_id", "status", "last_seen", "custom_status_text", "custom_status_emoji", "status_expires_at")
+    __slots__ = ("user_id", "status", "last_seen", "custom_status_text", "custom_status_emoji", "status_expires_at", "auto_reply")
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
     LAST_SEEN_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_STATUS_TEXT_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_STATUS_EMOJI_FIELD_NUMBER: _ClassVar[int]
     STATUS_EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    AUTO_REPLY_FIELD_NUMBER: _ClassVar[int]
     user_id: str
     status: PresenceStatus
     last_seen: _timestamp_pb2.Timestamp
     custom_status_text: str
     custom_status_emoji: str
     status_expires_at: _timestamp_pb2.Timestamp
-    def __init__(self, user_id: _Optional[str] = ..., status: _Optional[_Union[PresenceStatus, str]] = ..., last_seen: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., custom_status_text: _Optional[str] = ..., custom_status_emoji: _Optional[str] = ..., status_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    auto_reply: str
+    def __init__(self, user_id: _Optional[str] = ..., status: _Optional[_Union[PresenceStatus, str]] = ..., last_seen: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., custom_status_text: _Optional[str] = ..., custom_status_emoji: _Optional[str] = ..., status_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., auto_reply: _Optional[str] = ...) -> None: ...
 
 class SetStatusRequest(_message.Message):
-    __slots__ = ("status", "custom_status_text", "custom_status_emoji", "expires_at", "workspace_id")
+    __slots__ = ("status", "custom_status_text", "custom_status_emoji", "expires_at", "workspace_id", "auto_reply")
     STATUS_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_STATUS_TEXT_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_STATUS_EMOJI_FIELD_NUMBER: _ClassVar[int]
     EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    AUTO_REPLY_FIELD_NUMBER: _ClassVar[int]
     status: PresenceStatus
     custom_status_text: str
     custom_status_emoji: str
     expires_at: _timestamp_pb2.Timestamp
     workspace_id: str
-    def __init__(self, status: _Optional[_Union[PresenceStatus, str]] = ..., custom_status_text: _Optional[str] = ..., custom_status_emoji: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., workspace_id: _Optional[str] = ...) -> None: ...
+    auto_reply: str
+    def __init__(self, status: _Optional[_Union[PresenceStatus, str]] = ..., custom_status_text: _Optional[str] = ..., custom_status_emoji: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., workspace_id: _Optional[str] = ..., auto_reply: _Optional[str] = ...) -> None: ...
 
 class SetStatusResponse(_message.Message):
     __slots__ = ("presence",)
@@ -69,3 +73,23 @@ class GetPresenceResponse(_message.Message):
     PRESENCES_FIELD_NUMBER: _ClassVar[int]
     presences: _containers.RepeatedCompositeFieldContainer[Presence]
     def __init__(self, presences: _Optional[_Iterable[_Union[Presence, _Mapping]]] = ...) -> None: ...
+
+class DescribeStatusRequest(_message.Message):
+    __slots__ = ("description",)
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    description: str
+    def __init__(self, description: _Optional[str] = ...) -> None: ...
+
+class DescribeStatusResponse(_message.Message):
+    __slots__ = ("status", "custom_status_text", "custom_status_emoji", "expires_in_minutes", "auto_reply")
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    CUSTOM_STATUS_TEXT_FIELD_NUMBER: _ClassVar[int]
+    CUSTOM_STATUS_EMOJI_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_IN_MINUTES_FIELD_NUMBER: _ClassVar[int]
+    AUTO_REPLY_FIELD_NUMBER: _ClassVar[int]
+    status: PresenceStatus
+    custom_status_text: str
+    custom_status_emoji: str
+    expires_in_minutes: int
+    auto_reply: str
+    def __init__(self, status: _Optional[_Union[PresenceStatus, str]] = ..., custom_status_text: _Optional[str] = ..., custom_status_emoji: _Optional[str] = ..., expires_in_minutes: _Optional[int] = ..., auto_reply: _Optional[str] = ...) -> None: ...

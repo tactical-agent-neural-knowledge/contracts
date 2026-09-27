@@ -36,6 +36,9 @@ const (
 	// PresenceServiceSetStatusProcedure is the fully-qualified name of the PresenceService's SetStatus
 	// RPC.
 	PresenceServiceSetStatusProcedure = "/tank.presence.v1.PresenceService/SetStatus"
+	// PresenceServiceDescribeStatusProcedure is the fully-qualified name of the PresenceService's
+	// DescribeStatus RPC.
+	PresenceServiceDescribeStatusProcedure = "/tank.presence.v1.PresenceService/DescribeStatus"
 	// PresenceServiceGetPresenceProcedure is the fully-qualified name of the PresenceService's
 	// GetPresence RPC.
 	PresenceServiceGetPresenceProcedure = "/tank.presence.v1.PresenceService/GetPresence"
@@ -44,6 +47,8 @@ const (
 // PresenceServiceClient is a client for the tank.presence.v1.PresenceService service.
 type PresenceServiceClient interface {
 	SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error)
+	// Turns a sentence into a status to review before saving; nothing is written.
+	DescribeStatus(context.Context, *connect.Request[v1.DescribeStatusRequest]) (*connect.Response[v1.DescribeStatusResponse], error)
 	GetPresence(context.Context, *connect.Request[v1.GetPresenceRequest]) (*connect.Response[v1.GetPresenceResponse], error)
 }
 
@@ -64,6 +69,12 @@ func NewPresenceServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(presenceServiceMethods.ByName("SetStatus")),
 			connect.WithClientOptions(opts...),
 		),
+		describeStatus: connect.NewClient[v1.DescribeStatusRequest, v1.DescribeStatusResponse](
+			httpClient,
+			baseURL+PresenceServiceDescribeStatusProcedure,
+			connect.WithSchema(presenceServiceMethods.ByName("DescribeStatus")),
+			connect.WithClientOptions(opts...),
+		),
 		getPresence: connect.NewClient[v1.GetPresenceRequest, v1.GetPresenceResponse](
 			httpClient,
 			baseURL+PresenceServiceGetPresenceProcedure,
@@ -75,13 +86,19 @@ func NewPresenceServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 
 // presenceServiceClient implements PresenceServiceClient.
 type presenceServiceClient struct {
-	setStatus   *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
-	getPresence *connect.Client[v1.GetPresenceRequest, v1.GetPresenceResponse]
+	setStatus      *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
+	describeStatus *connect.Client[v1.DescribeStatusRequest, v1.DescribeStatusResponse]
+	getPresence    *connect.Client[v1.GetPresenceRequest, v1.GetPresenceResponse]
 }
 
 // SetStatus calls tank.presence.v1.PresenceService.SetStatus.
 func (c *presenceServiceClient) SetStatus(ctx context.Context, req *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error) {
 	return c.setStatus.CallUnary(ctx, req)
+}
+
+// DescribeStatus calls tank.presence.v1.PresenceService.DescribeStatus.
+func (c *presenceServiceClient) DescribeStatus(ctx context.Context, req *connect.Request[v1.DescribeStatusRequest]) (*connect.Response[v1.DescribeStatusResponse], error) {
+	return c.describeStatus.CallUnary(ctx, req)
 }
 
 // GetPresence calls tank.presence.v1.PresenceService.GetPresence.
@@ -92,6 +109,8 @@ func (c *presenceServiceClient) GetPresence(ctx context.Context, req *connect.Re
 // PresenceServiceHandler is an implementation of the tank.presence.v1.PresenceService service.
 type PresenceServiceHandler interface {
 	SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error)
+	// Turns a sentence into a status to review before saving; nothing is written.
+	DescribeStatus(context.Context, *connect.Request[v1.DescribeStatusRequest]) (*connect.Response[v1.DescribeStatusResponse], error)
 	GetPresence(context.Context, *connect.Request[v1.GetPresenceRequest]) (*connect.Response[v1.GetPresenceResponse], error)
 }
 
@@ -108,6 +127,12 @@ func NewPresenceServiceHandler(svc PresenceServiceHandler, opts ...connect.Handl
 		connect.WithSchema(presenceServiceMethods.ByName("SetStatus")),
 		connect.WithHandlerOptions(opts...),
 	)
+	presenceServiceDescribeStatusHandler := connect.NewUnaryHandler(
+		PresenceServiceDescribeStatusProcedure,
+		svc.DescribeStatus,
+		connect.WithSchema(presenceServiceMethods.ByName("DescribeStatus")),
+		connect.WithHandlerOptions(opts...),
+	)
 	presenceServiceGetPresenceHandler := connect.NewUnaryHandler(
 		PresenceServiceGetPresenceProcedure,
 		svc.GetPresence,
@@ -118,6 +143,8 @@ func NewPresenceServiceHandler(svc PresenceServiceHandler, opts ...connect.Handl
 		switch r.URL.Path {
 		case PresenceServiceSetStatusProcedure:
 			presenceServiceSetStatusHandler.ServeHTTP(w, r)
+		case PresenceServiceDescribeStatusProcedure:
+			presenceServiceDescribeStatusHandler.ServeHTTP(w, r)
 		case PresenceServiceGetPresenceProcedure:
 			presenceServiceGetPresenceHandler.ServeHTTP(w, r)
 		default:
@@ -131,6 +158,10 @@ type UnimplementedPresenceServiceHandler struct{}
 
 func (UnimplementedPresenceServiceHandler) SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.presence.v1.PresenceService.SetStatus is not implemented"))
+}
+
+func (UnimplementedPresenceServiceHandler) DescribeStatus(context.Context, *connect.Request[v1.DescribeStatusRequest]) (*connect.Response[v1.DescribeStatusResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.presence.v1.PresenceService.DescribeStatus is not implemented"))
 }
 
 func (UnimplementedPresenceServiceHandler) GetPresence(context.Context, *connect.Request[v1.GetPresenceRequest]) (*connect.Response[v1.GetPresenceResponse], error) {

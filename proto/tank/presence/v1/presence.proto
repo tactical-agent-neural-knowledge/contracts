@@ -20,6 +20,8 @@ message Presence {
   string custom_status_text = 4;
   string custom_status_emoji = 5;
   google.protobuf.Timestamp status_expires_at = 6;
+  // When set, TANK answers anyone who @mentions this person with this text, on their behalf.
+  string auto_reply = 7;
 }
 
 message SetStatusRequest {
@@ -29,6 +31,8 @@ message SetStatusRequest {
   google.protobuf.Timestamp expires_at = 4;
   // When set, only this workspace's presence is written; otherwise every workspace the caller belongs to.
   string workspace_id = 5;
+  // Answer @mentions with this text while the status lasts. Empty turns it off.
+  string auto_reply = 6;
 }
 message SetStatusResponse {
   Presence presence = 1;
@@ -43,7 +47,22 @@ message GetPresenceResponse {
   repeated Presence presences = 1;
 }
 
+// "Deep in a Rust refactor until 3" → a status, an emoji, when it clears, and an auto-reply.
+message DescribeStatusRequest {
+  string description = 1; // at most 15 words
+}
+message DescribeStatusResponse {
+  PresenceStatus status = 1;
+  string custom_status_text = 2;
+  string custom_status_emoji = 3;
+  // Minutes from now until the status clears; 0 means it does not.
+  int32 expires_in_minutes = 4;
+  string auto_reply = 5;
+}
+
 service PresenceService {
   rpc SetStatus(SetStatusRequest) returns (SetStatusResponse);
+  // Turns a sentence into a status to review before saving; nothing is written.
+  rpc DescribeStatus(DescribeStatusRequest) returns (DescribeStatusResponse);
   rpc GetPresence(GetPresenceRequest) returns (GetPresenceResponse);
 }
