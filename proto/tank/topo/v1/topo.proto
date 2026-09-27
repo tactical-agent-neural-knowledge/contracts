@@ -293,6 +293,8 @@ message ListWaitingOnResponse {
 // server so both clients say the same thing.
 message GetBriefingRequest {
   string workspace_id = 1;
+  // Also write a short "while you were away" in the person's digest voice (costs a model call).
+  bool narrate = 2;
 }
 
 message BriefingTread {
@@ -325,6 +327,8 @@ message GetBriefingResponse {
   repeated BriefingPerson people = 2;
   // When the workspace last spoke, across the Treads you can see.
   google.protobuf.Timestamp quiet_since = 3;
+  // A few sentences on what moved, in the person's digest voice; empty unless narrate was set.
+  string narrative = 4;
 }
 
 // Marks are always read through the channel, so a Tread the caller cannot see

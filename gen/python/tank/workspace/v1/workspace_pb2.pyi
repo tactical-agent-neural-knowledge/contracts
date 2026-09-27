@@ -328,7 +328,7 @@ class ArmorModeSchedule(_message.Message):
     def __init__(self, enabled: bool = ..., start: _Optional[str] = ..., end: _Optional[str] = ..., days: _Optional[_Iterable[int]] = ..., timezone: _Optional[str] = ..., allow_critical: bool = ...) -> None: ...
 
 class Preferences(_message.Message):
-    __slots__ = ("notify_default", "dm_notify_default", "theme", "armor_mode_schedule", "email_digest", "desktop_sound", "push_on_mention_only", "topo", "custom_theme")
+    __slots__ = ("notify_default", "dm_notify_default", "theme", "armor_mode_schedule", "email_digest", "desktop_sound", "push_on_mention_only", "topo", "custom_theme", "home", "digest_voice")
     NOTIFY_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     DM_NOTIFY_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     THEME_FIELD_NUMBER: _ClassVar[int]
@@ -338,6 +338,8 @@ class Preferences(_message.Message):
     PUSH_ON_MENTION_ONLY_FIELD_NUMBER: _ClassVar[int]
     TOPO_FIELD_NUMBER: _ClassVar[int]
     CUSTOM_THEME_FIELD_NUMBER: _ClassVar[int]
+    HOME_FIELD_NUMBER: _ClassVar[int]
+    DIGEST_VOICE_FIELD_NUMBER: _ClassVar[int]
     notify_default: _channel_pb2.NotifyPref
     dm_notify_default: _channel_pb2.NotifyPref
     theme: str
@@ -347,7 +349,19 @@ class Preferences(_message.Message):
     push_on_mention_only: bool
     topo: TopoPreferences
     custom_theme: Theme
-    def __init__(self, notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., dm_notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., theme: _Optional[str] = ..., armor_mode_schedule: _Optional[_Union[ArmorModeSchedule, _Mapping]] = ..., email_digest: bool = ..., desktop_sound: bool = ..., push_on_mention_only: bool = ..., topo: _Optional[_Union[TopoPreferences, _Mapping]] = ..., custom_theme: _Optional[_Union[Theme, _Mapping]] = ...) -> None: ...
+    home: HomeLayout
+    digest_voice: str
+    def __init__(self, notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., dm_notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., theme: _Optional[str] = ..., armor_mode_schedule: _Optional[_Union[ArmorModeSchedule, _Mapping]] = ..., email_digest: bool = ..., desktop_sound: bool = ..., push_on_mention_only: bool = ..., topo: _Optional[_Union[TopoPreferences, _Mapping]] = ..., custom_theme: _Optional[_Union[Theme, _Mapping]] = ..., home: _Optional[_Union[HomeLayout, _Mapping]] = ..., digest_voice: _Optional[str] = ...) -> None: ...
+
+class HomeLayout(_message.Message):
+    __slots__ = ("order", "hidden", "description")
+    ORDER_FIELD_NUMBER: _ClassVar[int]
+    HIDDEN_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    order: _containers.RepeatedScalarFieldContainer[str]
+    hidden: _containers.RepeatedScalarFieldContainer[str]
+    description: str
+    def __init__(self, order: _Optional[_Iterable[str]] = ..., hidden: _Optional[_Iterable[str]] = ..., description: _Optional[str] = ...) -> None: ...
 
 class TopoPreferences(_message.Message):
     __slots__ = ("configured", "visible", "time_axis")
@@ -788,3 +802,33 @@ class SetWorkspaceIconResponse(_message.Message):
     WORKSPACE_FIELD_NUMBER: _ClassVar[int]
     workspace: Workspace
     def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ...) -> None: ...
+
+class DescribeHomeLayoutRequest(_message.Message):
+    __slots__ = ("workspace_id", "description")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    description: str
+    def __init__(self, workspace_id: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
+
+class DescribeHomeLayoutResponse(_message.Message):
+    __slots__ = ("home",)
+    HOME_FIELD_NUMBER: _ClassVar[int]
+    home: HomeLayout
+    def __init__(self, home: _Optional[_Union[HomeLayout, _Mapping]] = ...) -> None: ...
+
+class RewriteTextRequest(_message.Message):
+    __slots__ = ("workspace_id", "text", "instruction")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    INSTRUCTION_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    text: str
+    instruction: str
+    def __init__(self, workspace_id: _Optional[str] = ..., text: _Optional[str] = ..., instruction: _Optional[str] = ...) -> None: ...
+
+class RewriteTextResponse(_message.Message):
+    __slots__ = ("text",)
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    text: str
+    def __init__(self, text: _Optional[str] = ...) -> None: ...

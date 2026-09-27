@@ -232,6 +232,18 @@ message Preferences {
   TopoPreferences topo = 8;
   // A theme made from a description, for this person; wins over the workspace's. Unset means none.
   Theme custom_theme = 9;
+  // How Home is arranged, set from a sentence; unset means TANK's order.
+  HomeLayout home = 10;
+  // One sentence that styles the "while you were away" narrative ("like a naval log"). Empty means TANK's voice.
+  string digest_voice = 11;
+}
+
+// The order Home shows its sections in, and which are hidden. Section keys:
+// "online", "moved", "waiting", "agents", "threads", "download".
+message HomeLayout {
+  repeated string order = 1;
+  repeated string hidden = 2;
+  string description = 3;
 }
 
 // Which Topo mark families the strip draws for this person.
@@ -496,6 +508,8 @@ service WorkspaceService {
   rpc GenerateArt(GenerateArtRequest) returns (GenerateArtResponse);
   // Admins only: the workspace icon, or a reset when file_id is empty.
   rpc SetWorkspaceIcon(SetWorkspaceIconRequest) returns (SetWorkspaceIconResponse);
+  rpc DescribeHomeLayout(DescribeHomeLayoutRequest) returns (DescribeHomeLayoutResponse);
+  rpc RewriteText(RewriteTextRequest) returns (RewriteTextResponse);
   rpc ListEmoji(ListEmojiRequest) returns (ListEmojiResponse);
   rpc CreateEmoji(CreateEmojiRequest) returns (CreateEmojiResponse);
   rpc DeleteEmoji(DeleteEmojiRequest) returns (DeleteEmojiResponse);
@@ -557,4 +571,21 @@ message SetWorkspaceIconRequest {
 }
 message SetWorkspaceIconResponse {
   Workspace workspace = 1;
+}
+// "Agents first, then treads I own, hide people" → a HomeLayout to review; nothing is saved.
+message DescribeHomeLayoutRequest {
+  string workspace_id = 1;
+  string description = 2; // at most 15 words
+}
+message DescribeHomeLayoutResponse {
+  HomeLayout home = 1;
+}
+// Rewrite a draft in the composer: "terser", "friendlier", "as a bulleted decision".
+message RewriteTextRequest {
+  string workspace_id = 1;
+  string text = 2;        // the draft, at most 4000 characters
+  string instruction = 3; // at most 15 words
+}
+message RewriteTextResponse {
+  string text = 1;
 }

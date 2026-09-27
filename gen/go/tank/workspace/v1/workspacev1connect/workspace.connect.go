@@ -84,6 +84,12 @@ const (
 	// WorkspaceServiceSetWorkspaceIconProcedure is the fully-qualified name of the WorkspaceService's
 	// SetWorkspaceIcon RPC.
 	WorkspaceServiceSetWorkspaceIconProcedure = "/tank.workspace.v1.WorkspaceService/SetWorkspaceIcon"
+	// WorkspaceServiceDescribeHomeLayoutProcedure is the fully-qualified name of the WorkspaceService's
+	// DescribeHomeLayout RPC.
+	WorkspaceServiceDescribeHomeLayoutProcedure = "/tank.workspace.v1.WorkspaceService/DescribeHomeLayout"
+	// WorkspaceServiceRewriteTextProcedure is the fully-qualified name of the WorkspaceService's
+	// RewriteText RPC.
+	WorkspaceServiceRewriteTextProcedure = "/tank.workspace.v1.WorkspaceService/RewriteText"
 	// WorkspaceServiceListEmojiProcedure is the fully-qualified name of the WorkspaceService's
 	// ListEmoji RPC.
 	WorkspaceServiceListEmojiProcedure = "/tank.workspace.v1.WorkspaceService/ListEmoji"
@@ -160,6 +166,8 @@ type WorkspaceServiceClient interface {
 	GenerateArt(context.Context, *connect.Request[v1.GenerateArtRequest]) (*connect.Response[v1.GenerateArtResponse], error)
 	// Admins only: the workspace icon, or a reset when file_id is empty.
 	SetWorkspaceIcon(context.Context, *connect.Request[v1.SetWorkspaceIconRequest]) (*connect.Response[v1.SetWorkspaceIconResponse], error)
+	DescribeHomeLayout(context.Context, *connect.Request[v1.DescribeHomeLayoutRequest]) (*connect.Response[v1.DescribeHomeLayoutResponse], error)
+	RewriteText(context.Context, *connect.Request[v1.RewriteTextRequest]) (*connect.Response[v1.RewriteTextResponse], error)
 	ListEmoji(context.Context, *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error)
 	CreateEmoji(context.Context, *connect.Request[v1.CreateEmojiRequest]) (*connect.Response[v1.CreateEmojiResponse], error)
 	DeleteEmoji(context.Context, *connect.Request[v1.DeleteEmojiRequest]) (*connect.Response[v1.DeleteEmojiResponse], error)
@@ -292,6 +300,18 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(workspaceServiceMethods.ByName("SetWorkspaceIcon")),
 			connect.WithClientOptions(opts...),
 		),
+		describeHomeLayout: connect.NewClient[v1.DescribeHomeLayoutRequest, v1.DescribeHomeLayoutResponse](
+			httpClient,
+			baseURL+WorkspaceServiceDescribeHomeLayoutProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("DescribeHomeLayout")),
+			connect.WithClientOptions(opts...),
+		),
+		rewriteText: connect.NewClient[v1.RewriteTextRequest, v1.RewriteTextResponse](
+			httpClient,
+			baseURL+WorkspaceServiceRewriteTextProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("RewriteText")),
+			connect.WithClientOptions(opts...),
+		),
 		listEmoji: connect.NewClient[v1.ListEmojiRequest, v1.ListEmojiResponse](
 			httpClient,
 			baseURL+WorkspaceServiceListEmojiProcedure,
@@ -416,6 +436,8 @@ type workspaceServiceClient struct {
 	setWorkspaceTheme      *connect.Client[v1.SetWorkspaceThemeRequest, v1.SetWorkspaceThemeResponse]
 	generateArt            *connect.Client[v1.GenerateArtRequest, v1.GenerateArtResponse]
 	setWorkspaceIcon       *connect.Client[v1.SetWorkspaceIconRequest, v1.SetWorkspaceIconResponse]
+	describeHomeLayout     *connect.Client[v1.DescribeHomeLayoutRequest, v1.DescribeHomeLayoutResponse]
+	rewriteText            *connect.Client[v1.RewriteTextRequest, v1.RewriteTextResponse]
 	listEmoji              *connect.Client[v1.ListEmojiRequest, v1.ListEmojiResponse]
 	createEmoji            *connect.Client[v1.CreateEmojiRequest, v1.CreateEmojiResponse]
 	deleteEmoji            *connect.Client[v1.DeleteEmojiRequest, v1.DeleteEmojiResponse]
@@ -518,6 +540,16 @@ func (c *workspaceServiceClient) GenerateArt(ctx context.Context, req *connect.R
 // SetWorkspaceIcon calls tank.workspace.v1.WorkspaceService.SetWorkspaceIcon.
 func (c *workspaceServiceClient) SetWorkspaceIcon(ctx context.Context, req *connect.Request[v1.SetWorkspaceIconRequest]) (*connect.Response[v1.SetWorkspaceIconResponse], error) {
 	return c.setWorkspaceIcon.CallUnary(ctx, req)
+}
+
+// DescribeHomeLayout calls tank.workspace.v1.WorkspaceService.DescribeHomeLayout.
+func (c *workspaceServiceClient) DescribeHomeLayout(ctx context.Context, req *connect.Request[v1.DescribeHomeLayoutRequest]) (*connect.Response[v1.DescribeHomeLayoutResponse], error) {
+	return c.describeHomeLayout.CallUnary(ctx, req)
+}
+
+// RewriteText calls tank.workspace.v1.WorkspaceService.RewriteText.
+func (c *workspaceServiceClient) RewriteText(ctx context.Context, req *connect.Request[v1.RewriteTextRequest]) (*connect.Response[v1.RewriteTextResponse], error) {
+	return c.rewriteText.CallUnary(ctx, req)
 }
 
 // ListEmoji calls tank.workspace.v1.WorkspaceService.ListEmoji.
@@ -628,6 +660,8 @@ type WorkspaceServiceHandler interface {
 	GenerateArt(context.Context, *connect.Request[v1.GenerateArtRequest]) (*connect.Response[v1.GenerateArtResponse], error)
 	// Admins only: the workspace icon, or a reset when file_id is empty.
 	SetWorkspaceIcon(context.Context, *connect.Request[v1.SetWorkspaceIconRequest]) (*connect.Response[v1.SetWorkspaceIconResponse], error)
+	DescribeHomeLayout(context.Context, *connect.Request[v1.DescribeHomeLayoutRequest]) (*connect.Response[v1.DescribeHomeLayoutResponse], error)
+	RewriteText(context.Context, *connect.Request[v1.RewriteTextRequest]) (*connect.Response[v1.RewriteTextResponse], error)
 	ListEmoji(context.Context, *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error)
 	CreateEmoji(context.Context, *connect.Request[v1.CreateEmojiRequest]) (*connect.Response[v1.CreateEmojiResponse], error)
 	DeleteEmoji(context.Context, *connect.Request[v1.DeleteEmojiRequest]) (*connect.Response[v1.DeleteEmojiResponse], error)
@@ -754,6 +788,18 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 		WorkspaceServiceSetWorkspaceIconProcedure,
 		svc.SetWorkspaceIcon,
 		connect.WithSchema(workspaceServiceMethods.ByName("SetWorkspaceIcon")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceDescribeHomeLayoutHandler := connect.NewUnaryHandler(
+		WorkspaceServiceDescribeHomeLayoutProcedure,
+		svc.DescribeHomeLayout,
+		connect.WithSchema(workspaceServiceMethods.ByName("DescribeHomeLayout")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceRewriteTextHandler := connect.NewUnaryHandler(
+		WorkspaceServiceRewriteTextProcedure,
+		svc.RewriteText,
+		connect.WithSchema(workspaceServiceMethods.ByName("RewriteText")),
 		connect.WithHandlerOptions(opts...),
 	)
 	workspaceServiceListEmojiHandler := connect.NewUnaryHandler(
@@ -894,6 +940,10 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 			workspaceServiceGenerateArtHandler.ServeHTTP(w, r)
 		case WorkspaceServiceSetWorkspaceIconProcedure:
 			workspaceServiceSetWorkspaceIconHandler.ServeHTTP(w, r)
+		case WorkspaceServiceDescribeHomeLayoutProcedure:
+			workspaceServiceDescribeHomeLayoutHandler.ServeHTTP(w, r)
+		case WorkspaceServiceRewriteTextProcedure:
+			workspaceServiceRewriteTextHandler.ServeHTTP(w, r)
 		case WorkspaceServiceListEmojiProcedure:
 			workspaceServiceListEmojiHandler.ServeHTTP(w, r)
 		case WorkspaceServiceCreateEmojiProcedure:
@@ -1003,6 +1053,14 @@ func (UnimplementedWorkspaceServiceHandler) GenerateArt(context.Context, *connec
 
 func (UnimplementedWorkspaceServiceHandler) SetWorkspaceIcon(context.Context, *connect.Request[v1.SetWorkspaceIconRequest]) (*connect.Response[v1.SetWorkspaceIconResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.SetWorkspaceIcon is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) DescribeHomeLayout(context.Context, *connect.Request[v1.DescribeHomeLayoutRequest]) (*connect.Response[v1.DescribeHomeLayoutResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.DescribeHomeLayout is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) RewriteText(context.Context, *connect.Request[v1.RewriteTextRequest]) (*connect.Response[v1.RewriteTextResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.RewriteText is not implemented"))
 }
 
 func (UnimplementedWorkspaceServiceHandler) ListEmoji(context.Context, *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error) {

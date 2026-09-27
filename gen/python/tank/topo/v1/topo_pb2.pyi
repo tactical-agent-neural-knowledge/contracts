@@ -288,10 +288,12 @@ class ListWaitingOnResponse(_message.Message):
     def __init__(self, items: _Optional[_Iterable[_Union[WaitingOnItem, _Mapping]]] = ...) -> None: ...
 
 class GetBriefingRequest(_message.Message):
-    __slots__ = ("workspace_id",)
+    __slots__ = ("workspace_id", "narrate")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    NARRATE_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
-    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+    narrate: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., narrate: bool = ...) -> None: ...
 
 class BriefingTread(_message.Message):
     __slots__ = ("channel_id", "new_messages", "author_ids", "latest_decision", "latest_decision_id", "last_message_at", "recent_messages", "mentions")
@@ -324,11 +326,13 @@ class BriefingPerson(_message.Message):
     def __init__(self, user_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class GetBriefingResponse(_message.Message):
-    __slots__ = ("treads", "people", "quiet_since")
+    __slots__ = ("treads", "people", "quiet_since", "narrative")
     TREADS_FIELD_NUMBER: _ClassVar[int]
     PEOPLE_FIELD_NUMBER: _ClassVar[int]
     QUIET_SINCE_FIELD_NUMBER: _ClassVar[int]
+    NARRATIVE_FIELD_NUMBER: _ClassVar[int]
     treads: _containers.RepeatedCompositeFieldContainer[BriefingTread]
     people: _containers.RepeatedCompositeFieldContainer[BriefingPerson]
     quiet_since: _timestamp_pb2.Timestamp
-    def __init__(self, treads: _Optional[_Iterable[_Union[BriefingTread, _Mapping]]] = ..., people: _Optional[_Iterable[_Union[BriefingPerson, _Mapping]]] = ..., quiet_since: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    narrative: str
+    def __init__(self, treads: _Optional[_Iterable[_Union[BriefingTread, _Mapping]]] = ..., people: _Optional[_Iterable[_Union[BriefingPerson, _Mapping]]] = ..., quiet_since: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., narrative: _Optional[str] = ...) -> None: ...
