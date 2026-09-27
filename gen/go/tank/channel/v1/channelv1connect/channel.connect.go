@@ -53,6 +53,9 @@ const (
 	ChannelServiceInviteToChannelProcedure = "/tank.channel.v1.ChannelService/InviteToChannel"
 	// ChannelServiceSetGoalProcedure is the fully-qualified name of the ChannelService's SetGoal RPC.
 	ChannelServiceSetGoalProcedure = "/tank.channel.v1.ChannelService/SetGoal"
+	// ChannelServiceSetChannelIconProcedure is the fully-qualified name of the ChannelService's
+	// SetChannelIcon RPC.
+	ChannelServiceSetChannelIconProcedure = "/tank.channel.v1.ChannelService/SetChannelIcon"
 	// ChannelServiceListChannelMembersProcedure is the fully-qualified name of the ChannelService's
 	// ListChannelMembers RPC.
 	ChannelServiceListChannelMembersProcedure = "/tank.channel.v1.ChannelService/ListChannelMembers"
@@ -79,6 +82,7 @@ type ChannelServiceClient interface {
 	LeaveChannel(context.Context, *connect.Request[v1.LeaveChannelRequest]) (*connect.Response[v1.LeaveChannelResponse], error)
 	InviteToChannel(context.Context, *connect.Request[v1.InviteToChannelRequest]) (*connect.Response[v1.InviteToChannelResponse], error)
 	SetGoal(context.Context, *connect.Request[v1.SetGoalRequest]) (*connect.Response[v1.SetGoalResponse], error)
+	SetChannelIcon(context.Context, *connect.Request[v1.SetChannelIconRequest]) (*connect.Response[v1.SetChannelIconResponse], error)
 	ListChannelMembers(context.Context, *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error)
 	UpdateChannel(context.Context, *connect.Request[v1.UpdateChannelRequest]) (*connect.Response[v1.UpdateChannelResponse], error)
 	ArchiveChannel(context.Context, *connect.Request[v1.ArchiveChannelRequest]) (*connect.Response[v1.ArchiveChannelResponse], error)
@@ -139,6 +143,12 @@ func NewChannelServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(channelServiceMethods.ByName("SetGoal")),
 			connect.WithClientOptions(opts...),
 		),
+		setChannelIcon: connect.NewClient[v1.SetChannelIconRequest, v1.SetChannelIconResponse](
+			httpClient,
+			baseURL+ChannelServiceSetChannelIconProcedure,
+			connect.WithSchema(channelServiceMethods.ByName("SetChannelIcon")),
+			connect.WithClientOptions(opts...),
+		),
 		listChannelMembers: connect.NewClient[v1.ListChannelMembersRequest, v1.ListChannelMembersResponse](
 			httpClient,
 			baseURL+ChannelServiceListChannelMembersProcedure,
@@ -181,6 +191,7 @@ type channelServiceClient struct {
 	leaveChannel         *connect.Client[v1.LeaveChannelRequest, v1.LeaveChannelResponse]
 	inviteToChannel      *connect.Client[v1.InviteToChannelRequest, v1.InviteToChannelResponse]
 	setGoal              *connect.Client[v1.SetGoalRequest, v1.SetGoalResponse]
+	setChannelIcon       *connect.Client[v1.SetChannelIconRequest, v1.SetChannelIconResponse]
 	listChannelMembers   *connect.Client[v1.ListChannelMembersRequest, v1.ListChannelMembersResponse]
 	updateChannel        *connect.Client[v1.UpdateChannelRequest, v1.UpdateChannelResponse]
 	archiveChannel       *connect.Client[v1.ArchiveChannelRequest, v1.ArchiveChannelResponse]
@@ -223,6 +234,11 @@ func (c *channelServiceClient) SetGoal(ctx context.Context, req *connect.Request
 	return c.setGoal.CallUnary(ctx, req)
 }
 
+// SetChannelIcon calls tank.channel.v1.ChannelService.SetChannelIcon.
+func (c *channelServiceClient) SetChannelIcon(ctx context.Context, req *connect.Request[v1.SetChannelIconRequest]) (*connect.Response[v1.SetChannelIconResponse], error) {
+	return c.setChannelIcon.CallUnary(ctx, req)
+}
+
 // ListChannelMembers calls tank.channel.v1.ChannelService.ListChannelMembers.
 func (c *channelServiceClient) ListChannelMembers(ctx context.Context, req *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error) {
 	return c.listChannelMembers.CallUnary(ctx, req)
@@ -257,6 +273,7 @@ type ChannelServiceHandler interface {
 	LeaveChannel(context.Context, *connect.Request[v1.LeaveChannelRequest]) (*connect.Response[v1.LeaveChannelResponse], error)
 	InviteToChannel(context.Context, *connect.Request[v1.InviteToChannelRequest]) (*connect.Response[v1.InviteToChannelResponse], error)
 	SetGoal(context.Context, *connect.Request[v1.SetGoalRequest]) (*connect.Response[v1.SetGoalResponse], error)
+	SetChannelIcon(context.Context, *connect.Request[v1.SetChannelIconRequest]) (*connect.Response[v1.SetChannelIconResponse], error)
 	ListChannelMembers(context.Context, *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error)
 	UpdateChannel(context.Context, *connect.Request[v1.UpdateChannelRequest]) (*connect.Response[v1.UpdateChannelResponse], error)
 	ArchiveChannel(context.Context, *connect.Request[v1.ArchiveChannelRequest]) (*connect.Response[v1.ArchiveChannelResponse], error)
@@ -313,6 +330,12 @@ func NewChannelServiceHandler(svc ChannelServiceHandler, opts ...connect.Handler
 		connect.WithSchema(channelServiceMethods.ByName("SetGoal")),
 		connect.WithHandlerOptions(opts...),
 	)
+	channelServiceSetChannelIconHandler := connect.NewUnaryHandler(
+		ChannelServiceSetChannelIconProcedure,
+		svc.SetChannelIcon,
+		connect.WithSchema(channelServiceMethods.ByName("SetChannelIcon")),
+		connect.WithHandlerOptions(opts...),
+	)
 	channelServiceListChannelMembersHandler := connect.NewUnaryHandler(
 		ChannelServiceListChannelMembersProcedure,
 		svc.ListChannelMembers,
@@ -359,6 +382,8 @@ func NewChannelServiceHandler(svc ChannelServiceHandler, opts ...connect.Handler
 			channelServiceInviteToChannelHandler.ServeHTTP(w, r)
 		case ChannelServiceSetGoalProcedure:
 			channelServiceSetGoalHandler.ServeHTTP(w, r)
+		case ChannelServiceSetChannelIconProcedure:
+			channelServiceSetChannelIconHandler.ServeHTTP(w, r)
 		case ChannelServiceListChannelMembersProcedure:
 			channelServiceListChannelMembersHandler.ServeHTTP(w, r)
 		case ChannelServiceUpdateChannelProcedure:
@@ -404,6 +429,10 @@ func (UnimplementedChannelServiceHandler) InviteToChannel(context.Context, *conn
 
 func (UnimplementedChannelServiceHandler) SetGoal(context.Context, *connect.Request[v1.SetGoalRequest]) (*connect.Response[v1.SetGoalResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.channel.v1.ChannelService.SetGoal is not implemented"))
+}
+
+func (UnimplementedChannelServiceHandler) SetChannelIcon(context.Context, *connect.Request[v1.SetChannelIconRequest]) (*connect.Response[v1.SetChannelIconResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.channel.v1.ChannelService.SetChannelIcon is not implemented"))
 }
 
 func (UnimplementedChannelServiceHandler) ListChannelMembers(context.Context, *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error) {

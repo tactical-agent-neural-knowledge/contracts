@@ -25,6 +25,8 @@ message Workspace {
   google.protobuf.Timestamp created_at = 5;
   // The workspace's look, set by an admin from a description. Unset means TANK's own.
   Theme theme = 6;
+  // A generated or uploaded picture for the workspace; empty means the TANK mark.
+  string icon_file_id = 7;
 }
 
 // A colour theme made from a few words. Every colour is a #rrggbb hex; the
@@ -490,6 +492,10 @@ service WorkspaceService {
   rpc GenerateTheme(GenerateThemeRequest) returns (GenerateThemeResponse);
   // Admins only: the workspace's theme, or a reset when theme is unset.
   rpc SetWorkspaceTheme(SetWorkspaceThemeRequest) returns (SetWorkspaceThemeResponse);
+  // Turn up to fifteen words into an icon or emoji picture. The file is saved; nothing is applied.
+  rpc GenerateArt(GenerateArtRequest) returns (GenerateArtResponse);
+  // Admins only: the workspace icon, or a reset when file_id is empty.
+  rpc SetWorkspaceIcon(SetWorkspaceIconRequest) returns (SetWorkspaceIconResponse);
   rpc ListEmoji(ListEmojiRequest) returns (ListEmojiResponse);
   rpc CreateEmoji(CreateEmojiRequest) returns (CreateEmojiResponse);
   rpc DeleteEmoji(DeleteEmojiRequest) returns (DeleteEmojiResponse);
@@ -523,5 +529,32 @@ message SetWorkspaceThemeRequest {
   Theme theme = 2;
 }
 message SetWorkspaceThemeResponse {
+  Workspace workspace = 1;
+}
+
+// What a generated picture is for. It changes the brief, not the pipeline.
+enum ArtKind {
+  ART_KIND_UNSPECIFIED = 0;
+  ART_KIND_ICON = 1;  // a Tread or workspace icon
+  ART_KIND_EMOJI = 2; // a custom emoji
+}
+// "A copper gear with a lightning bolt" → a small SVG, stored as a file the caller owns.
+message GenerateArtRequest {
+  string workspace_id = 1;
+  ArtKind kind = 2;
+  string description = 3; // at most 15 words
+}
+message GenerateArtResponse {
+  // The stored picture; pass its id to SetWorkspaceIcon, SetChannelIcon or CreateEmoji.
+  string file_id = 1;
+  // The sanitised SVG, for an instant preview.
+  string svg = 2;
+}
+// Admins only: the workspace icon, or a reset when file_id is empty.
+message SetWorkspaceIconRequest {
+  string workspace_id = 1;
+  string file_id = 2;
+}
+message SetWorkspaceIconResponse {
   Workspace workspace = 1;
 }

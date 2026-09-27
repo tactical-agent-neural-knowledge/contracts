@@ -48,7 +48,7 @@ class TreadGoal(_message.Message):
     def __init__(self, goal: _Optional[str] = ..., assignee_ids: _Optional[_Iterable[str]] = ..., pipeline_status: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ...) -> None: ...
 
 class Channel(_message.Message):
-    __slots__ = ("id", "workspace_id", "type", "name", "topic", "purpose", "last_seq", "member_count", "last_message_at", "archived_at", "created_at", "goal", "member_ids", "joined")
+    __slots__ = ("id", "workspace_id", "type", "name", "topic", "purpose", "last_seq", "member_count", "last_message_at", "archived_at", "created_at", "goal", "member_ids", "joined", "icon_file_id")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     TYPE_FIELD_NUMBER: _ClassVar[int]
@@ -63,6 +63,7 @@ class Channel(_message.Message):
     GOAL_FIELD_NUMBER: _ClassVar[int]
     MEMBER_IDS_FIELD_NUMBER: _ClassVar[int]
     JOINED_FIELD_NUMBER: _ClassVar[int]
+    ICON_FILE_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     type: ChannelType
@@ -77,7 +78,8 @@ class Channel(_message.Message):
     goal: TreadGoal
     member_ids: _containers.RepeatedScalarFieldContainer[str]
     joined: bool
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., type: _Optional[_Union[ChannelType, str]] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., last_seq: _Optional[int] = ..., member_count: _Optional[int] = ..., last_message_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., archived_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., goal: _Optional[_Union[TreadGoal, _Mapping]] = ..., member_ids: _Optional[_Iterable[str]] = ..., joined: bool = ...) -> None: ...
+    icon_file_id: str
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., type: _Optional[_Union[ChannelType, str]] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., last_seq: _Optional[int] = ..., member_count: _Optional[int] = ..., last_message_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., archived_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., goal: _Optional[_Union[TreadGoal, _Mapping]] = ..., member_ids: _Optional[_Iterable[str]] = ..., joined: bool = ..., icon_file_id: _Optional[str] = ...) -> None: ...
 
 class ChannelReadState(_message.Message):
     __slots__ = ("channel_id", "last_read_seq", "mention_count", "muted", "starred", "notify_pref", "unread_count")
@@ -194,6 +196,20 @@ class SetGoalRequest(_message.Message):
     def __init__(self, channel_id: _Optional[str] = ..., goal: _Optional[_Union[TreadGoal, _Mapping]] = ...) -> None: ...
 
 class SetGoalResponse(_message.Message):
+    __slots__ = ("channel",)
+    CHANNEL_FIELD_NUMBER: _ClassVar[int]
+    channel: Channel
+    def __init__(self, channel: _Optional[_Union[Channel, _Mapping]] = ...) -> None: ...
+
+class SetChannelIconRequest(_message.Message):
+    __slots__ = ("channel_id", "file_id")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    file_id: str
+    def __init__(self, channel_id: _Optional[str] = ..., file_id: _Optional[str] = ...) -> None: ...
+
+class SetChannelIconResponse(_message.Message):
     __slots__ = ("channel",)
     CHANNEL_FIELD_NUMBER: _ClassVar[int]
     channel: Channel

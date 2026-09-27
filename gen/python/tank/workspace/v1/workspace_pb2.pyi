@@ -19,28 +19,39 @@ class Role(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     ROLE_MEMBER: _ClassVar[Role]
     ROLE_GUEST: _ClassVar[Role]
     ROLE_BOT: _ClassVar[Role]
+
+class ArtKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    ART_KIND_UNSPECIFIED: _ClassVar[ArtKind]
+    ART_KIND_ICON: _ClassVar[ArtKind]
+    ART_KIND_EMOJI: _ClassVar[ArtKind]
 ROLE_UNSPECIFIED: Role
 ROLE_OWNER: Role
 ROLE_ADMIN: Role
 ROLE_MEMBER: Role
 ROLE_GUEST: Role
 ROLE_BOT: Role
+ART_KIND_UNSPECIFIED: ArtKind
+ART_KIND_ICON: ArtKind
+ART_KIND_EMOJI: ArtKind
 
 class Workspace(_message.Message):
-    __slots__ = ("id", "slug", "name", "icon_url", "created_at", "theme")
+    __slots__ = ("id", "slug", "name", "icon_url", "created_at", "theme", "icon_file_id")
     ID_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     ICON_URL_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     THEME_FIELD_NUMBER: _ClassVar[int]
+    ICON_FILE_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
     slug: str
     name: str
     icon_url: str
     created_at: _timestamp_pb2.Timestamp
     theme: Theme
-    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., icon_url: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., theme: _Optional[_Union[Theme, _Mapping]] = ...) -> None: ...
+    icon_file_id: str
+    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., icon_url: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., theme: _Optional[_Union[Theme, _Mapping]] = ..., icon_file_id: _Optional[str] = ...) -> None: ...
 
 class Theme(_message.Message):
     __slots__ = ("description", "name", "scheme", "primary", "secondary", "background", "surface", "on_surface", "accent")
@@ -741,6 +752,38 @@ class SetWorkspaceThemeRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ..., theme: _Optional[_Union[Theme, _Mapping]] = ...) -> None: ...
 
 class SetWorkspaceThemeResponse(_message.Message):
+    __slots__ = ("workspace",)
+    WORKSPACE_FIELD_NUMBER: _ClassVar[int]
+    workspace: Workspace
+    def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ...) -> None: ...
+
+class GenerateArtRequest(_message.Message):
+    __slots__ = ("workspace_id", "kind", "description")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    kind: ArtKind
+    description: str
+    def __init__(self, workspace_id: _Optional[str] = ..., kind: _Optional[_Union[ArtKind, str]] = ..., description: _Optional[str] = ...) -> None: ...
+
+class GenerateArtResponse(_message.Message):
+    __slots__ = ("file_id", "svg")
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    SVG_FIELD_NUMBER: _ClassVar[int]
+    file_id: str
+    svg: str
+    def __init__(self, file_id: _Optional[str] = ..., svg: _Optional[str] = ...) -> None: ...
+
+class SetWorkspaceIconRequest(_message.Message):
+    __slots__ = ("workspace_id", "file_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    file_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., file_id: _Optional[str] = ...) -> None: ...
+
+class SetWorkspaceIconResponse(_message.Message):
     __slots__ = ("workspace",)
     WORKSPACE_FIELD_NUMBER: _ClassVar[int]
     workspace: Workspace

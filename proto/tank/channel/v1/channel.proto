@@ -52,6 +52,8 @@ message Channel {
   repeated string member_ids = 13;
   // Whether the caller is a member (public channels are listed even when not joined).
   bool joined = 14;
+  // A generated or uploaded picture for the Tread; empty means the # or lock glyph.
+  string icon_file_id = 15;
 }
 
 message ChannelReadState {
@@ -128,6 +130,14 @@ message SetGoalRequest {
 message SetGoalResponse {
   Channel channel = 1;
 }
+// Any member of the Tread may set its icon; an empty file_id resets it.
+message SetChannelIconRequest {
+  string channel_id = 1;
+  string file_id = 2;
+}
+message SetChannelIconResponse {
+  Channel channel = 1;
+}
 
 message ListChannelMembersRequest {
   string channel_id = 1;
@@ -184,6 +194,7 @@ service ChannelService {
   rpc LeaveChannel(LeaveChannelRequest) returns (LeaveChannelResponse);
   rpc InviteToChannel(InviteToChannelRequest) returns (InviteToChannelResponse);
   rpc SetGoal(SetGoalRequest) returns (SetGoalResponse);
+  rpc SetChannelIcon(SetChannelIconRequest) returns (SetChannelIconResponse);
   rpc ListChannelMembers(ListChannelMembersRequest) returns (ListChannelMembersResponse);
   rpc UpdateChannel(UpdateChannelRequest) returns (UpdateChannelResponse);
   rpc ArchiveChannel(ArchiveChannelRequest) returns (ArchiveChannelResponse);
