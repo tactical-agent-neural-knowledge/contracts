@@ -1930,6 +1930,88 @@ func (x *ArchiveChannelResponse) GetChannel() *Channel {
 	return nil
 }
 
+// Deletes a Tread or Radar for everyone: it leaves every list and cannot be opened again.
+// Admins, or whoever may archive it. #general cannot be deleted.
+type DeleteChannelRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ChannelId     string                 `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteChannelRequest) Reset() {
+	*x = DeleteChannelRequest{}
+	mi := &file_tank_channel_v1_channel_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteChannelRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteChannelRequest) ProtoMessage() {}
+
+func (x *DeleteChannelRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_channel_v1_channel_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteChannelRequest.ProtoReflect.Descriptor instead.
+func (*DeleteChannelRequest) Descriptor() ([]byte, []int) {
+	return file_tank_channel_v1_channel_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *DeleteChannelRequest) GetChannelId() string {
+	if x != nil {
+		return x.ChannelId
+	}
+	return ""
+}
+
+type DeleteChannelResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteChannelResponse) Reset() {
+	*x = DeleteChannelResponse{}
+	mi := &file_tank_channel_v1_channel_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteChannelResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteChannelResponse) ProtoMessage() {}
+
+func (x *DeleteChannelResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_channel_v1_channel_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteChannelResponse.ProtoReflect.Descriptor instead.
+func (*DeleteChannelResponse) Descriptor() ([]byte, []int) {
+	return file_tank_channel_v1_channel_proto_rawDescGZIP(), []int{32}
+}
+
 type UnarchiveChannelRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ChannelId     string                 `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
@@ -1939,7 +2021,7 @@ type UnarchiveChannelRequest struct {
 
 func (x *UnarchiveChannelRequest) Reset() {
 	*x = UnarchiveChannelRequest{}
-	mi := &file_tank_channel_v1_channel_proto_msgTypes[31]
+	mi := &file_tank_channel_v1_channel_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1951,7 +2033,7 @@ func (x *UnarchiveChannelRequest) String() string {
 func (*UnarchiveChannelRequest) ProtoMessage() {}
 
 func (x *UnarchiveChannelRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_channel_v1_channel_proto_msgTypes[31]
+	mi := &file_tank_channel_v1_channel_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1964,7 +2046,7 @@ func (x *UnarchiveChannelRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveChannelRequest.ProtoReflect.Descriptor instead.
 func (*UnarchiveChannelRequest) Descriptor() ([]byte, []int) {
-	return file_tank_channel_v1_channel_proto_rawDescGZIP(), []int{31}
+	return file_tank_channel_v1_channel_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *UnarchiveChannelRequest) GetChannelId() string {
@@ -1983,7 +2065,7 @@ type UnarchiveChannelResponse struct {
 
 func (x *UnarchiveChannelResponse) Reset() {
 	*x = UnarchiveChannelResponse{}
-	mi := &file_tank_channel_v1_channel_proto_msgTypes[32]
+	mi := &file_tank_channel_v1_channel_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1995,7 +2077,7 @@ func (x *UnarchiveChannelResponse) String() string {
 func (*UnarchiveChannelResponse) ProtoMessage() {}
 
 func (x *UnarchiveChannelResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_channel_v1_channel_proto_msgTypes[32]
+	mi := &file_tank_channel_v1_channel_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2008,7 +2090,7 @@ func (x *UnarchiveChannelResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnarchiveChannelResponse.ProtoReflect.Descriptor instead.
 func (*UnarchiveChannelResponse) Descriptor() ([]byte, []int) {
-	return file_tank_channel_v1_channel_proto_rawDescGZIP(), []int{32}
+	return file_tank_channel_v1_channel_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *UnarchiveChannelResponse) GetChannel() *Channel {
@@ -2031,7 +2113,7 @@ type SetChannelPreferenceRequest struct {
 
 func (x *SetChannelPreferenceRequest) Reset() {
 	*x = SetChannelPreferenceRequest{}
-	mi := &file_tank_channel_v1_channel_proto_msgTypes[33]
+	mi := &file_tank_channel_v1_channel_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2043,7 +2125,7 @@ func (x *SetChannelPreferenceRequest) String() string {
 func (*SetChannelPreferenceRequest) ProtoMessage() {}
 
 func (x *SetChannelPreferenceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_channel_v1_channel_proto_msgTypes[33]
+	mi := &file_tank_channel_v1_channel_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2056,7 +2138,7 @@ func (x *SetChannelPreferenceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetChannelPreferenceRequest.ProtoReflect.Descriptor instead.
 func (*SetChannelPreferenceRequest) Descriptor() ([]byte, []int) {
-	return file_tank_channel_v1_channel_proto_rawDescGZIP(), []int{33}
+	return file_tank_channel_v1_channel_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *SetChannelPreferenceRequest) GetChannelId() string {
@@ -2096,7 +2178,7 @@ type SetChannelPreferenceResponse struct {
 
 func (x *SetChannelPreferenceResponse) Reset() {
 	*x = SetChannelPreferenceResponse{}
-	mi := &file_tank_channel_v1_channel_proto_msgTypes[34]
+	mi := &file_tank_channel_v1_channel_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2108,7 +2190,7 @@ func (x *SetChannelPreferenceResponse) String() string {
 func (*SetChannelPreferenceResponse) ProtoMessage() {}
 
 func (x *SetChannelPreferenceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_channel_v1_channel_proto_msgTypes[34]
+	mi := &file_tank_channel_v1_channel_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2121,7 +2203,7 @@ func (x *SetChannelPreferenceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetChannelPreferenceResponse.ProtoReflect.Descriptor instead.
 func (*SetChannelPreferenceResponse) Descriptor() ([]byte, []int) {
-	return file_tank_channel_v1_channel_proto_rawDescGZIP(), []int{34}
+	return file_tank_channel_v1_channel_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *SetChannelPreferenceResponse) GetReadState() *ChannelReadState {
@@ -2372,7 +2454,12 @@ var file_tank_channel_v1_channel_proto_rawDesc = string([]byte{
 	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x32, 0x0a, 0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x63, 0x68,
 	0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c,
-	0x52, 0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x22, 0x38, 0x0a, 0x17, 0x55, 0x6e, 0x61,
+	0x52, 0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x22, 0x35, 0x0a, 0x14, 0x44, 0x65, 0x6c,
+	0x65, 0x74, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x5f, 0x69, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x49, 0x64,
+	0x22, 0x17, 0x0a, 0x15, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65,
+	0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x38, 0x0a, 0x17, 0x55, 0x6e, 0x61,
 	0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x71,
 	0x75, 0x65, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x5f,
 	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65,
@@ -2419,7 +2506,7 @@ var file_tank_channel_v1_channel_proto_rawDesc = string([]byte{
 	0x0a, 0x14, 0x4e, 0x4f, 0x54, 0x49, 0x46, 0x59, 0x5f, 0x50, 0x52, 0x45, 0x46, 0x5f, 0x4d, 0x45,
 	0x4e, 0x54, 0x49, 0x4f, 0x4e, 0x53, 0x10, 0x02, 0x12, 0x17, 0x0a, 0x13, 0x4e, 0x4f, 0x54, 0x49,
 	0x46, 0x59, 0x5f, 0x50, 0x52, 0x45, 0x46, 0x5f, 0x4e, 0x4f, 0x54, 0x48, 0x49, 0x4e, 0x47, 0x10,
-	0x03, 0x32, 0xd4, 0x0b, 0x0a, 0x0e, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x53, 0x65, 0x72,
+	0x03, 0x32, 0xb4, 0x0c, 0x0a, 0x0e, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x53, 0x65, 0x72,
 	0x76, 0x69, 0x63, 0x65, 0x12, 0x5e, 0x0a, 0x0d, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x68,
 	0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x12, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x63, 0x68, 0x61,
 	0x6e, 0x6e, 0x65, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x68,
@@ -2498,6 +2585,12 @@ var file_tank_channel_v1_channel_proto_rawDesc = string([]byte{
 	0x69, 0x76, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
 	0x74, 0x1a, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c,
 	0x2e, 0x76, 0x31, 0x2e, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x6e,
+	0x65, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5e, 0x0a, 0x0d, 0x44, 0x65,
+	0x6c, 0x65, 0x74, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x12, 0x25, 0x2e, 0x74, 0x61,
+	0x6e, 0x6b, 0x2e, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65,
+	0x6c, 0x65, 0x74, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65,
+	0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x6e,
 	0x65, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x67, 0x0a, 0x10, 0x55, 0x6e,
 	0x61, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x12, 0x28,
 	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x2e, 0x76, 0x31,
@@ -2542,7 +2635,7 @@ func file_tank_channel_v1_channel_proto_rawDescGZIP() []byte {
 }
 
 var file_tank_channel_v1_channel_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_tank_channel_v1_channel_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
+var file_tank_channel_v1_channel_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
 var file_tank_channel_v1_channel_proto_goTypes = []any{
 	(ChannelType)(0),                     // 0: tank.channel.v1.ChannelType
 	(NotifyPref)(0),                      // 1: tank.channel.v1.NotifyPref
@@ -2577,18 +2670,20 @@ var file_tank_channel_v1_channel_proto_goTypes = []any{
 	(*UpdateChannelResponse)(nil),        // 30: tank.channel.v1.UpdateChannelResponse
 	(*ArchiveChannelRequest)(nil),        // 31: tank.channel.v1.ArchiveChannelRequest
 	(*ArchiveChannelResponse)(nil),       // 32: tank.channel.v1.ArchiveChannelResponse
-	(*UnarchiveChannelRequest)(nil),      // 33: tank.channel.v1.UnarchiveChannelRequest
-	(*UnarchiveChannelResponse)(nil),     // 34: tank.channel.v1.UnarchiveChannelResponse
-	(*SetChannelPreferenceRequest)(nil),  // 35: tank.channel.v1.SetChannelPreferenceRequest
-	(*SetChannelPreferenceResponse)(nil), // 36: tank.channel.v1.SetChannelPreferenceResponse
-	(*timestamppb.Timestamp)(nil),        // 37: google.protobuf.Timestamp
+	(*DeleteChannelRequest)(nil),         // 33: tank.channel.v1.DeleteChannelRequest
+	(*DeleteChannelResponse)(nil),        // 34: tank.channel.v1.DeleteChannelResponse
+	(*UnarchiveChannelRequest)(nil),      // 35: tank.channel.v1.UnarchiveChannelRequest
+	(*UnarchiveChannelResponse)(nil),     // 36: tank.channel.v1.UnarchiveChannelResponse
+	(*SetChannelPreferenceRequest)(nil),  // 37: tank.channel.v1.SetChannelPreferenceRequest
+	(*SetChannelPreferenceResponse)(nil), // 38: tank.channel.v1.SetChannelPreferenceResponse
+	(*timestamppb.Timestamp)(nil),        // 39: google.protobuf.Timestamp
 }
 var file_tank_channel_v1_channel_proto_depIdxs = []int32{
-	37, // 0: tank.channel.v1.TreadGoal.updated_at:type_name -> google.protobuf.Timestamp
+	39, // 0: tank.channel.v1.TreadGoal.updated_at:type_name -> google.protobuf.Timestamp
 	0,  // 1: tank.channel.v1.Channel.type:type_name -> tank.channel.v1.ChannelType
-	37, // 2: tank.channel.v1.Channel.last_message_at:type_name -> google.protobuf.Timestamp
-	37, // 3: tank.channel.v1.Channel.archived_at:type_name -> google.protobuf.Timestamp
-	37, // 4: tank.channel.v1.Channel.created_at:type_name -> google.protobuf.Timestamp
+	39, // 2: tank.channel.v1.Channel.last_message_at:type_name -> google.protobuf.Timestamp
+	39, // 3: tank.channel.v1.Channel.archived_at:type_name -> google.protobuf.Timestamp
+	39, // 4: tank.channel.v1.Channel.created_at:type_name -> google.protobuf.Timestamp
 	2,  // 5: tank.channel.v1.Channel.goal:type_name -> tank.channel.v1.TreadGoal
 	1,  // 6: tank.channel.v1.ChannelReadState.notify_pref:type_name -> tank.channel.v1.NotifyPref
 	0,  // 7: tank.channel.v1.CreateChannelRequest.type:type_name -> tank.channel.v1.ChannelType
@@ -2623,25 +2718,27 @@ var file_tank_channel_v1_channel_proto_depIdxs = []int32{
 	27, // 36: tank.channel.v1.ChannelService.ListChannelMembers:input_type -> tank.channel.v1.ListChannelMembersRequest
 	29, // 37: tank.channel.v1.ChannelService.UpdateChannel:input_type -> tank.channel.v1.UpdateChannelRequest
 	31, // 38: tank.channel.v1.ChannelService.ArchiveChannel:input_type -> tank.channel.v1.ArchiveChannelRequest
-	33, // 39: tank.channel.v1.ChannelService.UnarchiveChannel:input_type -> tank.channel.v1.UnarchiveChannelRequest
-	35, // 40: tank.channel.v1.ChannelService.SetChannelPreference:input_type -> tank.channel.v1.SetChannelPreferenceRequest
-	6,  // 41: tank.channel.v1.ChannelService.CreateChannel:output_type -> tank.channel.v1.CreateChannelResponse
-	8,  // 42: tank.channel.v1.ChannelService.ListChannels:output_type -> tank.channel.v1.ListChannelsResponse
-	10, // 43: tank.channel.v1.ChannelService.GetChannel:output_type -> tank.channel.v1.GetChannelResponse
-	12, // 44: tank.channel.v1.ChannelService.JoinChannel:output_type -> tank.channel.v1.JoinChannelResponse
-	14, // 45: tank.channel.v1.ChannelService.LeaveChannel:output_type -> tank.channel.v1.LeaveChannelResponse
-	16, // 46: tank.channel.v1.ChannelService.InviteToChannel:output_type -> tank.channel.v1.InviteToChannelResponse
-	18, // 47: tank.channel.v1.ChannelService.SetGoal:output_type -> tank.channel.v1.SetGoalResponse
-	20, // 48: tank.channel.v1.ChannelService.SetChannelIcon:output_type -> tank.channel.v1.SetChannelIconResponse
-	24, // 49: tank.channel.v1.ChannelService.DescribeTread:output_type -> tank.channel.v1.DescribeTreadResponse
-	26, // 50: tank.channel.v1.ChannelService.CreateTreadFromPlan:output_type -> tank.channel.v1.CreateTreadFromPlanResponse
-	28, // 51: tank.channel.v1.ChannelService.ListChannelMembers:output_type -> tank.channel.v1.ListChannelMembersResponse
-	30, // 52: tank.channel.v1.ChannelService.UpdateChannel:output_type -> tank.channel.v1.UpdateChannelResponse
-	32, // 53: tank.channel.v1.ChannelService.ArchiveChannel:output_type -> tank.channel.v1.ArchiveChannelResponse
-	34, // 54: tank.channel.v1.ChannelService.UnarchiveChannel:output_type -> tank.channel.v1.UnarchiveChannelResponse
-	36, // 55: tank.channel.v1.ChannelService.SetChannelPreference:output_type -> tank.channel.v1.SetChannelPreferenceResponse
-	41, // [41:56] is the sub-list for method output_type
-	26, // [26:41] is the sub-list for method input_type
+	33, // 39: tank.channel.v1.ChannelService.DeleteChannel:input_type -> tank.channel.v1.DeleteChannelRequest
+	35, // 40: tank.channel.v1.ChannelService.UnarchiveChannel:input_type -> tank.channel.v1.UnarchiveChannelRequest
+	37, // 41: tank.channel.v1.ChannelService.SetChannelPreference:input_type -> tank.channel.v1.SetChannelPreferenceRequest
+	6,  // 42: tank.channel.v1.ChannelService.CreateChannel:output_type -> tank.channel.v1.CreateChannelResponse
+	8,  // 43: tank.channel.v1.ChannelService.ListChannels:output_type -> tank.channel.v1.ListChannelsResponse
+	10, // 44: tank.channel.v1.ChannelService.GetChannel:output_type -> tank.channel.v1.GetChannelResponse
+	12, // 45: tank.channel.v1.ChannelService.JoinChannel:output_type -> tank.channel.v1.JoinChannelResponse
+	14, // 46: tank.channel.v1.ChannelService.LeaveChannel:output_type -> tank.channel.v1.LeaveChannelResponse
+	16, // 47: tank.channel.v1.ChannelService.InviteToChannel:output_type -> tank.channel.v1.InviteToChannelResponse
+	18, // 48: tank.channel.v1.ChannelService.SetGoal:output_type -> tank.channel.v1.SetGoalResponse
+	20, // 49: tank.channel.v1.ChannelService.SetChannelIcon:output_type -> tank.channel.v1.SetChannelIconResponse
+	24, // 50: tank.channel.v1.ChannelService.DescribeTread:output_type -> tank.channel.v1.DescribeTreadResponse
+	26, // 51: tank.channel.v1.ChannelService.CreateTreadFromPlan:output_type -> tank.channel.v1.CreateTreadFromPlanResponse
+	28, // 52: tank.channel.v1.ChannelService.ListChannelMembers:output_type -> tank.channel.v1.ListChannelMembersResponse
+	30, // 53: tank.channel.v1.ChannelService.UpdateChannel:output_type -> tank.channel.v1.UpdateChannelResponse
+	32, // 54: tank.channel.v1.ChannelService.ArchiveChannel:output_type -> tank.channel.v1.ArchiveChannelResponse
+	34, // 55: tank.channel.v1.ChannelService.DeleteChannel:output_type -> tank.channel.v1.DeleteChannelResponse
+	36, // 56: tank.channel.v1.ChannelService.UnarchiveChannel:output_type -> tank.channel.v1.UnarchiveChannelResponse
+	38, // 57: tank.channel.v1.ChannelService.SetChannelPreference:output_type -> tank.channel.v1.SetChannelPreferenceResponse
+	42, // [42:58] is the sub-list for method output_type
+	26, // [26:42] is the sub-list for method input_type
 	26, // [26:26] is the sub-list for extension type_name
 	26, // [26:26] is the sub-list for extension extendee
 	0,  // [0:26] is the sub-list for field type_name
@@ -2654,14 +2751,14 @@ func file_tank_channel_v1_channel_proto_init() {
 	}
 	file_tank_channel_v1_channel_proto_msgTypes[2].OneofWrappers = []any{}
 	file_tank_channel_v1_channel_proto_msgTypes[27].OneofWrappers = []any{}
-	file_tank_channel_v1_channel_proto_msgTypes[33].OneofWrappers = []any{}
+	file_tank_channel_v1_channel_proto_msgTypes[35].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tank_channel_v1_channel_proto_rawDesc), len(file_tank_channel_v1_channel_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   35,
+			NumMessages:   37,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

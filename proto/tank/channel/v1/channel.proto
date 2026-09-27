@@ -201,6 +201,13 @@ message ArchiveChannelResponse {
   Channel channel = 1;
 }
 
+// Deletes a Tread or Radar for everyone: it leaves every list and cannot be opened again.
+// Admins, or whoever may archive it. #general cannot be deleted.
+message DeleteChannelRequest {
+  string channel_id = 1;
+}
+message DeleteChannelResponse {}
+
 message UnarchiveChannelRequest {
   string channel_id = 1;
 }
@@ -233,6 +240,7 @@ service ChannelService {
   rpc ListChannelMembers(ListChannelMembersRequest) returns (ListChannelMembersResponse);
   rpc UpdateChannel(UpdateChannelRequest) returns (UpdateChannelResponse);
   rpc ArchiveChannel(ArchiveChannelRequest) returns (ArchiveChannelResponse);
+  rpc DeleteChannel(DeleteChannelRequest) returns (DeleteChannelResponse);
   rpc UnarchiveChannel(UnarchiveChannelRequest) returns (UnarchiveChannelResponse);
   rpc SetChannelPreference(SetChannelPreferenceRequest) returns (SetChannelPreferenceResponse);
 }

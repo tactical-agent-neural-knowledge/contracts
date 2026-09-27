@@ -70,6 +70,11 @@ message ChannelUpdated {
   // The channel after the change (name/topic/purpose/goal/archived_at).
   tank.channel.v1.Channel channel = 2;
 }
+// A Tread or Radar was deleted; clients drop it wherever it is shown.
+message ChannelDeleted {
+  string channel_id = 1;
+  string actor_id = 2;
+}
 message ChannelMembershipChanged {
   string channel_id = 1;
   string user_id = 2;

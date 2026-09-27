@@ -321,6 +321,16 @@ class ArchiveChannelResponse(_message.Message):
     channel: Channel
     def __init__(self, channel: _Optional[_Union[Channel, _Mapping]] = ...) -> None: ...
 
+class DeleteChannelRequest(_message.Message):
+    __slots__ = ("channel_id",)
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
+
+class DeleteChannelResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class UnarchiveChannelRequest(_message.Message):
     __slots__ = ("channel_id",)
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]

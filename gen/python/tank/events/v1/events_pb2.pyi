@@ -110,6 +110,14 @@ class ChannelUpdated(_message.Message):
     channel: _channel_pb2.Channel
     def __init__(self, channel_id: _Optional[str] = ..., channel: _Optional[_Union[_channel_pb2.Channel, _Mapping]] = ...) -> None: ...
 
+class ChannelDeleted(_message.Message):
+    __slots__ = ("channel_id", "actor_id")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    actor_id: str
+    def __init__(self, channel_id: _Optional[str] = ..., actor_id: _Optional[str] = ...) -> None: ...
+
 class ChannelMembershipChanged(_message.Message):
     __slots__ = ("channel_id", "user_id", "joined", "actor_id")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]

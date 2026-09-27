@@ -71,6 +71,9 @@ const (
 	// ChannelServiceArchiveChannelProcedure is the fully-qualified name of the ChannelService's
 	// ArchiveChannel RPC.
 	ChannelServiceArchiveChannelProcedure = "/tank.channel.v1.ChannelService/ArchiveChannel"
+	// ChannelServiceDeleteChannelProcedure is the fully-qualified name of the ChannelService's
+	// DeleteChannel RPC.
+	ChannelServiceDeleteChannelProcedure = "/tank.channel.v1.ChannelService/DeleteChannel"
 	// ChannelServiceUnarchiveChannelProcedure is the fully-qualified name of the ChannelService's
 	// UnarchiveChannel RPC.
 	ChannelServiceUnarchiveChannelProcedure = "/tank.channel.v1.ChannelService/UnarchiveChannel"
@@ -94,6 +97,7 @@ type ChannelServiceClient interface {
 	ListChannelMembers(context.Context, *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error)
 	UpdateChannel(context.Context, *connect.Request[v1.UpdateChannelRequest]) (*connect.Response[v1.UpdateChannelResponse], error)
 	ArchiveChannel(context.Context, *connect.Request[v1.ArchiveChannelRequest]) (*connect.Response[v1.ArchiveChannelResponse], error)
+	DeleteChannel(context.Context, *connect.Request[v1.DeleteChannelRequest]) (*connect.Response[v1.DeleteChannelResponse], error)
 	UnarchiveChannel(context.Context, *connect.Request[v1.UnarchiveChannelRequest]) (*connect.Response[v1.UnarchiveChannelResponse], error)
 	SetChannelPreference(context.Context, *connect.Request[v1.SetChannelPreferenceRequest]) (*connect.Response[v1.SetChannelPreferenceResponse], error)
 }
@@ -187,6 +191,12 @@ func NewChannelServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(channelServiceMethods.ByName("ArchiveChannel")),
 			connect.WithClientOptions(opts...),
 		),
+		deleteChannel: connect.NewClient[v1.DeleteChannelRequest, v1.DeleteChannelResponse](
+			httpClient,
+			baseURL+ChannelServiceDeleteChannelProcedure,
+			connect.WithSchema(channelServiceMethods.ByName("DeleteChannel")),
+			connect.WithClientOptions(opts...),
+		),
 		unarchiveChannel: connect.NewClient[v1.UnarchiveChannelRequest, v1.UnarchiveChannelResponse](
 			httpClient,
 			baseURL+ChannelServiceUnarchiveChannelProcedure,
@@ -217,6 +227,7 @@ type channelServiceClient struct {
 	listChannelMembers   *connect.Client[v1.ListChannelMembersRequest, v1.ListChannelMembersResponse]
 	updateChannel        *connect.Client[v1.UpdateChannelRequest, v1.UpdateChannelResponse]
 	archiveChannel       *connect.Client[v1.ArchiveChannelRequest, v1.ArchiveChannelResponse]
+	deleteChannel        *connect.Client[v1.DeleteChannelRequest, v1.DeleteChannelResponse]
 	unarchiveChannel     *connect.Client[v1.UnarchiveChannelRequest, v1.UnarchiveChannelResponse]
 	setChannelPreference *connect.Client[v1.SetChannelPreferenceRequest, v1.SetChannelPreferenceResponse]
 }
@@ -286,6 +297,11 @@ func (c *channelServiceClient) ArchiveChannel(ctx context.Context, req *connect.
 	return c.archiveChannel.CallUnary(ctx, req)
 }
 
+// DeleteChannel calls tank.channel.v1.ChannelService.DeleteChannel.
+func (c *channelServiceClient) DeleteChannel(ctx context.Context, req *connect.Request[v1.DeleteChannelRequest]) (*connect.Response[v1.DeleteChannelResponse], error) {
+	return c.deleteChannel.CallUnary(ctx, req)
+}
+
 // UnarchiveChannel calls tank.channel.v1.ChannelService.UnarchiveChannel.
 func (c *channelServiceClient) UnarchiveChannel(ctx context.Context, req *connect.Request[v1.UnarchiveChannelRequest]) (*connect.Response[v1.UnarchiveChannelResponse], error) {
 	return c.unarchiveChannel.CallUnary(ctx, req)
@@ -311,6 +327,7 @@ type ChannelServiceHandler interface {
 	ListChannelMembers(context.Context, *connect.Request[v1.ListChannelMembersRequest]) (*connect.Response[v1.ListChannelMembersResponse], error)
 	UpdateChannel(context.Context, *connect.Request[v1.UpdateChannelRequest]) (*connect.Response[v1.UpdateChannelResponse], error)
 	ArchiveChannel(context.Context, *connect.Request[v1.ArchiveChannelRequest]) (*connect.Response[v1.ArchiveChannelResponse], error)
+	DeleteChannel(context.Context, *connect.Request[v1.DeleteChannelRequest]) (*connect.Response[v1.DeleteChannelResponse], error)
 	UnarchiveChannel(context.Context, *connect.Request[v1.UnarchiveChannelRequest]) (*connect.Response[v1.UnarchiveChannelResponse], error)
 	SetChannelPreference(context.Context, *connect.Request[v1.SetChannelPreferenceRequest]) (*connect.Response[v1.SetChannelPreferenceResponse], error)
 }
@@ -400,6 +417,12 @@ func NewChannelServiceHandler(svc ChannelServiceHandler, opts ...connect.Handler
 		connect.WithSchema(channelServiceMethods.ByName("ArchiveChannel")),
 		connect.WithHandlerOptions(opts...),
 	)
+	channelServiceDeleteChannelHandler := connect.NewUnaryHandler(
+		ChannelServiceDeleteChannelProcedure,
+		svc.DeleteChannel,
+		connect.WithSchema(channelServiceMethods.ByName("DeleteChannel")),
+		connect.WithHandlerOptions(opts...),
+	)
 	channelServiceUnarchiveChannelHandler := connect.NewUnaryHandler(
 		ChannelServiceUnarchiveChannelProcedure,
 		svc.UnarchiveChannel,
@@ -440,6 +463,8 @@ func NewChannelServiceHandler(svc ChannelServiceHandler, opts ...connect.Handler
 			channelServiceUpdateChannelHandler.ServeHTTP(w, r)
 		case ChannelServiceArchiveChannelProcedure:
 			channelServiceArchiveChannelHandler.ServeHTTP(w, r)
+		case ChannelServiceDeleteChannelProcedure:
+			channelServiceDeleteChannelHandler.ServeHTTP(w, r)
 		case ChannelServiceUnarchiveChannelProcedure:
 			channelServiceUnarchiveChannelHandler.ServeHTTP(w, r)
 		case ChannelServiceSetChannelPreferenceProcedure:
@@ -503,6 +528,10 @@ func (UnimplementedChannelServiceHandler) UpdateChannel(context.Context, *connec
 
 func (UnimplementedChannelServiceHandler) ArchiveChannel(context.Context, *connect.Request[v1.ArchiveChannelRequest]) (*connect.Response[v1.ArchiveChannelResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.channel.v1.ChannelService.ArchiveChannel is not implemented"))
+}
+
+func (UnimplementedChannelServiceHandler) DeleteChannel(context.Context, *connect.Request[v1.DeleteChannelRequest]) (*connect.Response[v1.DeleteChannelResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.channel.v1.ChannelService.DeleteChannel is not implemented"))
 }
 
 func (UnimplementedChannelServiceHandler) UnarchiveChannel(context.Context, *connect.Request[v1.UnarchiveChannelRequest]) (*connect.Response[v1.UnarchiveChannelResponse], error) {
