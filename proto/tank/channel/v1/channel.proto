@@ -12,6 +12,8 @@ enum ChannelType {
   CHANNEL_TYPE_PRIVATE = 2;
   CHANNEL_TYPE_DM = 3;
   CHANNEL_TYPE_MPDM = 4;
+  // A Radar: a grid of widgets instead of a message list. See tank.monitor.v1.
+  CHANNEL_TYPE_MONITOR = 5;
 }
 
 // Per-member notification level for a channel.

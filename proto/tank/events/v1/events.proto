@@ -11,6 +11,7 @@ import "tank/channel/v1/channel.proto";
 import "tank/files/v1/files.proto";
 import "tank/huddle/v1/huddle.proto";
 import "tank/message/v1/message.proto";
+import "tank/monitor/v1/monitor.proto";
 import "tank/presence/v1/presence.proto";
 import "tank/topo/v1/topo.proto";
 import "tank/workspace/v1/workspace.proto";
@@ -222,4 +223,10 @@ message ExportReady {
 // lifecycle to report, and the client recomputes them on its next read.
 message TopoMarkUpdated {
   tank.topo.v1.Mark mark = 1;
+}
+
+// monitor.widget.updated on evt.{ws}.ch.{channel}: a Radar widget has a new
+// point or a new health. Clients showing the grid redraw that widget.
+message MonitorWidgetUpdated {
+  tank.monitor.v1.Widget widget = 1;
 }

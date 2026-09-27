@@ -1,0 +1,211 @@
+syntax = "proto3";
+
+package tank.monitor.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/monitor/v1;monitorv1";
+
+// Radar: a channel that is a grid of widgets instead of a message list. Data
+// comes from webhooks, from scheduled probes the agent runs, and from TANK
+// itself. Every widget is still a message underneath, so it has a thread and
+// updates live like anything else.
+
+enum WidgetKind {
+  WIDGET_KIND_UNSPECIFIED = 0;
+  WIDGET_KIND_NUMBER = 1; // one value, with its change over the last day
+  WIDGET_KIND_LINE = 2;   // a series over time
+  WIDGET_KIND_BAR = 3;    // a series over time, as bars
+  WIDGET_KIND_STATUS = 4; // ok / warn / crit, with a reason
+  WIDGET_KIND_TEXT = 5;   // a paragraph, usually the agent's read of the data
+  WIDGET_KIND_TABLE = 6;  // rows of labelled values
+}
+
+enum SourceKind {
+  SOURCE_KIND_UNSPECIFIED = 0;
+  SOURCE_KIND_WEBHOOK = 1;  // anything that can POST JSON to the ingest URL
+  SOURCE_KIND_PROBE = 2;    // a scheduled agent run that fetches and extracts
+  SOURCE_KIND_INTERNAL = 3; // TANK's own numbers, no model involved
+}
+
+enum Health {
+  HEALTH_UNSPECIFIED = 0;
+  HEALTH_OK = 1;
+  HEALTH_WARN = 2;
+  HEALTH_CRIT = 3;
+  HEALTH_UNKNOWN = 4; // no data yet, or the source is failing
+}
+
+message Point {
+  google.protobuf.Timestamp at = 1;
+  double value = 2;
+  string text = 3;        // for TEXT and STATUS widgets: the reason, the paragraph
+  string labels_json = 4; // for TABLE widgets and labelled series
+}
+
+// Where a widget sits on the grid, in 12-column units.
+message Position {
+  int32 x = 1;
+  int32 y = 2;
+  int32 w = 3;
+  int32 h = 4;
+}
+
+message Thresholds {
+  // Unset (NaN is not sent; absent means none) leaves the widget without a health.
+  optional double warn_at = 1;
+  optional double crit_at = 2;
+  // True when a larger value is the bad direction (latency, errors); false for
+  // signups, revenue.
+  bool higher_is_bad = 3;
+}
+
+message Widget {
+  string id = 1;
+  string channel_id = 2;
+  WidgetKind kind = 3;
+  string title = 4;
+  string unit = 5;      // "ms", "$", "%", "" — appended to numbers
+  string source_id = 6; // which source feeds it
+  // How the source's payload becomes this widget's point. For a webhook: a dotted
+  // path into the JSON ("data.signups.today", "items[0].latency_ms"). For an
+  // internal source: the metric name. For a probe: what to extract, in words.
+  string mapping = 7;
+  Thresholds thresholds = 8;
+  Position position = 9;
+  Point latest = 10;
+  Health health = 11;
+  // The message that mirrors this widget in the channel: its thread.
+  string message_id = 12;
+  google.protobuf.Timestamp updated_at = 13;
+}
+
+message Schedule {
+  // How often the source runs. Webhooks ignore this; probes and internal sources
+  // run every interval, from 60 seconds up to a day.
+  int32 interval_seconds = 1;
+  // Optional five-field cron in the workspace's timezone; when set it wins over
+  // the interval. "0 9 * * 1-5" is every weekday at nine.
+  string cron = 2;
+}
+
+message Source {
+  string id = 1;
+  string channel_id = 2;
+  SourceKind kind = 3;
+  string name = 4;
+  Schedule schedule = 5;
+  // Kind-specific settings as JSON: a probe's URL and allowed hosts, an internal
+  // source's metric set. Never secrets; those live in the ingest token.
+  string config_json = 6;
+  // Webhooks only: where to POST. The full URL with its token is returned once,
+  // when the source is created or its token rotated; afterwards only the path.
+  string ingest_path = 7;
+  bool enabled = 8;
+  google.protobuf.Timestamp last_run_at = 9;
+  string last_error = 10;
+  google.protobuf.Timestamp created_at = 11;
+}
+
+message ListWidgetsRequest {
+  string channel_id = 1;
+}
+message ListWidgetsResponse {
+  repeated Widget widgets = 1;
+  repeated Source sources = 2;
+}
+
+message UpsertWidgetRequest {
+  // Empty id creates.
+  string id = 1;
+  string channel_id = 2;
+  WidgetKind kind = 3;
+  string title = 4;
+  string unit = 5;
+  string source_id = 6;
+  string mapping = 7;
+  Thresholds thresholds = 8;
+  Position position = 9;
+}
+message UpsertWidgetResponse {
+  Widget widget = 1;
+}
+
+message DeleteWidgetRequest {
+  string id = 1;
+}
+message DeleteWidgetResponse {}
+
+message GetSeriesRequest {
+  string widget_id = 1;
+  google.protobuf.Timestamp since = 2;
+  google.protobuf.Timestamp until = 3;
+  // Points are bucketed to this width and averaged; 0 returns raw points (capped).
+  int32 step_seconds = 4;
+}
+message GetSeriesResponse {
+  repeated Point points = 1;
+}
+
+message CreateSourceRequest {
+  string channel_id = 1;
+  SourceKind kind = 2;
+  string name = 3;
+  Schedule schedule = 4;
+  string config_json = 5;
+}
+message CreateSourceResponse {
+  Source source = 1;
+  // Webhooks only, shown once: the URL to POST to, token included.
+  string ingest_url = 2;
+}
+
+message UpdateSourceRequest {
+  string id = 1;
+  string name = 2;
+  Schedule schedule = 3;
+  string config_json = 4;
+  bool enabled = 5;
+}
+message UpdateSourceResponse {
+  Source source = 1;
+}
+
+message DeleteSourceRequest {
+  string id = 1;
+}
+message DeleteSourceResponse {}
+
+message RotateSourceTokenRequest {
+  string id = 1;
+}
+message RotateSourceTokenResponse {
+  string ingest_url = 1;
+}
+
+// PushPoints is how first-party code feeds widgets directly: the internal
+// worker, and later the probe runner. Members with chat:write may also use it.
+message PushPointsRequest {
+  string channel_id = 1;
+  message WidgetPoint {
+    string widget_id = 1;
+    Point point = 2;
+  }
+  repeated WidgetPoint points = 2;
+}
+message PushPointsResponse {
+  repeated Widget widgets = 1;
+}
+
+// Every RPC is read through the channel: a Radar you cannot see has no widgets.
+service MonitorService {
+  rpc ListWidgets(ListWidgetsRequest) returns (ListWidgetsResponse);
+  rpc UpsertWidget(UpsertWidgetRequest) returns (UpsertWidgetResponse);
+  rpc DeleteWidget(DeleteWidgetRequest) returns (DeleteWidgetResponse);
+  rpc GetSeries(GetSeriesRequest) returns (GetSeriesResponse);
+  rpc CreateSource(CreateSourceRequest) returns (CreateSourceResponse);
+  rpc UpdateSource(UpdateSourceRequest) returns (UpdateSourceResponse);
+  rpc DeleteSource(DeleteSourceRequest) returns (DeleteSourceResponse);
+  rpc RotateSourceToken(RotateSourceTokenRequest) returns (RotateSourceTokenResponse);
+  rpc PushPoints(PushPointsRequest) returns (PushPointsResponse);
+}
