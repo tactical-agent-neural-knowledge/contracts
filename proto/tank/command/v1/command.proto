@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package tank.command.v1;
+
+// Slash commands: what a composer offers after "/", and what happens when one
+// is sent. The server does the work and tells the client what to show or
+// post, so both clients behave the same without knowing each command.
+
+message Command {
+  string name = 1;    // "roll"
+  string summary = 2; // "Roll dice"
+  string usage = 3;   // "/roll 2d6"
+  bool takes_text = 4; // the rest of the line is the argument
+}
+
+message ListCommandsRequest {
+  string workspace_id = 1;
+}
+message ListCommandsResponse {
+  repeated Command commands = 1;
+}
+
+message RunCommandRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string thread_root_id = 3; // empty when typed in the Tread itself
+  string text = 4;           // the whole line: "/roll 2d6"
+  string draft = 5;          // what else is in the composer, for commands that rewrite it
+  string local_time = 6;     // "HH:MM" in the person's zone, for times in arguments
+}
+message RunCommandResponse {
+  // Shown only to the person who ran it, in the thread, like an ephemeral card.
+  string reply = 1;
+  // A message the client posts as the person (the server already did anything else).
+  string post = 2;
+  // Replace the composer's draft with this (the /tone family).
+  string replace_draft = 3;
+  // Open this channel (the /tread and /radar family).
+  string open_channel_id = 4;
+}
+
+service CommandService {
+  rpc ListCommands(ListCommandsRequest) returns (ListCommandsResponse);
+  rpc RunCommand(RunCommandRequest) returns (RunCommandResponse);
+}
