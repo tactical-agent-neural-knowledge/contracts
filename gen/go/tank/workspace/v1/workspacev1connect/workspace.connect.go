@@ -72,6 +72,12 @@ const (
 	// WorkspaceServiceUpdatePreferencesProcedure is the fully-qualified name of the WorkspaceService's
 	// UpdatePreferences RPC.
 	WorkspaceServiceUpdatePreferencesProcedure = "/tank.workspace.v1.WorkspaceService/UpdatePreferences"
+	// WorkspaceServiceGenerateThemeProcedure is the fully-qualified name of the WorkspaceService's
+	// GenerateTheme RPC.
+	WorkspaceServiceGenerateThemeProcedure = "/tank.workspace.v1.WorkspaceService/GenerateTheme"
+	// WorkspaceServiceSetWorkspaceThemeProcedure is the fully-qualified name of the WorkspaceService's
+	// SetWorkspaceTheme RPC.
+	WorkspaceServiceSetWorkspaceThemeProcedure = "/tank.workspace.v1.WorkspaceService/SetWorkspaceTheme"
 	// WorkspaceServiceListEmojiProcedure is the fully-qualified name of the WorkspaceService's
 	// ListEmoji RPC.
 	WorkspaceServiceListEmojiProcedure = "/tank.workspace.v1.WorkspaceService/ListEmoji"
@@ -140,6 +146,10 @@ type WorkspaceServiceClient interface {
 	UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error)
 	GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error)
 	UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error)
+	// Turn up to fifteen words into a theme. Nothing is saved; the caller decides.
+	GenerateTheme(context.Context, *connect.Request[v1.GenerateThemeRequest]) (*connect.Response[v1.GenerateThemeResponse], error)
+	// Admins only: the workspace's theme, or a reset when theme is unset.
+	SetWorkspaceTheme(context.Context, *connect.Request[v1.SetWorkspaceThemeRequest]) (*connect.Response[v1.SetWorkspaceThemeResponse], error)
 	ListEmoji(context.Context, *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error)
 	CreateEmoji(context.Context, *connect.Request[v1.CreateEmojiRequest]) (*connect.Response[v1.CreateEmojiResponse], error)
 	DeleteEmoji(context.Context, *connect.Request[v1.DeleteEmojiRequest]) (*connect.Response[v1.DeleteEmojiResponse], error)
@@ -246,6 +256,18 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			httpClient,
 			baseURL+WorkspaceServiceUpdatePreferencesProcedure,
 			connect.WithSchema(workspaceServiceMethods.ByName("UpdatePreferences")),
+			connect.WithClientOptions(opts...),
+		),
+		generateTheme: connect.NewClient[v1.GenerateThemeRequest, v1.GenerateThemeResponse](
+			httpClient,
+			baseURL+WorkspaceServiceGenerateThemeProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("GenerateTheme")),
+			connect.WithClientOptions(opts...),
+		),
+		setWorkspaceTheme: connect.NewClient[v1.SetWorkspaceThemeRequest, v1.SetWorkspaceThemeResponse](
+			httpClient,
+			baseURL+WorkspaceServiceSetWorkspaceThemeProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("SetWorkspaceTheme")),
 			connect.WithClientOptions(opts...),
 		),
 		listEmoji: connect.NewClient[v1.ListEmojiRequest, v1.ListEmojiResponse](
@@ -368,6 +390,8 @@ type workspaceServiceClient struct {
 	updateProfile          *connect.Client[v1.UpdateProfileRequest, v1.UpdateProfileResponse]
 	getPreferences         *connect.Client[v1.GetPreferencesRequest, v1.GetPreferencesResponse]
 	updatePreferences      *connect.Client[v1.UpdatePreferencesRequest, v1.UpdatePreferencesResponse]
+	generateTheme          *connect.Client[v1.GenerateThemeRequest, v1.GenerateThemeResponse]
+	setWorkspaceTheme      *connect.Client[v1.SetWorkspaceThemeRequest, v1.SetWorkspaceThemeResponse]
 	listEmoji              *connect.Client[v1.ListEmojiRequest, v1.ListEmojiResponse]
 	createEmoji            *connect.Client[v1.CreateEmojiRequest, v1.CreateEmojiResponse]
 	deleteEmoji            *connect.Client[v1.DeleteEmojiRequest, v1.DeleteEmojiResponse]
@@ -450,6 +474,16 @@ func (c *workspaceServiceClient) GetPreferences(ctx context.Context, req *connec
 // UpdatePreferences calls tank.workspace.v1.WorkspaceService.UpdatePreferences.
 func (c *workspaceServiceClient) UpdatePreferences(ctx context.Context, req *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error) {
 	return c.updatePreferences.CallUnary(ctx, req)
+}
+
+// GenerateTheme calls tank.workspace.v1.WorkspaceService.GenerateTheme.
+func (c *workspaceServiceClient) GenerateTheme(ctx context.Context, req *connect.Request[v1.GenerateThemeRequest]) (*connect.Response[v1.GenerateThemeResponse], error) {
+	return c.generateTheme.CallUnary(ctx, req)
+}
+
+// SetWorkspaceTheme calls tank.workspace.v1.WorkspaceService.SetWorkspaceTheme.
+func (c *workspaceServiceClient) SetWorkspaceTheme(ctx context.Context, req *connect.Request[v1.SetWorkspaceThemeRequest]) (*connect.Response[v1.SetWorkspaceThemeResponse], error) {
+	return c.setWorkspaceTheme.CallUnary(ctx, req)
 }
 
 // ListEmoji calls tank.workspace.v1.WorkspaceService.ListEmoji.
@@ -552,6 +586,10 @@ type WorkspaceServiceHandler interface {
 	UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error)
 	GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error)
 	UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error)
+	// Turn up to fifteen words into a theme. Nothing is saved; the caller decides.
+	GenerateTheme(context.Context, *connect.Request[v1.GenerateThemeRequest]) (*connect.Response[v1.GenerateThemeResponse], error)
+	// Admins only: the workspace's theme, or a reset when theme is unset.
+	SetWorkspaceTheme(context.Context, *connect.Request[v1.SetWorkspaceThemeRequest]) (*connect.Response[v1.SetWorkspaceThemeResponse], error)
 	ListEmoji(context.Context, *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error)
 	CreateEmoji(context.Context, *connect.Request[v1.CreateEmojiRequest]) (*connect.Response[v1.CreateEmojiResponse], error)
 	DeleteEmoji(context.Context, *connect.Request[v1.DeleteEmojiRequest]) (*connect.Response[v1.DeleteEmojiResponse], error)
@@ -654,6 +692,18 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 		WorkspaceServiceUpdatePreferencesProcedure,
 		svc.UpdatePreferences,
 		connect.WithSchema(workspaceServiceMethods.ByName("UpdatePreferences")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceGenerateThemeHandler := connect.NewUnaryHandler(
+		WorkspaceServiceGenerateThemeProcedure,
+		svc.GenerateTheme,
+		connect.WithSchema(workspaceServiceMethods.ByName("GenerateTheme")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceSetWorkspaceThemeHandler := connect.NewUnaryHandler(
+		WorkspaceServiceSetWorkspaceThemeProcedure,
+		svc.SetWorkspaceTheme,
+		connect.WithSchema(workspaceServiceMethods.ByName("SetWorkspaceTheme")),
 		connect.WithHandlerOptions(opts...),
 	)
 	workspaceServiceListEmojiHandler := connect.NewUnaryHandler(
@@ -786,6 +836,10 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 			workspaceServiceGetPreferencesHandler.ServeHTTP(w, r)
 		case WorkspaceServiceUpdatePreferencesProcedure:
 			workspaceServiceUpdatePreferencesHandler.ServeHTTP(w, r)
+		case WorkspaceServiceGenerateThemeProcedure:
+			workspaceServiceGenerateThemeHandler.ServeHTTP(w, r)
+		case WorkspaceServiceSetWorkspaceThemeProcedure:
+			workspaceServiceSetWorkspaceThemeHandler.ServeHTTP(w, r)
 		case WorkspaceServiceListEmojiProcedure:
 			workspaceServiceListEmojiHandler.ServeHTTP(w, r)
 		case WorkspaceServiceCreateEmojiProcedure:
@@ -879,6 +933,14 @@ func (UnimplementedWorkspaceServiceHandler) GetPreferences(context.Context, *con
 
 func (UnimplementedWorkspaceServiceHandler) UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.UpdatePreferences is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) GenerateTheme(context.Context, *connect.Request[v1.GenerateThemeRequest]) (*connect.Response[v1.GenerateThemeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.GenerateTheme is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) SetWorkspaceTheme(context.Context, *connect.Request[v1.SetWorkspaceThemeRequest]) (*connect.Response[v1.SetWorkspaceThemeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.SetWorkspaceTheme is not implemented"))
 }
 
 func (UnimplementedWorkspaceServiceHandler) ListEmoji(context.Context, *connect.Request[v1.ListEmojiRequest]) (*connect.Response[v1.ListEmojiResponse], error) {
