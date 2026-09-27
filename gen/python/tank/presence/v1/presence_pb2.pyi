@@ -75,10 +75,12 @@ class GetPresenceResponse(_message.Message):
     def __init__(self, presences: _Optional[_Iterable[_Union[Presence, _Mapping]]] = ...) -> None: ...
 
 class DescribeStatusRequest(_message.Message):
-    __slots__ = ("description",)
+    __slots__ = ("description", "local_time")
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    LOCAL_TIME_FIELD_NUMBER: _ClassVar[int]
     description: str
-    def __init__(self, description: _Optional[str] = ...) -> None: ...
+    local_time: str
+    def __init__(self, description: _Optional[str] = ..., local_time: _Optional[str] = ...) -> None: ...
 
 class DescribeStatusResponse(_message.Message):
     __slots__ = ("status", "custom_status_text", "custom_status_emoji", "expires_in_minutes", "auto_reply")

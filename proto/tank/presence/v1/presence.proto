@@ -50,6 +50,8 @@ message GetPresenceResponse {
 // "Deep in a Rust refactor until 3" → a status, an emoji, when it clears, and an auto-reply.
 message DescribeStatusRequest {
   string description = 1; // at most 15 words
+  // The person's local time, "HH:MM", so "until 3" becomes a duration.
+  string local_time = 2;
 }
 message DescribeStatusResponse {
   PresenceStatus status = 1;
