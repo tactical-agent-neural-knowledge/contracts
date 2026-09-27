@@ -289,6 +289,44 @@ message ListWaitingOnResponse {
   repeated WaitingOnItem items = 1;
 }
 
+// The Home briefing: what moved while you were away, computed once on the
+// server so both clients say the same thing.
+message GetBriefingRequest {
+  string workspace_id = 1;
+}
+
+message BriefingTread {
+  string channel_id = 1;
+  // Messages since your last read.
+  int32 new_messages = 2;
+  // Who wrote them, newest first, at most five, never you.
+  repeated string author_ids = 3;
+  // The newest decision on record here since your last read, if any.
+  string latest_decision = 4;
+  string latest_decision_id = 5;
+  google.protobuf.Timestamp last_message_at = 6;
+  // Messages in the last six hours: how hot the Tread is right now.
+  int32 recent_messages = 7;
+  // Your unread mentions here.
+  int32 mentions = 8;
+}
+
+// Where somebody last posted, so "online" can say what they are on.
+message BriefingPerson {
+  string user_id = 1;
+  string channel_id = 2;
+  google.protobuf.Timestamp at = 3;
+}
+
+message GetBriefingResponse {
+  // Treads that moved since you last read them, newest first.
+  repeated BriefingTread treads = 1;
+  // Each member's last post in the past day, in Treads you can see.
+  repeated BriefingPerson people = 2;
+  // When the workspace last spoke, across the Treads you can see.
+  google.protobuf.Timestamp quiet_since = 3;
+}
+
 // Marks are always read through the channel, so a Tread the caller cannot see
 // has no marks, and a mark can never carry content from one that they cannot.
 service TopoService {
@@ -300,6 +338,8 @@ service TopoService {
   // waited on: both of them know when it is done.
   rpc ResolveWaitingOn(ResolveWaitingOnRequest) returns (ResolveWaitingOnResponse);
   rpc ListWaitingOn(ListWaitingOnRequest) returns (ListWaitingOnResponse);
+  // Home's "since you were away", with heat and who was talking, per Tread.
+  rpc GetBriefing(GetBriefingRequest) returns (GetBriefingResponse);
   // Record something that happened to a channel rather than in it. For the
   // control plane and other first-party observers, never for a person: an
   // event tick claims something occurred, and a human claim belongs in a
