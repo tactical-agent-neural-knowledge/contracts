@@ -286,3 +286,49 @@ class ListWaitingOnResponse(_message.Message):
     ITEMS_FIELD_NUMBER: _ClassVar[int]
     items: _containers.RepeatedCompositeFieldContainer[WaitingOnItem]
     def __init__(self, items: _Optional[_Iterable[_Union[WaitingOnItem, _Mapping]]] = ...) -> None: ...
+
+class GetBriefingRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class BriefingTread(_message.Message):
+    __slots__ = ("channel_id", "new_messages", "author_ids", "latest_decision", "latest_decision_id", "last_message_at", "recent_messages", "mentions")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    NEW_MESSAGES_FIELD_NUMBER: _ClassVar[int]
+    AUTHOR_IDS_FIELD_NUMBER: _ClassVar[int]
+    LATEST_DECISION_FIELD_NUMBER: _ClassVar[int]
+    LATEST_DECISION_ID_FIELD_NUMBER: _ClassVar[int]
+    LAST_MESSAGE_AT_FIELD_NUMBER: _ClassVar[int]
+    RECENT_MESSAGES_FIELD_NUMBER: _ClassVar[int]
+    MENTIONS_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    new_messages: int
+    author_ids: _containers.RepeatedScalarFieldContainer[str]
+    latest_decision: str
+    latest_decision_id: str
+    last_message_at: _timestamp_pb2.Timestamp
+    recent_messages: int
+    mentions: int
+    def __init__(self, channel_id: _Optional[str] = ..., new_messages: _Optional[int] = ..., author_ids: _Optional[_Iterable[str]] = ..., latest_decision: _Optional[str] = ..., latest_decision_id: _Optional[str] = ..., last_message_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., recent_messages: _Optional[int] = ..., mentions: _Optional[int] = ...) -> None: ...
+
+class BriefingPerson(_message.Message):
+    __slots__ = ("user_id", "channel_id", "at")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    channel_id: str
+    at: _timestamp_pb2.Timestamp
+    def __init__(self, user_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class GetBriefingResponse(_message.Message):
+    __slots__ = ("treads", "people", "quiet_since")
+    TREADS_FIELD_NUMBER: _ClassVar[int]
+    PEOPLE_FIELD_NUMBER: _ClassVar[int]
+    QUIET_SINCE_FIELD_NUMBER: _ClassVar[int]
+    treads: _containers.RepeatedCompositeFieldContainer[BriefingTread]
+    people: _containers.RepeatedCompositeFieldContainer[BriefingPerson]
+    quiet_since: _timestamp_pb2.Timestamp
+    def __init__(self, treads: _Optional[_Iterable[_Union[BriefingTread, _Mapping]]] = ..., people: _Optional[_Iterable[_Union[BriefingPerson, _Mapping]]] = ..., quiet_since: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...

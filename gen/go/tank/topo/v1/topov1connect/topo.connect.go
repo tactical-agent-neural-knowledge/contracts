@@ -44,6 +44,8 @@ const (
 	// TopoServiceListWaitingOnProcedure is the fully-qualified name of the TopoService's ListWaitingOn
 	// RPC.
 	TopoServiceListWaitingOnProcedure = "/tank.topo.v1.TopoService/ListWaitingOn"
+	// TopoServiceGetBriefingProcedure is the fully-qualified name of the TopoService's GetBriefing RPC.
+	TopoServiceGetBriefingProcedure = "/tank.topo.v1.TopoService/GetBriefing"
 	// TopoServiceRecordEventProcedure is the fully-qualified name of the TopoService's RecordEvent RPC.
 	TopoServiceRecordEventProcedure = "/tank.topo.v1.TopoService/RecordEvent"
 	// TopoServiceListBenchmarksProcedure is the fully-qualified name of the TopoService's
@@ -64,6 +66,8 @@ type TopoServiceClient interface {
 	// waited on: both of them know when it is done.
 	ResolveWaitingOn(context.Context, *connect.Request[v1.ResolveWaitingOnRequest]) (*connect.Response[v1.ResolveWaitingOnResponse], error)
 	ListWaitingOn(context.Context, *connect.Request[v1.ListWaitingOnRequest]) (*connect.Response[v1.ListWaitingOnResponse], error)
+	// Home's "since you were away", with heat and who was talking, per Tread.
+	GetBriefing(context.Context, *connect.Request[v1.GetBriefingRequest]) (*connect.Response[v1.GetBriefingResponse], error)
 	// Record something that happened to a channel rather than in it. For the
 	// control plane and other first-party observers, never for a person: an
 	// event tick claims something occurred, and a human claim belongs in a
@@ -112,6 +116,12 @@ func NewTopoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(topoServiceMethods.ByName("ListWaitingOn")),
 			connect.WithClientOptions(opts...),
 		),
+		getBriefing: connect.NewClient[v1.GetBriefingRequest, v1.GetBriefingResponse](
+			httpClient,
+			baseURL+TopoServiceGetBriefingProcedure,
+			connect.WithSchema(topoServiceMethods.ByName("GetBriefing")),
+			connect.WithClientOptions(opts...),
+		),
 		recordEvent: connect.NewClient[v1.RecordEventRequest, v1.RecordEventResponse](
 			httpClient,
 			baseURL+TopoServiceRecordEventProcedure,
@@ -139,6 +149,7 @@ type topoServiceClient struct {
 	flagWaitingOn    *connect.Client[v1.FlagWaitingOnRequest, v1.FlagWaitingOnResponse]
 	resolveWaitingOn *connect.Client[v1.ResolveWaitingOnRequest, v1.ResolveWaitingOnResponse]
 	listWaitingOn    *connect.Client[v1.ListWaitingOnRequest, v1.ListWaitingOnResponse]
+	getBriefing      *connect.Client[v1.GetBriefingRequest, v1.GetBriefingResponse]
 	recordEvent      *connect.Client[v1.RecordEventRequest, v1.RecordEventResponse]
 	listBenchmarks   *connect.Client[v1.ListBenchmarksRequest, v1.ListBenchmarksResponse]
 	decideBenchmark  *connect.Client[v1.DecideBenchmarkRequest, v1.DecideBenchmarkResponse]
@@ -162,6 +173,11 @@ func (c *topoServiceClient) ResolveWaitingOn(ctx context.Context, req *connect.R
 // ListWaitingOn calls tank.topo.v1.TopoService.ListWaitingOn.
 func (c *topoServiceClient) ListWaitingOn(ctx context.Context, req *connect.Request[v1.ListWaitingOnRequest]) (*connect.Response[v1.ListWaitingOnResponse], error) {
 	return c.listWaitingOn.CallUnary(ctx, req)
+}
+
+// GetBriefing calls tank.topo.v1.TopoService.GetBriefing.
+func (c *topoServiceClient) GetBriefing(ctx context.Context, req *connect.Request[v1.GetBriefingRequest]) (*connect.Response[v1.GetBriefingResponse], error) {
+	return c.getBriefing.CallUnary(ctx, req)
 }
 
 // RecordEvent calls tank.topo.v1.TopoService.RecordEvent.
@@ -189,6 +205,8 @@ type TopoServiceHandler interface {
 	// waited on: both of them know when it is done.
 	ResolveWaitingOn(context.Context, *connect.Request[v1.ResolveWaitingOnRequest]) (*connect.Response[v1.ResolveWaitingOnResponse], error)
 	ListWaitingOn(context.Context, *connect.Request[v1.ListWaitingOnRequest]) (*connect.Response[v1.ListWaitingOnResponse], error)
+	// Home's "since you were away", with heat and who was talking, per Tread.
+	GetBriefing(context.Context, *connect.Request[v1.GetBriefingRequest]) (*connect.Response[v1.GetBriefingResponse], error)
 	// Record something that happened to a channel rather than in it. For the
 	// control plane and other first-party observers, never for a person: an
 	// event tick claims something occurred, and a human claim belongs in a
@@ -233,6 +251,12 @@ func NewTopoServiceHandler(svc TopoServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(topoServiceMethods.ByName("ListWaitingOn")),
 		connect.WithHandlerOptions(opts...),
 	)
+	topoServiceGetBriefingHandler := connect.NewUnaryHandler(
+		TopoServiceGetBriefingProcedure,
+		svc.GetBriefing,
+		connect.WithSchema(topoServiceMethods.ByName("GetBriefing")),
+		connect.WithHandlerOptions(opts...),
+	)
 	topoServiceRecordEventHandler := connect.NewUnaryHandler(
 		TopoServiceRecordEventProcedure,
 		svc.RecordEvent,
@@ -261,6 +285,8 @@ func NewTopoServiceHandler(svc TopoServiceHandler, opts ...connect.HandlerOption
 			topoServiceResolveWaitingOnHandler.ServeHTTP(w, r)
 		case TopoServiceListWaitingOnProcedure:
 			topoServiceListWaitingOnHandler.ServeHTTP(w, r)
+		case TopoServiceGetBriefingProcedure:
+			topoServiceGetBriefingHandler.ServeHTTP(w, r)
 		case TopoServiceRecordEventProcedure:
 			topoServiceRecordEventHandler.ServeHTTP(w, r)
 		case TopoServiceListBenchmarksProcedure:
@@ -290,6 +316,10 @@ func (UnimplementedTopoServiceHandler) ResolveWaitingOn(context.Context, *connec
 
 func (UnimplementedTopoServiceHandler) ListWaitingOn(context.Context, *connect.Request[v1.ListWaitingOnRequest]) (*connect.Response[v1.ListWaitingOnResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.topo.v1.TopoService.ListWaitingOn is not implemented"))
+}
+
+func (UnimplementedTopoServiceHandler) GetBriefing(context.Context, *connect.Request[v1.GetBriefingRequest]) (*connect.Response[v1.GetBriefingResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.topo.v1.TopoService.GetBriefing is not implemented"))
 }
 
 func (UnimplementedTopoServiceHandler) RecordEvent(context.Context, *connect.Request[v1.RecordEventRequest]) (*connect.Response[v1.RecordEventResponse], error) {
