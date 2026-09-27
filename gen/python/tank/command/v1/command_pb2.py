@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1dtank/command/v1/command.proto\x12\x0ftank.command.v1\"l\n\x07\x43ommand\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n\x07summary\x18\x02 \x01(\tR\x07summary\x12\x14\n\x05usage\x18\x03 \x01(\tR\x05usage\x12\x1d\n\ntakes_text\x18\x04 \x01(\x08R\ttakesText\"8\n\x13ListCommandsRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\"L\n\x14ListCommandsResponse\x12\x34\n\x08\x63ommands\x18\x01 \x03(\x0b\x32\x18.tank.command.v1.CommandR\x08\x63ommands\"\xc4\x01\n\x11RunCommandRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x1d\n\nchannel_id\x18\x02 \x01(\tR\tchannelId\x12$\n\x0ethread_root_id\x18\x03 \x01(\tR\x0cthreadRootId\x12\x12\n\x04text\x18\x04 \x01(\tR\x04text\x12\x14\n\x05\x64raft\x18\x05 \x01(\tR\x05\x64raft\x12\x1d\n\nlocal_time\x18\x06 \x01(\tR\tlocalTime\"\x8b\x01\n\x12RunCommandResponse\x12\x14\n\x05reply\x18\x01 \x01(\tR\x05reply\x12\x12\n\x04post\x18\x02 \x01(\tR\x04post\x12#\n\rreplace_draft\x18\x03 \x01(\tR\x0creplaceDraft\x12&\n\x0fopen_channel_id\x18\x04 \x01(\tR\ropenChannelId2\xc4\x01\n\x0e\x43ommandService\x12[\n\x0cListCommands\x12$.tank.command.v1.ListCommandsRequest\x1a%.tank.command.v1.ListCommandsResponse\x12U\n\nRunCommand\x12\".tank.command.v1.RunCommandRequest\x1a#.tank.command.v1.RunCommandResponseB\xd8\x01\n\x13\x63om.tank.command.v1B\x0c\x43ommandProtoP\x01ZUgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/command/v1;commandv1\xa2\x02\x03TCX\xaa\x02\x0fTank.Command.V1\xca\x02\x0fTank\\Command\\V1\xe2\x02\x1bTank\\Command\\V1\\GPBMetadata\xea\x02\x11Tank::Command::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1dtank/command/v1/command.proto\x12\x0ftank.command.v1\"l\n\x07\x43ommand\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n\x07summary\x18\x02 \x01(\tR\x07summary\x12\x14\n\x05usage\x18\x03 \x01(\tR\x05usage\x12\x1d\n\ntakes_text\x18\x04 \x01(\x08R\ttakesText\"8\n\x13ListCommandsRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\"L\n\x14ListCommandsResponse\x12\x34\n\x08\x63ommands\x18\x01 \x03(\x0b\x32\x18.tank.command.v1.CommandR\x08\x63ommands\"\xc4\x01\n\x11RunCommandRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x1d\n\nchannel_id\x18\x02 \x01(\tR\tchannelId\x12$\n\x0ethread_root_id\x18\x03 \x01(\tR\x0cthreadRootId\x12\x12\n\x04text\x18\x04 \x01(\tR\x04text\x12\x14\n\x05\x64raft\x18\x05 \x01(\tR\x05\x64raft\x12\x1d\n\nlocal_time\x18\x06 \x01(\tR\tlocalTime\"\x8b\x01\n\x12RunCommandResponse\x12\x14\n\x05reply\x18\x01 \x01(\tR\x05reply\x12\x12\n\x04post\x18\x02 \x01(\tR\x04post\x12#\n\rreplace_draft\x18\x03 \x01(\tR\x0creplaceDraft\x12&\n\x0fopen_channel_id\x18\x04 \x01(\tR\ropenChannelId\"~\n\x05Macro\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05steps\x18\x03 \x03(\tR\x05steps\x12\x1c\n\tworkspace\x18\x04 \x01(\x08R\tworkspace\x12\x1d\n\ncreated_by\x18\x05 \x01(\tR\tcreatedBy\"6\n\x11ListMacrosRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\"D\n\x12ListMacrosResponse\x12.\n\x06macros\x18\x01 \x03(\x0b\x32\x16.tank.command.v1.MacroR\x06macros\"}\n\x10SaveMacroRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05steps\x18\x03 \x03(\tR\x05steps\x12\x1c\n\tworkspace\x18\x04 \x01(\x08R\tworkspace\"A\n\x11SaveMacroResponse\x12,\n\x05macro\x18\x01 \x01(\x0b\x32\x16.tank.command.v1.MacroR\x05macro\"i\n\x12\x44\x65leteMacroRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x1c\n\tworkspace\x18\x03 \x01(\x08R\tworkspace\"\x15\n\x13\x44\x65leteMacroResponse2\xc9\x03\n\x0e\x43ommandService\x12[\n\x0cListCommands\x12$.tank.command.v1.ListCommandsRequest\x1a%.tank.command.v1.ListCommandsResponse\x12U\n\nRunCommand\x12\".tank.command.v1.RunCommandRequest\x1a#.tank.command.v1.RunCommandResponse\x12U\n\nListMacros\x12\".tank.command.v1.ListMacrosRequest\x1a#.tank.command.v1.ListMacrosResponse\x12R\n\tSaveMacro\x12!.tank.command.v1.SaveMacroRequest\x1a\".tank.command.v1.SaveMacroResponse\x12X\n\x0b\x44\x65leteMacro\x12#.tank.command.v1.DeleteMacroRequest\x1a$.tank.command.v1.DeleteMacroResponseB\xd8\x01\n\x13\x63om.tank.command.v1B\x0c\x43ommandProtoP\x01ZUgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/command/v1;commandv1\xa2\x02\x03TCX\xaa\x02\x0fTank.Command.V1\xca\x02\x0fTank\\Command\\V1\xe2\x02\x1bTank\\Command\\V1\\GPBMetadata\xea\x02\x11Tank::Command::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -42,6 +42,20 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_RUNCOMMANDREQUEST']._serialized_end=493
   _globals['_RUNCOMMANDRESPONSE']._serialized_start=496
   _globals['_RUNCOMMANDRESPONSE']._serialized_end=635
-  _globals['_COMMANDSERVICE']._serialized_start=638
-  _globals['_COMMANDSERVICE']._serialized_end=834
+  _globals['_MACRO']._serialized_start=637
+  _globals['_MACRO']._serialized_end=763
+  _globals['_LISTMACROSREQUEST']._serialized_start=765
+  _globals['_LISTMACROSREQUEST']._serialized_end=819
+  _globals['_LISTMACROSRESPONSE']._serialized_start=821
+  _globals['_LISTMACROSRESPONSE']._serialized_end=889
+  _globals['_SAVEMACROREQUEST']._serialized_start=891
+  _globals['_SAVEMACROREQUEST']._serialized_end=1016
+  _globals['_SAVEMACRORESPONSE']._serialized_start=1018
+  _globals['_SAVEMACRORESPONSE']._serialized_end=1083
+  _globals['_DELETEMACROREQUEST']._serialized_start=1085
+  _globals['_DELETEMACROREQUEST']._serialized_end=1190
+  _globals['_DELETEMACRORESPONSE']._serialized_start=1192
+  _globals['_DELETEMACRORESPONSE']._serialized_end=1213
+  _globals['_COMMANDSERVICE']._serialized_start=1216
+  _globals['_COMMANDSERVICE']._serialized_end=1673
 # @@protoc_insertion_point(module_scope)

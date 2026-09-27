@@ -39,7 +39,42 @@ message RunCommandResponse {
   string open_channel_id = 4;
 }
 
+// A macro: a name that runs a sequence of command lines. "$1", "$2"… in a step
+// take the words given when the macro runs; "$*" takes them all.
+message Macro {
+  string id = 1;
+  string name = 2;           // "standup"; runs as /standup
+  repeated string steps = 3; // "/catchup", "/tldr post", "/later 9:00 tomorrow Standup"
+  // Empty for a personal macro; a workspace macro (admins) is for everyone.
+  bool workspace = 4;
+  string created_by = 5;
+}
+message ListMacrosRequest {
+  string workspace_id = 1;
+}
+message ListMacrosResponse {
+  repeated Macro macros = 1;
+}
+message SaveMacroRequest {
+  string workspace_id = 1;
+  string name = 2;
+  repeated string steps = 3;
+  bool workspace = 4;
+}
+message SaveMacroResponse {
+  Macro macro = 1;
+}
+message DeleteMacroRequest {
+  string workspace_id = 1;
+  string name = 2;
+  bool workspace = 3;
+}
+message DeleteMacroResponse {}
+
 service CommandService {
   rpc ListCommands(ListCommandsRequest) returns (ListCommandsResponse);
   rpc RunCommand(RunCommandRequest) returns (RunCommandResponse);
+  rpc ListMacros(ListMacrosRequest) returns (ListMacrosResponse);
+  rpc SaveMacro(SaveMacroRequest) returns (SaveMacroResponse);
+  rpc DeleteMacro(DeleteMacroRequest) returns (DeleteMacroResponse);
 }

@@ -56,3 +56,61 @@ class RunCommandResponse(_message.Message):
     replace_draft: str
     open_channel_id: str
     def __init__(self, reply: _Optional[str] = ..., post: _Optional[str] = ..., replace_draft: _Optional[str] = ..., open_channel_id: _Optional[str] = ...) -> None: ...
+
+class Macro(_message.Message):
+    __slots__ = ("id", "name", "steps", "workspace", "created_by")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    STEPS_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_FIELD_NUMBER: _ClassVar[int]
+    CREATED_BY_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    name: str
+    steps: _containers.RepeatedScalarFieldContainer[str]
+    workspace: bool
+    created_by: str
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., steps: _Optional[_Iterable[str]] = ..., workspace: bool = ..., created_by: _Optional[str] = ...) -> None: ...
+
+class ListMacrosRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class ListMacrosResponse(_message.Message):
+    __slots__ = ("macros",)
+    MACROS_FIELD_NUMBER: _ClassVar[int]
+    macros: _containers.RepeatedCompositeFieldContainer[Macro]
+    def __init__(self, macros: _Optional[_Iterable[_Union[Macro, _Mapping]]] = ...) -> None: ...
+
+class SaveMacroRequest(_message.Message):
+    __slots__ = ("workspace_id", "name", "steps", "workspace")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    STEPS_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    name: str
+    steps: _containers.RepeatedScalarFieldContainer[str]
+    workspace: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., steps: _Optional[_Iterable[str]] = ..., workspace: bool = ...) -> None: ...
+
+class SaveMacroResponse(_message.Message):
+    __slots__ = ("macro",)
+    MACRO_FIELD_NUMBER: _ClassVar[int]
+    macro: Macro
+    def __init__(self, macro: _Optional[_Union[Macro, _Mapping]] = ...) -> None: ...
+
+class DeleteMacroRequest(_message.Message):
+    __slots__ = ("workspace_id", "name", "workspace")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    name: str
+    workspace: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., workspace: bool = ...) -> None: ...
+
+class DeleteMacroResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...

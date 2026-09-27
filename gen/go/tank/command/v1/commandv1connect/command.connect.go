@@ -39,12 +39,24 @@ const (
 	// CommandServiceRunCommandProcedure is the fully-qualified name of the CommandService's RunCommand
 	// RPC.
 	CommandServiceRunCommandProcedure = "/tank.command.v1.CommandService/RunCommand"
+	// CommandServiceListMacrosProcedure is the fully-qualified name of the CommandService's ListMacros
+	// RPC.
+	CommandServiceListMacrosProcedure = "/tank.command.v1.CommandService/ListMacros"
+	// CommandServiceSaveMacroProcedure is the fully-qualified name of the CommandService's SaveMacro
+	// RPC.
+	CommandServiceSaveMacroProcedure = "/tank.command.v1.CommandService/SaveMacro"
+	// CommandServiceDeleteMacroProcedure is the fully-qualified name of the CommandService's
+	// DeleteMacro RPC.
+	CommandServiceDeleteMacroProcedure = "/tank.command.v1.CommandService/DeleteMacro"
 )
 
 // CommandServiceClient is a client for the tank.command.v1.CommandService service.
 type CommandServiceClient interface {
 	ListCommands(context.Context, *connect.Request[v1.ListCommandsRequest]) (*connect.Response[v1.ListCommandsResponse], error)
 	RunCommand(context.Context, *connect.Request[v1.RunCommandRequest]) (*connect.Response[v1.RunCommandResponse], error)
+	ListMacros(context.Context, *connect.Request[v1.ListMacrosRequest]) (*connect.Response[v1.ListMacrosResponse], error)
+	SaveMacro(context.Context, *connect.Request[v1.SaveMacroRequest]) (*connect.Response[v1.SaveMacroResponse], error)
+	DeleteMacro(context.Context, *connect.Request[v1.DeleteMacroRequest]) (*connect.Response[v1.DeleteMacroResponse], error)
 }
 
 // NewCommandServiceClient constructs a client for the tank.command.v1.CommandService service. By
@@ -70,6 +82,24 @@ func NewCommandServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(commandServiceMethods.ByName("RunCommand")),
 			connect.WithClientOptions(opts...),
 		),
+		listMacros: connect.NewClient[v1.ListMacrosRequest, v1.ListMacrosResponse](
+			httpClient,
+			baseURL+CommandServiceListMacrosProcedure,
+			connect.WithSchema(commandServiceMethods.ByName("ListMacros")),
+			connect.WithClientOptions(opts...),
+		),
+		saveMacro: connect.NewClient[v1.SaveMacroRequest, v1.SaveMacroResponse](
+			httpClient,
+			baseURL+CommandServiceSaveMacroProcedure,
+			connect.WithSchema(commandServiceMethods.ByName("SaveMacro")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteMacro: connect.NewClient[v1.DeleteMacroRequest, v1.DeleteMacroResponse](
+			httpClient,
+			baseURL+CommandServiceDeleteMacroProcedure,
+			connect.WithSchema(commandServiceMethods.ByName("DeleteMacro")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -77,6 +107,9 @@ func NewCommandServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 type commandServiceClient struct {
 	listCommands *connect.Client[v1.ListCommandsRequest, v1.ListCommandsResponse]
 	runCommand   *connect.Client[v1.RunCommandRequest, v1.RunCommandResponse]
+	listMacros   *connect.Client[v1.ListMacrosRequest, v1.ListMacrosResponse]
+	saveMacro    *connect.Client[v1.SaveMacroRequest, v1.SaveMacroResponse]
+	deleteMacro  *connect.Client[v1.DeleteMacroRequest, v1.DeleteMacroResponse]
 }
 
 // ListCommands calls tank.command.v1.CommandService.ListCommands.
@@ -89,10 +122,28 @@ func (c *commandServiceClient) RunCommand(ctx context.Context, req *connect.Requ
 	return c.runCommand.CallUnary(ctx, req)
 }
 
+// ListMacros calls tank.command.v1.CommandService.ListMacros.
+func (c *commandServiceClient) ListMacros(ctx context.Context, req *connect.Request[v1.ListMacrosRequest]) (*connect.Response[v1.ListMacrosResponse], error) {
+	return c.listMacros.CallUnary(ctx, req)
+}
+
+// SaveMacro calls tank.command.v1.CommandService.SaveMacro.
+func (c *commandServiceClient) SaveMacro(ctx context.Context, req *connect.Request[v1.SaveMacroRequest]) (*connect.Response[v1.SaveMacroResponse], error) {
+	return c.saveMacro.CallUnary(ctx, req)
+}
+
+// DeleteMacro calls tank.command.v1.CommandService.DeleteMacro.
+func (c *commandServiceClient) DeleteMacro(ctx context.Context, req *connect.Request[v1.DeleteMacroRequest]) (*connect.Response[v1.DeleteMacroResponse], error) {
+	return c.deleteMacro.CallUnary(ctx, req)
+}
+
 // CommandServiceHandler is an implementation of the tank.command.v1.CommandService service.
 type CommandServiceHandler interface {
 	ListCommands(context.Context, *connect.Request[v1.ListCommandsRequest]) (*connect.Response[v1.ListCommandsResponse], error)
 	RunCommand(context.Context, *connect.Request[v1.RunCommandRequest]) (*connect.Response[v1.RunCommandResponse], error)
+	ListMacros(context.Context, *connect.Request[v1.ListMacrosRequest]) (*connect.Response[v1.ListMacrosResponse], error)
+	SaveMacro(context.Context, *connect.Request[v1.SaveMacroRequest]) (*connect.Response[v1.SaveMacroResponse], error)
+	DeleteMacro(context.Context, *connect.Request[v1.DeleteMacroRequest]) (*connect.Response[v1.DeleteMacroResponse], error)
 }
 
 // NewCommandServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -114,12 +165,36 @@ func NewCommandServiceHandler(svc CommandServiceHandler, opts ...connect.Handler
 		connect.WithSchema(commandServiceMethods.ByName("RunCommand")),
 		connect.WithHandlerOptions(opts...),
 	)
+	commandServiceListMacrosHandler := connect.NewUnaryHandler(
+		CommandServiceListMacrosProcedure,
+		svc.ListMacros,
+		connect.WithSchema(commandServiceMethods.ByName("ListMacros")),
+		connect.WithHandlerOptions(opts...),
+	)
+	commandServiceSaveMacroHandler := connect.NewUnaryHandler(
+		CommandServiceSaveMacroProcedure,
+		svc.SaveMacro,
+		connect.WithSchema(commandServiceMethods.ByName("SaveMacro")),
+		connect.WithHandlerOptions(opts...),
+	)
+	commandServiceDeleteMacroHandler := connect.NewUnaryHandler(
+		CommandServiceDeleteMacroProcedure,
+		svc.DeleteMacro,
+		connect.WithSchema(commandServiceMethods.ByName("DeleteMacro")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.command.v1.CommandService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case CommandServiceListCommandsProcedure:
 			commandServiceListCommandsHandler.ServeHTTP(w, r)
 		case CommandServiceRunCommandProcedure:
 			commandServiceRunCommandHandler.ServeHTTP(w, r)
+		case CommandServiceListMacrosProcedure:
+			commandServiceListMacrosHandler.ServeHTTP(w, r)
+		case CommandServiceSaveMacroProcedure:
+			commandServiceSaveMacroHandler.ServeHTTP(w, r)
+		case CommandServiceDeleteMacroProcedure:
+			commandServiceDeleteMacroHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -135,4 +210,16 @@ func (UnimplementedCommandServiceHandler) ListCommands(context.Context, *connect
 
 func (UnimplementedCommandServiceHandler) RunCommand(context.Context, *connect.Request[v1.RunCommandRequest]) (*connect.Response[v1.RunCommandResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.command.v1.CommandService.RunCommand is not implemented"))
+}
+
+func (UnimplementedCommandServiceHandler) ListMacros(context.Context, *connect.Request[v1.ListMacrosRequest]) (*connect.Response[v1.ListMacrosResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.command.v1.CommandService.ListMacros is not implemented"))
+}
+
+func (UnimplementedCommandServiceHandler) SaveMacro(context.Context, *connect.Request[v1.SaveMacroRequest]) (*connect.Response[v1.SaveMacroResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.command.v1.CommandService.SaveMacro is not implemented"))
+}
+
+func (UnimplementedCommandServiceHandler) DeleteMacro(context.Context, *connect.Request[v1.DeleteMacroRequest]) (*connect.Response[v1.DeleteMacroResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.command.v1.CommandService.DeleteMacro is not implemented"))
 }
