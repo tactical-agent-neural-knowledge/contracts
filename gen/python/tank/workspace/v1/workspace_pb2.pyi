@@ -27,18 +27,42 @@ ROLE_GUEST: Role
 ROLE_BOT: Role
 
 class Workspace(_message.Message):
-    __slots__ = ("id", "slug", "name", "icon_url", "created_at")
+    __slots__ = ("id", "slug", "name", "icon_url", "created_at", "theme")
     ID_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     ICON_URL_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    THEME_FIELD_NUMBER: _ClassVar[int]
     id: str
     slug: str
     name: str
     icon_url: str
     created_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., icon_url: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    theme: Theme
+    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., icon_url: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., theme: _Optional[_Union[Theme, _Mapping]] = ...) -> None: ...
+
+class Theme(_message.Message):
+    __slots__ = ("description", "name", "scheme", "primary", "secondary", "background", "surface", "on_surface", "accent")
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    SCHEME_FIELD_NUMBER: _ClassVar[int]
+    PRIMARY_FIELD_NUMBER: _ClassVar[int]
+    SECONDARY_FIELD_NUMBER: _ClassVar[int]
+    BACKGROUND_FIELD_NUMBER: _ClassVar[int]
+    SURFACE_FIELD_NUMBER: _ClassVar[int]
+    ON_SURFACE_FIELD_NUMBER: _ClassVar[int]
+    ACCENT_FIELD_NUMBER: _ClassVar[int]
+    description: str
+    name: str
+    scheme: str
+    primary: str
+    secondary: str
+    background: str
+    surface: str
+    on_surface: str
+    accent: str
+    def __init__(self, description: _Optional[str] = ..., name: _Optional[str] = ..., scheme: _Optional[str] = ..., primary: _Optional[str] = ..., secondary: _Optional[str] = ..., background: _Optional[str] = ..., surface: _Optional[str] = ..., on_surface: _Optional[str] = ..., accent: _Optional[str] = ...) -> None: ...
 
 class Member(_message.Message):
     __slots__ = ("principal", "role", "title", "timezone", "joined_at", "deactivated_at")
@@ -293,7 +317,7 @@ class ArmorModeSchedule(_message.Message):
     def __init__(self, enabled: bool = ..., start: _Optional[str] = ..., end: _Optional[str] = ..., days: _Optional[_Iterable[int]] = ..., timezone: _Optional[str] = ..., allow_critical: bool = ...) -> None: ...
 
 class Preferences(_message.Message):
-    __slots__ = ("notify_default", "dm_notify_default", "theme", "armor_mode_schedule", "email_digest", "desktop_sound", "push_on_mention_only", "topo")
+    __slots__ = ("notify_default", "dm_notify_default", "theme", "armor_mode_schedule", "email_digest", "desktop_sound", "push_on_mention_only", "topo", "custom_theme")
     NOTIFY_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     DM_NOTIFY_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     THEME_FIELD_NUMBER: _ClassVar[int]
@@ -302,6 +326,7 @@ class Preferences(_message.Message):
     DESKTOP_SOUND_FIELD_NUMBER: _ClassVar[int]
     PUSH_ON_MENTION_ONLY_FIELD_NUMBER: _ClassVar[int]
     TOPO_FIELD_NUMBER: _ClassVar[int]
+    CUSTOM_THEME_FIELD_NUMBER: _ClassVar[int]
     notify_default: _channel_pb2.NotifyPref
     dm_notify_default: _channel_pb2.NotifyPref
     theme: str
@@ -310,7 +335,8 @@ class Preferences(_message.Message):
     desktop_sound: bool
     push_on_mention_only: bool
     topo: TopoPreferences
-    def __init__(self, notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., dm_notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., theme: _Optional[str] = ..., armor_mode_schedule: _Optional[_Union[ArmorModeSchedule, _Mapping]] = ..., email_digest: bool = ..., desktop_sound: bool = ..., push_on_mention_only: bool = ..., topo: _Optional[_Union[TopoPreferences, _Mapping]] = ...) -> None: ...
+    custom_theme: Theme
+    def __init__(self, notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., dm_notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., theme: _Optional[str] = ..., armor_mode_schedule: _Optional[_Union[ArmorModeSchedule, _Mapping]] = ..., email_digest: bool = ..., desktop_sound: bool = ..., push_on_mention_only: bool = ..., topo: _Optional[_Union[TopoPreferences, _Mapping]] = ..., custom_theme: _Optional[_Union[Theme, _Mapping]] = ...) -> None: ...
 
 class TopoPreferences(_message.Message):
     __slots__ = ("configured", "visible", "time_axis")
@@ -691,3 +717,31 @@ class CancelScheduledRequest(_message.Message):
 class CancelScheduledResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class GenerateThemeRequest(_message.Message):
+    __slots__ = ("workspace_id", "description")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    description: str
+    def __init__(self, workspace_id: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
+
+class GenerateThemeResponse(_message.Message):
+    __slots__ = ("theme",)
+    THEME_FIELD_NUMBER: _ClassVar[int]
+    theme: Theme
+    def __init__(self, theme: _Optional[_Union[Theme, _Mapping]] = ...) -> None: ...
+
+class SetWorkspaceThemeRequest(_message.Message):
+    __slots__ = ("workspace_id", "theme")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    THEME_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    theme: Theme
+    def __init__(self, workspace_id: _Optional[str] = ..., theme: _Optional[_Union[Theme, _Mapping]] = ...) -> None: ...
+
+class SetWorkspaceThemeResponse(_message.Message):
+    __slots__ = ("workspace",)
+    WORKSPACE_FIELD_NUMBER: _ClassVar[int]
+    workspace: Workspace
+    def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ...) -> None: ...

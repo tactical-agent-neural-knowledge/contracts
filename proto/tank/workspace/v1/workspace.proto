@@ -23,6 +23,25 @@ message Workspace {
   string name = 3;
   string icon_url = 4;
   google.protobuf.Timestamp created_at = 5;
+  // The workspace's look, set by an admin from a description. Unset means TANK's own.
+  Theme theme = 6;
+}
+
+// A colour theme made from a few words. Every colour is a #rrggbb hex; the
+// server checks contrast before it hands one out, so clients apply it as is.
+message Theme {
+  // What the person typed, so it can be shown back and refined.
+  string description = 1;
+  // A short name the model gave it: "Midnight glacier".
+  string name = 2;
+  // "dark" or "light": which base the colours sit on.
+  string scheme = 3;
+  string primary = 4;
+  string secondary = 5;
+  string background = 6;
+  string surface = 7;
+  string on_surface = 8;
+  string accent = 9;
 }
 
 message Member {
@@ -209,6 +228,8 @@ message Preferences {
   bool desktop_sound = 6;
   bool push_on_mention_only = 7;
   TopoPreferences topo = 8;
+  // A theme made from a description, for this person; wins over the workspace's. Unset means none.
+  Theme custom_theme = 9;
 }
 
 // Which Topo mark families the strip draws for this person.
@@ -465,6 +486,10 @@ service WorkspaceService {
   rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
   rpc GetPreferences(GetPreferencesRequest) returns (GetPreferencesResponse);
   rpc UpdatePreferences(UpdatePreferencesRequest) returns (UpdatePreferencesResponse);
+  // Turn up to fifteen words into a theme. Nothing is saved; the caller decides.
+  rpc GenerateTheme(GenerateThemeRequest) returns (GenerateThemeResponse);
+  // Admins only: the workspace's theme, or a reset when theme is unset.
+  rpc SetWorkspaceTheme(SetWorkspaceThemeRequest) returns (SetWorkspaceThemeResponse);
   rpc ListEmoji(ListEmojiRequest) returns (ListEmojiResponse);
   rpc CreateEmoji(CreateEmojiRequest) returns (CreateEmojiResponse);
   rpc DeleteEmoji(DeleteEmojiRequest) returns (DeleteEmojiResponse);
@@ -482,4 +507,21 @@ service WorkspaceService {
   rpc ScheduleMessage(ScheduleMessageRequest) returns (ScheduleMessageResponse);
   rpc ListScheduled(ListScheduledRequest) returns (ListScheduledResponse);
   rpc CancelScheduled(CancelScheduledRequest) returns (CancelScheduledResponse);
+}
+
+message GenerateThemeRequest {
+  string workspace_id = 1;
+  string description = 2;
+}
+message GenerateThemeResponse {
+  Theme theme = 1;
+}
+
+message SetWorkspaceThemeRequest {
+  string workspace_id = 1;
+  // Unset clears the workspace theme.
+  Theme theme = 2;
+}
+message SetWorkspaceThemeResponse {
+  Workspace workspace = 1;
 }
