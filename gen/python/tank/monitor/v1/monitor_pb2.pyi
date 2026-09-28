@@ -49,16 +49,18 @@ HEALTH_CRIT: Health
 HEALTH_UNKNOWN: Health
 
 class Point(_message.Message):
-    __slots__ = ("at", "value", "text", "labels_json")
+    __slots__ = ("at", "value", "text", "labels_json", "url")
     AT_FIELD_NUMBER: _ClassVar[int]
     VALUE_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
     LABELS_JSON_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
     at: _timestamp_pb2.Timestamp
     value: float
     text: str
     labels_json: str
-    def __init__(self, at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., value: _Optional[float] = ..., text: _Optional[str] = ..., labels_json: _Optional[str] = ...) -> None: ...
+    url: str
+    def __init__(self, at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., value: _Optional[float] = ..., text: _Optional[str] = ..., labels_json: _Optional[str] = ..., url: _Optional[str] = ...) -> None: ...
 
 class Position(_message.Message):
     __slots__ = ("x", "y", "w", "h")

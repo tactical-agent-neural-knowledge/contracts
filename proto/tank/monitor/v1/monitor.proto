@@ -39,8 +39,9 @@ enum Health {
 message Point {
   google.protobuf.Timestamp at = 1;
   double value = 2;
-  string text = 3;        // for TEXT and STATUS widgets: the reason, the paragraph
+  string text = 3;        // for TEXT and STATUS widgets: the reason, the paragraph (supports Markdown)
   string labels_json = 4; // for TABLE widgets and labelled series
+  string url = 5;         // optional: makes text clickable (for TEXT widgets)
 }
 
 // Where a widget sits on the grid, in 12-column units.
