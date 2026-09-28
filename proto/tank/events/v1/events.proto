@@ -235,3 +235,10 @@ message TopoMarkUpdated {
 message MonitorWidgetUpdated {
   tank.monitor.v1.Widget widget = 1;
 }
+
+// A widget crossed into warning or critical and asks to be told about it. Only the
+// crossing is an event; a widget that stays red does not keep shouting.
+message MonitorWidgetAlert {
+  tank.monitor.v1.Widget widget = 1;
+  tank.monitor.v1.Health previous = 2;
+}

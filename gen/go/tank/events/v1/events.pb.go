@@ -2269,6 +2269,60 @@ func (x *MonitorWidgetUpdated) GetWidget() *v110.Widget {
 	return nil
 }
 
+// A widget crossed into warning or critical and asks to be told about it. Only the
+// crossing is an event; a widget that stays red does not keep shouting.
+type MonitorWidgetAlert struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Widget        *v110.Widget           `protobuf:"bytes,1,opt,name=widget,proto3" json:"widget,omitempty"`
+	Previous      v110.Health            `protobuf:"varint,2,opt,name=previous,proto3,enum=tank.monitor.v1.Health" json:"previous,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MonitorWidgetAlert) Reset() {
+	*x = MonitorWidgetAlert{}
+	mi := &file_tank_events_v1_events_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MonitorWidgetAlert) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MonitorWidgetAlert) ProtoMessage() {}
+
+func (x *MonitorWidgetAlert) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_events_v1_events_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MonitorWidgetAlert.ProtoReflect.Descriptor instead.
+func (*MonitorWidgetAlert) Descriptor() ([]byte, []int) {
+	return file_tank_events_v1_events_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *MonitorWidgetAlert) GetWidget() *v110.Widget {
+	if x != nil {
+		return x.Widget
+	}
+	return nil
+}
+
+func (x *MonitorWidgetAlert) GetPrevious() v110.Health {
+	if x != nil {
+		return x.Previous
+	}
+	return v110.Health(0)
+}
+
 var File_tank_events_v1_events_proto protoreflect.FileDescriptor
 
 var file_tank_events_v1_events_proto_rawDesc = string([]byte{
@@ -2558,21 +2612,29 @@ var file_tank_events_v1_events_proto_rawDesc = string([]byte{
 	0x67, 0x65, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12, 0x2f, 0x0a, 0x06, 0x77, 0x69,
 	0x64, 0x67, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x74, 0x61, 0x6e,
 	0x6b, 0x2e, 0x6d, 0x6f, 0x6e, 0x69, 0x74, 0x6f, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x57, 0x69, 0x64,
-	0x67, 0x65, 0x74, 0x52, 0x06, 0x77, 0x69, 0x64, 0x67, 0x65, 0x74, 0x42, 0xd0, 0x01, 0x0a, 0x12,
-	0x63, 0x6f, 0x6d, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e,
-	0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
-	0x01, 0x5a, 0x53, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x74, 0x61,
-	0x63, 0x74, 0x69, 0x63, 0x61, 0x6c, 0x2d, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2d, 0x6e, 0x65, 0x75,
-	0x72, 0x61, 0x6c, 0x2d, 0x6b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x2f, 0x63, 0x6f,
-	0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x67, 0x6f, 0x2f, 0x74,
-	0x61, 0x6e, 0x6b, 0x2f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x76,
-	0x65, 0x6e, 0x74, 0x73, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x54, 0x45, 0x58, 0xaa, 0x02, 0x0e, 0x54,
-	0x61, 0x6e, 0x6b, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0e,
-	0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x5c, 0x56, 0x31, 0xe2, 0x02,
-	0x1a, 0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x5c, 0x56, 0x31, 0x5c,
-	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x54, 0x61,
-	0x6e, 0x6b, 0x3a, 0x3a, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x67, 0x65, 0x74, 0x52, 0x06, 0x77, 0x69, 0x64, 0x67, 0x65, 0x74, 0x22, 0x7a, 0x0a, 0x12, 0x4d,
+	0x6f, 0x6e, 0x69, 0x74, 0x6f, 0x72, 0x57, 0x69, 0x64, 0x67, 0x65, 0x74, 0x41, 0x6c, 0x65, 0x72,
+	0x74, 0x12, 0x2f, 0x0a, 0x06, 0x77, 0x69, 0x64, 0x67, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x17, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x6d, 0x6f, 0x6e, 0x69, 0x74, 0x6f, 0x72,
+	0x2e, 0x76, 0x31, 0x2e, 0x57, 0x69, 0x64, 0x67, 0x65, 0x74, 0x52, 0x06, 0x77, 0x69, 0x64, 0x67,
+	0x65, 0x74, 0x12, 0x33, 0x0a, 0x08, 0x70, 0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0e, 0x32, 0x17, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x6d, 0x6f, 0x6e, 0x69,
+	0x74, 0x6f, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x52, 0x08, 0x70,
+	0x72, 0x65, 0x76, 0x69, 0x6f, 0x75, 0x73, 0x42, 0xd0, 0x01, 0x0a, 0x12, 0x63, 0x6f, 0x6d, 0x2e,
+	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x76, 0x31, 0x42, 0x0b,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x53, 0x67,
+	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x74, 0x61, 0x63, 0x74, 0x69, 0x63,
+	0x61, 0x6c, 0x2d, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2d, 0x6e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x2d,
+	0x6b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x2f, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61,
+	0x63, 0x74, 0x73, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x67, 0x6f, 0x2f, 0x74, 0x61, 0x6e, 0x6b, 0x2f,
+	0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73,
+	0x76, 0x31, 0xa2, 0x02, 0x03, 0x54, 0x45, 0x58, 0xaa, 0x02, 0x0e, 0x54, 0x61, 0x6e, 0x6b, 0x2e,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0e, 0x54, 0x61, 0x6e, 0x6b,
+	0x5c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1a, 0x54, 0x61, 0x6e,
+	0x6b, 0x5c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x54, 0x61, 0x6e, 0x6b, 0x3a, 0x3a,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 })
 
 var (
@@ -2587,7 +2649,7 @@ func file_tank_events_v1_events_proto_rawDescGZIP() []byte {
 	return file_tank_events_v1_events_proto_rawDescData
 }
 
-var file_tank_events_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 40)
+var file_tank_events_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 41)
 var file_tank_events_v1_events_proto_goTypes = []any{
 	(*Envelope)(nil),                  // 0: tank.events.v1.Envelope
 	(*MessageCreated)(nil),            // 1: tank.events.v1.MessageCreated
@@ -2629,65 +2691,69 @@ var file_tank_events_v1_events_proto_goTypes = []any{
 	(*ExportReady)(nil),               // 37: tank.events.v1.ExportReady
 	(*TopoMarkUpdated)(nil),           // 38: tank.events.v1.TopoMarkUpdated
 	(*MonitorWidgetUpdated)(nil),      // 39: tank.events.v1.MonitorWidgetUpdated
-	(*timestamppb.Timestamp)(nil),     // 40: google.protobuf.Timestamp
-	(*anypb.Any)(nil),                 // 41: google.protobuf.Any
-	(*v1.Message)(nil),                // 42: tank.message.v1.Message
-	(*v11.Channel)(nil),               // 43: tank.channel.v1.Channel
-	(*v12.BlockAction)(nil),           // 44: tank.blocks.v1.BlockAction
-	(*v13.Presence)(nil),              // 45: tank.presence.v1.Presence
-	(*v14.File)(nil),                  // 46: tank.files.v1.File
-	(*v15.Run)(nil),                   // 47: tank.agent.v1.Run
-	(*v16.CustomEmoji)(nil),           // 48: tank.workspace.v1.CustomEmoji
-	(*v16.Preferences)(nil),           // 49: tank.workspace.v1.Preferences
-	(*v11.ChannelReadState)(nil),      // 50: tank.channel.v1.ChannelReadState
-	(*v16.Draft)(nil),                 // 51: tank.workspace.v1.Draft
-	(*v16.ScheduledMessage)(nil),      // 52: tank.workspace.v1.ScheduledMessage
-	(*v16.UserGroup)(nil),             // 53: tank.workspace.v1.UserGroup
-	(*v16.ChannelBookmark)(nil),       // 54: tank.workspace.v1.ChannelBookmark
-	(*v16.Member)(nil),                // 55: tank.workspace.v1.Member
-	(*v17.Huddle)(nil),                // 56: tank.huddle.v1.Huddle
-	(v16.Role)(0),                     // 57: tank.workspace.v1.Role
-	(*v18.WorkspaceSettings)(nil),     // 58: tank.admin.v1.WorkspaceSettings
-	(*v18.AuditEntry)(nil),            // 59: tank.admin.v1.AuditEntry
-	(*v18.ExportJob)(nil),             // 60: tank.admin.v1.ExportJob
-	(*v19.Mark)(nil),                  // 61: tank.topo.v1.Mark
-	(*v110.Widget)(nil),               // 62: tank.monitor.v1.Widget
+	(*MonitorWidgetAlert)(nil),        // 40: tank.events.v1.MonitorWidgetAlert
+	(*timestamppb.Timestamp)(nil),     // 41: google.protobuf.Timestamp
+	(*anypb.Any)(nil),                 // 42: google.protobuf.Any
+	(*v1.Message)(nil),                // 43: tank.message.v1.Message
+	(*v11.Channel)(nil),               // 44: tank.channel.v1.Channel
+	(*v12.BlockAction)(nil),           // 45: tank.blocks.v1.BlockAction
+	(*v13.Presence)(nil),              // 46: tank.presence.v1.Presence
+	(*v14.File)(nil),                  // 47: tank.files.v1.File
+	(*v15.Run)(nil),                   // 48: tank.agent.v1.Run
+	(*v16.CustomEmoji)(nil),           // 49: tank.workspace.v1.CustomEmoji
+	(*v16.Preferences)(nil),           // 50: tank.workspace.v1.Preferences
+	(*v11.ChannelReadState)(nil),      // 51: tank.channel.v1.ChannelReadState
+	(*v16.Draft)(nil),                 // 52: tank.workspace.v1.Draft
+	(*v16.ScheduledMessage)(nil),      // 53: tank.workspace.v1.ScheduledMessage
+	(*v16.UserGroup)(nil),             // 54: tank.workspace.v1.UserGroup
+	(*v16.ChannelBookmark)(nil),       // 55: tank.workspace.v1.ChannelBookmark
+	(*v16.Member)(nil),                // 56: tank.workspace.v1.Member
+	(*v17.Huddle)(nil),                // 57: tank.huddle.v1.Huddle
+	(v16.Role)(0),                     // 58: tank.workspace.v1.Role
+	(*v18.WorkspaceSettings)(nil),     // 59: tank.admin.v1.WorkspaceSettings
+	(*v18.AuditEntry)(nil),            // 60: tank.admin.v1.AuditEntry
+	(*v18.ExportJob)(nil),             // 61: tank.admin.v1.ExportJob
+	(*v19.Mark)(nil),                  // 62: tank.topo.v1.Mark
+	(*v110.Widget)(nil),               // 63: tank.monitor.v1.Widget
+	(v110.Health)(0),                  // 64: tank.monitor.v1.Health
 }
 var file_tank_events_v1_events_proto_depIdxs = []int32{
-	40, // 0: tank.events.v1.Envelope.occurred_at:type_name -> google.protobuf.Timestamp
-	41, // 1: tank.events.v1.Envelope.payload:type_name -> google.protobuf.Any
-	42, // 2: tank.events.v1.MessageCreated.message:type_name -> tank.message.v1.Message
-	42, // 3: tank.events.v1.MessageUpdated.message:type_name -> tank.message.v1.Message
-	43, // 4: tank.events.v1.ChannelUpdated.channel:type_name -> tank.channel.v1.Channel
-	44, // 5: tank.events.v1.CardAction.action:type_name -> tank.blocks.v1.BlockAction
-	45, // 6: tank.events.v1.PresenceChanged.presence:type_name -> tank.presence.v1.Presence
-	46, // 7: tank.events.v1.FileReady.file:type_name -> tank.files.v1.File
-	42, // 8: tank.events.v1.MessageEphemeral.message:type_name -> tank.message.v1.Message
-	47, // 9: tank.events.v1.AgentRunUpdated.run:type_name -> tank.agent.v1.Run
-	48, // 10: tank.events.v1.EmojiChanged.emoji:type_name -> tank.workspace.v1.CustomEmoji
-	49, // 11: tank.events.v1.PreferencesUpdated.preferences:type_name -> tank.workspace.v1.Preferences
-	50, // 12: tank.events.v1.ChannelPreferenceUpdated.read_state:type_name -> tank.channel.v1.ChannelReadState
-	51, // 13: tank.events.v1.DraftUpdated.draft:type_name -> tank.workspace.v1.Draft
-	52, // 14: tank.events.v1.ScheduledMessageSent.scheduled:type_name -> tank.workspace.v1.ScheduledMessage
-	53, // 15: tank.events.v1.UserGroupUpdated.group:type_name -> tank.workspace.v1.UserGroup
-	54, // 16: tank.events.v1.BookmarkChanged.bookmark:type_name -> tank.workspace.v1.ChannelBookmark
-	55, // 17: tank.events.v1.MemberUpdated.member:type_name -> tank.workspace.v1.Member
-	56, // 18: tank.events.v1.HuddleStarted.huddle:type_name -> tank.huddle.v1.Huddle
-	56, // 19: tank.events.v1.HuddleEnded.huddle:type_name -> tank.huddle.v1.Huddle
-	56, // 20: tank.events.v1.HuddleParticipantsChanged.huddle:type_name -> tank.huddle.v1.Huddle
-	55, // 21: tank.events.v1.MemberRoleChanged.member:type_name -> tank.workspace.v1.Member
-	57, // 22: tank.events.v1.MemberRoleChanged.previous_role:type_name -> tank.workspace.v1.Role
-	55, // 23: tank.events.v1.MemberDeactivated.member:type_name -> tank.workspace.v1.Member
-	58, // 24: tank.events.v1.WorkspaceSettingsUpdated.settings:type_name -> tank.admin.v1.WorkspaceSettings
-	59, // 25: tank.events.v1.AuditLogged.entry:type_name -> tank.admin.v1.AuditEntry
-	60, // 26: tank.events.v1.ExportReady.job:type_name -> tank.admin.v1.ExportJob
-	61, // 27: tank.events.v1.TopoMarkUpdated.mark:type_name -> tank.topo.v1.Mark
-	62, // 28: tank.events.v1.MonitorWidgetUpdated.widget:type_name -> tank.monitor.v1.Widget
-	29, // [29:29] is the sub-list for method output_type
-	29, // [29:29] is the sub-list for method input_type
-	29, // [29:29] is the sub-list for extension type_name
-	29, // [29:29] is the sub-list for extension extendee
-	0,  // [0:29] is the sub-list for field type_name
+	41, // 0: tank.events.v1.Envelope.occurred_at:type_name -> google.protobuf.Timestamp
+	42, // 1: tank.events.v1.Envelope.payload:type_name -> google.protobuf.Any
+	43, // 2: tank.events.v1.MessageCreated.message:type_name -> tank.message.v1.Message
+	43, // 3: tank.events.v1.MessageUpdated.message:type_name -> tank.message.v1.Message
+	44, // 4: tank.events.v1.ChannelUpdated.channel:type_name -> tank.channel.v1.Channel
+	45, // 5: tank.events.v1.CardAction.action:type_name -> tank.blocks.v1.BlockAction
+	46, // 6: tank.events.v1.PresenceChanged.presence:type_name -> tank.presence.v1.Presence
+	47, // 7: tank.events.v1.FileReady.file:type_name -> tank.files.v1.File
+	43, // 8: tank.events.v1.MessageEphemeral.message:type_name -> tank.message.v1.Message
+	48, // 9: tank.events.v1.AgentRunUpdated.run:type_name -> tank.agent.v1.Run
+	49, // 10: tank.events.v1.EmojiChanged.emoji:type_name -> tank.workspace.v1.CustomEmoji
+	50, // 11: tank.events.v1.PreferencesUpdated.preferences:type_name -> tank.workspace.v1.Preferences
+	51, // 12: tank.events.v1.ChannelPreferenceUpdated.read_state:type_name -> tank.channel.v1.ChannelReadState
+	52, // 13: tank.events.v1.DraftUpdated.draft:type_name -> tank.workspace.v1.Draft
+	53, // 14: tank.events.v1.ScheduledMessageSent.scheduled:type_name -> tank.workspace.v1.ScheduledMessage
+	54, // 15: tank.events.v1.UserGroupUpdated.group:type_name -> tank.workspace.v1.UserGroup
+	55, // 16: tank.events.v1.BookmarkChanged.bookmark:type_name -> tank.workspace.v1.ChannelBookmark
+	56, // 17: tank.events.v1.MemberUpdated.member:type_name -> tank.workspace.v1.Member
+	57, // 18: tank.events.v1.HuddleStarted.huddle:type_name -> tank.huddle.v1.Huddle
+	57, // 19: tank.events.v1.HuddleEnded.huddle:type_name -> tank.huddle.v1.Huddle
+	57, // 20: tank.events.v1.HuddleParticipantsChanged.huddle:type_name -> tank.huddle.v1.Huddle
+	56, // 21: tank.events.v1.MemberRoleChanged.member:type_name -> tank.workspace.v1.Member
+	58, // 22: tank.events.v1.MemberRoleChanged.previous_role:type_name -> tank.workspace.v1.Role
+	56, // 23: tank.events.v1.MemberDeactivated.member:type_name -> tank.workspace.v1.Member
+	59, // 24: tank.events.v1.WorkspaceSettingsUpdated.settings:type_name -> tank.admin.v1.WorkspaceSettings
+	60, // 25: tank.events.v1.AuditLogged.entry:type_name -> tank.admin.v1.AuditEntry
+	61, // 26: tank.events.v1.ExportReady.job:type_name -> tank.admin.v1.ExportJob
+	62, // 27: tank.events.v1.TopoMarkUpdated.mark:type_name -> tank.topo.v1.Mark
+	63, // 28: tank.events.v1.MonitorWidgetUpdated.widget:type_name -> tank.monitor.v1.Widget
+	63, // 29: tank.events.v1.MonitorWidgetAlert.widget:type_name -> tank.monitor.v1.Widget
+	64, // 30: tank.events.v1.MonitorWidgetAlert.previous:type_name -> tank.monitor.v1.Health
+	31, // [31:31] is the sub-list for method output_type
+	31, // [31:31] is the sub-list for method input_type
+	31, // [31:31] is the sub-list for extension type_name
+	31, // [31:31] is the sub-list for extension extendee
+	0,  // [0:31] is the sub-list for field type_name
 }
 
 func init() { file_tank_events_v1_events_proto_init() }
@@ -2701,7 +2767,7 @@ func file_tank_events_v1_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tank_events_v1_events_proto_rawDesc), len(file_tank_events_v1_events_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   40,
+			NumMessages:   41,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

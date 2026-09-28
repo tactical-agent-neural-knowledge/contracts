@@ -28,6 +28,15 @@ enum SourceKind {
   SOURCE_KIND_INTERNAL = 3; // TANK's own numbers, no model involved
 }
 
+// When a widget should raise a notification. It is a property of the widget, not
+// of the person: a Radar is small and everyone on it wants the same alert.
+enum WidgetNotify {
+  WIDGET_NOTIFY_UNSPECIFIED = 0;
+  WIDGET_NOTIFY_OFF = 1;     // never
+  WIDGET_NOTIFY_CRIT = 2;    // only when it goes critical
+  WIDGET_NOTIFY_WARN = 3;    // when it goes warning or critical
+}
+
 enum Health {
   HEALTH_UNSPECIFIED = 0;
   HEALTH_OK = 1;
@@ -79,6 +88,7 @@ message Widget {
   // The message that mirrors this widget in the channel: its thread.
   string message_id = 12;
   google.protobuf.Timestamp updated_at = 13;
+  WidgetNotify notify = 14;
 }
 
 message Schedule {
@@ -127,6 +137,7 @@ message UpsertWidgetRequest {
   string mapping = 7;
   Thresholds thresholds = 8;
   Position position = 9;
+  WidgetNotify notify = 10;
 }
 message UpsertWidgetResponse {
   Widget widget = 1;

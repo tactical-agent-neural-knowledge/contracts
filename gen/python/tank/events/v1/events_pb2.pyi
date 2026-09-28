@@ -365,3 +365,11 @@ class MonitorWidgetUpdated(_message.Message):
     WIDGET_FIELD_NUMBER: _ClassVar[int]
     widget: _monitor_pb2.Widget
     def __init__(self, widget: _Optional[_Union[_monitor_pb2.Widget, _Mapping]] = ...) -> None: ...
+
+class MonitorWidgetAlert(_message.Message):
+    __slots__ = ("widget", "previous")
+    WIDGET_FIELD_NUMBER: _ClassVar[int]
+    PREVIOUS_FIELD_NUMBER: _ClassVar[int]
+    widget: _monitor_pb2.Widget
+    previous: _monitor_pb2.Health
+    def __init__(self, widget: _Optional[_Union[_monitor_pb2.Widget, _Mapping]] = ..., previous: _Optional[_Union[_monitor_pb2.Health, str]] = ...) -> None: ...

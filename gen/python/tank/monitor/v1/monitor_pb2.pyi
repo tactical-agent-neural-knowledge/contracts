@@ -24,6 +24,13 @@ class SourceKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     SOURCE_KIND_PROBE: _ClassVar[SourceKind]
     SOURCE_KIND_INTERNAL: _ClassVar[SourceKind]
 
+class WidgetNotify(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    WIDGET_NOTIFY_UNSPECIFIED: _ClassVar[WidgetNotify]
+    WIDGET_NOTIFY_OFF: _ClassVar[WidgetNotify]
+    WIDGET_NOTIFY_CRIT: _ClassVar[WidgetNotify]
+    WIDGET_NOTIFY_WARN: _ClassVar[WidgetNotify]
+
 class Health(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     HEALTH_UNSPECIFIED: _ClassVar[Health]
@@ -42,6 +49,10 @@ SOURCE_KIND_UNSPECIFIED: SourceKind
 SOURCE_KIND_WEBHOOK: SourceKind
 SOURCE_KIND_PROBE: SourceKind
 SOURCE_KIND_INTERNAL: SourceKind
+WIDGET_NOTIFY_UNSPECIFIED: WidgetNotify
+WIDGET_NOTIFY_OFF: WidgetNotify
+WIDGET_NOTIFY_CRIT: WidgetNotify
+WIDGET_NOTIFY_WARN: WidgetNotify
 HEALTH_UNSPECIFIED: Health
 HEALTH_OK: Health
 HEALTH_WARN: Health
@@ -85,7 +96,7 @@ class Thresholds(_message.Message):
     def __init__(self, warn_at: _Optional[float] = ..., crit_at: _Optional[float] = ..., higher_is_bad: bool = ...) -> None: ...
 
 class Widget(_message.Message):
-    __slots__ = ("id", "channel_id", "kind", "title", "unit", "source_id", "mapping", "thresholds", "position", "latest", "health", "message_id", "updated_at")
+    __slots__ = ("id", "channel_id", "kind", "title", "unit", "source_id", "mapping", "thresholds", "position", "latest", "health", "message_id", "updated_at", "notify")
     ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
@@ -99,6 +110,7 @@ class Widget(_message.Message):
     HEALTH_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    NOTIFY_FIELD_NUMBER: _ClassVar[int]
     id: str
     channel_id: str
     kind: WidgetKind
@@ -112,7 +124,8 @@ class Widget(_message.Message):
     health: Health
     message_id: str
     updated_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., channel_id: _Optional[str] = ..., kind: _Optional[_Union[WidgetKind, str]] = ..., title: _Optional[str] = ..., unit: _Optional[str] = ..., source_id: _Optional[str] = ..., mapping: _Optional[str] = ..., thresholds: _Optional[_Union[Thresholds, _Mapping]] = ..., position: _Optional[_Union[Position, _Mapping]] = ..., latest: _Optional[_Union[Point, _Mapping]] = ..., health: _Optional[_Union[Health, str]] = ..., message_id: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    notify: WidgetNotify
+    def __init__(self, id: _Optional[str] = ..., channel_id: _Optional[str] = ..., kind: _Optional[_Union[WidgetKind, str]] = ..., title: _Optional[str] = ..., unit: _Optional[str] = ..., source_id: _Optional[str] = ..., mapping: _Optional[str] = ..., thresholds: _Optional[_Union[Thresholds, _Mapping]] = ..., position: _Optional[_Union[Position, _Mapping]] = ..., latest: _Optional[_Union[Point, _Mapping]] = ..., health: _Optional[_Union[Health, str]] = ..., message_id: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., notify: _Optional[_Union[WidgetNotify, str]] = ...) -> None: ...
 
 class Schedule(_message.Message):
     __slots__ = ("interval_seconds", "cron")
@@ -163,7 +176,7 @@ class ListWidgetsResponse(_message.Message):
     def __init__(self, widgets: _Optional[_Iterable[_Union[Widget, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ...) -> None: ...
 
 class UpsertWidgetRequest(_message.Message):
-    __slots__ = ("id", "channel_id", "kind", "title", "unit", "source_id", "mapping", "thresholds", "position")
+    __slots__ = ("id", "channel_id", "kind", "title", "unit", "source_id", "mapping", "thresholds", "position", "notify")
     ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
@@ -173,6 +186,7 @@ class UpsertWidgetRequest(_message.Message):
     MAPPING_FIELD_NUMBER: _ClassVar[int]
     THRESHOLDS_FIELD_NUMBER: _ClassVar[int]
     POSITION_FIELD_NUMBER: _ClassVar[int]
+    NOTIFY_FIELD_NUMBER: _ClassVar[int]
     id: str
     channel_id: str
     kind: WidgetKind
@@ -182,7 +196,8 @@ class UpsertWidgetRequest(_message.Message):
     mapping: str
     thresholds: Thresholds
     position: Position
-    def __init__(self, id: _Optional[str] = ..., channel_id: _Optional[str] = ..., kind: _Optional[_Union[WidgetKind, str]] = ..., title: _Optional[str] = ..., unit: _Optional[str] = ..., source_id: _Optional[str] = ..., mapping: _Optional[str] = ..., thresholds: _Optional[_Union[Thresholds, _Mapping]] = ..., position: _Optional[_Union[Position, _Mapping]] = ...) -> None: ...
+    notify: WidgetNotify
+    def __init__(self, id: _Optional[str] = ..., channel_id: _Optional[str] = ..., kind: _Optional[_Union[WidgetKind, str]] = ..., title: _Optional[str] = ..., unit: _Optional[str] = ..., source_id: _Optional[str] = ..., mapping: _Optional[str] = ..., thresholds: _Optional[_Union[Thresholds, _Mapping]] = ..., position: _Optional[_Union[Position, _Mapping]] = ..., notify: _Optional[_Union[WidgetNotify, str]] = ...) -> None: ...
 
 class UpsertWidgetResponse(_message.Message):
     __slots__ = ("widget",)
