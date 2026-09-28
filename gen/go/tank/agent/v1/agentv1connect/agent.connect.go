@@ -47,6 +47,16 @@ const (
 	AgentServiceListRunsProcedure = "/tank.agent.v1.AgentService/ListRuns"
 	// AgentServiceListAgentsProcedure is the fully-qualified name of the AgentService's ListAgents RPC.
 	AgentServiceListAgentsProcedure = "/tank.agent.v1.AgentService/ListAgents"
+	// AgentServiceGetRepoConnectionProcedure is the fully-qualified name of the AgentService's
+	// GetRepoConnection RPC.
+	AgentServiceGetRepoConnectionProcedure = "/tank.agent.v1.AgentService/GetRepoConnection"
+	// AgentServiceStartGitHubConnectProcedure is the fully-qualified name of the AgentService's
+	// StartGitHubConnect RPC.
+	AgentServiceStartGitHubConnectProcedure = "/tank.agent.v1.AgentService/StartGitHubConnect"
+	// AgentServiceBindRepoProcedure is the fully-qualified name of the AgentService's BindRepo RPC.
+	AgentServiceBindRepoProcedure = "/tank.agent.v1.AgentService/BindRepo"
+	// AgentServiceUnbindRepoProcedure is the fully-qualified name of the AgentService's UnbindRepo RPC.
+	AgentServiceUnbindRepoProcedure = "/tank.agent.v1.AgentService/UnbindRepo"
 )
 
 // AgentServiceClient is a client for the tank.agent.v1.AgentService service.
@@ -58,6 +68,12 @@ type AgentServiceClient interface {
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
 	ListAgents(context.Context, *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error)
+	// Connecting a Tread to code. A Radar is private and so is this: only workspace
+	// admins may connect an org or bind a repository.
+	GetRepoConnection(context.Context, *connect.Request[v1.GetRepoConnectionRequest]) (*connect.Response[v1.GetRepoConnectionResponse], error)
+	StartGitHubConnect(context.Context, *connect.Request[v1.StartGitHubConnectRequest]) (*connect.Response[v1.StartGitHubConnectResponse], error)
+	BindRepo(context.Context, *connect.Request[v1.BindRepoRequest]) (*connect.Response[v1.BindRepoResponse], error)
+	UnbindRepo(context.Context, *connect.Request[v1.UnbindRepoRequest]) (*connect.Response[v1.UnbindRepoResponse], error)
 }
 
 // NewAgentServiceClient constructs a client for the tank.agent.v1.AgentService service. By default,
@@ -113,18 +129,46 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("ListAgents")),
 			connect.WithClientOptions(opts...),
 		),
+		getRepoConnection: connect.NewClient[v1.GetRepoConnectionRequest, v1.GetRepoConnectionResponse](
+			httpClient,
+			baseURL+AgentServiceGetRepoConnectionProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("GetRepoConnection")),
+			connect.WithClientOptions(opts...),
+		),
+		startGitHubConnect: connect.NewClient[v1.StartGitHubConnectRequest, v1.StartGitHubConnectResponse](
+			httpClient,
+			baseURL+AgentServiceStartGitHubConnectProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("StartGitHubConnect")),
+			connect.WithClientOptions(opts...),
+		),
+		bindRepo: connect.NewClient[v1.BindRepoRequest, v1.BindRepoResponse](
+			httpClient,
+			baseURL+AgentServiceBindRepoProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("BindRepo")),
+			connect.WithClientOptions(opts...),
+		),
+		unbindRepo: connect.NewClient[v1.UnbindRepoRequest, v1.UnbindRepoResponse](
+			httpClient,
+			baseURL+AgentServiceUnbindRepoProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("UnbindRepo")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // agentServiceClient implements AgentServiceClient.
 type agentServiceClient struct {
-	startRun   *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
-	stopRun    *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
-	heartbeat  *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
-	setStatus  *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
-	getRun     *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
-	listRuns   *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
-	listAgents *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
+	startRun           *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	stopRun            *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
+	heartbeat          *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
+	setStatus          *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
+	getRun             *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	listRuns           *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
+	listAgents         *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
+	getRepoConnection  *connect.Client[v1.GetRepoConnectionRequest, v1.GetRepoConnectionResponse]
+	startGitHubConnect *connect.Client[v1.StartGitHubConnectRequest, v1.StartGitHubConnectResponse]
+	bindRepo           *connect.Client[v1.BindRepoRequest, v1.BindRepoResponse]
+	unbindRepo         *connect.Client[v1.UnbindRepoRequest, v1.UnbindRepoResponse]
 }
 
 // StartRun calls tank.agent.v1.AgentService.StartRun.
@@ -162,6 +206,26 @@ func (c *agentServiceClient) ListAgents(ctx context.Context, req *connect.Reques
 	return c.listAgents.CallUnary(ctx, req)
 }
 
+// GetRepoConnection calls tank.agent.v1.AgentService.GetRepoConnection.
+func (c *agentServiceClient) GetRepoConnection(ctx context.Context, req *connect.Request[v1.GetRepoConnectionRequest]) (*connect.Response[v1.GetRepoConnectionResponse], error) {
+	return c.getRepoConnection.CallUnary(ctx, req)
+}
+
+// StartGitHubConnect calls tank.agent.v1.AgentService.StartGitHubConnect.
+func (c *agentServiceClient) StartGitHubConnect(ctx context.Context, req *connect.Request[v1.StartGitHubConnectRequest]) (*connect.Response[v1.StartGitHubConnectResponse], error) {
+	return c.startGitHubConnect.CallUnary(ctx, req)
+}
+
+// BindRepo calls tank.agent.v1.AgentService.BindRepo.
+func (c *agentServiceClient) BindRepo(ctx context.Context, req *connect.Request[v1.BindRepoRequest]) (*connect.Response[v1.BindRepoResponse], error) {
+	return c.bindRepo.CallUnary(ctx, req)
+}
+
+// UnbindRepo calls tank.agent.v1.AgentService.UnbindRepo.
+func (c *agentServiceClient) UnbindRepo(ctx context.Context, req *connect.Request[v1.UnbindRepoRequest]) (*connect.Response[v1.UnbindRepoResponse], error) {
+	return c.unbindRepo.CallUnary(ctx, req)
+}
+
 // AgentServiceHandler is an implementation of the tank.agent.v1.AgentService service.
 type AgentServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
@@ -171,6 +235,12 @@ type AgentServiceHandler interface {
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
 	ListAgents(context.Context, *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error)
+	// Connecting a Tread to code. A Radar is private and so is this: only workspace
+	// admins may connect an org or bind a repository.
+	GetRepoConnection(context.Context, *connect.Request[v1.GetRepoConnectionRequest]) (*connect.Response[v1.GetRepoConnectionResponse], error)
+	StartGitHubConnect(context.Context, *connect.Request[v1.StartGitHubConnectRequest]) (*connect.Response[v1.StartGitHubConnectResponse], error)
+	BindRepo(context.Context, *connect.Request[v1.BindRepoRequest]) (*connect.Response[v1.BindRepoResponse], error)
+	UnbindRepo(context.Context, *connect.Request[v1.UnbindRepoRequest]) (*connect.Response[v1.UnbindRepoResponse], error)
 }
 
 // NewAgentServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -222,6 +292,30 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("ListAgents")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceGetRepoConnectionHandler := connect.NewUnaryHandler(
+		AgentServiceGetRepoConnectionProcedure,
+		svc.GetRepoConnection,
+		connect.WithSchema(agentServiceMethods.ByName("GetRepoConnection")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceStartGitHubConnectHandler := connect.NewUnaryHandler(
+		AgentServiceStartGitHubConnectProcedure,
+		svc.StartGitHubConnect,
+		connect.WithSchema(agentServiceMethods.ByName("StartGitHubConnect")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceBindRepoHandler := connect.NewUnaryHandler(
+		AgentServiceBindRepoProcedure,
+		svc.BindRepo,
+		connect.WithSchema(agentServiceMethods.ByName("BindRepo")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceUnbindRepoHandler := connect.NewUnaryHandler(
+		AgentServiceUnbindRepoProcedure,
+		svc.UnbindRepo,
+		connect.WithSchema(agentServiceMethods.ByName("UnbindRepo")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agent.v1.AgentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AgentServiceStartRunProcedure:
@@ -238,6 +332,14 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceListRunsHandler.ServeHTTP(w, r)
 		case AgentServiceListAgentsProcedure:
 			agentServiceListAgentsHandler.ServeHTTP(w, r)
+		case AgentServiceGetRepoConnectionProcedure:
+			agentServiceGetRepoConnectionHandler.ServeHTTP(w, r)
+		case AgentServiceStartGitHubConnectProcedure:
+			agentServiceStartGitHubConnectHandler.ServeHTTP(w, r)
+		case AgentServiceBindRepoProcedure:
+			agentServiceBindRepoHandler.ServeHTTP(w, r)
+		case AgentServiceUnbindRepoProcedure:
+			agentServiceUnbindRepoHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -273,4 +375,20 @@ func (UnimplementedAgentServiceHandler) ListRuns(context.Context, *connect.Reque
 
 func (UnimplementedAgentServiceHandler) ListAgents(context.Context, *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.ListAgents is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) GetRepoConnection(context.Context, *connect.Request[v1.GetRepoConnectionRequest]) (*connect.Response[v1.GetRepoConnectionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.GetRepoConnection is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) StartGitHubConnect(context.Context, *connect.Request[v1.StartGitHubConnectRequest]) (*connect.Response[v1.StartGitHubConnectResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.StartGitHubConnect is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) BindRepo(context.Context, *connect.Request[v1.BindRepoRequest]) (*connect.Response[v1.BindRepoResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.BindRepo is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) UnbindRepo(context.Context, *connect.Request[v1.UnbindRepoRequest]) (*connect.Response[v1.UnbindRepoResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.UnbindRepo is not implemented"))
 }

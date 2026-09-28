@@ -209,3 +209,79 @@ class ListAgentsResponse(_message.Message):
     AGENTS_FIELD_NUMBER: _ClassVar[int]
     agents: _containers.RepeatedCompositeFieldContainer[Agent]
     def __init__(self, agents: _Optional[_Iterable[_Union[Agent, _Mapping]]] = ...) -> None: ...
+
+class RepoBinding(_message.Message):
+    __slots__ = ("repo", "base_branch", "toolchain")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    BASE_BRANCH_FIELD_NUMBER: _ClassVar[int]
+    TOOLCHAIN_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    base_branch: str
+    toolchain: str
+    def __init__(self, repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., toolchain: _Optional[str] = ...) -> None: ...
+
+class RepoConnection(_message.Message):
+    __slots__ = ("connected", "account_login", "repos", "binding", "can_manage")
+    CONNECTED_FIELD_NUMBER: _ClassVar[int]
+    ACCOUNT_LOGIN_FIELD_NUMBER: _ClassVar[int]
+    REPOS_FIELD_NUMBER: _ClassVar[int]
+    BINDING_FIELD_NUMBER: _ClassVar[int]
+    CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
+    connected: bool
+    account_login: str
+    repos: _containers.RepeatedScalarFieldContainer[str]
+    binding: RepoBinding
+    can_manage: bool
+    def __init__(self, connected: bool = ..., account_login: _Optional[str] = ..., repos: _Optional[_Iterable[str]] = ..., binding: _Optional[_Union[RepoBinding, _Mapping]] = ..., can_manage: bool = ...) -> None: ...
+
+class GetRepoConnectionRequest(_message.Message):
+    __slots__ = ("channel_id",)
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
+
+class GetRepoConnectionResponse(_message.Message):
+    __slots__ = ("connection",)
+    CONNECTION_FIELD_NUMBER: _ClassVar[int]
+    connection: RepoConnection
+    def __init__(self, connection: _Optional[_Union[RepoConnection, _Mapping]] = ...) -> None: ...
+
+class StartGitHubConnectRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class StartGitHubConnectResponse(_message.Message):
+    __slots__ = ("install_url",)
+    INSTALL_URL_FIELD_NUMBER: _ClassVar[int]
+    install_url: str
+    def __init__(self, install_url: _Optional[str] = ...) -> None: ...
+
+class BindRepoRequest(_message.Message):
+    __slots__ = ("channel_id", "repo", "base_branch", "toolchain")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    BASE_BRANCH_FIELD_NUMBER: _ClassVar[int]
+    TOOLCHAIN_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    repo: str
+    base_branch: str
+    toolchain: str
+    def __init__(self, channel_id: _Optional[str] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., toolchain: _Optional[str] = ...) -> None: ...
+
+class BindRepoResponse(_message.Message):
+    __slots__ = ("binding",)
+    BINDING_FIELD_NUMBER: _ClassVar[int]
+    binding: RepoBinding
+    def __init__(self, binding: _Optional[_Union[RepoBinding, _Mapping]] = ...) -> None: ...
+
+class UnbindRepoRequest(_message.Message):
+    __slots__ = ("channel_id",)
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
+
+class UnbindRepoResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...

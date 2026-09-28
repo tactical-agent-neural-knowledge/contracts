@@ -121,6 +121,42 @@ message ListAgentsResponse {
   repeated Agent agents = 1;
 }
 
+
+// What a Tread knows about GitHub: whether the workspace is connected at all, what
+// that installation can reach, and which repository this Tread works on.
+message RepoBinding {
+  string repo = 1;        // owner/name
+  string base_branch = 2; // default "main"
+  string toolchain = 3;   // node | go | python | expo
+}
+
+message RepoConnection {
+  bool connected = 1;             // the workspace has a GitHub installation
+  string account_login = 2;       // the org it is installed into
+  repeated string repos = 3;      // what that installation can reach
+  RepoBinding binding = 4;        // this Tread's binding, absent when unbound
+  bool can_manage = 5;            // the caller may connect and bind: workspace admins only
+}
+
+message GetRepoConnectionRequest { string channel_id = 1; }
+message GetRepoConnectionResponse { RepoConnection connection = 1; }
+
+// StartGitHubConnect mints the one-time state GitHub carries through an install and
+// returns where to send somebody. Admins only.
+message StartGitHubConnectRequest { string workspace_id = 1; }
+message StartGitHubConnectResponse { string install_url = 1; }
+
+message BindRepoRequest {
+  string channel_id = 1;
+  string repo = 2;
+  string base_branch = 3; // empty means "main"
+  string toolchain = 4;   // empty means "node"
+}
+message BindRepoResponse { RepoBinding binding = 1; }
+
+message UnbindRepoRequest { string channel_id = 1; }
+message UnbindRepoResponse {}
+
 service AgentService {
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
   rpc StopRun(StopRunRequest) returns (StopRunResponse);
@@ -129,4 +165,11 @@ service AgentService {
   rpc GetRun(GetRunRequest) returns (GetRunResponse);
   rpc ListRuns(ListRunsRequest) returns (ListRunsResponse);
   rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse);
+
+  // Connecting a Tread to code. A Radar is private and so is this: only workspace
+  // admins may connect an org or bind a repository.
+  rpc GetRepoConnection(GetRepoConnectionRequest) returns (GetRepoConnectionResponse);
+  rpc StartGitHubConnect(StartGitHubConnectRequest) returns (StartGitHubConnectResponse);
+  rpc BindRepo(BindRepoRequest) returns (BindRepoResponse);
+  rpc UnbindRepo(UnbindRepoRequest) returns (UnbindRepoResponse);
 }
