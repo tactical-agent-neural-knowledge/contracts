@@ -508,6 +508,8 @@ message Agenture {
   string description = 4;   // its #general purpose: what the business does
   bool agent_active = 5;    // an agent is working in it right now
   int32 active_runs = 6;
+  string industry = 7;      // the trade it is in, so a bubble says more than a name
+  int64 price_cents = 8;    // what it costs to take over today
 }
 
 message ListAgenturesRequest {
@@ -528,6 +530,32 @@ message AgentActivityResponse {
   repeated string workspace_ids = 1; // workspaces with at least one live run
 }
 
+// AgentureWork is one piece of work the agent has done, or is doing now.
+message AgentureWork {
+  string title = 1;                             // "Sketch the data model"
+  string summary = 2;                           // a line of what it produced
+  google.protobuf.Timestamp asked_at = 3;
+  google.protobuf.Timestamp delivered_at = 4;   // unset while it is still working
+}
+
+// AgentureDetail is everything the claim page shows: what the product is, what
+// trade it is in, what the agent has built, and what it costs today.
+message AgentureDetail {
+  string workspace_id = 1;
+  string slug = 2;
+  string name = 3;
+  string description = 4;
+  string industry = 5;
+  string buyer = 6;                             // who it is for
+  int64 agent_minutes = 7;
+  int64 price_cents = 8;
+  bool available = 9;
+  repeated AgentureWork work = 10;              // newest first
+}
+
+message GetAgentureRequest { string slug = 1; }
+message GetAgentureResponse { AgentureDetail agenture = 1; }
+
 message ClaimAgentureRequest {
   string workspace_id = 1;
   // Or name it by slug, which is what a claim link off the marketing site carries.
@@ -542,6 +570,7 @@ service WorkspaceService {
   // The agenture board.
   rpc ListAgentures(ListAgenturesRequest) returns (ListAgenturesResponse);
   rpc AgentActivity(AgentActivityRequest) returns (AgentActivityResponse);
+  rpc GetAgenture(GetAgentureRequest) returns (GetAgentureResponse);
   rpc ClaimAgenture(ClaimAgentureRequest) returns (ClaimAgentureResponse);
   rpc GetBootstrap(GetBootstrapRequest) returns (GetBootstrapResponse);
   rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);

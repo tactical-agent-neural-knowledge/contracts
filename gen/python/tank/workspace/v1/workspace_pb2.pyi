@@ -760,20 +760,24 @@ class CancelScheduledResponse(_message.Message):
     def __init__(self) -> None: ...
 
 class Agenture(_message.Message):
-    __slots__ = ("workspace_id", "slug", "name", "description", "agent_active", "active_runs")
+    __slots__ = ("workspace_id", "slug", "name", "description", "agent_active", "active_runs", "industry", "price_cents")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     AGENT_ACTIVE_FIELD_NUMBER: _ClassVar[int]
     ACTIVE_RUNS_FIELD_NUMBER: _ClassVar[int]
+    INDUSTRY_FIELD_NUMBER: _ClassVar[int]
+    PRICE_CENTS_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     slug: str
     name: str
     description: str
     agent_active: bool
     active_runs: int
-    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., agent_active: bool = ..., active_runs: _Optional[int] = ...) -> None: ...
+    industry: str
+    price_cents: int
+    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., agent_active: bool = ..., active_runs: _Optional[int] = ..., industry: _Optional[str] = ..., price_cents: _Optional[int] = ...) -> None: ...
 
 class ListAgenturesRequest(_message.Message):
     __slots__ = ("cursor", "limit")
@@ -802,6 +806,54 @@ class AgentActivityResponse(_message.Message):
     WORKSPACE_IDS_FIELD_NUMBER: _ClassVar[int]
     workspace_ids: _containers.RepeatedScalarFieldContainer[str]
     def __init__(self, workspace_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class AgentureWork(_message.Message):
+    __slots__ = ("title", "summary", "asked_at", "delivered_at")
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    SUMMARY_FIELD_NUMBER: _ClassVar[int]
+    ASKED_AT_FIELD_NUMBER: _ClassVar[int]
+    DELIVERED_AT_FIELD_NUMBER: _ClassVar[int]
+    title: str
+    summary: str
+    asked_at: _timestamp_pb2.Timestamp
+    delivered_at: _timestamp_pb2.Timestamp
+    def __init__(self, title: _Optional[str] = ..., summary: _Optional[str] = ..., asked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., delivered_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class AgentureDetail(_message.Message):
+    __slots__ = ("workspace_id", "slug", "name", "description", "industry", "buyer", "agent_minutes", "price_cents", "available", "work")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    INDUSTRY_FIELD_NUMBER: _ClassVar[int]
+    BUYER_FIELD_NUMBER: _ClassVar[int]
+    AGENT_MINUTES_FIELD_NUMBER: _ClassVar[int]
+    PRICE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    AVAILABLE_FIELD_NUMBER: _ClassVar[int]
+    WORK_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    slug: str
+    name: str
+    description: str
+    industry: str
+    buyer: str
+    agent_minutes: int
+    price_cents: int
+    available: bool
+    work: _containers.RepeatedCompositeFieldContainer[AgentureWork]
+    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., industry: _Optional[str] = ..., buyer: _Optional[str] = ..., agent_minutes: _Optional[int] = ..., price_cents: _Optional[int] = ..., available: bool = ..., work: _Optional[_Iterable[_Union[AgentureWork, _Mapping]]] = ...) -> None: ...
+
+class GetAgentureRequest(_message.Message):
+    __slots__ = ("slug",)
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    def __init__(self, slug: _Optional[str] = ...) -> None: ...
+
+class GetAgentureResponse(_message.Message):
+    __slots__ = ("agenture",)
+    AGENTURE_FIELD_NUMBER: _ClassVar[int]
+    agenture: AgentureDetail
+    def __init__(self, agenture: _Optional[_Union[AgentureDetail, _Mapping]] = ...) -> None: ...
 
 class ClaimAgentureRequest(_message.Message):
     __slots__ = ("workspace_id", "slug")

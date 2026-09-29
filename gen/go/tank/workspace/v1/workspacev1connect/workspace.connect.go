@@ -45,6 +45,9 @@ const (
 	// WorkspaceServiceAgentActivityProcedure is the fully-qualified name of the WorkspaceService's
 	// AgentActivity RPC.
 	WorkspaceServiceAgentActivityProcedure = "/tank.workspace.v1.WorkspaceService/AgentActivity"
+	// WorkspaceServiceGetAgentureProcedure is the fully-qualified name of the WorkspaceService's
+	// GetAgenture RPC.
+	WorkspaceServiceGetAgentureProcedure = "/tank.workspace.v1.WorkspaceService/GetAgenture"
 	// WorkspaceServiceClaimAgentureProcedure is the fully-qualified name of the WorkspaceService's
 	// ClaimAgenture RPC.
 	WorkspaceServiceClaimAgentureProcedure = "/tank.workspace.v1.WorkspaceService/ClaimAgenture"
@@ -165,6 +168,7 @@ type WorkspaceServiceClient interface {
 	// The agenture board.
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
 	AgentActivity(context.Context, *connect.Request[v1.AgentActivityRequest]) (*connect.Response[v1.AgentActivityResponse], error)
+	GetAgenture(context.Context, *connect.Request[v1.GetAgentureRequest]) (*connect.Response[v1.GetAgentureResponse], error)
 	ClaimAgenture(context.Context, *connect.Request[v1.ClaimAgentureRequest]) (*connect.Response[v1.ClaimAgentureResponse], error)
 	GetBootstrap(context.Context, *connect.Request[v1.GetBootstrapRequest]) (*connect.Response[v1.GetBootstrapResponse], error)
 	ListMembers(context.Context, *connect.Request[v1.ListMembersRequest]) (*connect.Response[v1.ListMembersResponse], error)
@@ -241,6 +245,12 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			httpClient,
 			baseURL+WorkspaceServiceAgentActivityProcedure,
 			connect.WithSchema(workspaceServiceMethods.ByName("AgentActivity")),
+			connect.WithClientOptions(opts...),
+		),
+		getAgenture: connect.NewClient[v1.GetAgentureRequest, v1.GetAgentureResponse](
+			httpClient,
+			baseURL+WorkspaceServiceGetAgentureProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("GetAgenture")),
 			connect.WithClientOptions(opts...),
 		),
 		claimAgenture: connect.NewClient[v1.ClaimAgentureRequest, v1.ClaimAgentureResponse](
@@ -474,6 +484,7 @@ type workspaceServiceClient struct {
 	listWorkspaces         *connect.Client[v1.ListWorkspacesRequest, v1.ListWorkspacesResponse]
 	listAgentures          *connect.Client[v1.ListAgenturesRequest, v1.ListAgenturesResponse]
 	agentActivity          *connect.Client[v1.AgentActivityRequest, v1.AgentActivityResponse]
+	getAgenture            *connect.Client[v1.GetAgentureRequest, v1.GetAgentureResponse]
 	claimAgenture          *connect.Client[v1.ClaimAgentureRequest, v1.ClaimAgentureResponse]
 	getBootstrap           *connect.Client[v1.GetBootstrapRequest, v1.GetBootstrapResponse]
 	listMembers            *connect.Client[v1.ListMembersRequest, v1.ListMembersResponse]
@@ -531,6 +542,11 @@ func (c *workspaceServiceClient) ListAgentures(ctx context.Context, req *connect
 // AgentActivity calls tank.workspace.v1.WorkspaceService.AgentActivity.
 func (c *workspaceServiceClient) AgentActivity(ctx context.Context, req *connect.Request[v1.AgentActivityRequest]) (*connect.Response[v1.AgentActivityResponse], error) {
 	return c.agentActivity.CallUnary(ctx, req)
+}
+
+// GetAgenture calls tank.workspace.v1.WorkspaceService.GetAgenture.
+func (c *workspaceServiceClient) GetAgenture(ctx context.Context, req *connect.Request[v1.GetAgentureRequest]) (*connect.Response[v1.GetAgentureResponse], error) {
+	return c.getAgenture.CallUnary(ctx, req)
 }
 
 // ClaimAgenture calls tank.workspace.v1.WorkspaceService.ClaimAgenture.
@@ -725,6 +741,7 @@ type WorkspaceServiceHandler interface {
 	// The agenture board.
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
 	AgentActivity(context.Context, *connect.Request[v1.AgentActivityRequest]) (*connect.Response[v1.AgentActivityResponse], error)
+	GetAgenture(context.Context, *connect.Request[v1.GetAgentureRequest]) (*connect.Response[v1.GetAgentureResponse], error)
 	ClaimAgenture(context.Context, *connect.Request[v1.ClaimAgentureRequest]) (*connect.Response[v1.ClaimAgentureResponse], error)
 	GetBootstrap(context.Context, *connect.Request[v1.GetBootstrapRequest]) (*connect.Response[v1.GetBootstrapResponse], error)
 	ListMembers(context.Context, *connect.Request[v1.ListMembersRequest]) (*connect.Response[v1.ListMembersResponse], error)
@@ -797,6 +814,12 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 		WorkspaceServiceAgentActivityProcedure,
 		svc.AgentActivity,
 		connect.WithSchema(workspaceServiceMethods.ByName("AgentActivity")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceGetAgentureHandler := connect.NewUnaryHandler(
+		WorkspaceServiceGetAgentureProcedure,
+		svc.GetAgenture,
+		connect.WithSchema(workspaceServiceMethods.ByName("GetAgenture")),
 		connect.WithHandlerOptions(opts...),
 	)
 	workspaceServiceClaimAgentureHandler := connect.NewUnaryHandler(
@@ -1031,6 +1054,8 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 			workspaceServiceListAgenturesHandler.ServeHTTP(w, r)
 		case WorkspaceServiceAgentActivityProcedure:
 			workspaceServiceAgentActivityHandler.ServeHTTP(w, r)
+		case WorkspaceServiceGetAgentureProcedure:
+			workspaceServiceGetAgentureHandler.ServeHTTP(w, r)
 		case WorkspaceServiceClaimAgentureProcedure:
 			workspaceServiceClaimAgentureHandler.ServeHTTP(w, r)
 		case WorkspaceServiceGetBootstrapProcedure:
@@ -1128,6 +1153,10 @@ func (UnimplementedWorkspaceServiceHandler) ListAgentures(context.Context, *conn
 
 func (UnimplementedWorkspaceServiceHandler) AgentActivity(context.Context, *connect.Request[v1.AgentActivityRequest]) (*connect.Response[v1.AgentActivityResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.AgentActivity is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) GetAgenture(context.Context, *connect.Request[v1.GetAgentureRequest]) (*connect.Response[v1.GetAgentureResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.GetAgenture is not implemented"))
 }
 
 func (UnimplementedWorkspaceServiceHandler) ClaimAgenture(context.Context, *connect.Request[v1.ClaimAgentureRequest]) (*connect.Response[v1.ClaimAgentureResponse], error) {
