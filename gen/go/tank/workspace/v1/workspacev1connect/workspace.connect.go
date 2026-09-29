@@ -39,6 +39,15 @@ const (
 	// WorkspaceServiceListWorkspacesProcedure is the fully-qualified name of the WorkspaceService's
 	// ListWorkspaces RPC.
 	WorkspaceServiceListWorkspacesProcedure = "/tank.workspace.v1.WorkspaceService/ListWorkspaces"
+	// WorkspaceServiceListAgenturesProcedure is the fully-qualified name of the WorkspaceService's
+	// ListAgentures RPC.
+	WorkspaceServiceListAgenturesProcedure = "/tank.workspace.v1.WorkspaceService/ListAgentures"
+	// WorkspaceServiceAgentActivityProcedure is the fully-qualified name of the WorkspaceService's
+	// AgentActivity RPC.
+	WorkspaceServiceAgentActivityProcedure = "/tank.workspace.v1.WorkspaceService/AgentActivity"
+	// WorkspaceServiceClaimAgentureProcedure is the fully-qualified name of the WorkspaceService's
+	// ClaimAgenture RPC.
+	WorkspaceServiceClaimAgentureProcedure = "/tank.workspace.v1.WorkspaceService/ClaimAgenture"
 	// WorkspaceServiceGetBootstrapProcedure is the fully-qualified name of the WorkspaceService's
 	// GetBootstrap RPC.
 	WorkspaceServiceGetBootstrapProcedure = "/tank.workspace.v1.WorkspaceService/GetBootstrap"
@@ -153,6 +162,10 @@ const (
 type WorkspaceServiceClient interface {
 	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
 	ListWorkspaces(context.Context, *connect.Request[v1.ListWorkspacesRequest]) (*connect.Response[v1.ListWorkspacesResponse], error)
+	// The agenture board.
+	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
+	AgentActivity(context.Context, *connect.Request[v1.AgentActivityRequest]) (*connect.Response[v1.AgentActivityResponse], error)
+	ClaimAgenture(context.Context, *connect.Request[v1.ClaimAgentureRequest]) (*connect.Response[v1.ClaimAgentureResponse], error)
 	GetBootstrap(context.Context, *connect.Request[v1.GetBootstrapRequest]) (*connect.Response[v1.GetBootstrapResponse], error)
 	ListMembers(context.Context, *connect.Request[v1.ListMembersRequest]) (*connect.Response[v1.ListMembersResponse], error)
 	InviteMember(context.Context, *connect.Request[v1.InviteMemberRequest]) (*connect.Response[v1.InviteMemberResponse], error)
@@ -216,6 +229,24 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			httpClient,
 			baseURL+WorkspaceServiceListWorkspacesProcedure,
 			connect.WithSchema(workspaceServiceMethods.ByName("ListWorkspaces")),
+			connect.WithClientOptions(opts...),
+		),
+		listAgentures: connect.NewClient[v1.ListAgenturesRequest, v1.ListAgenturesResponse](
+			httpClient,
+			baseURL+WorkspaceServiceListAgenturesProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("ListAgentures")),
+			connect.WithClientOptions(opts...),
+		),
+		agentActivity: connect.NewClient[v1.AgentActivityRequest, v1.AgentActivityResponse](
+			httpClient,
+			baseURL+WorkspaceServiceAgentActivityProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("AgentActivity")),
+			connect.WithClientOptions(opts...),
+		),
+		claimAgenture: connect.NewClient[v1.ClaimAgentureRequest, v1.ClaimAgentureResponse](
+			httpClient,
+			baseURL+WorkspaceServiceClaimAgentureProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("ClaimAgenture")),
 			connect.WithClientOptions(opts...),
 		),
 		getBootstrap: connect.NewClient[v1.GetBootstrapRequest, v1.GetBootstrapResponse](
@@ -441,6 +472,9 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 type workspaceServiceClient struct {
 	createWorkspace        *connect.Client[v1.CreateWorkspaceRequest, v1.CreateWorkspaceResponse]
 	listWorkspaces         *connect.Client[v1.ListWorkspacesRequest, v1.ListWorkspacesResponse]
+	listAgentures          *connect.Client[v1.ListAgenturesRequest, v1.ListAgenturesResponse]
+	agentActivity          *connect.Client[v1.AgentActivityRequest, v1.AgentActivityResponse]
+	claimAgenture          *connect.Client[v1.ClaimAgentureRequest, v1.ClaimAgentureResponse]
 	getBootstrap           *connect.Client[v1.GetBootstrapRequest, v1.GetBootstrapResponse]
 	listMembers            *connect.Client[v1.ListMembersRequest, v1.ListMembersResponse]
 	inviteMember           *connect.Client[v1.InviteMemberRequest, v1.InviteMemberResponse]
@@ -487,6 +521,21 @@ func (c *workspaceServiceClient) CreateWorkspace(ctx context.Context, req *conne
 // ListWorkspaces calls tank.workspace.v1.WorkspaceService.ListWorkspaces.
 func (c *workspaceServiceClient) ListWorkspaces(ctx context.Context, req *connect.Request[v1.ListWorkspacesRequest]) (*connect.Response[v1.ListWorkspacesResponse], error) {
 	return c.listWorkspaces.CallUnary(ctx, req)
+}
+
+// ListAgentures calls tank.workspace.v1.WorkspaceService.ListAgentures.
+func (c *workspaceServiceClient) ListAgentures(ctx context.Context, req *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error) {
+	return c.listAgentures.CallUnary(ctx, req)
+}
+
+// AgentActivity calls tank.workspace.v1.WorkspaceService.AgentActivity.
+func (c *workspaceServiceClient) AgentActivity(ctx context.Context, req *connect.Request[v1.AgentActivityRequest]) (*connect.Response[v1.AgentActivityResponse], error) {
+	return c.agentActivity.CallUnary(ctx, req)
+}
+
+// ClaimAgenture calls tank.workspace.v1.WorkspaceService.ClaimAgenture.
+func (c *workspaceServiceClient) ClaimAgenture(ctx context.Context, req *connect.Request[v1.ClaimAgentureRequest]) (*connect.Response[v1.ClaimAgentureResponse], error) {
+	return c.claimAgenture.CallUnary(ctx, req)
 }
 
 // GetBootstrap calls tank.workspace.v1.WorkspaceService.GetBootstrap.
@@ -673,6 +722,10 @@ func (c *workspaceServiceClient) CancelScheduled(ctx context.Context, req *conne
 type WorkspaceServiceHandler interface {
 	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
 	ListWorkspaces(context.Context, *connect.Request[v1.ListWorkspacesRequest]) (*connect.Response[v1.ListWorkspacesResponse], error)
+	// The agenture board.
+	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
+	AgentActivity(context.Context, *connect.Request[v1.AgentActivityRequest]) (*connect.Response[v1.AgentActivityResponse], error)
+	ClaimAgenture(context.Context, *connect.Request[v1.ClaimAgentureRequest]) (*connect.Response[v1.ClaimAgentureResponse], error)
 	GetBootstrap(context.Context, *connect.Request[v1.GetBootstrapRequest]) (*connect.Response[v1.GetBootstrapResponse], error)
 	ListMembers(context.Context, *connect.Request[v1.ListMembersRequest]) (*connect.Response[v1.ListMembersResponse], error)
 	InviteMember(context.Context, *connect.Request[v1.InviteMemberRequest]) (*connect.Response[v1.InviteMemberResponse], error)
@@ -732,6 +785,24 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 		WorkspaceServiceListWorkspacesProcedure,
 		svc.ListWorkspaces,
 		connect.WithSchema(workspaceServiceMethods.ByName("ListWorkspaces")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceListAgenturesHandler := connect.NewUnaryHandler(
+		WorkspaceServiceListAgenturesProcedure,
+		svc.ListAgentures,
+		connect.WithSchema(workspaceServiceMethods.ByName("ListAgentures")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceAgentActivityHandler := connect.NewUnaryHandler(
+		WorkspaceServiceAgentActivityProcedure,
+		svc.AgentActivity,
+		connect.WithSchema(workspaceServiceMethods.ByName("AgentActivity")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceClaimAgentureHandler := connect.NewUnaryHandler(
+		WorkspaceServiceClaimAgentureProcedure,
+		svc.ClaimAgenture,
+		connect.WithSchema(workspaceServiceMethods.ByName("ClaimAgenture")),
 		connect.WithHandlerOptions(opts...),
 	)
 	workspaceServiceGetBootstrapHandler := connect.NewUnaryHandler(
@@ -956,6 +1027,12 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 			workspaceServiceCreateWorkspaceHandler.ServeHTTP(w, r)
 		case WorkspaceServiceListWorkspacesProcedure:
 			workspaceServiceListWorkspacesHandler.ServeHTTP(w, r)
+		case WorkspaceServiceListAgenturesProcedure:
+			workspaceServiceListAgenturesHandler.ServeHTTP(w, r)
+		case WorkspaceServiceAgentActivityProcedure:
+			workspaceServiceAgentActivityHandler.ServeHTTP(w, r)
+		case WorkspaceServiceClaimAgentureProcedure:
+			workspaceServiceClaimAgentureHandler.ServeHTTP(w, r)
 		case WorkspaceServiceGetBootstrapProcedure:
 			workspaceServiceGetBootstrapHandler.ServeHTTP(w, r)
 		case WorkspaceServiceListMembersProcedure:
@@ -1043,6 +1120,18 @@ func (UnimplementedWorkspaceServiceHandler) CreateWorkspace(context.Context, *co
 
 func (UnimplementedWorkspaceServiceHandler) ListWorkspaces(context.Context, *connect.Request[v1.ListWorkspacesRequest]) (*connect.Response[v1.ListWorkspacesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ListWorkspaces is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ListAgentures is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) AgentActivity(context.Context, *connect.Request[v1.AgentActivityRequest]) (*connect.Response[v1.AgentActivityResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.AgentActivity is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) ClaimAgenture(context.Context, *connect.Request[v1.ClaimAgentureRequest]) (*connect.Response[v1.ClaimAgentureResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ClaimAgenture is not implemented"))
 }
 
 func (UnimplementedWorkspaceServiceHandler) GetBootstrap(context.Context, *connect.Request[v1.GetBootstrapRequest]) (*connect.Response[v1.GetBootstrapResponse], error) {

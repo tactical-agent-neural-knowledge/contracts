@@ -498,9 +498,47 @@ message CancelScheduledRequest {
 }
 message CancelScheduledResponse {}
 
+
+// An agenture is a business TANK stood up and runs itself. Somebody claims one and it
+// becomes their venture, and it leaves the board — agentures are unique.
+message Agenture {
+  string workspace_id = 1;
+  string slug = 2;
+  string name = 3;
+  string description = 4;   // its #general purpose: what the business does
+  bool agent_active = 5;    // an agent is working in it right now
+  int32 active_runs = 6;
+}
+
+message ListAgenturesRequest {
+  // Paging, because this grows to thousands. Empty cursor starts at the beginning.
+  string cursor = 1;
+  int32 limit = 2;
+}
+message ListAgenturesResponse {
+  repeated Agenture agentures = 1;
+  string next_cursor = 2;
+  int32 total = 3;
+}
+
+// Which workspaces have an agent working right now. Small and cheap on purpose: the
+// board polls it, the list of agentures itself does not change often.
+message AgentActivityRequest {}
+message AgentActivityResponse {
+  repeated string workspace_ids = 1; // workspaces with at least one live run
+}
+
+message ClaimAgentureRequest { string workspace_id = 1; }
+message ClaimAgentureResponse { Workspace workspace = 1; }
+
 service WorkspaceService {
   rpc CreateWorkspace(CreateWorkspaceRequest) returns (CreateWorkspaceResponse);
   rpc ListWorkspaces(ListWorkspacesRequest) returns (ListWorkspacesResponse);
+
+  // The agenture board.
+  rpc ListAgentures(ListAgenturesRequest) returns (ListAgenturesResponse);
+  rpc AgentActivity(AgentActivityRequest) returns (AgentActivityResponse);
+  rpc ClaimAgenture(ClaimAgentureRequest) returns (ClaimAgentureResponse);
   rpc GetBootstrap(GetBootstrapRequest) returns (GetBootstrapResponse);
   rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
   rpc InviteMember(InviteMemberRequest) returns (InviteMemberResponse);

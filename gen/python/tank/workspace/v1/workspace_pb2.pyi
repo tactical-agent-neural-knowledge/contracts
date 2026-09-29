@@ -759,6 +759,62 @@ class CancelScheduledResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class Agenture(_message.Message):
+    __slots__ = ("workspace_id", "slug", "name", "description", "agent_active", "active_runs")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    AGENT_ACTIVE_FIELD_NUMBER: _ClassVar[int]
+    ACTIVE_RUNS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    slug: str
+    name: str
+    description: str
+    agent_active: bool
+    active_runs: int
+    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., agent_active: bool = ..., active_runs: _Optional[int] = ...) -> None: ...
+
+class ListAgenturesRequest(_message.Message):
+    __slots__ = ("cursor", "limit")
+    CURSOR_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    cursor: str
+    limit: int
+    def __init__(self, cursor: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListAgenturesResponse(_message.Message):
+    __slots__ = ("agentures", "next_cursor", "total")
+    AGENTURES_FIELD_NUMBER: _ClassVar[int]
+    NEXT_CURSOR_FIELD_NUMBER: _ClassVar[int]
+    TOTAL_FIELD_NUMBER: _ClassVar[int]
+    agentures: _containers.RepeatedCompositeFieldContainer[Agenture]
+    next_cursor: str
+    total: int
+    def __init__(self, agentures: _Optional[_Iterable[_Union[Agenture, _Mapping]]] = ..., next_cursor: _Optional[str] = ..., total: _Optional[int] = ...) -> None: ...
+
+class AgentActivityRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class AgentActivityResponse(_message.Message):
+    __slots__ = ("workspace_ids",)
+    WORKSPACE_IDS_FIELD_NUMBER: _ClassVar[int]
+    workspace_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, workspace_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ClaimAgentureRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class ClaimAgentureResponse(_message.Message):
+    __slots__ = ("workspace",)
+    WORKSPACE_FIELD_NUMBER: _ClassVar[int]
+    workspace: Workspace
+    def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ...) -> None: ...
+
 class GenerateThemeRequest(_message.Message):
     __slots__ = ("workspace_id", "description")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
