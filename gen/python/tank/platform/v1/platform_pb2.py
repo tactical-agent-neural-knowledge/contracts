@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1ftank/platform/v1/platform.proto\x12\x10tank.platform.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x93\x04\n\x0b\x41gentureRow\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04slug\x18\x02 \x01(\tR\x04slug\x12\x12\n\x04name\x18\x03 \x01(\tR\x04name\x12 \n\x0b\x64\x65scription\x18\x04 \x01(\tR\x0b\x64\x65scription\x12\x18\n\x07\x65nabled\x18\x05 \x01(\x08R\x07\x65nabled\x12\x16\n\x06weight\x18\x06 \x01(\x05R\x06weight\x12:\n\x0bnext_due_at\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tnextDueAt\x12:\n\x0blast_run_at\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tlastRunAt\x12\x12\n\x04runs\x18\t \x01(\x05R\x04runs\x12\x1d\n\nlast_error\x18\n \x01(\tR\tlastError\x12#\n\ragent_minutes\x18\x0b \x01(\x03R\x0c\x61gentMinutes\x12\x1e\n\x0blive_run_id\x18\x0c \x01(\tR\tliveRunId\x12\x1d\n\nlive_state\x18\r \x01(\tR\tliveState\x12\x1b\n\tspend_usd\x18\x0e \x01(\x01R\x08spendUsd\x12\x1f\n\x0bprice_cents\x18\x0f \x01(\x03R\npriceCents\x12\x18\n\x07\x63laimed\x18\x10 \x01(\x08R\x07\x63laimed\"Z\n\x14ListAgenturesRequest\x12\x14\n\x05query\x18\x01 \x01(\tR\x05query\x12\x14\n\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n\x06offset\x18\x03 \x01(\x05R\x06offset\"\xa4\x01\n\x15ListAgenturesResponse\x12;\n\tagentures\x18\x01 \x03(\x0b\x32\x1d.tank.platform.v1.AgentureRowR\tagentures\x12\x14\n\x05total\x18\x02 \x01(\x05R\x05total\x12\x38\n\x07summary\x18\x03 \x01(\x0b\x32\x1e.tank.platform.v1.BoardSummaryR\x07summary\"\x82\x02\n\x0c\x42oardSummary\x12\x1b\n\tin_flight\x18\x01 \x01(\x05R\x08inFlight\x12%\n\x0emax_concurrent\x18\x02 \x01(\x05R\rmaxConcurrent\x12\x18\n\x07\x65nabled\x18\x03 \x01(\x08R\x07\x65nabled\x12\x1c\n\tunclaimed\x18\x04 \x01(\x05R\tunclaimed\x12*\n\x11\x61gent_minutes_24h\x18\x05 \x01(\x03R\x0f\x61gentMinutes24h\x12\"\n\rspend_usd_24h\x18\x06 \x01(\x01R\x0bspendUsd24h\x12&\n\x0fspend_usd_total\x18\x07 \x01(\x01R\rspendUsdTotal\"\x84\x01\n\x14SetAllocationRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x18\n\x07\x65nabled\x18\x02 \x01(\x08R\x07\x65nabled\x12\x16\n\x06weight\x18\x03 \x01(\x05R\x06weight\x12\x17\n\x07run_now\x18\x04 \x01(\x08R\x06runNow\"R\n\x15SetAllocationResponse\x12\x39\n\x08\x61genture\x18\x01 \x01(\x0b\x32\x1d.tank.platform.v1.AgentureRowR\x08\x61genture\"?\n\x0eStopRunRequest\x12\x15\n\x06run_id\x18\x01 \x01(\tR\x05runId\x12\x16\n\x06reason\x18\x02 \x01(\tR\x06reason\"\x11\n\x0fStopRunResponse2\xa5\x02\n\x0fPlatformService\x12`\n\rListAgentures\x12&.tank.platform.v1.ListAgenturesRequest\x1a\'.tank.platform.v1.ListAgenturesResponse\x12`\n\rSetAllocation\x12&.tank.platform.v1.SetAllocationRequest\x1a\'.tank.platform.v1.SetAllocationResponse\x12N\n\x07StopRun\x12 .tank.platform.v1.StopRunRequest\x1a!.tank.platform.v1.StopRunResponseB\xe0\x01\n\x14\x63om.tank.platform.v1B\rPlatformProtoP\x01ZWgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/platform/v1;platformv1\xa2\x02\x03TPX\xaa\x02\x10Tank.Platform.V1\xca\x02\x10Tank\\Platform\\V1\xe2\x02\x1cTank\\Platform\\V1\\GPBMetadata\xea\x02\x12Tank::Platform::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1ftank/platform/v1/platform.proto\x12\x10tank.platform.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb6\x04\n\x0b\x41gentureRow\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04slug\x18\x02 \x01(\tR\x04slug\x12\x12\n\x04name\x18\x03 \x01(\tR\x04name\x12 \n\x0b\x64\x65scription\x18\x04 \x01(\tR\x0b\x64\x65scription\x12\x18\n\x07\x65nabled\x18\x05 \x01(\x08R\x07\x65nabled\x12\x16\n\x06weight\x18\x06 \x01(\x05R\x06weight\x12:\n\x0bnext_due_at\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tnextDueAt\x12:\n\x0blast_run_at\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tlastRunAt\x12\x12\n\x04runs\x18\t \x01(\x05R\x04runs\x12\x1d\n\nlast_error\x18\n \x01(\tR\tlastError\x12#\n\ragent_minutes\x18\x0b \x01(\x03R\x0c\x61gentMinutes\x12\x1e\n\x0blive_run_id\x18\x0c \x01(\tR\tliveRunId\x12\x1d\n\nlive_state\x18\r \x01(\tR\tliveState\x12\x1b\n\tspend_usd\x18\x0e \x01(\x01R\x08spendUsd\x12\x1f\n\x0bprice_cents\x18\x0f \x01(\x03R\npriceCents\x12\x18\n\x07\x63laimed\x18\x10 \x01(\x08R\x07\x63laimed\x12!\n\x0c\x61uto_approve\x18\x11 \x01(\x08R\x0b\x61utoApprove\"Z\n\x14ListAgenturesRequest\x12\x14\n\x05query\x18\x01 \x01(\tR\x05query\x12\x14\n\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n\x06offset\x18\x03 \x01(\x05R\x06offset\"\xa4\x01\n\x15ListAgenturesResponse\x12;\n\tagentures\x18\x01 \x03(\x0b\x32\x1d.tank.platform.v1.AgentureRowR\tagentures\x12\x14\n\x05total\x18\x02 \x01(\x05R\x05total\x12\x38\n\x07summary\x18\x03 \x01(\x0b\x32\x1e.tank.platform.v1.BoardSummaryR\x07summary\"\x82\x02\n\x0c\x42oardSummary\x12\x1b\n\tin_flight\x18\x01 \x01(\x05R\x08inFlight\x12%\n\x0emax_concurrent\x18\x02 \x01(\x05R\rmaxConcurrent\x12\x18\n\x07\x65nabled\x18\x03 \x01(\x08R\x07\x65nabled\x12\x1c\n\tunclaimed\x18\x04 \x01(\x05R\tunclaimed\x12*\n\x11\x61gent_minutes_24h\x18\x05 \x01(\x03R\x0f\x61gentMinutes24h\x12\"\n\rspend_usd_24h\x18\x06 \x01(\x01R\x0bspendUsd24h\x12&\n\x0fspend_usd_total\x18\x07 \x01(\x01R\rspendUsdTotal\"\xa7\x01\n\x14SetAllocationRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x18\n\x07\x65nabled\x18\x02 \x01(\x08R\x07\x65nabled\x12\x16\n\x06weight\x18\x03 \x01(\x05R\x06weight\x12\x17\n\x07run_now\x18\x04 \x01(\x08R\x06runNow\x12!\n\x0c\x61uto_approve\x18\x05 \x01(\x08R\x0b\x61utoApprove\"R\n\x15SetAllocationResponse\x12\x39\n\x08\x61genture\x18\x01 \x01(\x0b\x32\x1d.tank.platform.v1.AgentureRowR\x08\x61genture\"@\n\x17SetBoardSettingsRequest\x12%\n\x0emax_concurrent\x18\x01 \x01(\x05R\rmaxConcurrent\"T\n\x18SetBoardSettingsResponse\x12\x38\n\x07summary\x18\x01 \x01(\x0b\x32\x1e.tank.platform.v1.BoardSummaryR\x07summary\"?\n\x0eStopRunRequest\x12\x15\n\x06run_id\x18\x01 \x01(\tR\x05runId\x12\x16\n\x06reason\x18\x02 \x01(\tR\x06reason\"\x11\n\x0fStopRunResponse2\x90\x03\n\x0fPlatformService\x12`\n\rListAgentures\x12&.tank.platform.v1.ListAgenturesRequest\x1a\'.tank.platform.v1.ListAgenturesResponse\x12`\n\rSetAllocation\x12&.tank.platform.v1.SetAllocationRequest\x1a\'.tank.platform.v1.SetAllocationResponse\x12i\n\x10SetBoardSettings\x12).tank.platform.v1.SetBoardSettingsRequest\x1a*.tank.platform.v1.SetBoardSettingsResponse\x12N\n\x07StopRun\x12 .tank.platform.v1.StopRunRequest\x1a!.tank.platform.v1.StopRunResponseB\xe0\x01\n\x14\x63om.tank.platform.v1B\rPlatformProtoP\x01ZWgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/platform/v1;platformv1\xa2\x02\x03TPX\xaa\x02\x10Tank.Platform.V1\xca\x02\x10Tank\\Platform\\V1\xe2\x02\x1cTank\\Platform\\V1\\GPBMetadata\xea\x02\x12Tank::Platform::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,21 +34,25 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\024com.tank.platform.v1B\rPlatformProtoP\001ZWgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/platform/v1;platformv1\242\002\003TPX\252\002\020Tank.Platform.V1\312\002\020Tank\\Platform\\V1\342\002\034Tank\\Platform\\V1\\GPBMetadata\352\002\022Tank::Platform::V1'
   _globals['_AGENTUREROW']._serialized_start=87
-  _globals['_AGENTUREROW']._serialized_end=618
-  _globals['_LISTAGENTURESREQUEST']._serialized_start=620
-  _globals['_LISTAGENTURESREQUEST']._serialized_end=710
-  _globals['_LISTAGENTURESRESPONSE']._serialized_start=713
-  _globals['_LISTAGENTURESRESPONSE']._serialized_end=877
-  _globals['_BOARDSUMMARY']._serialized_start=880
-  _globals['_BOARDSUMMARY']._serialized_end=1138
-  _globals['_SETALLOCATIONREQUEST']._serialized_start=1141
-  _globals['_SETALLOCATIONREQUEST']._serialized_end=1273
-  _globals['_SETALLOCATIONRESPONSE']._serialized_start=1275
-  _globals['_SETALLOCATIONRESPONSE']._serialized_end=1357
-  _globals['_STOPRUNREQUEST']._serialized_start=1359
-  _globals['_STOPRUNREQUEST']._serialized_end=1422
-  _globals['_STOPRUNRESPONSE']._serialized_start=1424
-  _globals['_STOPRUNRESPONSE']._serialized_end=1441
-  _globals['_PLATFORMSERVICE']._serialized_start=1444
-  _globals['_PLATFORMSERVICE']._serialized_end=1737
+  _globals['_AGENTUREROW']._serialized_end=653
+  _globals['_LISTAGENTURESREQUEST']._serialized_start=655
+  _globals['_LISTAGENTURESREQUEST']._serialized_end=745
+  _globals['_LISTAGENTURESRESPONSE']._serialized_start=748
+  _globals['_LISTAGENTURESRESPONSE']._serialized_end=912
+  _globals['_BOARDSUMMARY']._serialized_start=915
+  _globals['_BOARDSUMMARY']._serialized_end=1173
+  _globals['_SETALLOCATIONREQUEST']._serialized_start=1176
+  _globals['_SETALLOCATIONREQUEST']._serialized_end=1343
+  _globals['_SETALLOCATIONRESPONSE']._serialized_start=1345
+  _globals['_SETALLOCATIONRESPONSE']._serialized_end=1427
+  _globals['_SETBOARDSETTINGSREQUEST']._serialized_start=1429
+  _globals['_SETBOARDSETTINGSREQUEST']._serialized_end=1493
+  _globals['_SETBOARDSETTINGSRESPONSE']._serialized_start=1495
+  _globals['_SETBOARDSETTINGSRESPONSE']._serialized_end=1579
+  _globals['_STOPRUNREQUEST']._serialized_start=1581
+  _globals['_STOPRUNREQUEST']._serialized_end=1644
+  _globals['_STOPRUNRESPONSE']._serialized_start=1646
+  _globals['_STOPRUNRESPONSE']._serialized_end=1663
+  _globals['_PLATFORMSERVICE']._serialized_start=1666
+  _globals['_PLATFORMSERVICE']._serialized_end=2066
 # @@protoc_insertion_point(module_scope)

@@ -37,6 +37,9 @@ message AgentureRow {
   // Money.
   int64 price_cents = 15;                      // what it would cost to take over right now
   bool claimed = 16;
+  // When set, a plan the agent stops at is approved for it rather than waiting for
+  // somebody who is not coming.
+  bool auto_approve = 17;
 }
 
 message ListAgenturesRequest {
@@ -68,9 +71,18 @@ message SetAllocationRequest {
   bool enabled = 2;
   int32 weight = 3;
   bool run_now = 4;                            // become due now rather than at its next turn
+  bool auto_approve = 5;
 }
 message SetAllocationResponse {
   AgentureRow agenture = 1;
+}
+
+// SetBoardSettings changes how the board as a whole behaves.
+message SetBoardSettingsRequest {
+  int32 max_concurrent = 1;                    // 0 stops new work without losing anything
+}
+message SetBoardSettingsResponse {
+  BoardSummary summary = 1;
 }
 
 // StopRun stops an agent that is working right now.
@@ -83,5 +95,6 @@ message StopRunResponse {}
 service PlatformService {
   rpc ListAgentures(ListAgenturesRequest) returns (ListAgenturesResponse);
   rpc SetAllocation(SetAllocationRequest) returns (SetAllocationResponse);
+  rpc SetBoardSettings(SetBoardSettingsRequest) returns (SetBoardSettingsResponse);
   rpc StopRun(StopRunRequest) returns (StopRunResponse);
 }

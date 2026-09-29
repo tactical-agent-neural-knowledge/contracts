@@ -39,6 +39,9 @@ const (
 	// PlatformServiceSetAllocationProcedure is the fully-qualified name of the PlatformService's
 	// SetAllocation RPC.
 	PlatformServiceSetAllocationProcedure = "/tank.platform.v1.PlatformService/SetAllocation"
+	// PlatformServiceSetBoardSettingsProcedure is the fully-qualified name of the PlatformService's
+	// SetBoardSettings RPC.
+	PlatformServiceSetBoardSettingsProcedure = "/tank.platform.v1.PlatformService/SetBoardSettings"
 	// PlatformServiceStopRunProcedure is the fully-qualified name of the PlatformService's StopRun RPC.
 	PlatformServiceStopRunProcedure = "/tank.platform.v1.PlatformService/StopRun"
 )
@@ -47,6 +50,7 @@ const (
 type PlatformServiceClient interface {
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
 	SetAllocation(context.Context, *connect.Request[v1.SetAllocationRequest]) (*connect.Response[v1.SetAllocationResponse], error)
+	SetBoardSettings(context.Context, *connect.Request[v1.SetBoardSettingsRequest]) (*connect.Response[v1.SetBoardSettingsResponse], error)
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
 }
 
@@ -73,6 +77,12 @@ func NewPlatformServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(platformServiceMethods.ByName("SetAllocation")),
 			connect.WithClientOptions(opts...),
 		),
+		setBoardSettings: connect.NewClient[v1.SetBoardSettingsRequest, v1.SetBoardSettingsResponse](
+			httpClient,
+			baseURL+PlatformServiceSetBoardSettingsProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("SetBoardSettings")),
+			connect.WithClientOptions(opts...),
+		),
 		stopRun: connect.NewClient[v1.StopRunRequest, v1.StopRunResponse](
 			httpClient,
 			baseURL+PlatformServiceStopRunProcedure,
@@ -84,9 +94,10 @@ func NewPlatformServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 
 // platformServiceClient implements PlatformServiceClient.
 type platformServiceClient struct {
-	listAgentures *connect.Client[v1.ListAgenturesRequest, v1.ListAgenturesResponse]
-	setAllocation *connect.Client[v1.SetAllocationRequest, v1.SetAllocationResponse]
-	stopRun       *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
+	listAgentures    *connect.Client[v1.ListAgenturesRequest, v1.ListAgenturesResponse]
+	setAllocation    *connect.Client[v1.SetAllocationRequest, v1.SetAllocationResponse]
+	setBoardSettings *connect.Client[v1.SetBoardSettingsRequest, v1.SetBoardSettingsResponse]
+	stopRun          *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
 }
 
 // ListAgentures calls tank.platform.v1.PlatformService.ListAgentures.
@@ -99,6 +110,11 @@ func (c *platformServiceClient) SetAllocation(ctx context.Context, req *connect.
 	return c.setAllocation.CallUnary(ctx, req)
 }
 
+// SetBoardSettings calls tank.platform.v1.PlatformService.SetBoardSettings.
+func (c *platformServiceClient) SetBoardSettings(ctx context.Context, req *connect.Request[v1.SetBoardSettingsRequest]) (*connect.Response[v1.SetBoardSettingsResponse], error) {
+	return c.setBoardSettings.CallUnary(ctx, req)
+}
+
 // StopRun calls tank.platform.v1.PlatformService.StopRun.
 func (c *platformServiceClient) StopRun(ctx context.Context, req *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error) {
 	return c.stopRun.CallUnary(ctx, req)
@@ -108,6 +124,7 @@ func (c *platformServiceClient) StopRun(ctx context.Context, req *connect.Reques
 type PlatformServiceHandler interface {
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
 	SetAllocation(context.Context, *connect.Request[v1.SetAllocationRequest]) (*connect.Response[v1.SetAllocationResponse], error)
+	SetBoardSettings(context.Context, *connect.Request[v1.SetBoardSettingsRequest]) (*connect.Response[v1.SetBoardSettingsResponse], error)
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
 }
 
@@ -130,6 +147,12 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 		connect.WithSchema(platformServiceMethods.ByName("SetAllocation")),
 		connect.WithHandlerOptions(opts...),
 	)
+	platformServiceSetBoardSettingsHandler := connect.NewUnaryHandler(
+		PlatformServiceSetBoardSettingsProcedure,
+		svc.SetBoardSettings,
+		connect.WithSchema(platformServiceMethods.ByName("SetBoardSettings")),
+		connect.WithHandlerOptions(opts...),
+	)
 	platformServiceStopRunHandler := connect.NewUnaryHandler(
 		PlatformServiceStopRunProcedure,
 		svc.StopRun,
@@ -142,6 +165,8 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 			platformServiceListAgenturesHandler.ServeHTTP(w, r)
 		case PlatformServiceSetAllocationProcedure:
 			platformServiceSetAllocationHandler.ServeHTTP(w, r)
+		case PlatformServiceSetBoardSettingsProcedure:
+			platformServiceSetBoardSettingsHandler.ServeHTTP(w, r)
 		case PlatformServiceStopRunProcedure:
 			platformServiceStopRunHandler.ServeHTTP(w, r)
 		default:
@@ -159,6 +184,10 @@ func (UnimplementedPlatformServiceHandler) ListAgentures(context.Context, *conne
 
 func (UnimplementedPlatformServiceHandler) SetAllocation(context.Context, *connect.Request[v1.SetAllocationRequest]) (*connect.Response[v1.SetAllocationResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.SetAllocation is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) SetBoardSettings(context.Context, *connect.Request[v1.SetBoardSettingsRequest]) (*connect.Response[v1.SetBoardSettingsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.SetBoardSettings is not implemented"))
 }
 
 func (UnimplementedPlatformServiceHandler) StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error) {
