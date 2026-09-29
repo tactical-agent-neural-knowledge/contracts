@@ -528,7 +528,11 @@ message AgentActivityResponse {
   repeated string workspace_ids = 1; // workspaces with at least one live run
 }
 
-message ClaimAgentureRequest { string workspace_id = 1; }
+message ClaimAgentureRequest {
+  string workspace_id = 1;
+  // Or name it by slug, which is what a claim link off the marketing site carries.
+  string slug = 2;
+}
 message ClaimAgentureResponse { Workspace workspace = 1; }
 
 service WorkspaceService {

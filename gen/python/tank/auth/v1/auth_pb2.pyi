@@ -44,10 +44,12 @@ class Principal(_message.Message):
     def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[PrincipalKind, str]] = ..., display_name: _Optional[str] = ..., avatar_url: _Optional[str] = ..., email: _Optional[str] = ..., avatar_file_id: _Optional[str] = ...) -> None: ...
 
 class StartMagicLinkRequest(_message.Message):
-    __slots__ = ("email",)
+    __slots__ = ("email", "next")
     EMAIL_FIELD_NUMBER: _ClassVar[int]
+    NEXT_FIELD_NUMBER: _ClassVar[int]
     email: str
-    def __init__(self, email: _Optional[str] = ...) -> None: ...
+    next: str
+    def __init__(self, email: _Optional[str] = ..., next: _Optional[str] = ...) -> None: ...
 
 class StartMagicLinkResponse(_message.Message):
     __slots__ = ()

@@ -25,6 +25,11 @@ message Principal {
 
 message StartMagicLinkRequest {
   string email = 1;
+  // Where to land after the link is opened, as a path on the app's own origin
+  // ("/claim?a=wardbridge"). The mail carries it, because the link is usually opened
+  // in a fresh tab — often on another device — where nothing the sending tab stored
+  // can be read. Anything that is not a same-origin path is ignored.
+  string next = 2;
 }
 message StartMagicLinkResponse {}
 
