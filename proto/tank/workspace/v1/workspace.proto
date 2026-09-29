@@ -528,6 +528,10 @@ message ListAgenturesResponse {
 message AgentActivityRequest {}
 message AgentActivityResponse {
   repeated string workspace_ids = 1; // workspaces with at least one live run
+  // The products themselves, so the board can show one that is being worked on even
+  // when it is not in the page of products the board happens to be holding. There
+  // are never many: the whole board runs a bounded number of agents at once.
+  repeated Agenture agentures = 2;
 }
 
 // AgentureWork is one piece of work the agent has done, or is doing now.

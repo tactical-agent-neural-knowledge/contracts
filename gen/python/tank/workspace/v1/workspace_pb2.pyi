@@ -802,10 +802,12 @@ class AgentActivityRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class AgentActivityResponse(_message.Message):
-    __slots__ = ("workspace_ids",)
+    __slots__ = ("workspace_ids", "agentures")
     WORKSPACE_IDS_FIELD_NUMBER: _ClassVar[int]
+    AGENTURES_FIELD_NUMBER: _ClassVar[int]
     workspace_ids: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, workspace_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+    agentures: _containers.RepeatedCompositeFieldContainer[Agenture]
+    def __init__(self, workspace_ids: _Optional[_Iterable[str]] = ..., agentures: _Optional[_Iterable[_Union[Agenture, _Mapping]]] = ...) -> None: ...
 
 class AgentureWork(_message.Message):
     __slots__ = ("title", "summary", "asked_at", "delivered_at")
