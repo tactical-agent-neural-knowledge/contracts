@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package tank.billing.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/billing/v1;billingv1";
+
+// BillingService is what money goes through: taking over a product from the board,
+// and keeping a workspace that has agents in it.
+//
+// Two shapes of charge. Taking over an agenture is a one-off whose size depends on
+// how much agent work has gone into it, and it starts a subscription. A venture is
+// free until it has agents, and then it is the same subscription.
+
+// Price is what a product costs to take over right now, and why.
+message Price {
+  string slug = 1;
+  string name = 2;
+  string description = 3;
+  int64 agent_minutes = 4;   // how much agent work has gone into it
+  int64 price_cents = 5;     // what that makes it cost today
+  bool available = 6;        // false once somebody has taken it over
+}
+
+// GetPrice is public: the claim page shows it before anybody has signed in.
+message GetPriceRequest { string slug = 1; }
+message GetPriceResponse { Price price = 1; }
+
+// StartClaimCheckout begins paying for a product. It holds the product for a short
+// while so that two people cannot pay for the same one, and returns somewhere to pay.
+message StartClaimCheckoutRequest {
+  string slug = 1;
+  // Where to send the buyer afterwards. Must be a path on the app's own origin.
+  string success_path = 2;
+  string cancel_path = 3;
+}
+message StartClaimCheckoutResponse {
+  string checkout_url = 1;
+  google.protobuf.Timestamp held_until = 2;
+}
+
+// Subscription is what a workspace is paying, and what it is running up.
+message Subscription {
+  string workspace_id = 1;
+  string plan = 2;                        // free | premium
+  string status = 3;                       // none | active | past_due | canceled
+  int64 monthly_cents = 4;
+  int64 agent_minute_cents = 5;
+  // This period's agent time and what it has cost so far.
+  int64 agent_minutes_this_period = 6;
+  int64 agent_fees_cents_this_period = 7;
+  google.protobuf.Timestamp period_end = 8;
+  bool has_agents = 9;
+}
+
+message GetSubscriptionRequest { string workspace_id = 1; }
+message GetSubscriptionResponse { Subscription subscription = 1; }
+
+// StartUpgradeCheckout turns a free venture into one that can have agents.
+message StartUpgradeCheckoutRequest {
+  string workspace_id = 1;
+  string success_path = 2;
+  string cancel_path = 3;
+}
+message StartUpgradeCheckoutResponse { string checkout_url = 1; }
+
+// OpenBillingPortal sends an owner to change a card or cancel.
+message OpenBillingPortalRequest {
+  string workspace_id = 1;
+  string return_path = 2;
+}
+message OpenBillingPortalResponse { string url = 1; }
+
+service BillingService {
+  rpc GetPrice(GetPriceRequest) returns (GetPriceResponse);
+  rpc StartClaimCheckout(StartClaimCheckoutRequest) returns (StartClaimCheckoutResponse);
+  rpc GetSubscription(GetSubscriptionRequest) returns (GetSubscriptionResponse);
+  rpc StartUpgradeCheckout(StartUpgradeCheckoutRequest) returns (StartUpgradeCheckoutResponse);
+  rpc OpenBillingPortal(OpenBillingPortalRequest) returns (OpenBillingPortalResponse);
+}
