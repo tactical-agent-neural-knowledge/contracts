@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package tank.platform.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/platform/v1;platformv1";
+
+// PlatformService is the console above every workspace: what the board's own agents
+// are doing, and the controls to change it.
+//
+// Every RPC requires a super admin — an address named in the deployment, not a role
+// in the database. This is the only identity in TANK that reads and stops work inside
+// workspaces it is not a member of, so it is not something a stray UPDATE can grant.
+
+// AgentureRow is one product on the board as the console sees it.
+message AgentureRow {
+  string workspace_id = 1;
+  string slug = 2;
+  string name = 3;
+  string description = 4;
+
+  // Allocation.
+  bool enabled = 5;
+  int32 weight = 6;                            // share of the board's attention, 0 to 100
+  google.protobuf.Timestamp next_due_at = 7;
+  google.protobuf.Timestamp last_run_at = 8;
+  int32 runs = 9;                              // spikes asked for since it joined the board
+  string last_error = 10;                      // why the last attempt failed, if it did
+
+  // Work.
+  int64 agent_minutes = 11;                    // everything an agent has spent in it
+  string live_run_id = 12;                     // empty when nothing is running
+  string live_state = 13;                      // the live run's state, for the console
+  double spend_usd = 14;                       // what its agents have cost, all time
+
+  // Money.
+  int64 price_cents = 15;                      // what it would cost to take over right now
+  bool claimed = 16;
+}
+
+message ListAgenturesRequest {
+  string query = 1;                            // match on name or slug
+  int32 limit = 2;
+  int32 offset = 3;
+}
+message ListAgenturesResponse {
+  repeated AgentureRow agentures = 1;
+  int32 total = 2;
+  BoardSummary summary = 3;
+}
+
+// BoardSummary is the state of the whole board in one line.
+message BoardSummary {
+  int32 in_flight = 1;                         // agents working, or briefed and about to be
+  int32 max_concurrent = 2;                    // the cap they are held to
+  bool enabled = 3;                            // whether the board's agents run at all
+  int32 unclaimed = 4;
+  int64 agent_minutes_24h = 5;
+  double spend_usd_24h = 6;                    // what the board cost in the last day
+  double spend_usd_total = 7;
+}
+
+// SetAllocation changes how much attention a product gets. Weight 0 or enabled=false
+// both stop new work; neither touches a run already going.
+message SetAllocationRequest {
+  string workspace_id = 1;
+  bool enabled = 2;
+  int32 weight = 3;
+  bool run_now = 4;                            // become due now rather than at its next turn
+}
+message SetAllocationResponse {
+  AgentureRow agenture = 1;
+}
+
+// StopRun stops an agent that is working right now.
+message StopRunRequest {
+  string run_id = 1;
+  string reason = 2;
+}
+message StopRunResponse {}
+
+service PlatformService {
+  rpc ListAgentures(ListAgenturesRequest) returns (ListAgenturesResponse);
+  rpc SetAllocation(SetAllocationRequest) returns (SetAllocationResponse);
+  rpc StopRun(StopRunRequest) returns (StopRunResponse);
+}
