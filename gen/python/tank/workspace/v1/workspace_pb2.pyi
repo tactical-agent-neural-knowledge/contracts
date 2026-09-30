@@ -822,7 +822,7 @@ class AgentureWork(_message.Message):
     def __init__(self, title: _Optional[str] = ..., summary: _Optional[str] = ..., asked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., delivered_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class AgentureDetail(_message.Message):
-    __slots__ = ("workspace_id", "slug", "name", "description", "industry", "buyer", "agent_minutes", "price_cents", "available", "work")
+    __slots__ = ("workspace_id", "slug", "name", "description", "industry", "buyer", "agent_minutes", "price_cents", "available", "work", "overview")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -833,6 +833,7 @@ class AgentureDetail(_message.Message):
     PRICE_CENTS_FIELD_NUMBER: _ClassVar[int]
     AVAILABLE_FIELD_NUMBER: _ClassVar[int]
     WORK_FIELD_NUMBER: _ClassVar[int]
+    OVERVIEW_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     slug: str
     name: str
@@ -843,7 +844,8 @@ class AgentureDetail(_message.Message):
     price_cents: int
     available: bool
     work: _containers.RepeatedCompositeFieldContainer[AgentureWork]
-    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., industry: _Optional[str] = ..., buyer: _Optional[str] = ..., agent_minutes: _Optional[int] = ..., price_cents: _Optional[int] = ..., available: bool = ..., work: _Optional[_Iterable[_Union[AgentureWork, _Mapping]]] = ...) -> None: ...
+    overview: str
+    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., industry: _Optional[str] = ..., buyer: _Optional[str] = ..., agent_minutes: _Optional[int] = ..., price_cents: _Optional[int] = ..., available: bool = ..., work: _Optional[_Iterable[_Union[AgentureWork, _Mapping]]] = ..., overview: _Optional[str] = ...) -> None: ...
 
 class GetAgentureRequest(_message.Message):
     __slots__ = ("slug",)

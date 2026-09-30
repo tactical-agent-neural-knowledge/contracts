@@ -555,6 +555,10 @@ message AgentureDetail {
   int64 price_cents = 8;
   bool available = 9;
   repeated AgentureWork work = 10;              // newest first
+  // The long form: what it is, the problem it solves, who buys it, where it has got
+  // to. Markdown. The one-liner above is what a card shows; this is what somebody
+  // deciding whether to take it over reads.
+  string overview = 11;
 }
 
 message GetAgentureRequest { string slug = 1; }
