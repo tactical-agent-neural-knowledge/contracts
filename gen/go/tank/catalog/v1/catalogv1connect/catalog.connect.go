@@ -36,6 +36,9 @@ const (
 	// CatalogServiceListProductsProcedure is the fully-qualified name of the CatalogService's
 	// ListProducts RPC.
 	CatalogServiceListProductsProcedure = "/tank.catalog.v1.CatalogService/ListProducts"
+	// CatalogServiceRecordProductViewProcedure is the fully-qualified name of the CatalogService's
+	// RecordProductView RPC.
+	CatalogServiceRecordProductViewProcedure = "/tank.catalog.v1.CatalogService/RecordProductView"
 	// CatalogServiceWatchProductProcedure is the fully-qualified name of the CatalogService's
 	// WatchProduct RPC.
 	CatalogServiceWatchProductProcedure = "/tank.catalog.v1.CatalogService/WatchProduct"
@@ -60,6 +63,7 @@ const (
 type CatalogServiceClient interface {
 	// Anonymous.
 	ListProducts(context.Context, *connect.Request[v1.ListProductsRequest]) (*connect.Response[v1.ListProductsResponse], error)
+	RecordProductView(context.Context, *connect.Request[v1.RecordProductViewRequest]) (*connect.Response[v1.RecordProductViewResponse], error)
 	// Signed in.
 	WatchProduct(context.Context, *connect.Request[v1.WatchProductRequest]) (*connect.Response[v1.WatchProductResponse], error)
 	ListPortfolios(context.Context, *connect.Request[v1.ListPortfoliosRequest]) (*connect.Response[v1.ListPortfoliosResponse], error)
@@ -84,6 +88,12 @@ func NewCatalogServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+CatalogServiceListProductsProcedure,
 			connect.WithSchema(catalogServiceMethods.ByName("ListProducts")),
+			connect.WithClientOptions(opts...),
+		),
+		recordProductView: connect.NewClient[v1.RecordProductViewRequest, v1.RecordProductViewResponse](
+			httpClient,
+			baseURL+CatalogServiceRecordProductViewProcedure,
+			connect.WithSchema(catalogServiceMethods.ByName("RecordProductView")),
 			connect.WithClientOptions(opts...),
 		),
 		watchProduct: connect.NewClient[v1.WatchProductRequest, v1.WatchProductResponse](
@@ -128,6 +138,7 @@ func NewCatalogServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 // catalogServiceClient implements CatalogServiceClient.
 type catalogServiceClient struct {
 	listProducts        *connect.Client[v1.ListProductsRequest, v1.ListProductsResponse]
+	recordProductView   *connect.Client[v1.RecordProductViewRequest, v1.RecordProductViewResponse]
 	watchProduct        *connect.Client[v1.WatchProductRequest, v1.WatchProductResponse]
 	listPortfolios      *connect.Client[v1.ListPortfoliosRequest, v1.ListPortfoliosResponse]
 	createPortfolio     *connect.Client[v1.CreatePortfolioRequest, v1.CreatePortfolioResponse]
@@ -139,6 +150,11 @@ type catalogServiceClient struct {
 // ListProducts calls tank.catalog.v1.CatalogService.ListProducts.
 func (c *catalogServiceClient) ListProducts(ctx context.Context, req *connect.Request[v1.ListProductsRequest]) (*connect.Response[v1.ListProductsResponse], error) {
 	return c.listProducts.CallUnary(ctx, req)
+}
+
+// RecordProductView calls tank.catalog.v1.CatalogService.RecordProductView.
+func (c *catalogServiceClient) RecordProductView(ctx context.Context, req *connect.Request[v1.RecordProductViewRequest]) (*connect.Response[v1.RecordProductViewResponse], error) {
+	return c.recordProductView.CallUnary(ctx, req)
 }
 
 // WatchProduct calls tank.catalog.v1.CatalogService.WatchProduct.
@@ -175,6 +191,7 @@ func (c *catalogServiceClient) SetPortfolioProduct(ctx context.Context, req *con
 type CatalogServiceHandler interface {
 	// Anonymous.
 	ListProducts(context.Context, *connect.Request[v1.ListProductsRequest]) (*connect.Response[v1.ListProductsResponse], error)
+	RecordProductView(context.Context, *connect.Request[v1.RecordProductViewRequest]) (*connect.Response[v1.RecordProductViewResponse], error)
 	// Signed in.
 	WatchProduct(context.Context, *connect.Request[v1.WatchProductRequest]) (*connect.Response[v1.WatchProductResponse], error)
 	ListPortfolios(context.Context, *connect.Request[v1.ListPortfoliosRequest]) (*connect.Response[v1.ListPortfoliosResponse], error)
@@ -195,6 +212,12 @@ func NewCatalogServiceHandler(svc CatalogServiceHandler, opts ...connect.Handler
 		CatalogServiceListProductsProcedure,
 		svc.ListProducts,
 		connect.WithSchema(catalogServiceMethods.ByName("ListProducts")),
+		connect.WithHandlerOptions(opts...),
+	)
+	catalogServiceRecordProductViewHandler := connect.NewUnaryHandler(
+		CatalogServiceRecordProductViewProcedure,
+		svc.RecordProductView,
+		connect.WithSchema(catalogServiceMethods.ByName("RecordProductView")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceWatchProductHandler := connect.NewUnaryHandler(
@@ -237,6 +260,8 @@ func NewCatalogServiceHandler(svc CatalogServiceHandler, opts ...connect.Handler
 		switch r.URL.Path {
 		case CatalogServiceListProductsProcedure:
 			catalogServiceListProductsHandler.ServeHTTP(w, r)
+		case CatalogServiceRecordProductViewProcedure:
+			catalogServiceRecordProductViewHandler.ServeHTTP(w, r)
 		case CatalogServiceWatchProductProcedure:
 			catalogServiceWatchProductHandler.ServeHTTP(w, r)
 		case CatalogServiceListPortfoliosProcedure:
@@ -260,6 +285,10 @@ type UnimplementedCatalogServiceHandler struct{}
 
 func (UnimplementedCatalogServiceHandler) ListProducts(context.Context, *connect.Request[v1.ListProductsRequest]) (*connect.Response[v1.ListProductsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.catalog.v1.CatalogService.ListProducts is not implemented"))
+}
+
+func (UnimplementedCatalogServiceHandler) RecordProductView(context.Context, *connect.Request[v1.RecordProductViewRequest]) (*connect.Response[v1.RecordProductViewResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.catalog.v1.CatalogService.RecordProductView is not implemented"))
 }
 
 func (UnimplementedCatalogServiceHandler) WatchProduct(context.Context, *connect.Request[v1.WatchProductRequest]) (*connect.Response[v1.WatchProductResponse], error) {

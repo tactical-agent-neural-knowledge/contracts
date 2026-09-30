@@ -33,6 +33,9 @@ message ProductCard {
   google.protobuf.Timestamp last_worked_at = 12;
   bool available = 13;                          // nobody has taken it over yet
   bool watched = 14;                            // on the caller's watch list
+  // How many people have looked at this product's page. One per visitor per day, so
+  // it counts interest rather than refreshes.
+  int64 view_count = 15;
 }
 
 // The orders a person actually asks for, named after what they mean rather than the
@@ -44,6 +47,7 @@ enum ProductSort {
   PRODUCT_SORT_FURTHEST_ALONG = 2;
   PRODUCT_SORT_CHEAPEST = 3;
   PRODUCT_SORT_MOST_EXPENSIVE = 4;
+  PRODUCT_SORT_MOST_VIEWED = 5;
 }
 
 message ListProductsRequest {
@@ -110,9 +114,17 @@ message SetPortfolioProductRequest {
 }
 message SetPortfolioProductResponse { Portfolio portfolio = 1; }
 
+// Recording a view is anonymous and deliberately cheap: the page calls it once when
+// it opens, and the server decides whether it counts.
+message RecordProductViewRequest { string slug = 1; }
+message RecordProductViewResponse {
+  int64 view_count = 1;                         // the total after this call
+}
+
 service CatalogService {
   // Anonymous.
   rpc ListProducts(ListProductsRequest) returns (ListProductsResponse);
+  rpc RecordProductView(RecordProductViewRequest) returns (RecordProductViewResponse);
 
   // Signed in.
   rpc WatchProduct(WatchProductRequest) returns (WatchProductResponse);

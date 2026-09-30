@@ -14,14 +14,16 @@ class ProductSort(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     PRODUCT_SORT_FURTHEST_ALONG: _ClassVar[ProductSort]
     PRODUCT_SORT_CHEAPEST: _ClassVar[ProductSort]
     PRODUCT_SORT_MOST_EXPENSIVE: _ClassVar[ProductSort]
+    PRODUCT_SORT_MOST_VIEWED: _ClassVar[ProductSort]
 PRODUCT_SORT_UNSPECIFIED: ProductSort
 PRODUCT_SORT_NEWEST: ProductSort
 PRODUCT_SORT_FURTHEST_ALONG: ProductSort
 PRODUCT_SORT_CHEAPEST: ProductSort
 PRODUCT_SORT_MOST_EXPENSIVE: ProductSort
+PRODUCT_SORT_MOST_VIEWED: ProductSort
 
 class ProductCard(_message.Message):
-    __slots__ = ("workspace_id", "slug", "name", "description", "industry", "buyer", "price_cents", "agent_minutes", "work_delivered", "agent_active", "created_at", "last_worked_at", "available", "watched")
+    __slots__ = ("workspace_id", "slug", "name", "description", "industry", "buyer", "price_cents", "agent_minutes", "work_delivered", "agent_active", "created_at", "last_worked_at", "available", "watched", "view_count")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -36,6 +38,7 @@ class ProductCard(_message.Message):
     LAST_WORKED_AT_FIELD_NUMBER: _ClassVar[int]
     AVAILABLE_FIELD_NUMBER: _ClassVar[int]
     WATCHED_FIELD_NUMBER: _ClassVar[int]
+    VIEW_COUNT_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     slug: str
     name: str
@@ -50,7 +53,8 @@ class ProductCard(_message.Message):
     last_worked_at: _timestamp_pb2.Timestamp
     available: bool
     watched: bool
-    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., industry: _Optional[str] = ..., buyer: _Optional[str] = ..., price_cents: _Optional[int] = ..., agent_minutes: _Optional[int] = ..., work_delivered: _Optional[int] = ..., agent_active: bool = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_worked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., available: bool = ..., watched: bool = ...) -> None: ...
+    view_count: int
+    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., industry: _Optional[str] = ..., buyer: _Optional[str] = ..., price_cents: _Optional[int] = ..., agent_minutes: _Optional[int] = ..., work_delivered: _Optional[int] = ..., agent_active: bool = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_worked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., available: bool = ..., watched: bool = ..., view_count: _Optional[int] = ...) -> None: ...
 
 class ListProductsRequest(_message.Message):
     __slots__ = ("sort", "industry", "query", "watched_only", "portfolio_id", "cursor", "limit")
@@ -177,3 +181,15 @@ class SetPortfolioProductResponse(_message.Message):
     PORTFOLIO_FIELD_NUMBER: _ClassVar[int]
     portfolio: Portfolio
     def __init__(self, portfolio: _Optional[_Union[Portfolio, _Mapping]] = ...) -> None: ...
+
+class RecordProductViewRequest(_message.Message):
+    __slots__ = ("slug",)
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    def __init__(self, slug: _Optional[str] = ...) -> None: ...
+
+class RecordProductViewResponse(_message.Message):
+    __slots__ = ("view_count",)
+    VIEW_COUNT_FIELD_NUMBER: _ClassVar[int]
+    view_count: int
+    def __init__(self, view_count: _Optional[int] = ...) -> None: ...
