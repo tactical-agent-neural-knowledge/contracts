@@ -183,10 +183,12 @@ class SetPortfolioProductResponse(_message.Message):
     def __init__(self, portfolio: _Optional[_Union[Portfolio, _Mapping]] = ...) -> None: ...
 
 class RecordProductViewRequest(_message.Message):
-    __slots__ = ("slug",)
+    __slots__ = ("slug", "referrer")
     SLUG_FIELD_NUMBER: _ClassVar[int]
+    REFERRER_FIELD_NUMBER: _ClassVar[int]
     slug: str
-    def __init__(self, slug: _Optional[str] = ...) -> None: ...
+    referrer: str
+    def __init__(self, slug: _Optional[str] = ..., referrer: _Optional[str] = ...) -> None: ...
 
 class RecordProductViewResponse(_message.Message):
     __slots__ = ("view_count",)

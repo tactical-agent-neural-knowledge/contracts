@@ -116,7 +116,13 @@ message SetPortfolioProductResponse { Portfolio portfolio = 1; }
 
 // Recording a view is anonymous and deliberately cheap: the page calls it once when
 // it opens, and every call counts.
-message RecordProductViewRequest { string slug = 1; }
+message RecordProductViewRequest {
+  string slug = 1;
+  // Where the visitor came from, as the browser reports it. Used only to bucket the
+  // visit — assistant, search, social, direct — and never stored against a person.
+  // The server decides the bucket; this is the raw value it decides from.
+  string referrer = 2;
+}
 message RecordProductViewResponse {
   int64 view_count = 1;                         // the total after this call
 }
