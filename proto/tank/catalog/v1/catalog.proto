@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package tank.catalog.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/catalog/v1;catalogv1";
+
+// CatalogService is the public face of the board: every product TANK is building,
+// browsable by anyone, whether or not they have an account.
+//
+// Browsing is anonymous. Keeping a watch list, building a portfolio and buying are
+// the things that need an account, and each says so rather than hiding the product
+// behind a sign-in wall — somebody has to be able to see what is for sale before
+// deciding they want one.
+
+// ProductCard is a product as a list shows it. It carries what the card renders and
+// what the sorts order by, so a list of fifty needs one query and no follow-ups.
+message ProductCard {
+  string workspace_id = 1;
+  string slug = 2;
+  string name = 3;
+  string description = 4;
+  string industry = 5;                          // the trade it serves
+  string buyer = 6;                             // who it is for
+  int64 price_cents = 7;                        // what it costs to take over today
+  // How far along it is. Agent minutes is the honest measure: it is what was spent
+  // building the thing, and it is what the price is derived from.
+  int64 agent_minutes = 8;
+  int32 work_delivered = 9;                     // pieces of finished agent work
+  bool agent_active = 10;                       // an agent is working in it now
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp last_worked_at = 12;
+  bool available = 13;                          // nobody has taken it over yet
+  bool watched = 14;                            // on the caller's watch list
+}
+
+// The orders a person actually asks for, named after what they mean rather than the
+// column they sort on, so the client never has to know that "furthest along" is
+// agent minutes.
+enum ProductSort {
+  PRODUCT_SORT_UNSPECIFIED = 0;
+  PRODUCT_SORT_NEWEST = 1;
+  PRODUCT_SORT_FURTHEST_ALONG = 2;
+  PRODUCT_SORT_CHEAPEST = 3;
+  PRODUCT_SORT_MOST_EXPENSIVE = 4;
+}
+
+message ListProductsRequest {
+  ProductSort sort = 1;
+  string industry = 2;                          // one trade, or empty for all
+  string query = 3;                             // matches name and description
+  // Signed in only. A watch list nobody is signed in to see is empty, not an error.
+  bool watched_only = 4;
+  string portfolio_id = 5;                      // signed in: one portfolio's products
+  string cursor = 6;
+  int32 limit = 7;
+}
+message ListProductsResponse {
+  repeated ProductCard products = 1;
+  string next_cursor = 2;
+  int32 total = 3;
+  // The trades that actually have products, so the filter offers real choices rather
+  // than a hard-coded list that drifts from what is on the board.
+  repeated string industries = 4;
+}
+
+// Watching is a plain toggle rather than add/remove, because the button is a toggle
+// and two RPCs would let the two disagree.
+message WatchProductRequest {
+  string workspace_id = 1;
+  bool watched = 2;
+}
+message WatchProductResponse { ProductCard product = 1; }
+
+// A portfolio is a named set of products somebody is following as a group.
+message Portfolio {
+  string id = 1;
+  string name = 2;
+  string note = 3;
+  int32 product_count = 4;
+  int64 value_cents = 5;                        // what taking over all of them costs
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message ListPortfoliosRequest {}
+message ListPortfoliosResponse { repeated Portfolio portfolios = 1; }
+
+message CreatePortfolioRequest {
+  string name = 1;
+  string note = 2;
+}
+message CreatePortfolioResponse { Portfolio portfolio = 1; }
+
+message RenamePortfolioRequest {
+  string id = 1;
+  string name = 2;
+  string note = 3;
+}
+message RenamePortfolioResponse { Portfolio portfolio = 1; }
+
+message DeletePortfolioRequest { string id = 1; }
+message DeletePortfolioResponse {}
+
+// Membership is a toggle for the same reason watching is.
+message SetPortfolioProductRequest {
+  string portfolio_id = 1;
+  string workspace_id = 2;
+  bool included = 3;
+}
+message SetPortfolioProductResponse { Portfolio portfolio = 1; }
+
+service CatalogService {
+  // Anonymous.
+  rpc ListProducts(ListProductsRequest) returns (ListProductsResponse);
+
+  // Signed in.
+  rpc WatchProduct(WatchProductRequest) returns (WatchProductResponse);
+  rpc ListPortfolios(ListPortfoliosRequest) returns (ListPortfoliosResponse);
+  rpc CreatePortfolio(CreatePortfolioRequest) returns (CreatePortfolioResponse);
+  rpc RenamePortfolio(RenamePortfolioRequest) returns (RenamePortfolioResponse);
+  rpc DeletePortfolio(DeletePortfolioRequest) returns (DeletePortfolioResponse);
+  rpc SetPortfolioProduct(SetPortfolioProductRequest) returns (SetPortfolioProductResponse);
+}
