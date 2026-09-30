@@ -58,6 +58,16 @@ message BoardSummary {
   int32 in_flight = 1;                         // agents working, or briefed and about to be
   int32 max_concurrent = 2;                    // the cap they are held to
   bool enabled = 3;                            // whether the board's agents run at all
+  // Stopped outright: nothing starts and anything running is ended. Not the same as
+  // a cap of zero, which lets what is running finish.
+  bool killed = 8;
+  // What a product starts as. Does not reach back and change products that exist.
+  bool auto_default = 9;
+  // When agents may work. Minutes past midnight in hours_zone; equal means all day.
+  int32 hours_from = 10;
+  int32 hours_to = 11;
+  string hours_zone = 12;
+  repeated int32 hours_days = 13;              // 0 is Sunday; empty means every day
   int32 unclaimed = 4;
   int64 agent_minutes_24h = 5;
   double spend_usd_24h = 6;                    // what the board cost in the last day
@@ -80,6 +90,12 @@ message SetAllocationResponse {
 // SetBoardSettings changes how the board as a whole behaves.
 message SetBoardSettingsRequest {
   int32 max_concurrent = 1;                    // 0 stops new work without losing anything
+  bool killed = 2;                             // stop, and end what is running
+  bool auto_default = 3;
+  int32 hours_from = 4;
+  int32 hours_to = 5;
+  string hours_zone = 6;
+  repeated int32 hours_days = 7;
 }
 message SetBoardSettingsResponse {
   BoardSummary summary = 1;

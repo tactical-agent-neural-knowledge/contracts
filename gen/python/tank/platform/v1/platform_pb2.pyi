@@ -65,10 +65,16 @@ class ListAgenturesResponse(_message.Message):
     def __init__(self, agentures: _Optional[_Iterable[_Union[AgentureRow, _Mapping]]] = ..., total: _Optional[int] = ..., summary: _Optional[_Union[BoardSummary, _Mapping]] = ...) -> None: ...
 
 class BoardSummary(_message.Message):
-    __slots__ = ("in_flight", "max_concurrent", "enabled", "unclaimed", "agent_minutes_24h", "spend_usd_24h", "spend_usd_total")
+    __slots__ = ("in_flight", "max_concurrent", "enabled", "killed", "auto_default", "hours_from", "hours_to", "hours_zone", "hours_days", "unclaimed", "agent_minutes_24h", "spend_usd_24h", "spend_usd_total")
     IN_FLIGHT_FIELD_NUMBER: _ClassVar[int]
     MAX_CONCURRENT_FIELD_NUMBER: _ClassVar[int]
     ENABLED_FIELD_NUMBER: _ClassVar[int]
+    KILLED_FIELD_NUMBER: _ClassVar[int]
+    AUTO_DEFAULT_FIELD_NUMBER: _ClassVar[int]
+    HOURS_FROM_FIELD_NUMBER: _ClassVar[int]
+    HOURS_TO_FIELD_NUMBER: _ClassVar[int]
+    HOURS_ZONE_FIELD_NUMBER: _ClassVar[int]
+    HOURS_DAYS_FIELD_NUMBER: _ClassVar[int]
     UNCLAIMED_FIELD_NUMBER: _ClassVar[int]
     AGENT_MINUTES_24H_FIELD_NUMBER: _ClassVar[int]
     SPEND_USD_24H_FIELD_NUMBER: _ClassVar[int]
@@ -76,11 +82,17 @@ class BoardSummary(_message.Message):
     in_flight: int
     max_concurrent: int
     enabled: bool
+    killed: bool
+    auto_default: bool
+    hours_from: int
+    hours_to: int
+    hours_zone: str
+    hours_days: _containers.RepeatedScalarFieldContainer[int]
     unclaimed: int
     agent_minutes_24h: int
     spend_usd_24h: float
     spend_usd_total: float
-    def __init__(self, in_flight: _Optional[int] = ..., max_concurrent: _Optional[int] = ..., enabled: bool = ..., unclaimed: _Optional[int] = ..., agent_minutes_24h: _Optional[int] = ..., spend_usd_24h: _Optional[float] = ..., spend_usd_total: _Optional[float] = ...) -> None: ...
+    def __init__(self, in_flight: _Optional[int] = ..., max_concurrent: _Optional[int] = ..., enabled: bool = ..., killed: bool = ..., auto_default: bool = ..., hours_from: _Optional[int] = ..., hours_to: _Optional[int] = ..., hours_zone: _Optional[str] = ..., hours_days: _Optional[_Iterable[int]] = ..., unclaimed: _Optional[int] = ..., agent_minutes_24h: _Optional[int] = ..., spend_usd_24h: _Optional[float] = ..., spend_usd_total: _Optional[float] = ...) -> None: ...
 
 class SetAllocationRequest(_message.Message):
     __slots__ = ("workspace_id", "enabled", "weight", "run_now", "auto_approve")
@@ -103,10 +115,22 @@ class SetAllocationResponse(_message.Message):
     def __init__(self, agenture: _Optional[_Union[AgentureRow, _Mapping]] = ...) -> None: ...
 
 class SetBoardSettingsRequest(_message.Message):
-    __slots__ = ("max_concurrent",)
+    __slots__ = ("max_concurrent", "killed", "auto_default", "hours_from", "hours_to", "hours_zone", "hours_days")
     MAX_CONCURRENT_FIELD_NUMBER: _ClassVar[int]
+    KILLED_FIELD_NUMBER: _ClassVar[int]
+    AUTO_DEFAULT_FIELD_NUMBER: _ClassVar[int]
+    HOURS_FROM_FIELD_NUMBER: _ClassVar[int]
+    HOURS_TO_FIELD_NUMBER: _ClassVar[int]
+    HOURS_ZONE_FIELD_NUMBER: _ClassVar[int]
+    HOURS_DAYS_FIELD_NUMBER: _ClassVar[int]
     max_concurrent: int
-    def __init__(self, max_concurrent: _Optional[int] = ...) -> None: ...
+    killed: bool
+    auto_default: bool
+    hours_from: int
+    hours_to: int
+    hours_zone: str
+    hours_days: _containers.RepeatedScalarFieldContainer[int]
+    def __init__(self, max_concurrent: _Optional[int] = ..., killed: bool = ..., auto_default: bool = ..., hours_from: _Optional[int] = ..., hours_to: _Optional[int] = ..., hours_zone: _Optional[str] = ..., hours_days: _Optional[_Iterable[int]] = ...) -> None: ...
 
 class SetBoardSettingsResponse(_message.Message):
     __slots__ = ("summary",)
