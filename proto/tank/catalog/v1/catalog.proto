@@ -33,8 +33,8 @@ message ProductCard {
   google.protobuf.Timestamp last_worked_at = 12;
   bool available = 13;                          // nobody has taken it over yet
   bool watched = 14;                            // on the caller's watch list
-  // How many people have looked at this product's page. One per visitor per day, so
-  // it counts interest rather than refreshes.
+  // Total visits to this product's page, all time. Every view counts, including
+  // repeat visits and crawlers — it is a hit counter, not a headcount.
   int64 view_count = 15;
 }
 
@@ -115,7 +115,7 @@ message SetPortfolioProductRequest {
 message SetPortfolioProductResponse { Portfolio portfolio = 1; }
 
 // Recording a view is anonymous and deliberately cheap: the page calls it once when
-// it opens, and the server decides whether it counts.
+// it opens, and every call counts.
 message RecordProductViewRequest { string slug = 1; }
 message RecordProductViewResponse {
   int64 view_count = 1;                         // the total after this call

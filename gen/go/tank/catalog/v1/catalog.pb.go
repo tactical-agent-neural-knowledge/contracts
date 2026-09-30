@@ -103,8 +103,8 @@ type ProductCard struct {
 	LastWorkedAt  *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=last_worked_at,json=lastWorkedAt,proto3" json:"last_worked_at,omitempty"`
 	Available     bool                   `protobuf:"varint,13,opt,name=available,proto3" json:"available,omitempty"` // nobody has taken it over yet
 	Watched       bool                   `protobuf:"varint,14,opt,name=watched,proto3" json:"watched,omitempty"`     // on the caller's watch list
-	// How many people have looked at this product's page. One per visitor per day, so
-	// it counts interest rather than refreshes.
+	// Total visits to this product's page, all time. Every view counts, including
+	// repeat visits and crawlers — it is a hit counter, not a headcount.
 	ViewCount     int64 `protobuf:"varint,15,opt,name=view_count,json=viewCount,proto3" json:"view_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1057,7 +1057,7 @@ func (x *SetPortfolioProductResponse) GetPortfolio() *Portfolio {
 }
 
 // Recording a view is anonymous and deliberately cheap: the page calls it once when
-// it opens, and the server decides whether it counts.
+// it opens, and every call counts.
 type RecordProductViewRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Slug          string                 `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
