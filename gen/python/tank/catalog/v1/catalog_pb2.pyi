@@ -227,17 +227,45 @@ class BoardStatsRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class BoardStatsResponse(_message.Message):
-    __slots__ = ("computed_at", "headline", "all", "industries", "stages", "sources")
+    __slots__ = ("computed_at", "headline", "all", "industries", "stages", "sources", "recent", "most_visited")
     COMPUTED_AT_FIELD_NUMBER: _ClassVar[int]
     HEADLINE_FIELD_NUMBER: _ClassVar[int]
     ALL_FIELD_NUMBER: _ClassVar[int]
     INDUSTRIES_FIELD_NUMBER: _ClassVar[int]
     STAGES_FIELD_NUMBER: _ClassVar[int]
     SOURCES_FIELD_NUMBER: _ClassVar[int]
+    RECENT_FIELD_NUMBER: _ClassVar[int]
+    MOST_VISITED_FIELD_NUMBER: _ClassVar[int]
     computed_at: _timestamp_pb2.Timestamp
     headline: _containers.RepeatedCompositeFieldContainer[Stat]
     all: _containers.RepeatedCompositeFieldContainer[Stat]
     industries: _containers.RepeatedCompositeFieldContainer[Tally]
     stages: _containers.RepeatedCompositeFieldContainer[Tally]
     sources: _containers.RepeatedCompositeFieldContainer[Tally]
-    def __init__(self, computed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., headline: _Optional[_Iterable[_Union[Stat, _Mapping]]] = ..., all: _Optional[_Iterable[_Union[Stat, _Mapping]]] = ..., industries: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., stages: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ...) -> None: ...
+    recent: _containers.RepeatedCompositeFieldContainer[Event]
+    most_visited: _containers.RepeatedCompositeFieldContainer[Ranked]
+    def __init__(self, computed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., headline: _Optional[_Iterable[_Union[Stat, _Mapping]]] = ..., all: _Optional[_Iterable[_Union[Stat, _Mapping]]] = ..., industries: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., stages: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., recent: _Optional[_Iterable[_Union[Event, _Mapping]]] = ..., most_visited: _Optional[_Iterable[_Union[Ranked, _Mapping]]] = ...) -> None: ...
+
+class Event(_message.Message):
+    __slots__ = ("product", "slug", "stage", "at")
+    PRODUCT_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    STAGE_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    product: str
+    slug: str
+    stage: str
+    at: _timestamp_pb2.Timestamp
+    def __init__(self, product: _Optional[str] = ..., slug: _Optional[str] = ..., stage: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class Ranked(_message.Message):
+    __slots__ = ("product", "slug", "value", "industry")
+    PRODUCT_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    INDUSTRY_FIELD_NUMBER: _ClassVar[int]
+    product: str
+    slug: str
+    value: int
+    industry: str
+    def __init__(self, product: _Optional[str] = ..., slug: _Optional[str] = ..., value: _Optional[int] = ..., industry: _Optional[str] = ...) -> None: ...

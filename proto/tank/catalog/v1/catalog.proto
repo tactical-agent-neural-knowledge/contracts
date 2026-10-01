@@ -154,6 +154,26 @@ message BoardStatsResponse {
   repeated Tally industries = 4;    // products by industry
   repeated Tally stages = 5;        // which stages agents have completed
   repeated Tally sources = 6;       // where visits came from
+  repeated Event recent = 7;        // the last few things that happened, newest first
+  repeated Ranked most_visited = 8; // products people actually open
+}
+
+// Event is one thing an agent finished, for a page that wants to look alive rather
+// than merely be accurate. Additive: a client that does not know about it renders
+// the figures exactly as before.
+message Event {
+  string product = 1;               // the product's name
+  string slug = 2;                  // so the ticker can link
+  string stage = 3;                 // which question it answered
+  google.protobuf.Timestamp at = 4;
+}
+
+// Ranked is a product and a number, for a leaderboard.
+message Ranked {
+  string product = 1;
+  string slug = 2;
+  int64 value = 3;
+  string industry = 4;
 }
 
 service CatalogService {
