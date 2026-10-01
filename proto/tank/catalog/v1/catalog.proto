@@ -176,6 +176,39 @@ message BoardStatsResponse {
   repeated Event recent = 7;        // the last few things that happened, newest first
   repeated Ranked most_visited = 8; // products people actually open
   repeated ToolMention tools = 9;   // software the agents name, and whether TANK does that job
+  repeated PriceBand prices = 10;   // what agents say software for each trade should cost
+  repeated Dropped dropped_list = 11; // ideas the board looked at and declined to build
+  repeated VendorGap vendor_gaps = 12; // what the agents say each named tool gets wrong
+}
+
+// PriceBand is what agents independently decided software for one trade should cost.
+//
+// The spread is the interesting half. Many agents priced many products in the same
+// industry without consulting each other, so how far apart they land is a measurement
+// of how much two AI agents disagree about the same question.
+message PriceBand {
+  string industry = 1;
+  int32 products = 2;      // how many agents priced something here
+  double median_usd = 3;   // dollars a month
+  double low_usd = 4;
+  double high_usd = 5;
+}
+
+// Dropped is a product the board stopped working on because its own research said to.
+message Dropped {
+  string product = 1;
+  string slug = 2;
+  string industry = 3;
+  string reason = 4;
+  google.protobuf.Timestamp at = 5;
+}
+
+// VendorGap is one thing the agents say a named tool gets wrong, in their own words.
+message VendorGap {
+  string tool = 1;         // the tool it is about
+  string gap = 2;
+  string from_product = 3; // the product whose research found it
+  string from_slug = 4;
 }
 
 // ToolMention is a third-party tool the agents named while planning businesses, how

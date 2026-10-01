@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tank/catalog/v1/catalog.proto.
  */
 export const file_tank_catalog_v1_catalog: GenFile = /*@__PURE__*/
-  fileDesc("Ch10YW5rL2NhdGFsb2cvdjEvY2F0YWxvZy5wcm90bxIPdGFuay5jYXRhbG9nLnYxIusCCgtQcm9kdWN0Q2FyZBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSDAoEc2x1ZxgCIAEoCRIMCgRuYW1lGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhAKCGluZHVzdHJ5GAUgASgJEg0KBWJ1eWVyGAYgASgJEhMKC3ByaWNlX2NlbnRzGAcgASgDEhUKDWFnZW50X21pbnV0ZXMYCCABKAMSFgoOd29ya19kZWxpdmVyZWQYCSABKAUSFAoMYWdlbnRfYWN0aXZlGAogASgIEi4KCmNyZWF0ZWRfYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjIKDmxhc3Rfd29ya2VkX2F0GAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIRCglhdmFpbGFibGUYDSABKAgSDwoHd2F0Y2hlZBgOIAEoCBISCgp2aWV3X2NvdW50GA8gASgDIq0BChNMaXN0UHJvZHVjdHNSZXF1ZXN0EioKBHNvcnQYASABKA4yHC50YW5rLmNhdGFsb2cudjEuUHJvZHVjdFNvcnQSEAoIaW5kdXN0cnkYAiABKAkSDQoFcXVlcnkYAyABKAkSFAoMd2F0Y2hlZF9vbmx5GAQgASgIEhQKDHBvcnRmb2xpb19pZBgFIAEoCRIOCgZjdXJzb3IYBiABKAkSDQoFbGltaXQYByABKAUifgoUTGlzdFByb2R1Y3RzUmVzcG9uc2USLgoIcHJvZHVjdHMYASADKAsyHC50YW5rLmNhdGFsb2cudjEuUHJvZHVjdENhcmQSEwoLbmV4dF9jdXJzb3IYAiABKAkSDQoFdG90YWwYAyABKAUSEgoKaW5kdXN0cmllcxgEIAMoCSI8ChNXYXRjaFByb2R1Y3RSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRIPCgd3YXRjaGVkGAIgASgIIkUKFFdhdGNoUHJvZHVjdFJlc3BvbnNlEi0KB3Byb2R1Y3QYASABKAsyHC50YW5rLmNhdGFsb2cudjEuUHJvZHVjdENhcmQijwEKCVBvcnRmb2xpbxIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJEgwKBG5vdGUYAyABKAkSFQoNcHJvZHVjdF9jb3VudBgEIAEoBRITCgt2YWx1ZV9jZW50cxgFIAEoAxIuCgpjcmVhdGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCIXChVMaXN0UG9ydGZvbGlvc1JlcXVlc3QiSAoWTGlzdFBvcnRmb2xpb3NSZXNwb25zZRIuCgpwb3J0Zm9saW9zGAEgAygLMhoudGFuay5jYXRhbG9nLnYxLlBvcnRmb2xpbyI0ChZDcmVhdGVQb3J0Zm9saW9SZXF1ZXN0EgwKBG5hbWUYASABKAkSDAoEbm90ZRgCIAEoCSJIChdDcmVhdGVQb3J0Zm9saW9SZXNwb25zZRItCglwb3J0Zm9saW8YASABKAsyGi50YW5rLmNhdGFsb2cudjEuUG9ydGZvbGlvIkAKFlJlbmFtZVBvcnRmb2xpb1JlcXVlc3QSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIMCgRub3RlGAMgASgJIkgKF1JlbmFtZVBvcnRmb2xpb1Jlc3BvbnNlEi0KCXBvcnRmb2xpbxgBIAEoCzIaLnRhbmsuY2F0YWxvZy52MS5Qb3J0Zm9saW8iJAoWRGVsZXRlUG9ydGZvbGlvUmVxdWVzdBIKCgJpZBgBIAEoCSIZChdEZWxldGVQb3J0Zm9saW9SZXNwb25zZSJaChpTZXRQb3J0Zm9saW9Qcm9kdWN0UmVxdWVzdBIUCgxwb3J0Zm9saW9faWQYASABKAkSFAoMd29ya3NwYWNlX2lkGAIgASgJEhAKCGluY2x1ZGVkGAMgASgIIkwKG1NldFBvcnRmb2xpb1Byb2R1Y3RSZXNwb25zZRItCglwb3J0Zm9saW8YASABKAsyGi50YW5rLmNhdGFsb2cudjEuUG9ydGZvbGlvIjoKGFJlY29yZFByb2R1Y3RWaWV3UmVxdWVzdBIMCgRzbHVnGAEgASgJEhAKCHJlZmVycmVyGAIgASgJIi8KGVJlY29yZFByb2R1Y3RWaWV3UmVzcG9uc2USEgoKdmlld19jb3VudBgBIAEoAyJdCgRTdGF0EgsKA2tleRgBIAEoCRINCgVsYWJlbBgCIAEoCRINCgV2YWx1ZRgDIAEoARIMCgR1bml0GAQgASgJEg4KBnNhbXBsZRgFIAEoAxIMCgRub3RlGAYgASgJIjMKBVRhbGx5EgwKBG5hbWUYASABKAkSDQoFY291bnQYAiABKAMSDQoFc2hhcmUYAyABKAEiEwoRQm9hcmRTdGF0c1JlcXVlc3QiMQoTQm9hcmRIaXN0b3J5UmVxdWVzdBIMCgRrZXlzGAEgAygJEgwKBGRheXMYAiABKAUiPwoUQm9hcmRIaXN0b3J5UmVzcG9uc2USJwoGc2VyaWVzGAEgAygLMhcudGFuay5jYXRhbG9nLnYxLlNlcmllcyI9CgZTZXJpZXMSCwoDa2V5GAEgASgJEiYKBnBvaW50cxgCIAMoCzIWLnRhbmsuY2F0YWxvZy52MS5Qb2ludCI+CgVQb2ludBImCgJhdBgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASDQoFdmFsdWUYAiABKAEikwMKEkJvYXJkU3RhdHNSZXNwb25zZRIvCgtjb21wdXRlZF9hdBgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASJwoIaGVhZGxpbmUYAiADKAsyFS50YW5rLmNhdGFsb2cudjEuU3RhdBIiCgNhbGwYAyADKAsyFS50YW5rLmNhdGFsb2cudjEuU3RhdBIqCgppbmR1c3RyaWVzGAQgAygLMhYudGFuay5jYXRhbG9nLnYxLlRhbGx5EiYKBnN0YWdlcxgFIAMoCzIWLnRhbmsuY2F0YWxvZy52MS5UYWxseRInCgdzb3VyY2VzGAYgAygLMhYudGFuay5jYXRhbG9nLnYxLlRhbGx5EiYKBnJlY2VudBgHIAMoCzIWLnRhbmsuY2F0YWxvZy52MS5FdmVudBItCgxtb3N0X3Zpc2l0ZWQYCCADKAsyFy50YW5rLmNhdGFsb2cudjEuUmFua2VkEisKBXRvb2xzGAkgAygLMhwudGFuay5jYXRhbG9nLnYxLlRvb2xNZW50aW9uIo0BCgtUb29sTWVudGlvbhIMCgRuYW1lGAEgASgJEhAKCHByb2R1Y3RzGAIgASgDEg8KB2NvdmVyZWQYAyABKAgSEAoIY2F0ZWdvcnkYBCABKAkSDAoEc2x1ZxgFIAEoCRIPCgdwcm9kdWN0GAYgASgJEg0KBXN0YWdlGAcgASgFEg0KBXRvdGFsGAggASgFIl0KBUV2ZW50Eg8KB3Byb2R1Y3QYASABKAkSDAoEc2x1ZxgCIAEoCRINCgVzdGFnZRgDIAEoCRImCgJhdBgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiSAoGUmFua2VkEg8KB3Byb2R1Y3QYASABKAkSDAoEc2x1ZxgCIAEoCRINCgV2YWx1ZRgDIAEoAxIQCghpbmR1c3RyeRgEIAEoCSq/AQoLUHJvZHVjdFNvcnQSHAoYUFJPRFVDVF9TT1JUX1VOU1BFQ0lGSUVEEAASFwoTUFJPRFVDVF9TT1JUX05FV0VTVBABEh8KG1BST0RVQ1RfU09SVF9GVVJUSEVTVF9BTE9ORxACEhkKFVBST0RVQ1RfU09SVF9DSEVBUEVTVBADEh8KG1BST0RVQ1RfU09SVF9NT1NUX0VYUEVOU0lWRRAEEhwKGFBST0RVQ1RfU09SVF9NT1NUX1ZJRVdFRBAFMvEHCg5DYXRhbG9nU2VydmljZRJVCgpCb2FyZFN0YXRzEiIudGFuay5jYXRhbG9nLnYxLkJvYXJkU3RhdHNSZXF1ZXN0GiMudGFuay5jYXRhbG9nLnYxLkJvYXJkU3RhdHNSZXNwb25zZRJbCgxCb2FyZEhpc3RvcnkSJC50YW5rLmNhdGFsb2cudjEuQm9hcmRIaXN0b3J5UmVxdWVzdBolLnRhbmsuY2F0YWxvZy52MS5Cb2FyZEhpc3RvcnlSZXNwb25zZRJbCgxMaXN0UHJvZHVjdHMSJC50YW5rLmNhdGFsb2cudjEuTGlzdFByb2R1Y3RzUmVxdWVzdBolLnRhbmsuY2F0YWxvZy52MS5MaXN0UHJvZHVjdHNSZXNwb25zZRJqChFSZWNvcmRQcm9kdWN0VmlldxIpLnRhbmsuY2F0YWxvZy52MS5SZWNvcmRQcm9kdWN0Vmlld1JlcXVlc3QaKi50YW5rLmNhdGFsb2cudjEuUmVjb3JkUHJvZHVjdFZpZXdSZXNwb25zZRJbCgxXYXRjaFByb2R1Y3QSJC50YW5rLmNhdGFsb2cudjEuV2F0Y2hQcm9kdWN0UmVxdWVzdBolLnRhbmsuY2F0YWxvZy52MS5XYXRjaFByb2R1Y3RSZXNwb25zZRJhCg5MaXN0UG9ydGZvbGlvcxImLnRhbmsuY2F0YWxvZy52MS5MaXN0UG9ydGZvbGlvc1JlcXVlc3QaJy50YW5rLmNhdGFsb2cudjEuTGlzdFBvcnRmb2xpb3NSZXNwb25zZRJkCg9DcmVhdGVQb3J0Zm9saW8SJy50YW5rLmNhdGFsb2cudjEuQ3JlYXRlUG9ydGZvbGlvUmVxdWVzdBooLnRhbmsuY2F0YWxvZy52MS5DcmVhdGVQb3J0Zm9saW9SZXNwb25zZRJkCg9SZW5hbWVQb3J0Zm9saW8SJy50YW5rLmNhdGFsb2cudjEuUmVuYW1lUG9ydGZvbGlvUmVxdWVzdBooLnRhbmsuY2F0YWxvZy52MS5SZW5hbWVQb3J0Zm9saW9SZXNwb25zZRJkCg9EZWxldGVQb3J0Zm9saW8SJy50YW5rLmNhdGFsb2cudjEuRGVsZXRlUG9ydGZvbGlvUmVxdWVzdBooLnRhbmsuY2F0YWxvZy52MS5EZWxldGVQb3J0Zm9saW9SZXNwb25zZRJwChNTZXRQb3J0Zm9saW9Qcm9kdWN0EisudGFuay5jYXRhbG9nLnYxLlNldFBvcnRmb2xpb1Byb2R1Y3RSZXF1ZXN0GiwudGFuay5jYXRhbG9nLnYxLlNldFBvcnRmb2xpb1Byb2R1Y3RSZXNwb25zZULYAQoTY29tLnRhbmsuY2F0YWxvZy52MUIMQ2F0YWxvZ1Byb3RvUAFaVWdpdGh1Yi5jb20vdGFjdGljYWwtYWdlbnQtbmV1cmFsLWtub3dsZWRnZS9jb250cmFjdHMvZ2VuL2dvL3RhbmsvY2F0YWxvZy92MTtjYXRhbG9ndjGiAgNUQ1iqAg9UYW5rLkNhdGFsb2cuVjHKAg9UYW5rXENhdGFsb2dcVjHiAhtUYW5rXENhdGFsb2dcVjFcR1BCTWV0YWRhdGHqAhFUYW5rOjpDYXRhbG9nOjpWMWIGcHJvdG8z", [file_google_protobuf_timestamp]);
+  fileDesc("Ch10YW5rL2NhdGFsb2cvdjEvY2F0YWxvZy5wcm90bxIPdGFuay5jYXRhbG9nLnYxIusCCgtQcm9kdWN0Q2FyZBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSDAoEc2x1ZxgCIAEoCRIMCgRuYW1lGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhAKCGluZHVzdHJ5GAUgASgJEg0KBWJ1eWVyGAYgASgJEhMKC3ByaWNlX2NlbnRzGAcgASgDEhUKDWFnZW50X21pbnV0ZXMYCCABKAMSFgoOd29ya19kZWxpdmVyZWQYCSABKAUSFAoMYWdlbnRfYWN0aXZlGAogASgIEi4KCmNyZWF0ZWRfYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjIKDmxhc3Rfd29ya2VkX2F0GAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIRCglhdmFpbGFibGUYDSABKAgSDwoHd2F0Y2hlZBgOIAEoCBISCgp2aWV3X2NvdW50GA8gASgDIq0BChNMaXN0UHJvZHVjdHNSZXF1ZXN0EioKBHNvcnQYASABKA4yHC50YW5rLmNhdGFsb2cudjEuUHJvZHVjdFNvcnQSEAoIaW5kdXN0cnkYAiABKAkSDQoFcXVlcnkYAyABKAkSFAoMd2F0Y2hlZF9vbmx5GAQgASgIEhQKDHBvcnRmb2xpb19pZBgFIAEoCRIOCgZjdXJzb3IYBiABKAkSDQoFbGltaXQYByABKAUifgoUTGlzdFByb2R1Y3RzUmVzcG9uc2USLgoIcHJvZHVjdHMYASADKAsyHC50YW5rLmNhdGFsb2cudjEuUHJvZHVjdENhcmQSEwoLbmV4dF9jdXJzb3IYAiABKAkSDQoFdG90YWwYAyABKAUSEgoKaW5kdXN0cmllcxgEIAMoCSI8ChNXYXRjaFByb2R1Y3RSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRIPCgd3YXRjaGVkGAIgASgIIkUKFFdhdGNoUHJvZHVjdFJlc3BvbnNlEi0KB3Byb2R1Y3QYASABKAsyHC50YW5rLmNhdGFsb2cudjEuUHJvZHVjdENhcmQijwEKCVBvcnRmb2xpbxIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJEgwKBG5vdGUYAyABKAkSFQoNcHJvZHVjdF9jb3VudBgEIAEoBRITCgt2YWx1ZV9jZW50cxgFIAEoAxIuCgpjcmVhdGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCIXChVMaXN0UG9ydGZvbGlvc1JlcXVlc3QiSAoWTGlzdFBvcnRmb2xpb3NSZXNwb25zZRIuCgpwb3J0Zm9saW9zGAEgAygLMhoudGFuay5jYXRhbG9nLnYxLlBvcnRmb2xpbyI0ChZDcmVhdGVQb3J0Zm9saW9SZXF1ZXN0EgwKBG5hbWUYASABKAkSDAoEbm90ZRgCIAEoCSJIChdDcmVhdGVQb3J0Zm9saW9SZXNwb25zZRItCglwb3J0Zm9saW8YASABKAsyGi50YW5rLmNhdGFsb2cudjEuUG9ydGZvbGlvIkAKFlJlbmFtZVBvcnRmb2xpb1JlcXVlc3QSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIMCgRub3RlGAMgASgJIkgKF1JlbmFtZVBvcnRmb2xpb1Jlc3BvbnNlEi0KCXBvcnRmb2xpbxgBIAEoCzIaLnRhbmsuY2F0YWxvZy52MS5Qb3J0Zm9saW8iJAoWRGVsZXRlUG9ydGZvbGlvUmVxdWVzdBIKCgJpZBgBIAEoCSIZChdEZWxldGVQb3J0Zm9saW9SZXNwb25zZSJaChpTZXRQb3J0Zm9saW9Qcm9kdWN0UmVxdWVzdBIUCgxwb3J0Zm9saW9faWQYASABKAkSFAoMd29ya3NwYWNlX2lkGAIgASgJEhAKCGluY2x1ZGVkGAMgASgIIkwKG1NldFBvcnRmb2xpb1Byb2R1Y3RSZXNwb25zZRItCglwb3J0Zm9saW8YASABKAsyGi50YW5rLmNhdGFsb2cudjEuUG9ydGZvbGlvIjoKGFJlY29yZFByb2R1Y3RWaWV3UmVxdWVzdBIMCgRzbHVnGAEgASgJEhAKCHJlZmVycmVyGAIgASgJIi8KGVJlY29yZFByb2R1Y3RWaWV3UmVzcG9uc2USEgoKdmlld19jb3VudBgBIAEoAyJdCgRTdGF0EgsKA2tleRgBIAEoCRINCgVsYWJlbBgCIAEoCRINCgV2YWx1ZRgDIAEoARIMCgR1bml0GAQgASgJEg4KBnNhbXBsZRgFIAEoAxIMCgRub3RlGAYgASgJIjMKBVRhbGx5EgwKBG5hbWUYASABKAkSDQoFY291bnQYAiABKAMSDQoFc2hhcmUYAyABKAEiEwoRQm9hcmRTdGF0c1JlcXVlc3QiMQoTQm9hcmRIaXN0b3J5UmVxdWVzdBIMCgRrZXlzGAEgAygJEgwKBGRheXMYAiABKAUiPwoUQm9hcmRIaXN0b3J5UmVzcG9uc2USJwoGc2VyaWVzGAEgAygLMhcudGFuay5jYXRhbG9nLnYxLlNlcmllcyI9CgZTZXJpZXMSCwoDa2V5GAEgASgJEiYKBnBvaW50cxgCIAMoCzIWLnRhbmsuY2F0YWxvZy52MS5Qb2ludCI+CgVQb2ludBImCgJhdBgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASDQoFdmFsdWUYAiABKAEioAQKEkJvYXJkU3RhdHNSZXNwb25zZRIvCgtjb21wdXRlZF9hdBgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASJwoIaGVhZGxpbmUYAiADKAsyFS50YW5rLmNhdGFsb2cudjEuU3RhdBIiCgNhbGwYAyADKAsyFS50YW5rLmNhdGFsb2cudjEuU3RhdBIqCgppbmR1c3RyaWVzGAQgAygLMhYudGFuay5jYXRhbG9nLnYxLlRhbGx5EiYKBnN0YWdlcxgFIAMoCzIWLnRhbmsuY2F0YWxvZy52MS5UYWxseRInCgdzb3VyY2VzGAYgAygLMhYudGFuay5jYXRhbG9nLnYxLlRhbGx5EiYKBnJlY2VudBgHIAMoCzIWLnRhbmsuY2F0YWxvZy52MS5FdmVudBItCgxtb3N0X3Zpc2l0ZWQYCCADKAsyFy50YW5rLmNhdGFsb2cudjEuUmFua2VkEisKBXRvb2xzGAkgAygLMhwudGFuay5jYXRhbG9nLnYxLlRvb2xNZW50aW9uEioKBnByaWNlcxgKIAMoCzIaLnRhbmsuY2F0YWxvZy52MS5QcmljZUJhbmQSLgoMZHJvcHBlZF9saXN0GAsgAygLMhgudGFuay5jYXRhbG9nLnYxLkRyb3BwZWQSLwoLdmVuZG9yX2dhcHMYDCADKAsyGi50YW5rLmNhdGFsb2cudjEuVmVuZG9yR2FwImYKCVByaWNlQmFuZBIQCghpbmR1c3RyeRgBIAEoCRIQCghwcm9kdWN0cxgCIAEoBRISCgptZWRpYW5fdXNkGAMgASgBEg8KB2xvd191c2QYBCABKAESEAoIaGlnaF91c2QYBSABKAEicgoHRHJvcHBlZBIPCgdwcm9kdWN0GAEgASgJEgwKBHNsdWcYAiABKAkSEAoIaW5kdXN0cnkYAyABKAkSDgoGcmVhc29uGAQgASgJEiYKAmF0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCJPCglWZW5kb3JHYXASDAoEdG9vbBgBIAEoCRILCgNnYXAYAiABKAkSFAoMZnJvbV9wcm9kdWN0GAMgASgJEhEKCWZyb21fc2x1ZxgEIAEoCSKNAQoLVG9vbE1lbnRpb24SDAoEbmFtZRgBIAEoCRIQCghwcm9kdWN0cxgCIAEoAxIPCgdjb3ZlcmVkGAMgASgIEhAKCGNhdGVnb3J5GAQgASgJEgwKBHNsdWcYBSABKAkSDwoHcHJvZHVjdBgGIAEoCRINCgVzdGFnZRgHIAEoBRINCgV0b3RhbBgIIAEoBSJdCgVFdmVudBIPCgdwcm9kdWN0GAEgASgJEgwKBHNsdWcYAiABKAkSDQoFc3RhZ2UYAyABKAkSJgoCYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIkgKBlJhbmtlZBIPCgdwcm9kdWN0GAEgASgJEgwKBHNsdWcYAiABKAkSDQoFdmFsdWUYAyABKAMSEAoIaW5kdXN0cnkYBCABKAkqvwEKC1Byb2R1Y3RTb3J0EhwKGFBST0RVQ1RfU09SVF9VTlNQRUNJRklFRBAAEhcKE1BST0RVQ1RfU09SVF9ORVdFU1QQARIfChtQUk9EVUNUX1NPUlRfRlVSVEhFU1RfQUxPTkcQAhIZChVQUk9EVUNUX1NPUlRfQ0hFQVBFU1QQAxIfChtQUk9EVUNUX1NPUlRfTU9TVF9FWFBFTlNJVkUQBBIcChhQUk9EVUNUX1NPUlRfTU9TVF9WSUVXRUQQBTLxBwoOQ2F0YWxvZ1NlcnZpY2USVQoKQm9hcmRTdGF0cxIiLnRhbmsuY2F0YWxvZy52MS5Cb2FyZFN0YXRzUmVxdWVzdBojLnRhbmsuY2F0YWxvZy52MS5Cb2FyZFN0YXRzUmVzcG9uc2USWwoMQm9hcmRIaXN0b3J5EiQudGFuay5jYXRhbG9nLnYxLkJvYXJkSGlzdG9yeVJlcXVlc3QaJS50YW5rLmNhdGFsb2cudjEuQm9hcmRIaXN0b3J5UmVzcG9uc2USWwoMTGlzdFByb2R1Y3RzEiQudGFuay5jYXRhbG9nLnYxLkxpc3RQcm9kdWN0c1JlcXVlc3QaJS50YW5rLmNhdGFsb2cudjEuTGlzdFByb2R1Y3RzUmVzcG9uc2USagoRUmVjb3JkUHJvZHVjdFZpZXcSKS50YW5rLmNhdGFsb2cudjEuUmVjb3JkUHJvZHVjdFZpZXdSZXF1ZXN0GioudGFuay5jYXRhbG9nLnYxLlJlY29yZFByb2R1Y3RWaWV3UmVzcG9uc2USWwoMV2F0Y2hQcm9kdWN0EiQudGFuay5jYXRhbG9nLnYxLldhdGNoUHJvZHVjdFJlcXVlc3QaJS50YW5rLmNhdGFsb2cudjEuV2F0Y2hQcm9kdWN0UmVzcG9uc2USYQoOTGlzdFBvcnRmb2xpb3MSJi50YW5rLmNhdGFsb2cudjEuTGlzdFBvcnRmb2xpb3NSZXF1ZXN0GicudGFuay5jYXRhbG9nLnYxLkxpc3RQb3J0Zm9saW9zUmVzcG9uc2USZAoPQ3JlYXRlUG9ydGZvbGlvEicudGFuay5jYXRhbG9nLnYxLkNyZWF0ZVBvcnRmb2xpb1JlcXVlc3QaKC50YW5rLmNhdGFsb2cudjEuQ3JlYXRlUG9ydGZvbGlvUmVzcG9uc2USZAoPUmVuYW1lUG9ydGZvbGlvEicudGFuay5jYXRhbG9nLnYxLlJlbmFtZVBvcnRmb2xpb1JlcXVlc3QaKC50YW5rLmNhdGFsb2cudjEuUmVuYW1lUG9ydGZvbGlvUmVzcG9uc2USZAoPRGVsZXRlUG9ydGZvbGlvEicudGFuay5jYXRhbG9nLnYxLkRlbGV0ZVBvcnRmb2xpb1JlcXVlc3QaKC50YW5rLmNhdGFsb2cudjEuRGVsZXRlUG9ydGZvbGlvUmVzcG9uc2UScAoTU2V0UG9ydGZvbGlvUHJvZHVjdBIrLnRhbmsuY2F0YWxvZy52MS5TZXRQb3J0Zm9saW9Qcm9kdWN0UmVxdWVzdBosLnRhbmsuY2F0YWxvZy52MS5TZXRQb3J0Zm9saW9Qcm9kdWN0UmVzcG9uc2VC2AEKE2NvbS50YW5rLmNhdGFsb2cudjFCDENhdGFsb2dQcm90b1ABWlVnaXRodWIuY29tL3RhY3RpY2FsLWFnZW50LW5ldXJhbC1rbm93bGVkZ2UvY29udHJhY3RzL2dlbi9nby90YW5rL2NhdGFsb2cvdjE7Y2F0YWxvZ3YxogIDVENYqgIPVGFuay5DYXRhbG9nLlYxygIPVGFua1xDYXRhbG9nXFYx4gIbVGFua1xDYXRhbG9nXFYxXEdQQk1ldGFkYXRh6gIRVGFuazo6Q2F0YWxvZzo6VjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * ProductCard is a product as a list shows it. It carries what the card renders and
@@ -789,6 +789,27 @@ export type BoardStatsResponse = Message<"tank.catalog.v1.BoardStatsResponse"> &
    * @generated from field: repeated tank.catalog.v1.ToolMention tools = 9;
    */
   tools: ToolMention[];
+
+  /**
+   * what agents say software for each trade should cost
+   *
+   * @generated from field: repeated tank.catalog.v1.PriceBand prices = 10;
+   */
+  prices: PriceBand[];
+
+  /**
+   * ideas the board looked at and declined to build
+   *
+   * @generated from field: repeated tank.catalog.v1.Dropped dropped_list = 11;
+   */
+  droppedList: Dropped[];
+
+  /**
+   * what the agents say each named tool gets wrong
+   *
+   * @generated from field: repeated tank.catalog.v1.VendorGap vendor_gaps = 12;
+   */
+  vendorGaps: VendorGap[];
 };
 
 /**
@@ -797,6 +818,130 @@ export type BoardStatsResponse = Message<"tank.catalog.v1.BoardStatsResponse"> &
  */
 export const BoardStatsResponseSchema: GenMessage<BoardStatsResponse> = /*@__PURE__*/
   messageDesc(file_tank_catalog_v1_catalog, 25);
+
+/**
+ * PriceBand is what agents independently decided software for one trade should cost.
+ *
+ * The spread is the interesting half. Many agents priced many products in the same
+ * industry without consulting each other, so how far apart they land is a measurement
+ * of how much two AI agents disagree about the same question.
+ *
+ * @generated from message tank.catalog.v1.PriceBand
+ */
+export type PriceBand = Message<"tank.catalog.v1.PriceBand"> & {
+  /**
+   * @generated from field: string industry = 1;
+   */
+  industry: string;
+
+  /**
+   * how many agents priced something here
+   *
+   * @generated from field: int32 products = 2;
+   */
+  products: number;
+
+  /**
+   * dollars a month
+   *
+   * @generated from field: double median_usd = 3;
+   */
+  medianUsd: number;
+
+  /**
+   * @generated from field: double low_usd = 4;
+   */
+  lowUsd: number;
+
+  /**
+   * @generated from field: double high_usd = 5;
+   */
+  highUsd: number;
+};
+
+/**
+ * Describes the message tank.catalog.v1.PriceBand.
+ * Use `create(PriceBandSchema)` to create a new message.
+ */
+export const PriceBandSchema: GenMessage<PriceBand> = /*@__PURE__*/
+  messageDesc(file_tank_catalog_v1_catalog, 26);
+
+/**
+ * Dropped is a product the board stopped working on because its own research said to.
+ *
+ * @generated from message tank.catalog.v1.Dropped
+ */
+export type Dropped = Message<"tank.catalog.v1.Dropped"> & {
+  /**
+   * @generated from field: string product = 1;
+   */
+  product: string;
+
+  /**
+   * @generated from field: string slug = 2;
+   */
+  slug: string;
+
+  /**
+   * @generated from field: string industry = 3;
+   */
+  industry: string;
+
+  /**
+   * @generated from field: string reason = 4;
+   */
+  reason: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp at = 5;
+   */
+  at?: Timestamp;
+};
+
+/**
+ * Describes the message tank.catalog.v1.Dropped.
+ * Use `create(DroppedSchema)` to create a new message.
+ */
+export const DroppedSchema: GenMessage<Dropped> = /*@__PURE__*/
+  messageDesc(file_tank_catalog_v1_catalog, 27);
+
+/**
+ * VendorGap is one thing the agents say a named tool gets wrong, in their own words.
+ *
+ * @generated from message tank.catalog.v1.VendorGap
+ */
+export type VendorGap = Message<"tank.catalog.v1.VendorGap"> & {
+  /**
+   * the tool it is about
+   *
+   * @generated from field: string tool = 1;
+   */
+  tool: string;
+
+  /**
+   * @generated from field: string gap = 2;
+   */
+  gap: string;
+
+  /**
+   * the product whose research found it
+   *
+   * @generated from field: string from_product = 3;
+   */
+  fromProduct: string;
+
+  /**
+   * @generated from field: string from_slug = 4;
+   */
+  fromSlug: string;
+};
+
+/**
+ * Describes the message tank.catalog.v1.VendorGap.
+ * Use `create(VendorGapSchema)` to create a new message.
+ */
+export const VendorGapSchema: GenMessage<VendorGap> = /*@__PURE__*/
+  messageDesc(file_tank_catalog_v1_catalog, 28);
 
 /**
  * ToolMention is a third-party tool the agents named while planning businesses, how
@@ -875,7 +1020,7 @@ export type ToolMention = Message<"tank.catalog.v1.ToolMention"> & {
  * Use `create(ToolMentionSchema)` to create a new message.
  */
 export const ToolMentionSchema: GenMessage<ToolMention> = /*@__PURE__*/
-  messageDesc(file_tank_catalog_v1_catalog, 26);
+  messageDesc(file_tank_catalog_v1_catalog, 29);
 
 /**
  * Event is one thing an agent finished, for a page that wants to look alive rather
@@ -917,7 +1062,7 @@ export type Event = Message<"tank.catalog.v1.Event"> & {
  * Use `create(EventSchema)` to create a new message.
  */
 export const EventSchema: GenMessage<Event> = /*@__PURE__*/
-  messageDesc(file_tank_catalog_v1_catalog, 27);
+  messageDesc(file_tank_catalog_v1_catalog, 30);
 
 /**
  * Ranked is a product and a number, for a leaderboard.
@@ -951,7 +1096,7 @@ export type Ranked = Message<"tank.catalog.v1.Ranked"> & {
  * Use `create(RankedSchema)` to create a new message.
  */
 export const RankedSchema: GenMessage<Ranked> = /*@__PURE__*/
-  messageDesc(file_tank_catalog_v1_catalog, 28);
+  messageDesc(file_tank_catalog_v1_catalog, 31);
 
 /**
  * The orders a person actually asks for, named after what they mean rather than the

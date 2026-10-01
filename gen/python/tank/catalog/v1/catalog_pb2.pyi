@@ -257,7 +257,7 @@ class Point(_message.Message):
     def __init__(self, at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., value: _Optional[float] = ...) -> None: ...
 
 class BoardStatsResponse(_message.Message):
-    __slots__ = ("computed_at", "headline", "all", "industries", "stages", "sources", "recent", "most_visited", "tools")
+    __slots__ = ("computed_at", "headline", "all", "industries", "stages", "sources", "recent", "most_visited", "tools", "prices", "dropped_list", "vendor_gaps")
     COMPUTED_AT_FIELD_NUMBER: _ClassVar[int]
     HEADLINE_FIELD_NUMBER: _ClassVar[int]
     ALL_FIELD_NUMBER: _ClassVar[int]
@@ -267,6 +267,9 @@ class BoardStatsResponse(_message.Message):
     RECENT_FIELD_NUMBER: _ClassVar[int]
     MOST_VISITED_FIELD_NUMBER: _ClassVar[int]
     TOOLS_FIELD_NUMBER: _ClassVar[int]
+    PRICES_FIELD_NUMBER: _ClassVar[int]
+    DROPPED_LIST_FIELD_NUMBER: _ClassVar[int]
+    VENDOR_GAPS_FIELD_NUMBER: _ClassVar[int]
     computed_at: _timestamp_pb2.Timestamp
     headline: _containers.RepeatedCompositeFieldContainer[Stat]
     all: _containers.RepeatedCompositeFieldContainer[Stat]
@@ -276,7 +279,50 @@ class BoardStatsResponse(_message.Message):
     recent: _containers.RepeatedCompositeFieldContainer[Event]
     most_visited: _containers.RepeatedCompositeFieldContainer[Ranked]
     tools: _containers.RepeatedCompositeFieldContainer[ToolMention]
-    def __init__(self, computed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., headline: _Optional[_Iterable[_Union[Stat, _Mapping]]] = ..., all: _Optional[_Iterable[_Union[Stat, _Mapping]]] = ..., industries: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., stages: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., recent: _Optional[_Iterable[_Union[Event, _Mapping]]] = ..., most_visited: _Optional[_Iterable[_Union[Ranked, _Mapping]]] = ..., tools: _Optional[_Iterable[_Union[ToolMention, _Mapping]]] = ...) -> None: ...
+    prices: _containers.RepeatedCompositeFieldContainer[PriceBand]
+    dropped_list: _containers.RepeatedCompositeFieldContainer[Dropped]
+    vendor_gaps: _containers.RepeatedCompositeFieldContainer[VendorGap]
+    def __init__(self, computed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., headline: _Optional[_Iterable[_Union[Stat, _Mapping]]] = ..., all: _Optional[_Iterable[_Union[Stat, _Mapping]]] = ..., industries: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., stages: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., recent: _Optional[_Iterable[_Union[Event, _Mapping]]] = ..., most_visited: _Optional[_Iterable[_Union[Ranked, _Mapping]]] = ..., tools: _Optional[_Iterable[_Union[ToolMention, _Mapping]]] = ..., prices: _Optional[_Iterable[_Union[PriceBand, _Mapping]]] = ..., dropped_list: _Optional[_Iterable[_Union[Dropped, _Mapping]]] = ..., vendor_gaps: _Optional[_Iterable[_Union[VendorGap, _Mapping]]] = ...) -> None: ...
+
+class PriceBand(_message.Message):
+    __slots__ = ("industry", "products", "median_usd", "low_usd", "high_usd")
+    INDUSTRY_FIELD_NUMBER: _ClassVar[int]
+    PRODUCTS_FIELD_NUMBER: _ClassVar[int]
+    MEDIAN_USD_FIELD_NUMBER: _ClassVar[int]
+    LOW_USD_FIELD_NUMBER: _ClassVar[int]
+    HIGH_USD_FIELD_NUMBER: _ClassVar[int]
+    industry: str
+    products: int
+    median_usd: float
+    low_usd: float
+    high_usd: float
+    def __init__(self, industry: _Optional[str] = ..., products: _Optional[int] = ..., median_usd: _Optional[float] = ..., low_usd: _Optional[float] = ..., high_usd: _Optional[float] = ...) -> None: ...
+
+class Dropped(_message.Message):
+    __slots__ = ("product", "slug", "industry", "reason", "at")
+    PRODUCT_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    INDUSTRY_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    product: str
+    slug: str
+    industry: str
+    reason: str
+    at: _timestamp_pb2.Timestamp
+    def __init__(self, product: _Optional[str] = ..., slug: _Optional[str] = ..., industry: _Optional[str] = ..., reason: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class VendorGap(_message.Message):
+    __slots__ = ("tool", "gap", "from_product", "from_slug")
+    TOOL_FIELD_NUMBER: _ClassVar[int]
+    GAP_FIELD_NUMBER: _ClassVar[int]
+    FROM_PRODUCT_FIELD_NUMBER: _ClassVar[int]
+    FROM_SLUG_FIELD_NUMBER: _ClassVar[int]
+    tool: str
+    gap: str
+    from_product: str
+    from_slug: str
+    def __init__(self, tool: _Optional[str] = ..., gap: _Optional[str] = ..., from_product: _Optional[str] = ..., from_slug: _Optional[str] = ...) -> None: ...
 
 class ToolMention(_message.Message):
     __slots__ = ("name", "products", "covered", "category", "slug", "product", "stage", "total")
