@@ -156,6 +156,22 @@ message BoardStatsResponse {
   repeated Tally sources = 6;       // where visits came from
   repeated Event recent = 7;        // the last few things that happened, newest first
   repeated Ranked most_visited = 8; // products people actually open
+  repeated ToolMention tools = 9;   // software the agents name, and whether TANK does that job
+}
+
+// ToolMention is a third-party tool the agents named while planning businesses, how
+// many of those businesses named it, and whether a TANK workspace already does that
+// job today.
+//
+// The third field is the point. The first two say what software a business is assumed
+// to run on; the third says how much of that assumption TANK already answers. Only
+// what ships today is marked covered — a roadmap in this column would make the whole
+// page an advertisement, and the page is only worth anything if it is not one.
+message ToolMention {
+  string name = 1;
+  int64 products = 2;      // distinct products whose agents named it
+  bool covered = 3;        // a TANK workspace does this job today
+  string category = 4;     // "where the team talks", "accounting", …
 }
 
 // Event is one thing an agent finished, for a page that wants to look alive rather
