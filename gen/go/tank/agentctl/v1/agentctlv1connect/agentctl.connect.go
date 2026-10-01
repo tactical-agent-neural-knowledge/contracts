@@ -121,6 +121,9 @@ const (
 	// ControlServiceCreateProductRepoProcedure is the fully-qualified name of the ControlService's
 	// CreateProductRepo RPC.
 	ControlServiceCreateProductRepoProcedure = "/tank.agentctl.v1.ControlService/CreateProductRepo"
+	// ControlServiceSetProductReplicasProcedure is the fully-qualified name of the ControlService's
+	// SetProductReplicas RPC.
+	ControlServiceSetProductReplicasProcedure = "/tank.agentctl.v1.ControlService/SetProductReplicas"
 )
 
 // RunnerServiceClient is a client for the tank.agentctl.v1.RunnerService service.
@@ -782,6 +785,10 @@ type ControlServiceClient interface {
 	// The control plane does it because it holds the GitHub App; api asks at product
 	// birth. Idempotent: asking twice for the same product returns the same repo.
 	CreateProductRepo(context.Context, *connect.Request[v1.CreateProductRepoRequest]) (*connect.Response[v1.CreateProductRepoResponse], error)
+	// Wakes a product (replicas 1) or puts it to sleep (replicas 0). A product is
+	// asleep by default and a new image never wakes it: waking is a decision — a
+	// preview, a sale — made here, and recorded in GitOps like everything else.
+	SetProductReplicas(context.Context, *connect.Request[v1.SetProductReplicasRequest]) (*connect.Response[v1.SetProductReplicasResponse], error)
 }
 
 // NewControlServiceClient constructs a client for the tank.agentctl.v1.ControlService service. By
@@ -843,19 +850,26 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("CreateProductRepo")),
 			connect.WithClientOptions(opts...),
 		),
+		setProductReplicas: connect.NewClient[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse](
+			httpClient,
+			baseURL+ControlServiceSetProductReplicasProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("SetProductReplicas")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // controlServiceClient implements ControlServiceClient.
 type controlServiceClient struct {
-	startRun          *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
-	getRun            *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
-	listRuns          *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
-	decideGate        *connect.Client[v1.DecideGateRequest, v1.DecideGateResponse]
-	steerRun          *connect.Client[v1.SteerRunRequest, v1.SteerRunResponse]
-	cancelRun         *connect.Client[v1.CancelRunRequest, v1.CancelRunResponse]
-	listRunEvents     *connect.Client[v1.ListRunEventsRequest, v1.ListRunEventsResponse]
-	createProductRepo *connect.Client[v1.CreateProductRepoRequest, v1.CreateProductRepoResponse]
+	startRun           *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	getRun             *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	listRuns           *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
+	decideGate         *connect.Client[v1.DecideGateRequest, v1.DecideGateResponse]
+	steerRun           *connect.Client[v1.SteerRunRequest, v1.SteerRunResponse]
+	cancelRun          *connect.Client[v1.CancelRunRequest, v1.CancelRunResponse]
+	listRunEvents      *connect.Client[v1.ListRunEventsRequest, v1.ListRunEventsResponse]
+	createProductRepo  *connect.Client[v1.CreateProductRepoRequest, v1.CreateProductRepoResponse]
+	setProductReplicas *connect.Client[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse]
 }
 
 // StartRun calls tank.agentctl.v1.ControlService.StartRun.
@@ -898,6 +912,11 @@ func (c *controlServiceClient) CreateProductRepo(ctx context.Context, req *conne
 	return c.createProductRepo.CallUnary(ctx, req)
 }
 
+// SetProductReplicas calls tank.agentctl.v1.ControlService.SetProductReplicas.
+func (c *controlServiceClient) SetProductReplicas(ctx context.Context, req *connect.Request[v1.SetProductReplicasRequest]) (*connect.Response[v1.SetProductReplicasResponse], error) {
+	return c.setProductReplicas.CallUnary(ctx, req)
+}
+
 // ControlServiceHandler is an implementation of the tank.agentctl.v1.ControlService service.
 type ControlServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
@@ -911,6 +930,10 @@ type ControlServiceHandler interface {
 	// The control plane does it because it holds the GitHub App; api asks at product
 	// birth. Idempotent: asking twice for the same product returns the same repo.
 	CreateProductRepo(context.Context, *connect.Request[v1.CreateProductRepoRequest]) (*connect.Response[v1.CreateProductRepoResponse], error)
+	// Wakes a product (replicas 1) or puts it to sleep (replicas 0). A product is
+	// asleep by default and a new image never wakes it: waking is a decision — a
+	// preview, a sale — made here, and recorded in GitOps like everything else.
+	SetProductReplicas(context.Context, *connect.Request[v1.SetProductReplicasRequest]) (*connect.Response[v1.SetProductReplicasResponse], error)
 }
 
 // NewControlServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -968,6 +991,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("CreateProductRepo")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceSetProductReplicasHandler := connect.NewUnaryHandler(
+		ControlServiceSetProductReplicasProcedure,
+		svc.SetProductReplicas,
+		connect.WithSchema(controlServiceMethods.ByName("SetProductReplicas")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agentctl.v1.ControlService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ControlServiceStartRunProcedure:
@@ -986,6 +1015,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceListRunEventsHandler.ServeHTTP(w, r)
 		case ControlServiceCreateProductRepoProcedure:
 			controlServiceCreateProductRepoHandler.ServeHTTP(w, r)
+		case ControlServiceSetProductReplicasProcedure:
+			controlServiceSetProductReplicasHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -1025,4 +1056,8 @@ func (UnimplementedControlServiceHandler) ListRunEvents(context.Context, *connec
 
 func (UnimplementedControlServiceHandler) CreateProductRepo(context.Context, *connect.Request[v1.CreateProductRepoRequest]) (*connect.Response[v1.CreateProductRepoResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.CreateProductRepo is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) SetProductReplicas(context.Context, *connect.Request[v1.SetProductReplicasRequest]) (*connect.Response[v1.SetProductReplicasResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.SetProductReplicas is not implemented"))
 }

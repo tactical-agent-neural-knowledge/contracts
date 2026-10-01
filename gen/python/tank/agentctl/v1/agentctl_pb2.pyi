@@ -787,6 +787,22 @@ class ListRunEventsResponse(_message.Message):
     has_more: bool
     def __init__(self, events: _Optional[_Iterable[_Union[RunEvent, _Mapping]]] = ..., has_more: bool = ...) -> None: ...
 
+class SetProductReplicasRequest(_message.Message):
+    __slots__ = ("slug", "replicas", "reason")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    REPLICAS_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    replicas: int
+    reason: str
+    def __init__(self, slug: _Optional[str] = ..., replicas: _Optional[int] = ..., reason: _Optional[str] = ...) -> None: ...
+
+class SetProductReplicasResponse(_message.Message):
+    __slots__ = ("url",)
+    URL_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    def __init__(self, url: _Optional[str] = ...) -> None: ...
+
 class CreateProductRepoRequest(_message.Message):
     __slots__ = ("workspace_id", "slug", "description")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]

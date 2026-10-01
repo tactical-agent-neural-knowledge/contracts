@@ -543,6 +543,19 @@ service ControlService {
   // The control plane does it because it holds the GitHub App; api asks at product
   // birth. Idempotent: asking twice for the same product returns the same repo.
   rpc CreateProductRepo(CreateProductRepoRequest) returns (CreateProductRepoResponse);
+  // Wakes a product (replicas 1) or puts it to sleep (replicas 0). A product is
+  // asleep by default and a new image never wakes it: waking is a decision — a
+  // preview, a sale — made here, and recorded in GitOps like everything else.
+  rpc SetProductReplicas(SetProductReplicasRequest) returns (SetProductReplicasResponse);
+}
+
+message SetProductReplicasRequest {
+  string slug = 1;
+  int32 replicas = 2;   // 0 or 1; the database lives in the pod, so never more
+  string reason = 3;    // "preview", "sale", "idle" — goes in the commit message
+}
+message SetProductReplicasResponse {
+  string url = 1;       // https://<slug>.tank.chat
 }
 
 message CreateProductRepoRequest {
