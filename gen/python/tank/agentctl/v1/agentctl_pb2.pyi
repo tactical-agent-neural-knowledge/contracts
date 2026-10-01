@@ -786,3 +786,19 @@ class ListRunEventsResponse(_message.Message):
     events: _containers.RepeatedCompositeFieldContainer[RunEvent]
     has_more: bool
     def __init__(self, events: _Optional[_Iterable[_Union[RunEvent, _Mapping]]] = ..., has_more: bool = ...) -> None: ...
+
+class CreateProductRepoRequest(_message.Message):
+    __slots__ = ("workspace_id", "slug", "description")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    slug: str
+    description: str
+    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
+
+class CreateProductRepoResponse(_message.Message):
+    __slots__ = ("repo",)
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    def __init__(self, repo: _Optional[str] = ...) -> None: ...

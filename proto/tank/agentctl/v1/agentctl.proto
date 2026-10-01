@@ -539,4 +539,17 @@ service ControlService {
   rpc SteerRun(SteerRunRequest) returns (SteerRunResponse);
   rpc CancelRun(CancelRunRequest) returns (CancelRunResponse);
   rpc ListRunEvents(ListRunEventsRequest) returns (ListRunEventsResponse);
+  // Creates the repository a product's code lives in, from the product template.
+  // The control plane does it because it holds the GitHub App; api asks at product
+  // birth. Idempotent: asking twice for the same product returns the same repo.
+  rpc CreateProductRepo(CreateProductRepoRequest) returns (CreateProductRepoResponse);
+}
+
+message CreateProductRepoRequest {
+  string workspace_id = 1;  // the product
+  string slug = 2;          // becomes agenture-<slug>
+  string description = 3;   // the repo's description on GitHub: name and one line
+}
+message CreateProductRepoResponse {
+  string repo = 1;          // owner/name
 }
