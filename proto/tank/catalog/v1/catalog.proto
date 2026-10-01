@@ -127,7 +127,40 @@ message RecordProductViewResponse {
   int64 view_count = 1;                         // the total after this call
 }
 
+// A number worth putting on a page, with enough around it to be quoted honestly.
+message Stat {
+  string key = 1;
+  string label = 2;
+  double value = 3;
+  string unit = 4;          // "", "usd", "hours", "minutes", "products", "percent"
+  // How many observations it rests on. Published next to every figure: a percentage
+  // hiding a sample of twelve is how a data page stops being believed.
+  int64 sample = 5;
+  string note = 6;          // the method, in one line
+}
+
+// One row of a ranking — a vendor, an industry, a stack choice.
+message Tally {
+  string name = 1;
+  int64 count = 2;
+  double share = 3;         // 0..1 of the sample
+}
+
+message BoardStatsRequest {}
+message BoardStatsResponse {
+  google.protobuf.Timestamp computed_at = 1;
+  repeated Stat headline = 2;       // the figures worth leading with
+  repeated Stat all = 3;            // everything else
+  repeated Tally industries = 4;    // products by industry
+  repeated Tally stages = 5;        // which stages agents have completed
+  repeated Tally sources = 6;       // where visits came from
+}
+
 service CatalogService {
+  // Aggregate numbers about the board. Counts and sums only: nothing from inside a
+  // workspace, nothing that identifies anybody. Public, because the point is that
+  // other people can quote it.
+  rpc BoardStats(BoardStatsRequest) returns (BoardStatsResponse);
   // Anonymous.
   rpc ListProducts(ListProductsRequest) returns (ListProductsResponse);
   rpc RecordProductView(RecordProductViewRequest) returns (RecordProductViewResponse);

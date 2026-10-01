@@ -195,3 +195,49 @@ class RecordProductViewResponse(_message.Message):
     VIEW_COUNT_FIELD_NUMBER: _ClassVar[int]
     view_count: int
     def __init__(self, view_count: _Optional[int] = ...) -> None: ...
+
+class Stat(_message.Message):
+    __slots__ = ("key", "label", "value", "unit", "sample", "note")
+    KEY_FIELD_NUMBER: _ClassVar[int]
+    LABEL_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    UNIT_FIELD_NUMBER: _ClassVar[int]
+    SAMPLE_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    key: str
+    label: str
+    value: float
+    unit: str
+    sample: int
+    note: str
+    def __init__(self, key: _Optional[str] = ..., label: _Optional[str] = ..., value: _Optional[float] = ..., unit: _Optional[str] = ..., sample: _Optional[int] = ..., note: _Optional[str] = ...) -> None: ...
+
+class Tally(_message.Message):
+    __slots__ = ("name", "count", "share")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    COUNT_FIELD_NUMBER: _ClassVar[int]
+    SHARE_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    count: int
+    share: float
+    def __init__(self, name: _Optional[str] = ..., count: _Optional[int] = ..., share: _Optional[float] = ...) -> None: ...
+
+class BoardStatsRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class BoardStatsResponse(_message.Message):
+    __slots__ = ("computed_at", "headline", "all", "industries", "stages", "sources")
+    COMPUTED_AT_FIELD_NUMBER: _ClassVar[int]
+    HEADLINE_FIELD_NUMBER: _ClassVar[int]
+    ALL_FIELD_NUMBER: _ClassVar[int]
+    INDUSTRIES_FIELD_NUMBER: _ClassVar[int]
+    STAGES_FIELD_NUMBER: _ClassVar[int]
+    SOURCES_FIELD_NUMBER: _ClassVar[int]
+    computed_at: _timestamp_pb2.Timestamp
+    headline: _containers.RepeatedCompositeFieldContainer[Stat]
+    all: _containers.RepeatedCompositeFieldContainer[Stat]
+    industries: _containers.RepeatedCompositeFieldContainer[Tally]
+    stages: _containers.RepeatedCompositeFieldContainer[Tally]
+    sources: _containers.RepeatedCompositeFieldContainer[Tally]
+    def __init__(self, computed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., headline: _Optional[_Iterable[_Union[Stat, _Mapping]]] = ..., all: _Optional[_Iterable[_Union[Stat, _Mapping]]] = ..., industries: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., stages: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ...) -> None: ...
