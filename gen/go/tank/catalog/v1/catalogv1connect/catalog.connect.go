@@ -36,6 +36,9 @@ const (
 	// CatalogServiceBoardStatsProcedure is the fully-qualified name of the CatalogService's BoardStats
 	// RPC.
 	CatalogServiceBoardStatsProcedure = "/tank.catalog.v1.CatalogService/BoardStats"
+	// CatalogServiceBoardHistoryProcedure is the fully-qualified name of the CatalogService's
+	// BoardHistory RPC.
+	CatalogServiceBoardHistoryProcedure = "/tank.catalog.v1.CatalogService/BoardHistory"
 	// CatalogServiceListProductsProcedure is the fully-qualified name of the CatalogService's
 	// ListProducts RPC.
 	CatalogServiceListProductsProcedure = "/tank.catalog.v1.CatalogService/ListProducts"
@@ -68,6 +71,7 @@ type CatalogServiceClient interface {
 	// workspace, nothing that identifies anybody. Public, because the point is that
 	// other people can quote it.
 	BoardStats(context.Context, *connect.Request[v1.BoardStatsRequest]) (*connect.Response[v1.BoardStatsResponse], error)
+	BoardHistory(context.Context, *connect.Request[v1.BoardHistoryRequest]) (*connect.Response[v1.BoardHistoryResponse], error)
 	// Anonymous.
 	ListProducts(context.Context, *connect.Request[v1.ListProductsRequest]) (*connect.Response[v1.ListProductsResponse], error)
 	RecordProductView(context.Context, *connect.Request[v1.RecordProductViewRequest]) (*connect.Response[v1.RecordProductViewResponse], error)
@@ -95,6 +99,12 @@ func NewCatalogServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+CatalogServiceBoardStatsProcedure,
 			connect.WithSchema(catalogServiceMethods.ByName("BoardStats")),
+			connect.WithClientOptions(opts...),
+		),
+		boardHistory: connect.NewClient[v1.BoardHistoryRequest, v1.BoardHistoryResponse](
+			httpClient,
+			baseURL+CatalogServiceBoardHistoryProcedure,
+			connect.WithSchema(catalogServiceMethods.ByName("BoardHistory")),
 			connect.WithClientOptions(opts...),
 		),
 		listProducts: connect.NewClient[v1.ListProductsRequest, v1.ListProductsResponse](
@@ -151,6 +161,7 @@ func NewCatalogServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 // catalogServiceClient implements CatalogServiceClient.
 type catalogServiceClient struct {
 	boardStats          *connect.Client[v1.BoardStatsRequest, v1.BoardStatsResponse]
+	boardHistory        *connect.Client[v1.BoardHistoryRequest, v1.BoardHistoryResponse]
 	listProducts        *connect.Client[v1.ListProductsRequest, v1.ListProductsResponse]
 	recordProductView   *connect.Client[v1.RecordProductViewRequest, v1.RecordProductViewResponse]
 	watchProduct        *connect.Client[v1.WatchProductRequest, v1.WatchProductResponse]
@@ -164,6 +175,11 @@ type catalogServiceClient struct {
 // BoardStats calls tank.catalog.v1.CatalogService.BoardStats.
 func (c *catalogServiceClient) BoardStats(ctx context.Context, req *connect.Request[v1.BoardStatsRequest]) (*connect.Response[v1.BoardStatsResponse], error) {
 	return c.boardStats.CallUnary(ctx, req)
+}
+
+// BoardHistory calls tank.catalog.v1.CatalogService.BoardHistory.
+func (c *catalogServiceClient) BoardHistory(ctx context.Context, req *connect.Request[v1.BoardHistoryRequest]) (*connect.Response[v1.BoardHistoryResponse], error) {
+	return c.boardHistory.CallUnary(ctx, req)
 }
 
 // ListProducts calls tank.catalog.v1.CatalogService.ListProducts.
@@ -212,6 +228,7 @@ type CatalogServiceHandler interface {
 	// workspace, nothing that identifies anybody. Public, because the point is that
 	// other people can quote it.
 	BoardStats(context.Context, *connect.Request[v1.BoardStatsRequest]) (*connect.Response[v1.BoardStatsResponse], error)
+	BoardHistory(context.Context, *connect.Request[v1.BoardHistoryRequest]) (*connect.Response[v1.BoardHistoryResponse], error)
 	// Anonymous.
 	ListProducts(context.Context, *connect.Request[v1.ListProductsRequest]) (*connect.Response[v1.ListProductsResponse], error)
 	RecordProductView(context.Context, *connect.Request[v1.RecordProductViewRequest]) (*connect.Response[v1.RecordProductViewResponse], error)
@@ -235,6 +252,12 @@ func NewCatalogServiceHandler(svc CatalogServiceHandler, opts ...connect.Handler
 		CatalogServiceBoardStatsProcedure,
 		svc.BoardStats,
 		connect.WithSchema(catalogServiceMethods.ByName("BoardStats")),
+		connect.WithHandlerOptions(opts...),
+	)
+	catalogServiceBoardHistoryHandler := connect.NewUnaryHandler(
+		CatalogServiceBoardHistoryProcedure,
+		svc.BoardHistory,
+		connect.WithSchema(catalogServiceMethods.ByName("BoardHistory")),
 		connect.WithHandlerOptions(opts...),
 	)
 	catalogServiceListProductsHandler := connect.NewUnaryHandler(
@@ -289,6 +312,8 @@ func NewCatalogServiceHandler(svc CatalogServiceHandler, opts ...connect.Handler
 		switch r.URL.Path {
 		case CatalogServiceBoardStatsProcedure:
 			catalogServiceBoardStatsHandler.ServeHTTP(w, r)
+		case CatalogServiceBoardHistoryProcedure:
+			catalogServiceBoardHistoryHandler.ServeHTTP(w, r)
 		case CatalogServiceListProductsProcedure:
 			catalogServiceListProductsHandler.ServeHTTP(w, r)
 		case CatalogServiceRecordProductViewProcedure:
@@ -316,6 +341,10 @@ type UnimplementedCatalogServiceHandler struct{}
 
 func (UnimplementedCatalogServiceHandler) BoardStats(context.Context, *connect.Request[v1.BoardStatsRequest]) (*connect.Response[v1.BoardStatsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.catalog.v1.CatalogService.BoardStats is not implemented"))
+}
+
+func (UnimplementedCatalogServiceHandler) BoardHistory(context.Context, *connect.Request[v1.BoardHistoryRequest]) (*connect.Response[v1.BoardHistoryResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.catalog.v1.CatalogService.BoardHistory is not implemented"))
 }
 
 func (UnimplementedCatalogServiceHandler) ListProducts(context.Context, *connect.Request[v1.ListProductsRequest]) (*connect.Response[v1.ListProductsResponse], error) {

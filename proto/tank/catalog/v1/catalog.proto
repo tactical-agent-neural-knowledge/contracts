@@ -147,6 +147,25 @@ message Tally {
 }
 
 message BoardStatsRequest {}
+
+// The series behind the figures. Published for the same reason the figures are: a
+// number somebody is invited to quote is worth more when they can see where it came
+// from, and that it is not being quietly revised.
+message BoardHistoryRequest {
+  repeated string keys = 1;  // empty for every figure
+  int32 days = 2;            // default 90, max 400
+}
+message BoardHistoryResponse {
+  repeated Series series = 1;
+}
+message Series {
+  string key = 1;
+  repeated Point points = 2;
+}
+message Point {
+  google.protobuf.Timestamp at = 1;
+  double value = 2;
+}
 message BoardStatsResponse {
   google.protobuf.Timestamp computed_at = 1;
   repeated Stat headline = 2;       // the figures worth leading with
@@ -207,6 +226,7 @@ service CatalogService {
   // workspace, nothing that identifies anybody. Public, because the point is that
   // other people can quote it.
   rpc BoardStats(BoardStatsRequest) returns (BoardStatsResponse);
+  rpc BoardHistory(BoardHistoryRequest) returns (BoardHistoryResponse);
   // Anonymous.
   rpc ListProducts(ListProductsRequest) returns (ListProductsResponse);
   rpc RecordProductView(RecordProductViewRequest) returns (RecordProductViewResponse);

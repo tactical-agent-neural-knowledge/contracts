@@ -226,6 +226,36 @@ class BoardStatsRequest(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class BoardHistoryRequest(_message.Message):
+    __slots__ = ("keys", "days")
+    KEYS_FIELD_NUMBER: _ClassVar[int]
+    DAYS_FIELD_NUMBER: _ClassVar[int]
+    keys: _containers.RepeatedScalarFieldContainer[str]
+    days: int
+    def __init__(self, keys: _Optional[_Iterable[str]] = ..., days: _Optional[int] = ...) -> None: ...
+
+class BoardHistoryResponse(_message.Message):
+    __slots__ = ("series",)
+    SERIES_FIELD_NUMBER: _ClassVar[int]
+    series: _containers.RepeatedCompositeFieldContainer[Series]
+    def __init__(self, series: _Optional[_Iterable[_Union[Series, _Mapping]]] = ...) -> None: ...
+
+class Series(_message.Message):
+    __slots__ = ("key", "points")
+    KEY_FIELD_NUMBER: _ClassVar[int]
+    POINTS_FIELD_NUMBER: _ClassVar[int]
+    key: str
+    points: _containers.RepeatedCompositeFieldContainer[Point]
+    def __init__(self, key: _Optional[str] = ..., points: _Optional[_Iterable[_Union[Point, _Mapping]]] = ...) -> None: ...
+
+class Point(_message.Message):
+    __slots__ = ("at", "value")
+    AT_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    at: _timestamp_pb2.Timestamp
+    value: float
+    def __init__(self, at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., value: _Optional[float] = ...) -> None: ...
+
 class BoardStatsResponse(_message.Message):
     __slots__ = ("computed_at", "headline", "all", "industries", "stages", "sources", "recent", "most_visited", "tools")
     COMPUTED_AT_FIELD_NUMBER: _ClassVar[int]
