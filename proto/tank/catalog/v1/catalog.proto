@@ -172,6 +172,16 @@ message ToolMention {
   int64 products = 2;      // distinct products whose agents named it
   bool covered = 3;        // a TANK workspace does this job today
   string category = 4;     // "where the team talks", "accounting", …
+
+  // A product the board is building to do this job. Empty when there is none.
+  //
+  // Separate from `covered` on purpose: covered means a TANK workspace does this
+  // today, and a product being worked on is a weaker claim that deserves weaker
+  // words. The page shows one as "Yes" and the other as a link and a percentage.
+  string slug = 5;
+  string product = 6;      // its name
+  int32 stage = 7;         // how many stages of its journey are finished
+  int32 total = 8;         // how many there are
 }
 
 // Event is one thing an agent finished, for a page that wants to look alive rather

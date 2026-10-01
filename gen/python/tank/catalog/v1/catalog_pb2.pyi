@@ -249,16 +249,24 @@ class BoardStatsResponse(_message.Message):
     def __init__(self, computed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., headline: _Optional[_Iterable[_Union[Stat, _Mapping]]] = ..., all: _Optional[_Iterable[_Union[Stat, _Mapping]]] = ..., industries: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., stages: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Tally, _Mapping]]] = ..., recent: _Optional[_Iterable[_Union[Event, _Mapping]]] = ..., most_visited: _Optional[_Iterable[_Union[Ranked, _Mapping]]] = ..., tools: _Optional[_Iterable[_Union[ToolMention, _Mapping]]] = ...) -> None: ...
 
 class ToolMention(_message.Message):
-    __slots__ = ("name", "products", "covered", "category")
+    __slots__ = ("name", "products", "covered", "category", "slug", "product", "stage", "total")
     NAME_FIELD_NUMBER: _ClassVar[int]
     PRODUCTS_FIELD_NUMBER: _ClassVar[int]
     COVERED_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    PRODUCT_FIELD_NUMBER: _ClassVar[int]
+    STAGE_FIELD_NUMBER: _ClassVar[int]
+    TOTAL_FIELD_NUMBER: _ClassVar[int]
     name: str
     products: int
     covered: bool
     category: str
-    def __init__(self, name: _Optional[str] = ..., products: _Optional[int] = ..., covered: bool = ..., category: _Optional[str] = ...) -> None: ...
+    slug: str
+    product: str
+    stage: int
+    total: int
+    def __init__(self, name: _Optional[str] = ..., products: _Optional[int] = ..., covered: bool = ..., category: _Optional[str] = ..., slug: _Optional[str] = ..., product: _Optional[str] = ..., stage: _Optional[int] = ..., total: _Optional[int] = ...) -> None: ...
 
 class Event(_message.Message):
     __slots__ = ("product", "slug", "stage", "at")
