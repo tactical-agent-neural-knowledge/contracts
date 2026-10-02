@@ -518,6 +518,10 @@ message Agenture {
   // Its brand, once it has one: the icon's path on the api, and the theme's primary colour.
   string icon_url = 12;
   string brand_primary = 13;
+  // Its family — products that share an engine for different customers — so the board
+  // can draw them as a constellation. Empty until the daily pass has placed it.
+  string family_id = 14;
+  int32 family_size = 15;
 }
 
 message ListAgenturesRequest {
