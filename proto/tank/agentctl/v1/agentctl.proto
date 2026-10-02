@@ -213,6 +213,25 @@ message ReadThreadResponse {
   repeated ThreadMessage messages = 1;
 }
 
+// What the board already found, from every product's research: the tools people use,
+// what each gets right and wrong, prices, verdicts. Asked before fetching the web, so
+// a trade is researched once and every product in it inherits the finding.
+message BoardResearchRequest {
+  string query = 1;
+  int32 limit = 2;
+}
+message ResearchHit {
+  string product = 1;
+  string slug = 2;
+  string url = 3;
+  string industry = 4;
+  string stage = 5;
+  string excerpt = 6;
+}
+message BoardResearchResponse {
+  repeated ResearchHit hits = 1;
+}
+
 // --------------------------------------------------------------------- GitHub
 
 message OpenPullRequestRequest {
@@ -422,6 +441,7 @@ service RunnerService {
   rpc AskQuestion(AskQuestionRequest) returns (AskQuestionResponse);
   rpc ReportStatus(ReportStatusRequest) returns (ReportStatusResponse);
   rpc ReadThread(ReadThreadRequest) returns (ReadThreadResponse);
+  rpc BoardResearch(BoardResearchRequest) returns (BoardResearchResponse);
   rpc PollInbox(PollInboxRequest) returns (PollInboxResponse);
 
   rpc OpenPullRequest(OpenPullRequestRequest) returns (OpenPullRequestResponse);

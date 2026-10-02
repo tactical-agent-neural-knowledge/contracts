@@ -67,6 +67,9 @@ const (
 	// RunnerServiceReadThreadProcedure is the fully-qualified name of the RunnerService's ReadThread
 	// RPC.
 	RunnerServiceReadThreadProcedure = "/tank.agentctl.v1.RunnerService/ReadThread"
+	// RunnerServiceBoardResearchProcedure is the fully-qualified name of the RunnerService's
+	// BoardResearch RPC.
+	RunnerServiceBoardResearchProcedure = "/tank.agentctl.v1.RunnerService/BoardResearch"
 	// RunnerServicePollInboxProcedure is the fully-qualified name of the RunnerService's PollInbox RPC.
 	RunnerServicePollInboxProcedure = "/tank.agentctl.v1.RunnerService/PollInbox"
 	// RunnerServiceOpenPullRequestProcedure is the fully-qualified name of the RunnerService's
@@ -139,6 +142,7 @@ type RunnerServiceClient interface {
 	AskQuestion(context.Context, *connect.Request[v1.AskQuestionRequest]) (*connect.Response[v1.AskQuestionResponse], error)
 	ReportStatus(context.Context, *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error)
 	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
+	BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -232,6 +236,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("ReadThread")),
 			connect.WithClientOptions(opts...),
 		),
+		boardResearch: connect.NewClient[v1.BoardResearchRequest, v1.BoardResearchResponse](
+			httpClient,
+			baseURL+RunnerServiceBoardResearchProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("BoardResearch")),
+			connect.WithClientOptions(opts...),
+		),
 		pollInbox: connect.NewClient[v1.PollInboxRequest, v1.PollInboxResponse](
 			httpClient,
 			baseURL+RunnerServicePollInboxProcedure,
@@ -320,6 +330,7 @@ type runnerServiceClient struct {
 	askQuestion              *connect.Client[v1.AskQuestionRequest, v1.AskQuestionResponse]
 	reportStatus             *connect.Client[v1.ReportStatusRequest, v1.ReportStatusResponse]
 	readThread               *connect.Client[v1.ReadThreadRequest, v1.ReadThreadResponse]
+	boardResearch            *connect.Client[v1.BoardResearchRequest, v1.BoardResearchResponse]
 	pollInbox                *connect.Client[v1.PollInboxRequest, v1.PollInboxResponse]
 	openPullRequest          *connect.Client[v1.OpenPullRequestRequest, v1.OpenPullRequestResponse]
 	requestCiWatch           *connect.Client[v1.RequestCiWatchRequest, v1.RequestCiWatchResponse]
@@ -387,6 +398,11 @@ func (c *runnerServiceClient) ReportStatus(ctx context.Context, req *connect.Req
 // ReadThread calls tank.agentctl.v1.RunnerService.ReadThread.
 func (c *runnerServiceClient) ReadThread(ctx context.Context, req *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error) {
 	return c.readThread.CallUnary(ctx, req)
+}
+
+// BoardResearch calls tank.agentctl.v1.RunnerService.BoardResearch.
+func (c *runnerServiceClient) BoardResearch(ctx context.Context, req *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error) {
+	return c.boardResearch.CallUnary(ctx, req)
 }
 
 // PollInbox calls tank.agentctl.v1.RunnerService.PollInbox.
@@ -462,6 +478,7 @@ type RunnerServiceHandler interface {
 	AskQuestion(context.Context, *connect.Request[v1.AskQuestionRequest]) (*connect.Response[v1.AskQuestionResponse], error)
 	ReportStatus(context.Context, *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error)
 	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
+	BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -549,6 +566,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceReadThreadProcedure,
 		svc.ReadThread,
 		connect.WithSchema(runnerServiceMethods.ByName("ReadThread")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceBoardResearchHandler := connect.NewUnaryHandler(
+		RunnerServiceBoardResearchProcedure,
+		svc.BoardResearch,
+		connect.WithSchema(runnerServiceMethods.ByName("BoardResearch")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServicePollInboxHandler := connect.NewUnaryHandler(
@@ -647,6 +670,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceReportStatusHandler.ServeHTTP(w, r)
 		case RunnerServiceReadThreadProcedure:
 			runnerServiceReadThreadHandler.ServeHTTP(w, r)
+		case RunnerServiceBoardResearchProcedure:
+			runnerServiceBoardResearchHandler.ServeHTTP(w, r)
 		case RunnerServicePollInboxProcedure:
 			runnerServicePollInboxHandler.ServeHTTP(w, r)
 		case RunnerServiceOpenPullRequestProcedure:
@@ -722,6 +747,10 @@ func (UnimplementedRunnerServiceHandler) ReportStatus(context.Context, *connect.
 
 func (UnimplementedRunnerServiceHandler) ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReadThread is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BoardResearch is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error) {

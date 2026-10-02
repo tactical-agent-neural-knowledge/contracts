@@ -347,6 +347,36 @@ class ReadThreadResponse(_message.Message):
     messages: _containers.RepeatedCompositeFieldContainer[ThreadMessage]
     def __init__(self, messages: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ...) -> None: ...
 
+class BoardResearchRequest(_message.Message):
+    __slots__ = ("query", "limit")
+    QUERY_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    query: str
+    limit: int
+    def __init__(self, query: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ResearchHit(_message.Message):
+    __slots__ = ("product", "slug", "url", "industry", "stage", "excerpt")
+    PRODUCT_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    INDUSTRY_FIELD_NUMBER: _ClassVar[int]
+    STAGE_FIELD_NUMBER: _ClassVar[int]
+    EXCERPT_FIELD_NUMBER: _ClassVar[int]
+    product: str
+    slug: str
+    url: str
+    industry: str
+    stage: str
+    excerpt: str
+    def __init__(self, product: _Optional[str] = ..., slug: _Optional[str] = ..., url: _Optional[str] = ..., industry: _Optional[str] = ..., stage: _Optional[str] = ..., excerpt: _Optional[str] = ...) -> None: ...
+
+class BoardResearchResponse(_message.Message):
+    __slots__ = ("hits",)
+    HITS_FIELD_NUMBER: _ClassVar[int]
+    hits: _containers.RepeatedCompositeFieldContainer[ResearchHit]
+    def __init__(self, hits: _Optional[_Iterable[_Union[ResearchHit, _Mapping]]] = ...) -> None: ...
+
 class OpenPullRequestRequest(_message.Message):
     __slots__ = ("title", "body", "head_sha", "draft")
     TITLE_FIELD_NUMBER: _ClassVar[int]
