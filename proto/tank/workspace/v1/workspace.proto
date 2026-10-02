@@ -515,6 +515,9 @@ message Agenture {
   int32 stage_done = 9;
   int32 stage_total = 10;
   string stage_title = 11;
+  // Its brand, once it has one: the icon's path on the api, and the theme's primary colour.
+  string icon_url = 12;
+  string brand_primary = 13;
 }
 
 message ListAgenturesRequest {
