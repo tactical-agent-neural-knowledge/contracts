@@ -760,7 +760,7 @@ class CancelScheduledResponse(_message.Message):
     def __init__(self) -> None: ...
 
 class Agenture(_message.Message):
-    __slots__ = ("workspace_id", "slug", "name", "description", "agent_active", "active_runs", "industry", "price_cents")
+    __slots__ = ("workspace_id", "slug", "name", "description", "agent_active", "active_runs", "industry", "price_cents", "stage_done", "stage_total", "stage_title")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -769,6 +769,9 @@ class Agenture(_message.Message):
     ACTIVE_RUNS_FIELD_NUMBER: _ClassVar[int]
     INDUSTRY_FIELD_NUMBER: _ClassVar[int]
     PRICE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    STAGE_DONE_FIELD_NUMBER: _ClassVar[int]
+    STAGE_TOTAL_FIELD_NUMBER: _ClassVar[int]
+    STAGE_TITLE_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     slug: str
     name: str
@@ -777,7 +780,10 @@ class Agenture(_message.Message):
     active_runs: int
     industry: str
     price_cents: int
-    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., agent_active: bool = ..., active_runs: _Optional[int] = ..., industry: _Optional[str] = ..., price_cents: _Optional[int] = ...) -> None: ...
+    stage_done: int
+    stage_total: int
+    stage_title: str
+    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., agent_active: bool = ..., active_runs: _Optional[int] = ..., industry: _Optional[str] = ..., price_cents: _Optional[int] = ..., stage_done: _Optional[int] = ..., stage_total: _Optional[int] = ..., stage_title: _Optional[str] = ...) -> None: ...
 
 class ListAgenturesRequest(_message.Message):
     __slots__ = ("cursor", "limit")

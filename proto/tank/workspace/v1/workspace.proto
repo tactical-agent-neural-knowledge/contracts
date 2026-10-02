@@ -510,6 +510,11 @@ message Agenture {
   int32 active_runs = 6;
   string industry = 7;      // the trade it is in, so a bubble says more than a name
   int64 price_cents = 8;    // what it costs to take over today
+  // How far along it is: stages of its journey done, out of how many, and the one in
+  // progress. The board draws this as a tank filling up.
+  int32 stage_done = 9;
+  int32 stage_total = 10;
+  string stage_title = 11;
 }
 
 message ListAgenturesRequest {
