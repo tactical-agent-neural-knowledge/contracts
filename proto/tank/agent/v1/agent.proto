@@ -95,6 +95,26 @@ message SetStatusResponse {
   Run run = 1;
 }
 
+// SetProductBrand gives a product its mark and palette, from the run working in it.
+message SetProductBrandRequest {
+  string run_id = 1;
+  string icon_svg = 2;      // viewBox 0 0 64 64; sanitised on the way in
+  string primary = 3;       // hex colours
+  string secondary = 4;
+  string background = 5;
+  string accent = 6;
+  string tagline = 7;
+}
+message SetProductBrandResponse {
+  string icon_url = 1;      // where the catalogue serves it
+}
+// SetProductLanding stores the product's landing page, sanitised, for its catalogue page.
+message SetProductLandingRequest {
+  string run_id = 1;
+  string html = 2;
+}
+message SetProductLandingResponse {}
+
 message GetRunRequest {
   string run_id = 1;
 }
@@ -162,6 +182,9 @@ service AgentService {
   rpc StopRun(StopRunRequest) returns (StopRunResponse);
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
   rpc SetStatus(SetStatusRequest) returns (SetStatusResponse);
+  // A product's brand and landing page, set by the run working in it (an agenture only).
+  rpc SetProductBrand(SetProductBrandRequest) returns (SetProductBrandResponse);
+  rpc SetProductLanding(SetProductLandingRequest) returns (SetProductLandingResponse);
   rpc GetRun(GetRunRequest) returns (GetRunResponse);
   rpc ListRuns(ListRunsRequest) returns (ListRunsResponse);
   rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse);

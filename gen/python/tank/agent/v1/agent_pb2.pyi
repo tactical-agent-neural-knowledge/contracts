@@ -164,6 +164,42 @@ class SetStatusResponse(_message.Message):
     run: Run
     def __init__(self, run: _Optional[_Union[Run, _Mapping]] = ...) -> None: ...
 
+class SetProductBrandRequest(_message.Message):
+    __slots__ = ("run_id", "icon_svg", "primary", "secondary", "background", "accent", "tagline")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    ICON_SVG_FIELD_NUMBER: _ClassVar[int]
+    PRIMARY_FIELD_NUMBER: _ClassVar[int]
+    SECONDARY_FIELD_NUMBER: _ClassVar[int]
+    BACKGROUND_FIELD_NUMBER: _ClassVar[int]
+    ACCENT_FIELD_NUMBER: _ClassVar[int]
+    TAGLINE_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    icon_svg: str
+    primary: str
+    secondary: str
+    background: str
+    accent: str
+    tagline: str
+    def __init__(self, run_id: _Optional[str] = ..., icon_svg: _Optional[str] = ..., primary: _Optional[str] = ..., secondary: _Optional[str] = ..., background: _Optional[str] = ..., accent: _Optional[str] = ..., tagline: _Optional[str] = ...) -> None: ...
+
+class SetProductBrandResponse(_message.Message):
+    __slots__ = ("icon_url",)
+    ICON_URL_FIELD_NUMBER: _ClassVar[int]
+    icon_url: str
+    def __init__(self, icon_url: _Optional[str] = ...) -> None: ...
+
+class SetProductLandingRequest(_message.Message):
+    __slots__ = ("run_id", "html")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    HTML_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    html: str
+    def __init__(self, run_id: _Optional[str] = ..., html: _Optional[str] = ...) -> None: ...
+
+class SetProductLandingResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class GetRunRequest(_message.Message):
     __slots__ = ("run_id",)
     RUN_ID_FIELD_NUMBER: _ClassVar[int]

@@ -232,6 +232,39 @@ message BoardResearchResponse {
   repeated ResearchHit hits = 1;
 }
 
+// Progress in the repository from every stage, without a sandbox: the control plane
+// commits the files as the App. Commits skip CI unless build is set, so a page of
+// writing does not build an image nobody runs.
+message RepoFile {
+  string path = 1;
+  string content = 2;
+}
+message CommitFilesRequest {
+  repeated RepoFile files = 1;
+  string message = 2;
+  bool build = 3;
+}
+message CommitFilesResponse {
+  int32 committed = 1;
+}
+
+// The product's brand and landing page, through the run's own identity.
+message SetBrandRequest {
+  string icon_svg = 1;
+  string primary = 2;
+  string secondary = 3;
+  string background = 4;
+  string accent = 5;
+  string tagline = 6;
+}
+message SetBrandResponse {
+  string icon_url = 1;
+}
+message SetLandingRequest {
+  string html = 1;
+}
+message SetLandingResponse {}
+
 // --------------------------------------------------------------------- GitHub
 
 message OpenPullRequestRequest {
@@ -442,6 +475,9 @@ service RunnerService {
   rpc ReportStatus(ReportStatusRequest) returns (ReportStatusResponse);
   rpc ReadThread(ReadThreadRequest) returns (ReadThreadResponse);
   rpc BoardResearch(BoardResearchRequest) returns (BoardResearchResponse);
+  rpc CommitFiles(CommitFilesRequest) returns (CommitFilesResponse);
+  rpc SetBrand(SetBrandRequest) returns (SetBrandResponse);
+  rpc SetLanding(SetLandingRequest) returns (SetLandingResponse);
   rpc PollInbox(PollInboxRequest) returns (PollInboxResponse);
 
   rpc OpenPullRequest(OpenPullRequestRequest) returns (OpenPullRequestResponse);

@@ -41,6 +41,12 @@ const (
 	AgentServiceHeartbeatProcedure = "/tank.agent.v1.AgentService/Heartbeat"
 	// AgentServiceSetStatusProcedure is the fully-qualified name of the AgentService's SetStatus RPC.
 	AgentServiceSetStatusProcedure = "/tank.agent.v1.AgentService/SetStatus"
+	// AgentServiceSetProductBrandProcedure is the fully-qualified name of the AgentService's
+	// SetProductBrand RPC.
+	AgentServiceSetProductBrandProcedure = "/tank.agent.v1.AgentService/SetProductBrand"
+	// AgentServiceSetProductLandingProcedure is the fully-qualified name of the AgentService's
+	// SetProductLanding RPC.
+	AgentServiceSetProductLandingProcedure = "/tank.agent.v1.AgentService/SetProductLanding"
 	// AgentServiceGetRunProcedure is the fully-qualified name of the AgentService's GetRun RPC.
 	AgentServiceGetRunProcedure = "/tank.agent.v1.AgentService/GetRun"
 	// AgentServiceListRunsProcedure is the fully-qualified name of the AgentService's ListRuns RPC.
@@ -65,6 +71,9 @@ type AgentServiceClient interface {
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
 	Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error)
 	SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error)
+	// A product's brand and landing page, set by the run working in it (an agenture only).
+	SetProductBrand(context.Context, *connect.Request[v1.SetProductBrandRequest]) (*connect.Response[v1.SetProductBrandResponse], error)
+	SetProductLanding(context.Context, *connect.Request[v1.SetProductLandingRequest]) (*connect.Response[v1.SetProductLandingResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
 	ListAgents(context.Context, *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error)
@@ -109,6 +118,18 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			httpClient,
 			baseURL+AgentServiceSetStatusProcedure,
 			connect.WithSchema(agentServiceMethods.ByName("SetStatus")),
+			connect.WithClientOptions(opts...),
+		),
+		setProductBrand: connect.NewClient[v1.SetProductBrandRequest, v1.SetProductBrandResponse](
+			httpClient,
+			baseURL+AgentServiceSetProductBrandProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("SetProductBrand")),
+			connect.WithClientOptions(opts...),
+		),
+		setProductLanding: connect.NewClient[v1.SetProductLandingRequest, v1.SetProductLandingResponse](
+			httpClient,
+			baseURL+AgentServiceSetProductLandingProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("SetProductLanding")),
 			connect.WithClientOptions(opts...),
 		),
 		getRun: connect.NewClient[v1.GetRunRequest, v1.GetRunResponse](
@@ -162,6 +183,8 @@ type agentServiceClient struct {
 	stopRun            *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
 	heartbeat          *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
 	setStatus          *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
+	setProductBrand    *connect.Client[v1.SetProductBrandRequest, v1.SetProductBrandResponse]
+	setProductLanding  *connect.Client[v1.SetProductLandingRequest, v1.SetProductLandingResponse]
 	getRun             *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
 	listRuns           *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
 	listAgents         *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
@@ -189,6 +212,16 @@ func (c *agentServiceClient) Heartbeat(ctx context.Context, req *connect.Request
 // SetStatus calls tank.agent.v1.AgentService.SetStatus.
 func (c *agentServiceClient) SetStatus(ctx context.Context, req *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error) {
 	return c.setStatus.CallUnary(ctx, req)
+}
+
+// SetProductBrand calls tank.agent.v1.AgentService.SetProductBrand.
+func (c *agentServiceClient) SetProductBrand(ctx context.Context, req *connect.Request[v1.SetProductBrandRequest]) (*connect.Response[v1.SetProductBrandResponse], error) {
+	return c.setProductBrand.CallUnary(ctx, req)
+}
+
+// SetProductLanding calls tank.agent.v1.AgentService.SetProductLanding.
+func (c *agentServiceClient) SetProductLanding(ctx context.Context, req *connect.Request[v1.SetProductLandingRequest]) (*connect.Response[v1.SetProductLandingResponse], error) {
+	return c.setProductLanding.CallUnary(ctx, req)
 }
 
 // GetRun calls tank.agent.v1.AgentService.GetRun.
@@ -232,6 +265,9 @@ type AgentServiceHandler interface {
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
 	Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error)
 	SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error)
+	// A product's brand and landing page, set by the run working in it (an agenture only).
+	SetProductBrand(context.Context, *connect.Request[v1.SetProductBrandRequest]) (*connect.Response[v1.SetProductBrandResponse], error)
+	SetProductLanding(context.Context, *connect.Request[v1.SetProductLandingRequest]) (*connect.Response[v1.SetProductLandingResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
 	ListAgents(context.Context, *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error)
@@ -272,6 +308,18 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		AgentServiceSetStatusProcedure,
 		svc.SetStatus,
 		connect.WithSchema(agentServiceMethods.ByName("SetStatus")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceSetProductBrandHandler := connect.NewUnaryHandler(
+		AgentServiceSetProductBrandProcedure,
+		svc.SetProductBrand,
+		connect.WithSchema(agentServiceMethods.ByName("SetProductBrand")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceSetProductLandingHandler := connect.NewUnaryHandler(
+		AgentServiceSetProductLandingProcedure,
+		svc.SetProductLanding,
+		connect.WithSchema(agentServiceMethods.ByName("SetProductLanding")),
 		connect.WithHandlerOptions(opts...),
 	)
 	agentServiceGetRunHandler := connect.NewUnaryHandler(
@@ -326,6 +374,10 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceHeartbeatHandler.ServeHTTP(w, r)
 		case AgentServiceSetStatusProcedure:
 			agentServiceSetStatusHandler.ServeHTTP(w, r)
+		case AgentServiceSetProductBrandProcedure:
+			agentServiceSetProductBrandHandler.ServeHTTP(w, r)
+		case AgentServiceSetProductLandingProcedure:
+			agentServiceSetProductLandingHandler.ServeHTTP(w, r)
 		case AgentServiceGetRunProcedure:
 			agentServiceGetRunHandler.ServeHTTP(w, r)
 		case AgentServiceListRunsProcedure:
@@ -363,6 +415,14 @@ func (UnimplementedAgentServiceHandler) Heartbeat(context.Context, *connect.Requ
 
 func (UnimplementedAgentServiceHandler) SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetStatus is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) SetProductBrand(context.Context, *connect.Request[v1.SetProductBrandRequest]) (*connect.Response[v1.SetProductBrandResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetProductBrand is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) SetProductLanding(context.Context, *connect.Request[v1.SetProductLandingRequest]) (*connect.Response[v1.SetProductLandingResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetProductLanding is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error) {

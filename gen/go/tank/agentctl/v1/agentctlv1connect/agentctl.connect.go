@@ -70,6 +70,14 @@ const (
 	// RunnerServiceBoardResearchProcedure is the fully-qualified name of the RunnerService's
 	// BoardResearch RPC.
 	RunnerServiceBoardResearchProcedure = "/tank.agentctl.v1.RunnerService/BoardResearch"
+	// RunnerServiceCommitFilesProcedure is the fully-qualified name of the RunnerService's CommitFiles
+	// RPC.
+	RunnerServiceCommitFilesProcedure = "/tank.agentctl.v1.RunnerService/CommitFiles"
+	// RunnerServiceSetBrandProcedure is the fully-qualified name of the RunnerService's SetBrand RPC.
+	RunnerServiceSetBrandProcedure = "/tank.agentctl.v1.RunnerService/SetBrand"
+	// RunnerServiceSetLandingProcedure is the fully-qualified name of the RunnerService's SetLanding
+	// RPC.
+	RunnerServiceSetLandingProcedure = "/tank.agentctl.v1.RunnerService/SetLanding"
 	// RunnerServicePollInboxProcedure is the fully-qualified name of the RunnerService's PollInbox RPC.
 	RunnerServicePollInboxProcedure = "/tank.agentctl.v1.RunnerService/PollInbox"
 	// RunnerServiceOpenPullRequestProcedure is the fully-qualified name of the RunnerService's
@@ -143,6 +151,9 @@ type RunnerServiceClient interface {
 	ReportStatus(context.Context, *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error)
 	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error)
+	CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error)
+	SetBrand(context.Context, *connect.Request[v1.SetBrandRequest]) (*connect.Response[v1.SetBrandResponse], error)
+	SetLanding(context.Context, *connect.Request[v1.SetLandingRequest]) (*connect.Response[v1.SetLandingResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -242,6 +253,24 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("BoardResearch")),
 			connect.WithClientOptions(opts...),
 		),
+		commitFiles: connect.NewClient[v1.CommitFilesRequest, v1.CommitFilesResponse](
+			httpClient,
+			baseURL+RunnerServiceCommitFilesProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("CommitFiles")),
+			connect.WithClientOptions(opts...),
+		),
+		setBrand: connect.NewClient[v1.SetBrandRequest, v1.SetBrandResponse](
+			httpClient,
+			baseURL+RunnerServiceSetBrandProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("SetBrand")),
+			connect.WithClientOptions(opts...),
+		),
+		setLanding: connect.NewClient[v1.SetLandingRequest, v1.SetLandingResponse](
+			httpClient,
+			baseURL+RunnerServiceSetLandingProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("SetLanding")),
+			connect.WithClientOptions(opts...),
+		),
 		pollInbox: connect.NewClient[v1.PollInboxRequest, v1.PollInboxResponse](
 			httpClient,
 			baseURL+RunnerServicePollInboxProcedure,
@@ -331,6 +360,9 @@ type runnerServiceClient struct {
 	reportStatus             *connect.Client[v1.ReportStatusRequest, v1.ReportStatusResponse]
 	readThread               *connect.Client[v1.ReadThreadRequest, v1.ReadThreadResponse]
 	boardResearch            *connect.Client[v1.BoardResearchRequest, v1.BoardResearchResponse]
+	commitFiles              *connect.Client[v1.CommitFilesRequest, v1.CommitFilesResponse]
+	setBrand                 *connect.Client[v1.SetBrandRequest, v1.SetBrandResponse]
+	setLanding               *connect.Client[v1.SetLandingRequest, v1.SetLandingResponse]
 	pollInbox                *connect.Client[v1.PollInboxRequest, v1.PollInboxResponse]
 	openPullRequest          *connect.Client[v1.OpenPullRequestRequest, v1.OpenPullRequestResponse]
 	requestCiWatch           *connect.Client[v1.RequestCiWatchRequest, v1.RequestCiWatchResponse]
@@ -403,6 +435,21 @@ func (c *runnerServiceClient) ReadThread(ctx context.Context, req *connect.Reque
 // BoardResearch calls tank.agentctl.v1.RunnerService.BoardResearch.
 func (c *runnerServiceClient) BoardResearch(ctx context.Context, req *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error) {
 	return c.boardResearch.CallUnary(ctx, req)
+}
+
+// CommitFiles calls tank.agentctl.v1.RunnerService.CommitFiles.
+func (c *runnerServiceClient) CommitFiles(ctx context.Context, req *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error) {
+	return c.commitFiles.CallUnary(ctx, req)
+}
+
+// SetBrand calls tank.agentctl.v1.RunnerService.SetBrand.
+func (c *runnerServiceClient) SetBrand(ctx context.Context, req *connect.Request[v1.SetBrandRequest]) (*connect.Response[v1.SetBrandResponse], error) {
+	return c.setBrand.CallUnary(ctx, req)
+}
+
+// SetLanding calls tank.agentctl.v1.RunnerService.SetLanding.
+func (c *runnerServiceClient) SetLanding(ctx context.Context, req *connect.Request[v1.SetLandingRequest]) (*connect.Response[v1.SetLandingResponse], error) {
+	return c.setLanding.CallUnary(ctx, req)
 }
 
 // PollInbox calls tank.agentctl.v1.RunnerService.PollInbox.
@@ -479,6 +526,9 @@ type RunnerServiceHandler interface {
 	ReportStatus(context.Context, *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error)
 	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error)
+	CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error)
+	SetBrand(context.Context, *connect.Request[v1.SetBrandRequest]) (*connect.Response[v1.SetBrandResponse], error)
+	SetLanding(context.Context, *connect.Request[v1.SetLandingRequest]) (*connect.Response[v1.SetLandingResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -572,6 +622,24 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceBoardResearchProcedure,
 		svc.BoardResearch,
 		connect.WithSchema(runnerServiceMethods.ByName("BoardResearch")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceCommitFilesHandler := connect.NewUnaryHandler(
+		RunnerServiceCommitFilesProcedure,
+		svc.CommitFiles,
+		connect.WithSchema(runnerServiceMethods.ByName("CommitFiles")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceSetBrandHandler := connect.NewUnaryHandler(
+		RunnerServiceSetBrandProcedure,
+		svc.SetBrand,
+		connect.WithSchema(runnerServiceMethods.ByName("SetBrand")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceSetLandingHandler := connect.NewUnaryHandler(
+		RunnerServiceSetLandingProcedure,
+		svc.SetLanding,
+		connect.WithSchema(runnerServiceMethods.ByName("SetLanding")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServicePollInboxHandler := connect.NewUnaryHandler(
@@ -672,6 +740,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceReadThreadHandler.ServeHTTP(w, r)
 		case RunnerServiceBoardResearchProcedure:
 			runnerServiceBoardResearchHandler.ServeHTTP(w, r)
+		case RunnerServiceCommitFilesProcedure:
+			runnerServiceCommitFilesHandler.ServeHTTP(w, r)
+		case RunnerServiceSetBrandProcedure:
+			runnerServiceSetBrandHandler.ServeHTTP(w, r)
+		case RunnerServiceSetLandingProcedure:
+			runnerServiceSetLandingHandler.ServeHTTP(w, r)
 		case RunnerServicePollInboxProcedure:
 			runnerServicePollInboxHandler.ServeHTTP(w, r)
 		case RunnerServiceOpenPullRequestProcedure:
@@ -751,6 +825,18 @@ func (UnimplementedRunnerServiceHandler) ReadThread(context.Context, *connect.Re
 
 func (UnimplementedRunnerServiceHandler) BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BoardResearch is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.CommitFiles is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) SetBrand(context.Context, *connect.Request[v1.SetBrandRequest]) (*connect.Response[v1.SetBrandResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.SetBrand is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) SetLanding(context.Context, *connect.Request[v1.SetLandingRequest]) (*connect.Response[v1.SetLandingResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.SetLanding is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error) {

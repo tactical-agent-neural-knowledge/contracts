@@ -377,6 +377,62 @@ class BoardResearchResponse(_message.Message):
     hits: _containers.RepeatedCompositeFieldContainer[ResearchHit]
     def __init__(self, hits: _Optional[_Iterable[_Union[ResearchHit, _Mapping]]] = ...) -> None: ...
 
+class RepoFile(_message.Message):
+    __slots__ = ("path", "content")
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_FIELD_NUMBER: _ClassVar[int]
+    path: str
+    content: str
+    def __init__(self, path: _Optional[str] = ..., content: _Optional[str] = ...) -> None: ...
+
+class CommitFilesRequest(_message.Message):
+    __slots__ = ("files", "message", "build")
+    FILES_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    BUILD_FIELD_NUMBER: _ClassVar[int]
+    files: _containers.RepeatedCompositeFieldContainer[RepoFile]
+    message: str
+    build: bool
+    def __init__(self, files: _Optional[_Iterable[_Union[RepoFile, _Mapping]]] = ..., message: _Optional[str] = ..., build: bool = ...) -> None: ...
+
+class CommitFilesResponse(_message.Message):
+    __slots__ = ("committed",)
+    COMMITTED_FIELD_NUMBER: _ClassVar[int]
+    committed: int
+    def __init__(self, committed: _Optional[int] = ...) -> None: ...
+
+class SetBrandRequest(_message.Message):
+    __slots__ = ("icon_svg", "primary", "secondary", "background", "accent", "tagline")
+    ICON_SVG_FIELD_NUMBER: _ClassVar[int]
+    PRIMARY_FIELD_NUMBER: _ClassVar[int]
+    SECONDARY_FIELD_NUMBER: _ClassVar[int]
+    BACKGROUND_FIELD_NUMBER: _ClassVar[int]
+    ACCENT_FIELD_NUMBER: _ClassVar[int]
+    TAGLINE_FIELD_NUMBER: _ClassVar[int]
+    icon_svg: str
+    primary: str
+    secondary: str
+    background: str
+    accent: str
+    tagline: str
+    def __init__(self, icon_svg: _Optional[str] = ..., primary: _Optional[str] = ..., secondary: _Optional[str] = ..., background: _Optional[str] = ..., accent: _Optional[str] = ..., tagline: _Optional[str] = ...) -> None: ...
+
+class SetBrandResponse(_message.Message):
+    __slots__ = ("icon_url",)
+    ICON_URL_FIELD_NUMBER: _ClassVar[int]
+    icon_url: str
+    def __init__(self, icon_url: _Optional[str] = ...) -> None: ...
+
+class SetLandingRequest(_message.Message):
+    __slots__ = ("html",)
+    HTML_FIELD_NUMBER: _ClassVar[int]
+    html: str
+    def __init__(self, html: _Optional[str] = ...) -> None: ...
+
+class SetLandingResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class OpenPullRequestRequest(_message.Message):
     __slots__ = ("title", "body", "head_sha", "draft")
     TITLE_FIELD_NUMBER: _ClassVar[int]
