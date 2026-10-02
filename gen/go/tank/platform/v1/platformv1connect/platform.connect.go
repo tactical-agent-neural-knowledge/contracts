@@ -44,6 +44,15 @@ const (
 	PlatformServiceSetBoardSettingsProcedure = "/tank.platform.v1.PlatformService/SetBoardSettings"
 	// PlatformServiceStopRunProcedure is the fully-qualified name of the PlatformService's StopRun RPC.
 	PlatformServiceStopRunProcedure = "/tank.platform.v1.PlatformService/StopRun"
+	// PlatformServiceListMergesProcedure is the fully-qualified name of the PlatformService's
+	// ListMerges RPC.
+	PlatformServiceListMergesProcedure = "/tank.platform.v1.PlatformService/ListMerges"
+	// PlatformServiceDecideMergeProcedure is the fully-qualified name of the PlatformService's
+	// DecideMerge RPC.
+	PlatformServiceDecideMergeProcedure = "/tank.platform.v1.PlatformService/DecideMerge"
+	// PlatformServiceListDropCandidatesProcedure is the fully-qualified name of the PlatformService's
+	// ListDropCandidates RPC.
+	PlatformServiceListDropCandidatesProcedure = "/tank.platform.v1.PlatformService/ListDropCandidates"
 )
 
 // PlatformServiceClient is a client for the tank.platform.v1.PlatformService service.
@@ -52,6 +61,9 @@ type PlatformServiceClient interface {
 	SetAllocation(context.Context, *connect.Request[v1.SetAllocationRequest]) (*connect.Response[v1.SetAllocationResponse], error)
 	SetBoardSettings(context.Context, *connect.Request[v1.SetBoardSettingsRequest]) (*connect.Response[v1.SetBoardSettingsResponse], error)
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
+	ListMerges(context.Context, *connect.Request[v1.ListMergesRequest]) (*connect.Response[v1.ListMergesResponse], error)
+	DecideMerge(context.Context, *connect.Request[v1.DecideMergeRequest]) (*connect.Response[v1.DecideMergeResponse], error)
+	ListDropCandidates(context.Context, *connect.Request[v1.ListDropCandidatesRequest]) (*connect.Response[v1.ListDropCandidatesResponse], error)
 }
 
 // NewPlatformServiceClient constructs a client for the tank.platform.v1.PlatformService service. By
@@ -89,15 +101,36 @@ func NewPlatformServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(platformServiceMethods.ByName("StopRun")),
 			connect.WithClientOptions(opts...),
 		),
+		listMerges: connect.NewClient[v1.ListMergesRequest, v1.ListMergesResponse](
+			httpClient,
+			baseURL+PlatformServiceListMergesProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("ListMerges")),
+			connect.WithClientOptions(opts...),
+		),
+		decideMerge: connect.NewClient[v1.DecideMergeRequest, v1.DecideMergeResponse](
+			httpClient,
+			baseURL+PlatformServiceDecideMergeProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("DecideMerge")),
+			connect.WithClientOptions(opts...),
+		),
+		listDropCandidates: connect.NewClient[v1.ListDropCandidatesRequest, v1.ListDropCandidatesResponse](
+			httpClient,
+			baseURL+PlatformServiceListDropCandidatesProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("ListDropCandidates")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // platformServiceClient implements PlatformServiceClient.
 type platformServiceClient struct {
-	listAgentures    *connect.Client[v1.ListAgenturesRequest, v1.ListAgenturesResponse]
-	setAllocation    *connect.Client[v1.SetAllocationRequest, v1.SetAllocationResponse]
-	setBoardSettings *connect.Client[v1.SetBoardSettingsRequest, v1.SetBoardSettingsResponse]
-	stopRun          *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
+	listAgentures      *connect.Client[v1.ListAgenturesRequest, v1.ListAgenturesResponse]
+	setAllocation      *connect.Client[v1.SetAllocationRequest, v1.SetAllocationResponse]
+	setBoardSettings   *connect.Client[v1.SetBoardSettingsRequest, v1.SetBoardSettingsResponse]
+	stopRun            *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
+	listMerges         *connect.Client[v1.ListMergesRequest, v1.ListMergesResponse]
+	decideMerge        *connect.Client[v1.DecideMergeRequest, v1.DecideMergeResponse]
+	listDropCandidates *connect.Client[v1.ListDropCandidatesRequest, v1.ListDropCandidatesResponse]
 }
 
 // ListAgentures calls tank.platform.v1.PlatformService.ListAgentures.
@@ -120,12 +153,30 @@ func (c *platformServiceClient) StopRun(ctx context.Context, req *connect.Reques
 	return c.stopRun.CallUnary(ctx, req)
 }
 
+// ListMerges calls tank.platform.v1.PlatformService.ListMerges.
+func (c *platformServiceClient) ListMerges(ctx context.Context, req *connect.Request[v1.ListMergesRequest]) (*connect.Response[v1.ListMergesResponse], error) {
+	return c.listMerges.CallUnary(ctx, req)
+}
+
+// DecideMerge calls tank.platform.v1.PlatformService.DecideMerge.
+func (c *platformServiceClient) DecideMerge(ctx context.Context, req *connect.Request[v1.DecideMergeRequest]) (*connect.Response[v1.DecideMergeResponse], error) {
+	return c.decideMerge.CallUnary(ctx, req)
+}
+
+// ListDropCandidates calls tank.platform.v1.PlatformService.ListDropCandidates.
+func (c *platformServiceClient) ListDropCandidates(ctx context.Context, req *connect.Request[v1.ListDropCandidatesRequest]) (*connect.Response[v1.ListDropCandidatesResponse], error) {
+	return c.listDropCandidates.CallUnary(ctx, req)
+}
+
 // PlatformServiceHandler is an implementation of the tank.platform.v1.PlatformService service.
 type PlatformServiceHandler interface {
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
 	SetAllocation(context.Context, *connect.Request[v1.SetAllocationRequest]) (*connect.Response[v1.SetAllocationResponse], error)
 	SetBoardSettings(context.Context, *connect.Request[v1.SetBoardSettingsRequest]) (*connect.Response[v1.SetBoardSettingsResponse], error)
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
+	ListMerges(context.Context, *connect.Request[v1.ListMergesRequest]) (*connect.Response[v1.ListMergesResponse], error)
+	DecideMerge(context.Context, *connect.Request[v1.DecideMergeRequest]) (*connect.Response[v1.DecideMergeResponse], error)
+	ListDropCandidates(context.Context, *connect.Request[v1.ListDropCandidatesRequest]) (*connect.Response[v1.ListDropCandidatesResponse], error)
 }
 
 // NewPlatformServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -159,6 +210,24 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 		connect.WithSchema(platformServiceMethods.ByName("StopRun")),
 		connect.WithHandlerOptions(opts...),
 	)
+	platformServiceListMergesHandler := connect.NewUnaryHandler(
+		PlatformServiceListMergesProcedure,
+		svc.ListMerges,
+		connect.WithSchema(platformServiceMethods.ByName("ListMerges")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceDecideMergeHandler := connect.NewUnaryHandler(
+		PlatformServiceDecideMergeProcedure,
+		svc.DecideMerge,
+		connect.WithSchema(platformServiceMethods.ByName("DecideMerge")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceListDropCandidatesHandler := connect.NewUnaryHandler(
+		PlatformServiceListDropCandidatesProcedure,
+		svc.ListDropCandidates,
+		connect.WithSchema(platformServiceMethods.ByName("ListDropCandidates")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.platform.v1.PlatformService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PlatformServiceListAgenturesProcedure:
@@ -169,6 +238,12 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 			platformServiceSetBoardSettingsHandler.ServeHTTP(w, r)
 		case PlatformServiceStopRunProcedure:
 			platformServiceStopRunHandler.ServeHTTP(w, r)
+		case PlatformServiceListMergesProcedure:
+			platformServiceListMergesHandler.ServeHTTP(w, r)
+		case PlatformServiceDecideMergeProcedure:
+			platformServiceDecideMergeHandler.ServeHTTP(w, r)
+		case PlatformServiceListDropCandidatesProcedure:
+			platformServiceListDropCandidatesHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -192,4 +267,16 @@ func (UnimplementedPlatformServiceHandler) SetBoardSettings(context.Context, *co
 
 func (UnimplementedPlatformServiceHandler) StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.StopRun is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) ListMerges(context.Context, *connect.Request[v1.ListMergesRequest]) (*connect.Response[v1.ListMergesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.ListMerges is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) DecideMerge(context.Context, *connect.Request[v1.DecideMergeRequest]) (*connect.Response[v1.DecideMergeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.DecideMerge is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) ListDropCandidates(context.Context, *connect.Request[v1.ListDropCandidatesRequest]) (*connect.Response[v1.ListDropCandidatesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.ListDropCandidates is not implemented"))
 }

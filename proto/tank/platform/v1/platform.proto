@@ -112,9 +112,58 @@ message StopRunRequest {
 }
 message StopRunResponse {}
 
+// MergeProposal is a twin the daily pass found: one product that should absorb
+// another. Approving carries it out; nothing is deleted either way.
+message MergeProposal {
+  string id = 1;
+  string absorbed_slug = 2;
+  string absorbed_name = 3;
+  string absorbed_summary = 4;
+  string survivor_slug = 5;
+  string survivor_name = 6;
+  string survivor_summary = 7;
+  double similarity = 8;
+  string status = 9;                           // proposed | rejected | done
+  bool auto = 10;                              // the board decided it on its own, beyond doubt
+  google.protobuf.Timestamp proposed_at = 11;
+  google.protobuf.Timestamp done_at = 12;
+}
+message ListMergesRequest {
+  bool include_decided = 1;                    // also what was already merged or kept
+}
+message ListMergesResponse {
+  repeated MergeProposal merges = 1;
+}
+message DecideMergeRequest {
+  string id = 1;
+  bool approve = 2;                            // false keeps both products
+}
+message DecideMergeResponse {
+  MergeProposal merge = 1;
+}
+
+// DropCandidate is a product the drop job would retire today, and why. The job is a
+// dry run until it is switched on; this list is how it is read meanwhile.
+message DropCandidate {
+  string workspace_id = 1;
+  string slug = 2;
+  string name = 3;
+  string industry = 4;
+  int32 score = 5;
+  string reasons = 6;
+}
+message ListDropCandidatesRequest {}
+message ListDropCandidatesResponse {
+  repeated DropCandidate candidates = 1;
+  string day = 2;                              // YYYY-MM-DD the list is for
+}
+
 service PlatformService {
   rpc ListAgentures(ListAgenturesRequest) returns (ListAgenturesResponse);
   rpc SetAllocation(SetAllocationRequest) returns (SetAllocationResponse);
   rpc SetBoardSettings(SetBoardSettingsRequest) returns (SetBoardSettingsResponse);
   rpc StopRun(StopRunRequest) returns (StopRunResponse);
+  rpc ListMerges(ListMergesRequest) returns (ListMergesResponse);
+  rpc DecideMerge(DecideMergeRequest) returns (DecideMergeResponse);
+  rpc ListDropCandidates(ListDropCandidatesRequest) returns (ListDropCandidatesResponse);
 }

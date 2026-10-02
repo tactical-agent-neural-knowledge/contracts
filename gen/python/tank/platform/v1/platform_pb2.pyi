@@ -153,3 +153,85 @@ class StopRunRequest(_message.Message):
 class StopRunResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class MergeProposal(_message.Message):
+    __slots__ = ("id", "absorbed_slug", "absorbed_name", "absorbed_summary", "survivor_slug", "survivor_name", "survivor_summary", "similarity", "status", "auto", "proposed_at", "done_at")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    ABSORBED_SLUG_FIELD_NUMBER: _ClassVar[int]
+    ABSORBED_NAME_FIELD_NUMBER: _ClassVar[int]
+    ABSORBED_SUMMARY_FIELD_NUMBER: _ClassVar[int]
+    SURVIVOR_SLUG_FIELD_NUMBER: _ClassVar[int]
+    SURVIVOR_NAME_FIELD_NUMBER: _ClassVar[int]
+    SURVIVOR_SUMMARY_FIELD_NUMBER: _ClassVar[int]
+    SIMILARITY_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    AUTO_FIELD_NUMBER: _ClassVar[int]
+    PROPOSED_AT_FIELD_NUMBER: _ClassVar[int]
+    DONE_AT_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    absorbed_slug: str
+    absorbed_name: str
+    absorbed_summary: str
+    survivor_slug: str
+    survivor_name: str
+    survivor_summary: str
+    similarity: float
+    status: str
+    auto: bool
+    proposed_at: _timestamp_pb2.Timestamp
+    done_at: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., absorbed_slug: _Optional[str] = ..., absorbed_name: _Optional[str] = ..., absorbed_summary: _Optional[str] = ..., survivor_slug: _Optional[str] = ..., survivor_name: _Optional[str] = ..., survivor_summary: _Optional[str] = ..., similarity: _Optional[float] = ..., status: _Optional[str] = ..., auto: bool = ..., proposed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., done_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ListMergesRequest(_message.Message):
+    __slots__ = ("include_decided",)
+    INCLUDE_DECIDED_FIELD_NUMBER: _ClassVar[int]
+    include_decided: bool
+    def __init__(self, include_decided: bool = ...) -> None: ...
+
+class ListMergesResponse(_message.Message):
+    __slots__ = ("merges",)
+    MERGES_FIELD_NUMBER: _ClassVar[int]
+    merges: _containers.RepeatedCompositeFieldContainer[MergeProposal]
+    def __init__(self, merges: _Optional[_Iterable[_Union[MergeProposal, _Mapping]]] = ...) -> None: ...
+
+class DecideMergeRequest(_message.Message):
+    __slots__ = ("id", "approve")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    APPROVE_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    approve: bool
+    def __init__(self, id: _Optional[str] = ..., approve: bool = ...) -> None: ...
+
+class DecideMergeResponse(_message.Message):
+    __slots__ = ("merge",)
+    MERGE_FIELD_NUMBER: _ClassVar[int]
+    merge: MergeProposal
+    def __init__(self, merge: _Optional[_Union[MergeProposal, _Mapping]] = ...) -> None: ...
+
+class DropCandidate(_message.Message):
+    __slots__ = ("workspace_id", "slug", "name", "industry", "score", "reasons")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    INDUSTRY_FIELD_NUMBER: _ClassVar[int]
+    SCORE_FIELD_NUMBER: _ClassVar[int]
+    REASONS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    slug: str
+    name: str
+    industry: str
+    score: int
+    reasons: str
+    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., industry: _Optional[str] = ..., score: _Optional[int] = ..., reasons: _Optional[str] = ...) -> None: ...
+
+class ListDropCandidatesRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListDropCandidatesResponse(_message.Message):
+    __slots__ = ("candidates", "day")
+    CANDIDATES_FIELD_NUMBER: _ClassVar[int]
+    DAY_FIELD_NUMBER: _ClassVar[int]
+    candidates: _containers.RepeatedCompositeFieldContainer[DropCandidate]
+    day: str
+    def __init__(self, candidates: _Optional[_Iterable[_Union[DropCandidate, _Mapping]]] = ..., day: _Optional[str] = ...) -> None: ...
