@@ -599,6 +599,7 @@ service ControlService {
   // The control plane does it because it holds the GitHub App; api asks at product
   // birth. Idempotent: asking twice for the same product returns the same repo.
   rpc CreateProductRepo(CreateProductRepoRequest) returns (CreateProductRepoResponse);
+  rpc CommitProductFiles(CommitProductFilesRequest) returns (CommitProductFilesResponse);
   // Wakes a product (replicas 1) or puts it to sleep (replicas 0). A product is
   // asleep by default and a new image never wakes it: waking is a decision — a
   // preview, a sale — made here, and recorded in GitOps like everything else.
@@ -621,4 +622,16 @@ message CreateProductRepoRequest {
 }
 message CreateProductRepoResponse {
   string repo = 1;          // owner/name
+}
+
+// CommitProductFiles writes files to a product's repository as the App, for the board's
+// own writing — a stage done without a sandbox still leaves its document behind.
+message CommitProductFilesRequest {
+  string slug = 1;
+  repeated RepoFile files = 2;
+  string message = 3;
+  bool build = 4;
+}
+message CommitProductFilesResponse {
+  int32 committed = 1;
 }

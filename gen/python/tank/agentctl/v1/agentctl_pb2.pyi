@@ -904,3 +904,21 @@ class CreateProductRepoResponse(_message.Message):
     REPO_FIELD_NUMBER: _ClassVar[int]
     repo: str
     def __init__(self, repo: _Optional[str] = ...) -> None: ...
+
+class CommitProductFilesRequest(_message.Message):
+    __slots__ = ("slug", "files", "message", "build")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    FILES_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    BUILD_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    files: _containers.RepeatedCompositeFieldContainer[RepoFile]
+    message: str
+    build: bool
+    def __init__(self, slug: _Optional[str] = ..., files: _Optional[_Iterable[_Union[RepoFile, _Mapping]]] = ..., message: _Optional[str] = ..., build: bool = ...) -> None: ...
+
+class CommitProductFilesResponse(_message.Message):
+    __slots__ = ("committed",)
+    COMMITTED_FIELD_NUMBER: _ClassVar[int]
+    committed: int
+    def __init__(self, committed: _Optional[int] = ...) -> None: ...
