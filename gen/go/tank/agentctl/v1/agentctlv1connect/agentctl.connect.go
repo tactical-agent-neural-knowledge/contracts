@@ -78,6 +78,9 @@ const (
 	// RunnerServiceSetLandingProcedure is the fully-qualified name of the RunnerService's SetLanding
 	// RPC.
 	RunnerServiceSetLandingProcedure = "/tank.agentctl.v1.RunnerService/SetLanding"
+	// RunnerServiceRecordFindingProcedure is the fully-qualified name of the RunnerService's
+	// RecordFinding RPC.
+	RunnerServiceRecordFindingProcedure = "/tank.agentctl.v1.RunnerService/RecordFinding"
 	// RunnerServicePollInboxProcedure is the fully-qualified name of the RunnerService's PollInbox RPC.
 	RunnerServicePollInboxProcedure = "/tank.agentctl.v1.RunnerService/PollInbox"
 	// RunnerServiceOpenPullRequestProcedure is the fully-qualified name of the RunnerService's
@@ -157,6 +160,7 @@ type RunnerServiceClient interface {
 	CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error)
 	SetBrand(context.Context, *connect.Request[v1.SetBrandRequest]) (*connect.Response[v1.SetBrandResponse], error)
 	SetLanding(context.Context, *connect.Request[v1.SetLandingRequest]) (*connect.Response[v1.SetLandingResponse], error)
+	RecordFinding(context.Context, *connect.Request[v1.RecordFindingRequest]) (*connect.Response[v1.RecordFindingResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -274,6 +278,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("SetLanding")),
 			connect.WithClientOptions(opts...),
 		),
+		recordFinding: connect.NewClient[v1.RecordFindingRequest, v1.RecordFindingResponse](
+			httpClient,
+			baseURL+RunnerServiceRecordFindingProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("RecordFinding")),
+			connect.WithClientOptions(opts...),
+		),
 		pollInbox: connect.NewClient[v1.PollInboxRequest, v1.PollInboxResponse](
 			httpClient,
 			baseURL+RunnerServicePollInboxProcedure,
@@ -366,6 +376,7 @@ type runnerServiceClient struct {
 	commitFiles              *connect.Client[v1.CommitFilesRequest, v1.CommitFilesResponse]
 	setBrand                 *connect.Client[v1.SetBrandRequest, v1.SetBrandResponse]
 	setLanding               *connect.Client[v1.SetLandingRequest, v1.SetLandingResponse]
+	recordFinding            *connect.Client[v1.RecordFindingRequest, v1.RecordFindingResponse]
 	pollInbox                *connect.Client[v1.PollInboxRequest, v1.PollInboxResponse]
 	openPullRequest          *connect.Client[v1.OpenPullRequestRequest, v1.OpenPullRequestResponse]
 	requestCiWatch           *connect.Client[v1.RequestCiWatchRequest, v1.RequestCiWatchResponse]
@@ -455,6 +466,11 @@ func (c *runnerServiceClient) SetLanding(ctx context.Context, req *connect.Reque
 	return c.setLanding.CallUnary(ctx, req)
 }
 
+// RecordFinding calls tank.agentctl.v1.RunnerService.RecordFinding.
+func (c *runnerServiceClient) RecordFinding(ctx context.Context, req *connect.Request[v1.RecordFindingRequest]) (*connect.Response[v1.RecordFindingResponse], error) {
+	return c.recordFinding.CallUnary(ctx, req)
+}
+
 // PollInbox calls tank.agentctl.v1.RunnerService.PollInbox.
 func (c *runnerServiceClient) PollInbox(ctx context.Context, req *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error) {
 	return c.pollInbox.CallUnary(ctx, req)
@@ -532,6 +548,7 @@ type RunnerServiceHandler interface {
 	CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error)
 	SetBrand(context.Context, *connect.Request[v1.SetBrandRequest]) (*connect.Response[v1.SetBrandResponse], error)
 	SetLanding(context.Context, *connect.Request[v1.SetLandingRequest]) (*connect.Response[v1.SetLandingResponse], error)
+	RecordFinding(context.Context, *connect.Request[v1.RecordFindingRequest]) (*connect.Response[v1.RecordFindingResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -645,6 +662,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("SetLanding")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceRecordFindingHandler := connect.NewUnaryHandler(
+		RunnerServiceRecordFindingProcedure,
+		svc.RecordFinding,
+		connect.WithSchema(runnerServiceMethods.ByName("RecordFinding")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServicePollInboxHandler := connect.NewUnaryHandler(
 		RunnerServicePollInboxProcedure,
 		svc.PollInbox,
@@ -749,6 +772,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceSetBrandHandler.ServeHTTP(w, r)
 		case RunnerServiceSetLandingProcedure:
 			runnerServiceSetLandingHandler.ServeHTTP(w, r)
+		case RunnerServiceRecordFindingProcedure:
+			runnerServiceRecordFindingHandler.ServeHTTP(w, r)
 		case RunnerServicePollInboxProcedure:
 			runnerServicePollInboxHandler.ServeHTTP(w, r)
 		case RunnerServiceOpenPullRequestProcedure:
@@ -840,6 +865,10 @@ func (UnimplementedRunnerServiceHandler) SetBrand(context.Context, *connect.Requ
 
 func (UnimplementedRunnerServiceHandler) SetLanding(context.Context, *connect.Request[v1.SetLandingRequest]) (*connect.Response[v1.SetLandingResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.SetLanding is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) RecordFinding(context.Context, *connect.Request[v1.RecordFindingRequest]) (*connect.Response[v1.RecordFindingResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.RecordFinding is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error) {

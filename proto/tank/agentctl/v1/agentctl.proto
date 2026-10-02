@@ -265,6 +265,20 @@ message SetLandingRequest {
 }
 message SetLandingResponse {}
 
+// RecordFinding writes one structured fact the agent learned about an existing tool
+// during research: what it costs, what people complain about, what it gets right, who
+// is leaving it. The board reads these across every product; prose cannot be counted.
+message RecordFindingRequest {
+  string tool = 1;      // the tool's name as people say it: "Jobber", "QuickBooks"
+  string kind = 2;      // price | complaint | strength | gap | switching_cost | segment_leaving | evidence | other
+  string value = 3;     // the fact in one sentence
+  double amount = 4;    // a number when the fact is one: a monthly price, a percentage
+  string unit = 5;      // usd_month | usd_year | percent | count | "" 
+  string quote = 6;     // the words it rests on, when there are some
+  string url = 7;       // where they were read, when there is one
+}
+message RecordFindingResponse {}
+
 // --------------------------------------------------------------------- GitHub
 
 message OpenPullRequestRequest {
@@ -478,6 +492,7 @@ service RunnerService {
   rpc CommitFiles(CommitFilesRequest) returns (CommitFilesResponse);
   rpc SetBrand(SetBrandRequest) returns (SetBrandResponse);
   rpc SetLanding(SetLandingRequest) returns (SetLandingResponse);
+  rpc RecordFinding(RecordFindingRequest) returns (RecordFindingResponse);
   rpc PollInbox(PollInboxRequest) returns (PollInboxResponse);
 
   rpc OpenPullRequest(OpenPullRequestRequest) returns (OpenPullRequestResponse);

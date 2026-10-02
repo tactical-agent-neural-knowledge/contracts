@@ -47,6 +47,9 @@ const (
 	// AgentServiceSetProductLandingProcedure is the fully-qualified name of the AgentService's
 	// SetProductLanding RPC.
 	AgentServiceSetProductLandingProcedure = "/tank.agent.v1.AgentService/SetProductLanding"
+	// AgentServiceRecordProductFindingProcedure is the fully-qualified name of the AgentService's
+	// RecordProductFinding RPC.
+	AgentServiceRecordProductFindingProcedure = "/tank.agent.v1.AgentService/RecordProductFinding"
 	// AgentServiceGetRunProcedure is the fully-qualified name of the AgentService's GetRun RPC.
 	AgentServiceGetRunProcedure = "/tank.agent.v1.AgentService/GetRun"
 	// AgentServiceListRunsProcedure is the fully-qualified name of the AgentService's ListRuns RPC.
@@ -74,6 +77,7 @@ type AgentServiceClient interface {
 	// A product's brand and landing page, set by the run working in it (an agenture only).
 	SetProductBrand(context.Context, *connect.Request[v1.SetProductBrandRequest]) (*connect.Response[v1.SetProductBrandResponse], error)
 	SetProductLanding(context.Context, *connect.Request[v1.SetProductLandingRequest]) (*connect.Response[v1.SetProductLandingResponse], error)
+	RecordProductFinding(context.Context, *connect.Request[v1.RecordProductFindingRequest]) (*connect.Response[v1.RecordProductFindingResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
 	ListAgents(context.Context, *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error)
@@ -132,6 +136,12 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("SetProductLanding")),
 			connect.WithClientOptions(opts...),
 		),
+		recordProductFinding: connect.NewClient[v1.RecordProductFindingRequest, v1.RecordProductFindingResponse](
+			httpClient,
+			baseURL+AgentServiceRecordProductFindingProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("RecordProductFinding")),
+			connect.WithClientOptions(opts...),
+		),
 		getRun: connect.NewClient[v1.GetRunRequest, v1.GetRunResponse](
 			httpClient,
 			baseURL+AgentServiceGetRunProcedure,
@@ -179,19 +189,20 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 
 // agentServiceClient implements AgentServiceClient.
 type agentServiceClient struct {
-	startRun           *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
-	stopRun            *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
-	heartbeat          *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
-	setStatus          *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
-	setProductBrand    *connect.Client[v1.SetProductBrandRequest, v1.SetProductBrandResponse]
-	setProductLanding  *connect.Client[v1.SetProductLandingRequest, v1.SetProductLandingResponse]
-	getRun             *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
-	listRuns           *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
-	listAgents         *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
-	getRepoConnection  *connect.Client[v1.GetRepoConnectionRequest, v1.GetRepoConnectionResponse]
-	startGitHubConnect *connect.Client[v1.StartGitHubConnectRequest, v1.StartGitHubConnectResponse]
-	bindRepo           *connect.Client[v1.BindRepoRequest, v1.BindRepoResponse]
-	unbindRepo         *connect.Client[v1.UnbindRepoRequest, v1.UnbindRepoResponse]
+	startRun             *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	stopRun              *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
+	heartbeat            *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
+	setStatus            *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
+	setProductBrand      *connect.Client[v1.SetProductBrandRequest, v1.SetProductBrandResponse]
+	setProductLanding    *connect.Client[v1.SetProductLandingRequest, v1.SetProductLandingResponse]
+	recordProductFinding *connect.Client[v1.RecordProductFindingRequest, v1.RecordProductFindingResponse]
+	getRun               *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	listRuns             *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
+	listAgents           *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
+	getRepoConnection    *connect.Client[v1.GetRepoConnectionRequest, v1.GetRepoConnectionResponse]
+	startGitHubConnect   *connect.Client[v1.StartGitHubConnectRequest, v1.StartGitHubConnectResponse]
+	bindRepo             *connect.Client[v1.BindRepoRequest, v1.BindRepoResponse]
+	unbindRepo           *connect.Client[v1.UnbindRepoRequest, v1.UnbindRepoResponse]
 }
 
 // StartRun calls tank.agent.v1.AgentService.StartRun.
@@ -222,6 +233,11 @@ func (c *agentServiceClient) SetProductBrand(ctx context.Context, req *connect.R
 // SetProductLanding calls tank.agent.v1.AgentService.SetProductLanding.
 func (c *agentServiceClient) SetProductLanding(ctx context.Context, req *connect.Request[v1.SetProductLandingRequest]) (*connect.Response[v1.SetProductLandingResponse], error) {
 	return c.setProductLanding.CallUnary(ctx, req)
+}
+
+// RecordProductFinding calls tank.agent.v1.AgentService.RecordProductFinding.
+func (c *agentServiceClient) RecordProductFinding(ctx context.Context, req *connect.Request[v1.RecordProductFindingRequest]) (*connect.Response[v1.RecordProductFindingResponse], error) {
+	return c.recordProductFinding.CallUnary(ctx, req)
 }
 
 // GetRun calls tank.agent.v1.AgentService.GetRun.
@@ -268,6 +284,7 @@ type AgentServiceHandler interface {
 	// A product's brand and landing page, set by the run working in it (an agenture only).
 	SetProductBrand(context.Context, *connect.Request[v1.SetProductBrandRequest]) (*connect.Response[v1.SetProductBrandResponse], error)
 	SetProductLanding(context.Context, *connect.Request[v1.SetProductLandingRequest]) (*connect.Response[v1.SetProductLandingResponse], error)
+	RecordProductFinding(context.Context, *connect.Request[v1.RecordProductFindingRequest]) (*connect.Response[v1.RecordProductFindingResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
 	ListAgents(context.Context, *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error)
@@ -320,6 +337,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		AgentServiceSetProductLandingProcedure,
 		svc.SetProductLanding,
 		connect.WithSchema(agentServiceMethods.ByName("SetProductLanding")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceRecordProductFindingHandler := connect.NewUnaryHandler(
+		AgentServiceRecordProductFindingProcedure,
+		svc.RecordProductFinding,
+		connect.WithSchema(agentServiceMethods.ByName("RecordProductFinding")),
 		connect.WithHandlerOptions(opts...),
 	)
 	agentServiceGetRunHandler := connect.NewUnaryHandler(
@@ -378,6 +401,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceSetProductBrandHandler.ServeHTTP(w, r)
 		case AgentServiceSetProductLandingProcedure:
 			agentServiceSetProductLandingHandler.ServeHTTP(w, r)
+		case AgentServiceRecordProductFindingProcedure:
+			agentServiceRecordProductFindingHandler.ServeHTTP(w, r)
 		case AgentServiceGetRunProcedure:
 			agentServiceGetRunHandler.ServeHTTP(w, r)
 		case AgentServiceListRunsProcedure:
@@ -423,6 +448,10 @@ func (UnimplementedAgentServiceHandler) SetProductBrand(context.Context, *connec
 
 func (UnimplementedAgentServiceHandler) SetProductLanding(context.Context, *connect.Request[v1.SetProductLandingRequest]) (*connect.Response[v1.SetProductLandingResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetProductLanding is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) RecordProductFinding(context.Context, *connect.Request[v1.RecordProductFindingRequest]) (*connect.Response[v1.RecordProductFindingResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.RecordProductFinding is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error) {

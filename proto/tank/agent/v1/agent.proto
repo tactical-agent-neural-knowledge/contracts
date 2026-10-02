@@ -115,6 +115,20 @@ message SetProductLandingRequest {
 }
 message SetProductLandingResponse {}
 
+// RecordProductFinding stores one structured research fact about an existing tool,
+// from a run on a product of the board. See agentctl.RecordFinding for the fields.
+message RecordProductFindingRequest {
+  string run_id = 1;
+  string tool = 2;
+  string kind = 3;
+  string value = 4;
+  double amount = 5;
+  string unit = 6;
+  string quote = 7;
+  string url = 8;
+}
+message RecordProductFindingResponse {}
+
 message GetRunRequest {
   string run_id = 1;
 }
@@ -185,6 +199,7 @@ service AgentService {
   // A product's brand and landing page, set by the run working in it (an agenture only).
   rpc SetProductBrand(SetProductBrandRequest) returns (SetProductBrandResponse);
   rpc SetProductLanding(SetProductLandingRequest) returns (SetProductLandingResponse);
+  rpc RecordProductFinding(RecordProductFindingRequest) returns (RecordProductFindingResponse);
   rpc GetRun(GetRunRequest) returns (GetRunResponse);
   rpc ListRuns(ListRunsRequest) returns (ListRunsResponse);
   rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse);

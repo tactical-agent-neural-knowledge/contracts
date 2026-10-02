@@ -433,6 +433,28 @@ class SetLandingResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class RecordFindingRequest(_message.Message):
+    __slots__ = ("tool", "kind", "value", "amount", "unit", "quote", "url")
+    TOOL_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    AMOUNT_FIELD_NUMBER: _ClassVar[int]
+    UNIT_FIELD_NUMBER: _ClassVar[int]
+    QUOTE_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    tool: str
+    kind: str
+    value: str
+    amount: float
+    unit: str
+    quote: str
+    url: str
+    def __init__(self, tool: _Optional[str] = ..., kind: _Optional[str] = ..., value: _Optional[str] = ..., amount: _Optional[float] = ..., unit: _Optional[str] = ..., quote: _Optional[str] = ..., url: _Optional[str] = ...) -> None: ...
+
+class RecordFindingResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class OpenPullRequestRequest(_message.Message):
     __slots__ = ("title", "body", "head_sha", "draft")
     TITLE_FIELD_NUMBER: _ClassVar[int]

@@ -200,6 +200,30 @@ class SetProductLandingResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class RecordProductFindingRequest(_message.Message):
+    __slots__ = ("run_id", "tool", "kind", "value", "amount", "unit", "quote", "url")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    TOOL_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    AMOUNT_FIELD_NUMBER: _ClassVar[int]
+    UNIT_FIELD_NUMBER: _ClassVar[int]
+    QUOTE_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    tool: str
+    kind: str
+    value: str
+    amount: float
+    unit: str
+    quote: str
+    url: str
+    def __init__(self, run_id: _Optional[str] = ..., tool: _Optional[str] = ..., kind: _Optional[str] = ..., value: _Optional[str] = ..., amount: _Optional[float] = ..., unit: _Optional[str] = ..., quote: _Optional[str] = ..., url: _Optional[str] = ...) -> None: ...
+
+class RecordProductFindingResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class GetRunRequest(_message.Message):
     __slots__ = ("run_id",)
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
