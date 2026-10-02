@@ -65,7 +65,7 @@ class ListAgenturesResponse(_message.Message):
     def __init__(self, agentures: _Optional[_Iterable[_Union[AgentureRow, _Mapping]]] = ..., total: _Optional[int] = ..., summary: _Optional[_Union[BoardSummary, _Mapping]] = ...) -> None: ...
 
 class BoardSummary(_message.Message):
-    __slots__ = ("in_flight", "max_concurrent", "enabled", "killed", "auto_default", "hours_from", "hours_to", "hours_zone", "hours_days", "unclaimed", "agent_minutes_24h", "spend_usd_24h", "spend_usd_total")
+    __slots__ = ("in_flight", "max_concurrent", "enabled", "killed", "auto_default", "hours_from", "hours_to", "hours_zone", "hours_days", "unclaimed", "agent_minutes_24h", "spend_usd_24h", "spend_usd_total", "spend_usd_1h", "spend_usd_3h")
     IN_FLIGHT_FIELD_NUMBER: _ClassVar[int]
     MAX_CONCURRENT_FIELD_NUMBER: _ClassVar[int]
     ENABLED_FIELD_NUMBER: _ClassVar[int]
@@ -79,6 +79,8 @@ class BoardSummary(_message.Message):
     AGENT_MINUTES_24H_FIELD_NUMBER: _ClassVar[int]
     SPEND_USD_24H_FIELD_NUMBER: _ClassVar[int]
     SPEND_USD_TOTAL_FIELD_NUMBER: _ClassVar[int]
+    SPEND_USD_1H_FIELD_NUMBER: _ClassVar[int]
+    SPEND_USD_3H_FIELD_NUMBER: _ClassVar[int]
     in_flight: int
     max_concurrent: int
     enabled: bool
@@ -92,7 +94,9 @@ class BoardSummary(_message.Message):
     agent_minutes_24h: int
     spend_usd_24h: float
     spend_usd_total: float
-    def __init__(self, in_flight: _Optional[int] = ..., max_concurrent: _Optional[int] = ..., enabled: bool = ..., killed: bool = ..., auto_default: bool = ..., hours_from: _Optional[int] = ..., hours_to: _Optional[int] = ..., hours_zone: _Optional[str] = ..., hours_days: _Optional[_Iterable[int]] = ..., unclaimed: _Optional[int] = ..., agent_minutes_24h: _Optional[int] = ..., spend_usd_24h: _Optional[float] = ..., spend_usd_total: _Optional[float] = ...) -> None: ...
+    spend_usd_1h: float
+    spend_usd_3h: float
+    def __init__(self, in_flight: _Optional[int] = ..., max_concurrent: _Optional[int] = ..., enabled: bool = ..., killed: bool = ..., auto_default: bool = ..., hours_from: _Optional[int] = ..., hours_to: _Optional[int] = ..., hours_zone: _Optional[str] = ..., hours_days: _Optional[_Iterable[int]] = ..., unclaimed: _Optional[int] = ..., agent_minutes_24h: _Optional[int] = ..., spend_usd_24h: _Optional[float] = ..., spend_usd_total: _Optional[float] = ..., spend_usd_1h: _Optional[float] = ..., spend_usd_3h: _Optional[float] = ...) -> None: ...
 
 class SetAllocationRequest(_message.Message):
     __slots__ = ("workspace_id", "enabled", "weight", "run_now", "auto_approve")

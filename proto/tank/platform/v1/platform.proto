@@ -72,6 +72,10 @@ message BoardSummary {
   int64 agent_minutes_24h = 5;
   double spend_usd_24h = 6;                    // what the board cost in the last day
   double spend_usd_total = 7;
+  // The last hour and the last three, for reading a change to the cap or the
+  // policy before the day's figure can show it.
+  double spend_usd_1h = 14;
+  double spend_usd_3h = 15;
 }
 
 // SetAllocation changes how much attention a product gets. Weight 0 or enabled=false
