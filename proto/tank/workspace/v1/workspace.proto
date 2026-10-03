@@ -88,6 +88,10 @@ message GetBootstrapResponse {
   // before anyone hits a wall. The server is still the authority: every gated
   // call is checked again server-side.
   Entitlements entitlements = 10;
+  // The viewer's read position in the threads they follow, most recently
+  // active first; capped. Threads not listed are read to wherever the client
+  // last marked them, or unread if it never has.
+  repeated tank.channel.v1.ThreadReadState thread_read_states = 11;
 }
 
 // Everything Slack does is free. The agent and the Neural Vault are what a

@@ -56,6 +56,13 @@ message Channel {
   string icon_file_id = 15;
 }
 
+// Where the viewer has read to in one thread. Served with the bootstrap so a
+// second device, or a fresh install, does not count every reply as new.
+message ThreadReadState {
+  string thread_root_id = 1;
+  int64 last_read_thread_seq = 2;
+}
+
 message ChannelReadState {
   string channel_id = 1;
   int64 last_read_seq = 2;
