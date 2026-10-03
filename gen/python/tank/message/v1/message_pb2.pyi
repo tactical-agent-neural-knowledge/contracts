@@ -38,7 +38,7 @@ class Reaction(_message.Message):
     def __init__(self, emoji: _Optional[str] = ..., count: _Optional[int] = ..., user_ids: _Optional[_Iterable[str]] = ..., reacted: bool = ...) -> None: ...
 
 class Message(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "channel_seq", "thread_root_id", "thread_seq", "author_id", "author_kind", "kind", "client_msg_id", "text", "rich_text", "blocks", "mention_ids", "file_ids", "reactions", "edited_at", "deleted_at", "reply_count", "last_reply_at", "reply_user_ids", "metadata", "created_at", "pinned", "saved", "files")
+    __slots__ = ("id", "workspace_id", "channel_id", "channel_seq", "thread_root_id", "thread_seq", "author_id", "author_kind", "kind", "client_msg_id", "text", "rich_text", "blocks", "mention_ids", "file_ids", "reactions", "edited_at", "deleted_at", "reply_count", "last_reply_at", "reply_user_ids", "metadata", "created_at", "pinned", "saved", "files", "also_sent_to_channel")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -65,6 +65,7 @@ class Message(_message.Message):
     PINNED_FIELD_NUMBER: _ClassVar[int]
     SAVED_FIELD_NUMBER: _ClassVar[int]
     FILES_FIELD_NUMBER: _ClassVar[int]
+    ALSO_SENT_TO_CHANNEL_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -91,7 +92,8 @@ class Message(_message.Message):
     pinned: bool
     saved: bool
     files: _containers.RepeatedCompositeFieldContainer[_files_pb2.File]
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., channel_seq: _Optional[int] = ..., thread_root_id: _Optional[str] = ..., thread_seq: _Optional[int] = ..., author_id: _Optional[str] = ..., author_kind: _Optional[_Union[_auth_pb2.PrincipalKind, str]] = ..., kind: _Optional[_Union[MessageKind, str]] = ..., client_msg_id: _Optional[str] = ..., text: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., blocks: _Optional[_Union[_blocks_pb2.Blocks, _Mapping]] = ..., mention_ids: _Optional[_Iterable[str]] = ..., file_ids: _Optional[_Iterable[str]] = ..., reactions: _Optional[_Iterable[_Union[Reaction, _Mapping]]] = ..., edited_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., reply_count: _Optional[int] = ..., last_reply_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., reply_user_ids: _Optional[_Iterable[str]] = ..., metadata: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., pinned: bool = ..., saved: bool = ..., files: _Optional[_Iterable[_Union[_files_pb2.File, _Mapping]]] = ...) -> None: ...
+    also_sent_to_channel: bool
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., channel_seq: _Optional[int] = ..., thread_root_id: _Optional[str] = ..., thread_seq: _Optional[int] = ..., author_id: _Optional[str] = ..., author_kind: _Optional[_Union[_auth_pb2.PrincipalKind, str]] = ..., kind: _Optional[_Union[MessageKind, str]] = ..., client_msg_id: _Optional[str] = ..., text: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., blocks: _Optional[_Union[_blocks_pb2.Blocks, _Mapping]] = ..., mention_ids: _Optional[_Iterable[str]] = ..., file_ids: _Optional[_Iterable[str]] = ..., reactions: _Optional[_Iterable[_Union[Reaction, _Mapping]]] = ..., edited_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., reply_count: _Optional[int] = ..., last_reply_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., reply_user_ids: _Optional[_Iterable[str]] = ..., metadata: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., pinned: bool = ..., saved: bool = ..., files: _Optional[_Iterable[_Union[_files_pb2.File, _Mapping]]] = ..., also_sent_to_channel: bool = ...) -> None: ...
 
 class PostMessageRequest(_message.Message):
     __slots__ = ("channel_id", "thread_root_id", "client_msg_id", "text", "rich_text", "blocks", "file_ids", "kind", "metadata", "also_send_to_channel", "ephemeral", "ephemeral_user_id", "mention_ids")

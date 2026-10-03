@@ -53,6 +53,10 @@ message Message {
   bool saved = 25;  // saved by the caller
   // The attached files (same order as file_ids), populated on every read path.
   repeated tank.files.v1.File files = 26;
+  // A reply that was also sent to the channel. Clients show a reply in the Tread's
+  // own timeline only when this is set; every reply carries a channel sequence
+  // number for ordering, so that alone cannot say.
+  bool also_sent_to_channel = 27;
 }
 
 message PostMessageRequest {

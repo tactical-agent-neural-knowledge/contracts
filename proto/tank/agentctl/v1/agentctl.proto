@@ -99,6 +99,10 @@ message RunContext {
   // commit_files, set_brand, set_landing, record_finding, board_research — exist only
   // for those; a customer's run never sees them.
   bool product_run = 23;
+  // The Tread's own purpose and goal, so an agent reading the code knows what the
+  // Tread is for and can offer the first step towards it.
+  string channel_purpose = 24;
+  string channel_goal = 25;
 }
 
 message GetRunContextRequest {}
