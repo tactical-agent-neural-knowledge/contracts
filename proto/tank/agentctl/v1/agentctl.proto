@@ -542,6 +542,10 @@ message StartRunRequest {
   string agent_id = 4;
   string requested_by = 5;
   string instructions = 6;
+  // "" for an ordinary run; "neural" for a Neural Knowledge refresh, which
+  // skips planning and works in `repo` regardless of the Tread's binding.
+  string mode = 7;
+  string repo = 8; // owner/name; required for mode "neural"
 }
 message StartRunResponse {
   tank.agent.v1.Run run = 1;
