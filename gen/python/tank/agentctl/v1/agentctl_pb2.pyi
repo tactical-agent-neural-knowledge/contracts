@@ -124,7 +124,7 @@ class ApprovedPlan(_message.Message):
     def __init__(self, plan_hash: _Optional[str] = ..., summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[_blocks_pb2.PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., approved_by: _Optional[str] = ..., approved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback: _Optional[str] = ...) -> None: ...
 
 class RunContext(_message.Message):
-    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal")
+    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "skip_neural_knowledge")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -150,6 +150,7 @@ class RunContext(_message.Message):
     PRODUCT_RUN_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_PURPOSE_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_GOAL_FIELD_NUMBER: _ClassVar[int]
+    SKIP_NEURAL_KNOWLEDGE_FIELD_NUMBER: _ClassVar[int]
     run_id: str
     workspace_id: str
     channel_id: str
@@ -175,7 +176,8 @@ class RunContext(_message.Message):
     product_run: bool
     channel_purpose: str
     channel_goal: str
-    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ...) -> None: ...
+    skip_neural_knowledge: bool
+    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., skip_neural_knowledge: bool = ...) -> None: ...
 
 class GetRunContextRequest(_message.Message):
     __slots__ = ()
@@ -758,7 +760,7 @@ class PollInboxResponse(_message.Message):
     def __init__(self, items: _Optional[_Iterable[_Union[InboxItem, _Mapping]]] = ...) -> None: ...
 
 class StartRunRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "instructions", "mode", "repo")
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "instructions", "mode", "repo", "skip_neural_knowledge")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
@@ -767,6 +769,7 @@ class StartRunRequest(_message.Message):
     INSTRUCTIONS_FIELD_NUMBER: _ClassVar[int]
     MODE_FIELD_NUMBER: _ClassVar[int]
     REPO_FIELD_NUMBER: _ClassVar[int]
+    SKIP_NEURAL_KNOWLEDGE_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     thread_root_id: str
@@ -775,7 +778,8 @@ class StartRunRequest(_message.Message):
     instructions: str
     mode: str
     repo: str
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., instructions: _Optional[str] = ..., mode: _Optional[str] = ..., repo: _Optional[str] = ...) -> None: ...
+    skip_neural_knowledge: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., instructions: _Optional[str] = ..., mode: _Optional[str] = ..., repo: _Optional[str] = ..., skip_neural_knowledge: bool = ...) -> None: ...
 
 class StartRunResponse(_message.Message):
     __slots__ = ("run",)
@@ -936,6 +940,22 @@ class RefreshNeuralKnowledgeResponse(_message.Message):
     thread_root_id: str
     started: bool
     def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., started: bool = ...) -> None: ...
+
+class OpenThreadRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "text")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    text: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., text: _Optional[str] = ...) -> None: ...
+
+class OpenThreadResponse(_message.Message):
+    __slots__ = ("thread_root_id",)
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    thread_root_id: str
+    def __init__(self, thread_root_id: _Optional[str] = ...) -> None: ...
 
 class SetProductReplicasRequest(_message.Message):
     __slots__ = ("slug", "replicas", "reason")

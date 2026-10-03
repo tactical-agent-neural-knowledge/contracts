@@ -103,6 +103,9 @@ message RunContext {
   // Tread is for and can offer the first step towards it.
   string channel_purpose = 24;
   string channel_goal = 25;
+  // True when this run must not read or write the repository's Neural Knowledge:
+  // the Tread turned it off, or the run is the control half of a measurement.
+  bool skip_neural_knowledge = 26;
 }
 
 message GetRunContextRequest {}
@@ -546,6 +549,9 @@ message StartRunRequest {
   // skips planning and works in `repo` regardless of the Tread's binding.
   string mode = 7;
   string repo = 8; // owner/name; required for mode "neural"
+  // Run without reading or writing the repository's Neural Knowledge. For measuring
+  // the layer: the same task with and without it.
+  bool skip_neural_knowledge = 9;
 }
 message StartRunResponse {
   tank.agent.v1.Run run = 1;
@@ -637,8 +643,20 @@ message RefreshNeuralKnowledgeResponse {
   bool started = 3;        // false when a refresh was already running for this repository
 }
 
+// Opens a thread in a Tread as the workspace's agent and returns its root. Used by
+// the platform when it needs a thread of its own: a measurement run, a refresh.
+message OpenThreadRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string text = 3;
+}
+message OpenThreadResponse {
+  string thread_root_id = 1;
+}
+
 service ControlService {
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
+  rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
   rpc RefreshNeuralKnowledge(RefreshNeuralKnowledgeRequest) returns (RefreshNeuralKnowledgeResponse);
   rpc GetRun(GetRunRequest) returns (GetRunResponse);
   rpc ListRuns(ListRunsRequest) returns (ListRunsResponse);

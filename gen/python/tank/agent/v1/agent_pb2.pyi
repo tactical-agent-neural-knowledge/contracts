@@ -319,20 +319,22 @@ class SetRepoAccessResponse(_message.Message):
     def __init__(self, access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ...) -> None: ...
 
 class TreadSettings(_message.Message):
-    __slots__ = ("concurrent_runs", "auto_accept_plans", "max_run_usd", "daily_usd", "pull_requests", "pr_reviewer_ids")
+    __slots__ = ("concurrent_runs", "auto_accept_plans", "max_run_usd", "daily_usd", "pull_requests", "pr_reviewer_ids", "read_neural_knowledge")
     CONCURRENT_RUNS_FIELD_NUMBER: _ClassVar[int]
     AUTO_ACCEPT_PLANS_FIELD_NUMBER: _ClassVar[int]
     MAX_RUN_USD_FIELD_NUMBER: _ClassVar[int]
     DAILY_USD_FIELD_NUMBER: _ClassVar[int]
     PULL_REQUESTS_FIELD_NUMBER: _ClassVar[int]
     PR_REVIEWER_IDS_FIELD_NUMBER: _ClassVar[int]
+    READ_NEURAL_KNOWLEDGE_FIELD_NUMBER: _ClassVar[int]
     concurrent_runs: int
     auto_accept_plans: bool
     max_run_usd: float
     daily_usd: float
     pull_requests: str
     pr_reviewer_ids: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, concurrent_runs: _Optional[int] = ..., auto_accept_plans: bool = ..., max_run_usd: _Optional[float] = ..., daily_usd: _Optional[float] = ..., pull_requests: _Optional[str] = ..., pr_reviewer_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+    read_neural_knowledge: bool
+    def __init__(self, concurrent_runs: _Optional[int] = ..., auto_accept_plans: bool = ..., max_run_usd: _Optional[float] = ..., daily_usd: _Optional[float] = ..., pull_requests: _Optional[str] = ..., pr_reviewer_ids: _Optional[_Iterable[str]] = ..., read_neural_knowledge: bool = ...) -> None: ...
 
 class HourBucket(_message.Message):
     __slots__ = ("hour", "runs", "spend_usd")
