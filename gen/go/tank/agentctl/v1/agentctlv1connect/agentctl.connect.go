@@ -117,6 +117,9 @@ const (
 	RunnerServiceSessionStoreDeleteProcedure = "/tank.agentctl.v1.RunnerService/SessionStoreDelete"
 	// ControlServiceStartRunProcedure is the fully-qualified name of the ControlService's StartRun RPC.
 	ControlServiceStartRunProcedure = "/tank.agentctl.v1.ControlService/StartRun"
+	// ControlServiceRefreshNeuralKnowledgeProcedure is the fully-qualified name of the ControlService's
+	// RefreshNeuralKnowledge RPC.
+	ControlServiceRefreshNeuralKnowledgeProcedure = "/tank.agentctl.v1.ControlService/RefreshNeuralKnowledge"
 	// ControlServiceGetRunProcedure is the fully-qualified name of the ControlService's GetRun RPC.
 	ControlServiceGetRunProcedure = "/tank.agentctl.v1.ControlService/GetRun"
 	// ControlServiceListRunsProcedure is the fully-qualified name of the ControlService's ListRuns RPC.
@@ -922,6 +925,7 @@ func (UnimplementedRunnerServiceHandler) SessionStoreDelete(context.Context, *co
 // ControlServiceClient is a client for the tank.agentctl.v1.ControlService service.
 type ControlServiceClient interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
+	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
 	DecideGate(context.Context, *connect.Request[v1.DecideGateRequest]) (*connect.Response[v1.DecideGateResponse], error)
@@ -954,6 +958,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+ControlServiceStartRunProcedure,
 			connect.WithSchema(controlServiceMethods.ByName("StartRun")),
+			connect.WithClientOptions(opts...),
+		),
+		refreshNeuralKnowledge: connect.NewClient[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse](
+			httpClient,
+			baseURL+ControlServiceRefreshNeuralKnowledgeProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("RefreshNeuralKnowledge")),
 			connect.WithClientOptions(opts...),
 		),
 		getRun: connect.NewClient[v1.GetRunRequest, v1.GetRunResponse](
@@ -1015,21 +1025,27 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 
 // controlServiceClient implements ControlServiceClient.
 type controlServiceClient struct {
-	startRun           *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
-	getRun             *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
-	listRuns           *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
-	decideGate         *connect.Client[v1.DecideGateRequest, v1.DecideGateResponse]
-	steerRun           *connect.Client[v1.SteerRunRequest, v1.SteerRunResponse]
-	cancelRun          *connect.Client[v1.CancelRunRequest, v1.CancelRunResponse]
-	listRunEvents      *connect.Client[v1.ListRunEventsRequest, v1.ListRunEventsResponse]
-	createProductRepo  *connect.Client[v1.CreateProductRepoRequest, v1.CreateProductRepoResponse]
-	commitProductFiles *connect.Client[v1.CommitProductFilesRequest, v1.CommitProductFilesResponse]
-	setProductReplicas *connect.Client[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse]
+	startRun               *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	refreshNeuralKnowledge *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
+	getRun                 *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	listRuns               *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
+	decideGate             *connect.Client[v1.DecideGateRequest, v1.DecideGateResponse]
+	steerRun               *connect.Client[v1.SteerRunRequest, v1.SteerRunResponse]
+	cancelRun              *connect.Client[v1.CancelRunRequest, v1.CancelRunResponse]
+	listRunEvents          *connect.Client[v1.ListRunEventsRequest, v1.ListRunEventsResponse]
+	createProductRepo      *connect.Client[v1.CreateProductRepoRequest, v1.CreateProductRepoResponse]
+	commitProductFiles     *connect.Client[v1.CommitProductFilesRequest, v1.CommitProductFilesResponse]
+	setProductReplicas     *connect.Client[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse]
 }
 
 // StartRun calls tank.agentctl.v1.ControlService.StartRun.
 func (c *controlServiceClient) StartRun(ctx context.Context, req *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error) {
 	return c.startRun.CallUnary(ctx, req)
+}
+
+// RefreshNeuralKnowledge calls tank.agentctl.v1.ControlService.RefreshNeuralKnowledge.
+func (c *controlServiceClient) RefreshNeuralKnowledge(ctx context.Context, req *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error) {
+	return c.refreshNeuralKnowledge.CallUnary(ctx, req)
 }
 
 // GetRun calls tank.agentctl.v1.ControlService.GetRun.
@@ -1080,6 +1096,7 @@ func (c *controlServiceClient) SetProductReplicas(ctx context.Context, req *conn
 // ControlServiceHandler is an implementation of the tank.agentctl.v1.ControlService service.
 type ControlServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
+	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
 	DecideGate(context.Context, *connect.Request[v1.DecideGateRequest]) (*connect.Response[v1.DecideGateResponse], error)
@@ -1108,6 +1125,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		ControlServiceStartRunProcedure,
 		svc.StartRun,
 		connect.WithSchema(controlServiceMethods.ByName("StartRun")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceRefreshNeuralKnowledgeHandler := connect.NewUnaryHandler(
+		ControlServiceRefreshNeuralKnowledgeProcedure,
+		svc.RefreshNeuralKnowledge,
+		connect.WithSchema(controlServiceMethods.ByName("RefreshNeuralKnowledge")),
 		connect.WithHandlerOptions(opts...),
 	)
 	controlServiceGetRunHandler := connect.NewUnaryHandler(
@@ -1168,6 +1191,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		switch r.URL.Path {
 		case ControlServiceStartRunProcedure:
 			controlServiceStartRunHandler.ServeHTTP(w, r)
+		case ControlServiceRefreshNeuralKnowledgeProcedure:
+			controlServiceRefreshNeuralKnowledgeHandler.ServeHTTP(w, r)
 		case ControlServiceGetRunProcedure:
 			controlServiceGetRunHandler.ServeHTTP(w, r)
 		case ControlServiceListRunsProcedure:
@@ -1197,6 +1222,10 @@ type UnimplementedControlServiceHandler struct{}
 
 func (UnimplementedControlServiceHandler) StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.StartRun is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.RefreshNeuralKnowledge is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error) {

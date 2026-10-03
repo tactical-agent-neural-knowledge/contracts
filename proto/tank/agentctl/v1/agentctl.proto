@@ -623,8 +623,23 @@ message ListRunEventsResponse {
   bool has_more = 2;
 }
 
+// Refresh a repository's Neural Knowledge: the control plane finds a Tread in the
+// workspace with access to the repository, keeps one standing thread per repository
+// for the refreshes, and starts a neural run there. Idempotent while one is active.
+message RefreshNeuralKnowledgeRequest {
+  string workspace_id = 1;
+  string repo = 2;         // owner/name
+  string requested_by = 3; // user id; empty means the platform (a push)
+}
+message RefreshNeuralKnowledgeResponse {
+  string channel_id = 1;
+  string thread_root_id = 2;
+  bool started = 3;        // false when a refresh was already running for this repository
+}
+
 service ControlService {
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
+  rpc RefreshNeuralKnowledge(RefreshNeuralKnowledgeRequest) returns (RefreshNeuralKnowledgeResponse);
   rpc GetRun(GetRunRequest) returns (GetRunResponse);
   rpc ListRuns(ListRunsRequest) returns (ListRunsResponse);
   rpc DecideGate(DecideGateRequest) returns (DecideGateResponse);

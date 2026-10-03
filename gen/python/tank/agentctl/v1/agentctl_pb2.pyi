@@ -917,6 +917,26 @@ class ListRunEventsResponse(_message.Message):
     has_more: bool
     def __init__(self, events: _Optional[_Iterable[_Union[RunEvent, _Mapping]]] = ..., has_more: bool = ...) -> None: ...
 
+class RefreshNeuralKnowledgeRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo", "requested_by")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    requested_by: str
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., requested_by: _Optional[str] = ...) -> None: ...
+
+class RefreshNeuralKnowledgeResponse(_message.Message):
+    __slots__ = ("channel_id", "thread_root_id", "started")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    STARTED_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    thread_root_id: str
+    started: bool
+    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., started: bool = ...) -> None: ...
+
 class SetProductReplicasRequest(_message.Message):
     __slots__ = ("slug", "replicas", "reason")
     SLUG_FIELD_NUMBER: _ClassVar[int]
