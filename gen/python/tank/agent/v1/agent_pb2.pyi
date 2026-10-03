@@ -280,19 +280,119 @@ class RepoBinding(_message.Message):
     toolchain: str
     def __init__(self, repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., toolchain: _Optional[str] = ...) -> None: ...
 
+class RepoAccess(_message.Message):
+    __slots__ = ("repo", "access")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    ACCESS_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    access: str
+    def __init__(self, repo: _Optional[str] = ..., access: _Optional[str] = ...) -> None: ...
+
 class RepoConnection(_message.Message):
-    __slots__ = ("connected", "account_login", "repos", "binding", "can_manage")
+    __slots__ = ("connected", "account_login", "repos", "binding", "can_manage", "access")
     CONNECTED_FIELD_NUMBER: _ClassVar[int]
     ACCOUNT_LOGIN_FIELD_NUMBER: _ClassVar[int]
     REPOS_FIELD_NUMBER: _ClassVar[int]
     BINDING_FIELD_NUMBER: _ClassVar[int]
     CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
+    ACCESS_FIELD_NUMBER: _ClassVar[int]
     connected: bool
     account_login: str
     repos: _containers.RepeatedScalarFieldContainer[str]
     binding: RepoBinding
     can_manage: bool
-    def __init__(self, connected: bool = ..., account_login: _Optional[str] = ..., repos: _Optional[_Iterable[str]] = ..., binding: _Optional[_Union[RepoBinding, _Mapping]] = ..., can_manage: bool = ...) -> None: ...
+    access: _containers.RepeatedCompositeFieldContainer[RepoAccess]
+    def __init__(self, connected: bool = ..., account_login: _Optional[str] = ..., repos: _Optional[_Iterable[str]] = ..., binding: _Optional[_Union[RepoBinding, _Mapping]] = ..., can_manage: bool = ..., access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ...) -> None: ...
+
+class SetRepoAccessRequest(_message.Message):
+    __slots__ = ("channel_id", "access")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    ACCESS_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    access: _containers.RepeatedCompositeFieldContainer[RepoAccess]
+    def __init__(self, channel_id: _Optional[str] = ..., access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ...) -> None: ...
+
+class SetRepoAccessResponse(_message.Message):
+    __slots__ = ("access",)
+    ACCESS_FIELD_NUMBER: _ClassVar[int]
+    access: _containers.RepeatedCompositeFieldContainer[RepoAccess]
+    def __init__(self, access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ...) -> None: ...
+
+class TreadSettings(_message.Message):
+    __slots__ = ("concurrent_runs", "auto_accept_plans", "max_run_usd", "daily_usd")
+    CONCURRENT_RUNS_FIELD_NUMBER: _ClassVar[int]
+    AUTO_ACCEPT_PLANS_FIELD_NUMBER: _ClassVar[int]
+    MAX_RUN_USD_FIELD_NUMBER: _ClassVar[int]
+    DAILY_USD_FIELD_NUMBER: _ClassVar[int]
+    concurrent_runs: int
+    auto_accept_plans: bool
+    max_run_usd: float
+    daily_usd: float
+    def __init__(self, concurrent_runs: _Optional[int] = ..., auto_accept_plans: bool = ..., max_run_usd: _Optional[float] = ..., daily_usd: _Optional[float] = ...) -> None: ...
+
+class HourBucket(_message.Message):
+    __slots__ = ("hour", "runs", "spend_usd")
+    HOUR_FIELD_NUMBER: _ClassVar[int]
+    RUNS_FIELD_NUMBER: _ClassVar[int]
+    SPEND_USD_FIELD_NUMBER: _ClassVar[int]
+    hour: _timestamp_pb2.Timestamp
+    runs: int
+    spend_usd: float
+    def __init__(self, hour: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., runs: _Optional[int] = ..., spend_usd: _Optional[float] = ...) -> None: ...
+
+class TreadMetrics(_message.Message):
+    __slots__ = ("spend_today_usd", "spend_month_usd", "runs_today", "runs_month", "success_rate_30d", "hours", "workspace_spend_today_usd", "workspace_spend_month_usd", "running_now", "avg_run_minutes_30d")
+    SPEND_TODAY_USD_FIELD_NUMBER: _ClassVar[int]
+    SPEND_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
+    RUNS_TODAY_FIELD_NUMBER: _ClassVar[int]
+    RUNS_MONTH_FIELD_NUMBER: _ClassVar[int]
+    SUCCESS_RATE_30D_FIELD_NUMBER: _ClassVar[int]
+    HOURS_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_SPEND_TODAY_USD_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_SPEND_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
+    RUNNING_NOW_FIELD_NUMBER: _ClassVar[int]
+    AVG_RUN_MINUTES_30D_FIELD_NUMBER: _ClassVar[int]
+    spend_today_usd: float
+    spend_month_usd: float
+    runs_today: int
+    runs_month: int
+    success_rate_30d: float
+    hours: _containers.RepeatedCompositeFieldContainer[HourBucket]
+    workspace_spend_today_usd: float
+    workspace_spend_month_usd: float
+    running_now: int
+    avg_run_minutes_30d: float
+    def __init__(self, spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., runs_month: _Optional[int] = ..., success_rate_30d: _Optional[float] = ..., hours: _Optional[_Iterable[_Union[HourBucket, _Mapping]]] = ..., workspace_spend_today_usd: _Optional[float] = ..., workspace_spend_month_usd: _Optional[float] = ..., running_now: _Optional[int] = ..., avg_run_minutes_30d: _Optional[float] = ...) -> None: ...
+
+class GetTreadSwitchboardRequest(_message.Message):
+    __slots__ = ("channel_id",)
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
+
+class GetTreadSwitchboardResponse(_message.Message):
+    __slots__ = ("metrics", "settings", "can_manage")
+    METRICS_FIELD_NUMBER: _ClassVar[int]
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
+    metrics: TreadMetrics
+    settings: TreadSettings
+    can_manage: bool
+    def __init__(self, metrics: _Optional[_Union[TreadMetrics, _Mapping]] = ..., settings: _Optional[_Union[TreadSettings, _Mapping]] = ..., can_manage: bool = ...) -> None: ...
+
+class SetTreadSettingsRequest(_message.Message):
+    __slots__ = ("channel_id", "settings")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    settings: TreadSettings
+    def __init__(self, channel_id: _Optional[str] = ..., settings: _Optional[_Union[TreadSettings, _Mapping]] = ...) -> None: ...
+
+class SetTreadSettingsResponse(_message.Message):
+    __slots__ = ("settings",)
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    settings: TreadSettings
+    def __init__(self, settings: _Optional[_Union[TreadSettings, _Mapping]] = ...) -> None: ...
 
 class GetRepoConnectionRequest(_message.Message):
     __slots__ = ("channel_id",)

@@ -164,13 +164,69 @@ message RepoBinding {
   string toolchain = 3;   // node | go | python | expo
 }
 
+// RepoAccess is one further repository a Tread's agent may reach, and how far. The
+// primary repository (RepoBinding) is where runs branch and open pull requests and
+// is always writable; these are the others: "read" to clone and study, "write" to
+// push branches and open pull requests there too.
+message RepoAccess {
+  string repo = 1;   // owner/name
+  string access = 2; // read | write
+}
+
 message RepoConnection {
   bool connected = 1;             // the workspace has a GitHub installation
   string account_login = 2;       // the org it is installed into
   repeated string repos = 3;      // what that installation can reach
   RepoBinding binding = 4;        // this Tread's binding, absent when unbound
   bool can_manage = 5;            // the caller may connect and bind: workspace admins only
+  repeated RepoAccess access = 6; // the further repositories this Tread may reach
 }
+
+// SetRepoAccess replaces the Tread's list of further repositories. Admins only; every
+// repository must be one the workspace's installation can reach, and the primary is
+// not listed here (it is always writable).
+message SetRepoAccessRequest {
+  string channel_id = 1;
+  repeated RepoAccess access = 2;
+}
+message SetRepoAccessResponse { repeated RepoAccess access = 1; }
+
+// The Tread's switchboard: what its agents cost and did, by the hour, and the knobs a
+// workspace admin turns. Spend is the workspace's own: the workspace pays for its agents.
+message TreadSettings {
+  int32 concurrent_runs = 1;     // agents at once in this Tread, 1..5
+  bool auto_accept_plans = 2;    // skip the plan gate: the agent goes straight from plan to work
+  double max_run_usd = 3;        // a single run's ceiling; 0 keeps the workspace default
+  double daily_usd = 4;          // this Tread's ceiling for a day; 0 keeps the workspace default
+}
+message HourBucket {
+  google.protobuf.Timestamp hour = 1;
+  int32 runs = 2;
+  double spend_usd = 3;
+}
+message TreadMetrics {
+  double spend_today_usd = 1;
+  double spend_month_usd = 2;
+  int32 runs_today = 3;
+  int32 runs_month = 4;
+  double success_rate_30d = 5;        // 0..1, done or delivered over finished runs
+  repeated HourBucket hours = 6;      // the last twenty-four hours, oldest first
+  double workspace_spend_today_usd = 7;
+  double workspace_spend_month_usd = 8;
+  int32 running_now = 9;
+  double avg_run_minutes_30d = 10;
+}
+message GetTreadSwitchboardRequest { string channel_id = 1; }
+message GetTreadSwitchboardResponse {
+  TreadMetrics metrics = 1;
+  TreadSettings settings = 2;
+  bool can_manage = 3;
+}
+message SetTreadSettingsRequest {
+  string channel_id = 1;
+  TreadSettings settings = 2;
+}
+message SetTreadSettingsResponse { TreadSettings settings = 1; }
 
 message GetRepoConnectionRequest { string channel_id = 1; }
 message GetRepoConnectionResponse { RepoConnection connection = 1; }
@@ -210,4 +266,8 @@ service AgentService {
   rpc StartGitHubConnect(StartGitHubConnectRequest) returns (StartGitHubConnectResponse);
   rpc BindRepo(BindRepoRequest) returns (BindRepoResponse);
   rpc UnbindRepo(UnbindRepoRequest) returns (UnbindRepoResponse);
+  rpc SetRepoAccess(SetRepoAccessRequest) returns (SetRepoAccessResponse);
+  // The Tread's switchboard: metrics for members, settings for admins.
+  rpc GetTreadSwitchboard(GetTreadSwitchboardRequest) returns (GetTreadSwitchboardResponse);
+  rpc SetTreadSettings(SetTreadSettingsRequest) returns (SetTreadSettingsResponse);
 }

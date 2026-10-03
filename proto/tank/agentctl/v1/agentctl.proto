@@ -92,6 +92,13 @@ message RunContext {
   // turn so the agent knows an image or a video exists without asking for it:
   // "add a filter to this image" is unanswerable otherwise.
   repeated Attachment attachments = 21;
+  // Further repositories this Tread may reach, and how far; the run's own repo is
+  // always writable in the implementing phase.
+  repeated RepoAccess repo_access = 22;
+  // True for a run inside one of TANK's own board products. The board's tools —
+  // commit_files, set_brand, set_landing, record_finding, board_research — exist only
+  // for those; a customer's run never sees them.
+  bool product_run = 23;
 }
 
 message GetRunContextRequest {}
@@ -99,8 +106,14 @@ message GetRunContextResponse {
   RunContext context = 1;
 }
 
+message RepoAccess {
+  string repo = 1;   // owner/name
+  string access = 2; // read | write
+}
+
 message GetGitCredentialRequest {
   string scope = 1; // read | write
+  string repo = 2;  // owner/name git is asking about; empty means the run's own repository
 }
 message GetGitCredentialResponse {
   string username = 1; // x-access-token for GitHub

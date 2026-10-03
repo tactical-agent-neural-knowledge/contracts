@@ -66,6 +66,15 @@ const (
 	AgentServiceBindRepoProcedure = "/tank.agent.v1.AgentService/BindRepo"
 	// AgentServiceUnbindRepoProcedure is the fully-qualified name of the AgentService's UnbindRepo RPC.
 	AgentServiceUnbindRepoProcedure = "/tank.agent.v1.AgentService/UnbindRepo"
+	// AgentServiceSetRepoAccessProcedure is the fully-qualified name of the AgentService's
+	// SetRepoAccess RPC.
+	AgentServiceSetRepoAccessProcedure = "/tank.agent.v1.AgentService/SetRepoAccess"
+	// AgentServiceGetTreadSwitchboardProcedure is the fully-qualified name of the AgentService's
+	// GetTreadSwitchboard RPC.
+	AgentServiceGetTreadSwitchboardProcedure = "/tank.agent.v1.AgentService/GetTreadSwitchboard"
+	// AgentServiceSetTreadSettingsProcedure is the fully-qualified name of the AgentService's
+	// SetTreadSettings RPC.
+	AgentServiceSetTreadSettingsProcedure = "/tank.agent.v1.AgentService/SetTreadSettings"
 )
 
 // AgentServiceClient is a client for the tank.agent.v1.AgentService service.
@@ -87,6 +96,10 @@ type AgentServiceClient interface {
 	StartGitHubConnect(context.Context, *connect.Request[v1.StartGitHubConnectRequest]) (*connect.Response[v1.StartGitHubConnectResponse], error)
 	BindRepo(context.Context, *connect.Request[v1.BindRepoRequest]) (*connect.Response[v1.BindRepoResponse], error)
 	UnbindRepo(context.Context, *connect.Request[v1.UnbindRepoRequest]) (*connect.Response[v1.UnbindRepoResponse], error)
+	SetRepoAccess(context.Context, *connect.Request[v1.SetRepoAccessRequest]) (*connect.Response[v1.SetRepoAccessResponse], error)
+	// The Tread's switchboard: metrics for members, settings for admins.
+	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
+	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
 }
 
 // NewAgentServiceClient constructs a client for the tank.agent.v1.AgentService service. By default,
@@ -184,6 +197,24 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("UnbindRepo")),
 			connect.WithClientOptions(opts...),
 		),
+		setRepoAccess: connect.NewClient[v1.SetRepoAccessRequest, v1.SetRepoAccessResponse](
+			httpClient,
+			baseURL+AgentServiceSetRepoAccessProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("SetRepoAccess")),
+			connect.WithClientOptions(opts...),
+		),
+		getTreadSwitchboard: connect.NewClient[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse](
+			httpClient,
+			baseURL+AgentServiceGetTreadSwitchboardProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("GetTreadSwitchboard")),
+			connect.WithClientOptions(opts...),
+		),
+		setTreadSettings: connect.NewClient[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse](
+			httpClient,
+			baseURL+AgentServiceSetTreadSettingsProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("SetTreadSettings")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -203,6 +234,9 @@ type agentServiceClient struct {
 	startGitHubConnect   *connect.Client[v1.StartGitHubConnectRequest, v1.StartGitHubConnectResponse]
 	bindRepo             *connect.Client[v1.BindRepoRequest, v1.BindRepoResponse]
 	unbindRepo           *connect.Client[v1.UnbindRepoRequest, v1.UnbindRepoResponse]
+	setRepoAccess        *connect.Client[v1.SetRepoAccessRequest, v1.SetRepoAccessResponse]
+	getTreadSwitchboard  *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
+	setTreadSettings     *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
 }
 
 // StartRun calls tank.agent.v1.AgentService.StartRun.
@@ -275,6 +309,21 @@ func (c *agentServiceClient) UnbindRepo(ctx context.Context, req *connect.Reques
 	return c.unbindRepo.CallUnary(ctx, req)
 }
 
+// SetRepoAccess calls tank.agent.v1.AgentService.SetRepoAccess.
+func (c *agentServiceClient) SetRepoAccess(ctx context.Context, req *connect.Request[v1.SetRepoAccessRequest]) (*connect.Response[v1.SetRepoAccessResponse], error) {
+	return c.setRepoAccess.CallUnary(ctx, req)
+}
+
+// GetTreadSwitchboard calls tank.agent.v1.AgentService.GetTreadSwitchboard.
+func (c *agentServiceClient) GetTreadSwitchboard(ctx context.Context, req *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error) {
+	return c.getTreadSwitchboard.CallUnary(ctx, req)
+}
+
+// SetTreadSettings calls tank.agent.v1.AgentService.SetTreadSettings.
+func (c *agentServiceClient) SetTreadSettings(ctx context.Context, req *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error) {
+	return c.setTreadSettings.CallUnary(ctx, req)
+}
+
 // AgentServiceHandler is an implementation of the tank.agent.v1.AgentService service.
 type AgentServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
@@ -294,6 +343,10 @@ type AgentServiceHandler interface {
 	StartGitHubConnect(context.Context, *connect.Request[v1.StartGitHubConnectRequest]) (*connect.Response[v1.StartGitHubConnectResponse], error)
 	BindRepo(context.Context, *connect.Request[v1.BindRepoRequest]) (*connect.Response[v1.BindRepoResponse], error)
 	UnbindRepo(context.Context, *connect.Request[v1.UnbindRepoRequest]) (*connect.Response[v1.UnbindRepoResponse], error)
+	SetRepoAccess(context.Context, *connect.Request[v1.SetRepoAccessRequest]) (*connect.Response[v1.SetRepoAccessResponse], error)
+	// The Tread's switchboard: metrics for members, settings for admins.
+	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
+	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
 }
 
 // NewAgentServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -387,6 +440,24 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("UnbindRepo")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceSetRepoAccessHandler := connect.NewUnaryHandler(
+		AgentServiceSetRepoAccessProcedure,
+		svc.SetRepoAccess,
+		connect.WithSchema(agentServiceMethods.ByName("SetRepoAccess")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceGetTreadSwitchboardHandler := connect.NewUnaryHandler(
+		AgentServiceGetTreadSwitchboardProcedure,
+		svc.GetTreadSwitchboard,
+		connect.WithSchema(agentServiceMethods.ByName("GetTreadSwitchboard")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceSetTreadSettingsHandler := connect.NewUnaryHandler(
+		AgentServiceSetTreadSettingsProcedure,
+		svc.SetTreadSettings,
+		connect.WithSchema(agentServiceMethods.ByName("SetTreadSettings")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agent.v1.AgentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AgentServiceStartRunProcedure:
@@ -417,6 +488,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceBindRepoHandler.ServeHTTP(w, r)
 		case AgentServiceUnbindRepoProcedure:
 			agentServiceUnbindRepoHandler.ServeHTTP(w, r)
+		case AgentServiceSetRepoAccessProcedure:
+			agentServiceSetRepoAccessHandler.ServeHTTP(w, r)
+		case AgentServiceGetTreadSwitchboardProcedure:
+			agentServiceGetTreadSwitchboardHandler.ServeHTTP(w, r)
+		case AgentServiceSetTreadSettingsProcedure:
+			agentServiceSetTreadSettingsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -480,4 +557,16 @@ func (UnimplementedAgentServiceHandler) BindRepo(context.Context, *connect.Reque
 
 func (UnimplementedAgentServiceHandler) UnbindRepo(context.Context, *connect.Request[v1.UnbindRepoRequest]) (*connect.Response[v1.UnbindRepoResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.UnbindRepo is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) SetRepoAccess(context.Context, *connect.Request[v1.SetRepoAccessRequest]) (*connect.Response[v1.SetRepoAccessResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetRepoAccess is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.GetTreadSwitchboard is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetTreadSettings is not implemented"))
 }
