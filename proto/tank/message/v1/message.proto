@@ -146,6 +146,21 @@ message MarkReadRequest {
 }
 message MarkReadResponse {}
 
+// Where every member has read to, for read receipts. With thread_root_id empty the
+// positions are channel sequences; with it set they are thread sequences. Members with
+// nothing read are listed at 0. Only served for channels with read receipts on.
+message ListReadPositionsRequest {
+  string channel_id = 1;
+  string thread_root_id = 2;
+}
+message ReadPosition {
+  string user_id = 1;
+  int64 seq = 2;
+}
+message ListReadPositionsResponse {
+  repeated ReadPosition positions = 1;
+}
+
 message AddReactionRequest {
   string message_id = 1;
   string emoji = 2;
@@ -235,6 +250,7 @@ service ChatService {
   rpc GetThread(GetThreadRequest) returns (GetThreadResponse);
   rpc GetMessage(GetMessageRequest) returns (GetMessageResponse);
   rpc MarkRead(MarkReadRequest) returns (MarkReadResponse);
+  rpc ListReadPositions(ListReadPositionsRequest) returns (ListReadPositionsResponse);
   rpc AddReaction(AddReactionRequest) returns (AddReactionResponse);
   rpc RemoveReaction(RemoveReactionRequest) returns (RemoveReactionResponse);
   rpc SubscribeThread(SubscribeThreadRequest) returns (SubscribeThreadResponse);

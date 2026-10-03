@@ -53,6 +53,9 @@ const (
 	ChatServiceGetMessageProcedure = "/tank.message.v1.ChatService/GetMessage"
 	// ChatServiceMarkReadProcedure is the fully-qualified name of the ChatService's MarkRead RPC.
 	ChatServiceMarkReadProcedure = "/tank.message.v1.ChatService/MarkRead"
+	// ChatServiceListReadPositionsProcedure is the fully-qualified name of the ChatService's
+	// ListReadPositions RPC.
+	ChatServiceListReadPositionsProcedure = "/tank.message.v1.ChatService/ListReadPositions"
 	// ChatServiceAddReactionProcedure is the fully-qualified name of the ChatService's AddReaction RPC.
 	ChatServiceAddReactionProcedure = "/tank.message.v1.ChatService/AddReaction"
 	// ChatServiceRemoveReactionProcedure is the fully-qualified name of the ChatService's
@@ -90,6 +93,7 @@ type ChatServiceClient interface {
 	GetThread(context.Context, *connect.Request[v1.GetThreadRequest]) (*connect.Response[v1.GetThreadResponse], error)
 	GetMessage(context.Context, *connect.Request[v1.GetMessageRequest]) (*connect.Response[v1.GetMessageResponse], error)
 	MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error)
+	ListReadPositions(context.Context, *connect.Request[v1.ListReadPositionsRequest]) (*connect.Response[v1.ListReadPositionsResponse], error)
 	AddReaction(context.Context, *connect.Request[v1.AddReactionRequest]) (*connect.Response[v1.AddReactionResponse], error)
 	RemoveReaction(context.Context, *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error)
 	SubscribeThread(context.Context, *connect.Request[v1.SubscribeThreadRequest]) (*connect.Response[v1.SubscribeThreadResponse], error)
@@ -161,6 +165,12 @@ func NewChatServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(chatServiceMethods.ByName("MarkRead")),
 			connect.WithClientOptions(opts...),
 		),
+		listReadPositions: connect.NewClient[v1.ListReadPositionsRequest, v1.ListReadPositionsResponse](
+			httpClient,
+			baseURL+ChatServiceListReadPositionsProcedure,
+			connect.WithSchema(chatServiceMethods.ByName("ListReadPositions")),
+			connect.WithClientOptions(opts...),
+		),
 		addReaction: connect.NewClient[v1.AddReactionRequest, v1.AddReactionResponse](
 			httpClient,
 			baseURL+ChatServiceAddReactionProcedure,
@@ -226,24 +236,25 @@ func NewChatServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // chatServiceClient implements ChatServiceClient.
 type chatServiceClient struct {
-	postMessage     *connect.Client[v1.PostMessageRequest, v1.PostMessageResponse]
-	updateMessage   *connect.Client[v1.UpdateMessageRequest, v1.UpdateMessageResponse]
-	deleteMessage   *connect.Client[v1.DeleteMessageRequest, v1.DeleteMessageResponse]
-	deleteThread    *connect.Client[v1.DeleteThreadRequest, v1.DeleteThreadResponse]
-	listMessages    *connect.Client[v1.ListMessagesRequest, v1.ListMessagesResponse]
-	getThread       *connect.Client[v1.GetThreadRequest, v1.GetThreadResponse]
-	getMessage      *connect.Client[v1.GetMessageRequest, v1.GetMessageResponse]
-	markRead        *connect.Client[v1.MarkReadRequest, v1.MarkReadResponse]
-	addReaction     *connect.Client[v1.AddReactionRequest, v1.AddReactionResponse]
-	removeReaction  *connect.Client[v1.RemoveReactionRequest, v1.RemoveReactionResponse]
-	subscribeThread *connect.Client[v1.SubscribeThreadRequest, v1.SubscribeThreadResponse]
-	postBlockAction *connect.Client[v1.PostBlockActionRequest, v1.PostBlockActionResponse]
-	pinMessage      *connect.Client[v1.PinMessageRequest, v1.PinMessageResponse]
-	unpinMessage    *connect.Client[v1.UnpinMessageRequest, v1.UnpinMessageResponse]
-	listPins        *connect.Client[v1.ListPinsRequest, v1.ListPinsResponse]
-	saveMessage     *connect.Client[v1.SaveMessageRequest, v1.SaveMessageResponse]
-	unsaveMessage   *connect.Client[v1.UnsaveMessageRequest, v1.UnsaveMessageResponse]
-	listSaved       *connect.Client[v1.ListSavedRequest, v1.ListSavedResponse]
+	postMessage       *connect.Client[v1.PostMessageRequest, v1.PostMessageResponse]
+	updateMessage     *connect.Client[v1.UpdateMessageRequest, v1.UpdateMessageResponse]
+	deleteMessage     *connect.Client[v1.DeleteMessageRequest, v1.DeleteMessageResponse]
+	deleteThread      *connect.Client[v1.DeleteThreadRequest, v1.DeleteThreadResponse]
+	listMessages      *connect.Client[v1.ListMessagesRequest, v1.ListMessagesResponse]
+	getThread         *connect.Client[v1.GetThreadRequest, v1.GetThreadResponse]
+	getMessage        *connect.Client[v1.GetMessageRequest, v1.GetMessageResponse]
+	markRead          *connect.Client[v1.MarkReadRequest, v1.MarkReadResponse]
+	listReadPositions *connect.Client[v1.ListReadPositionsRequest, v1.ListReadPositionsResponse]
+	addReaction       *connect.Client[v1.AddReactionRequest, v1.AddReactionResponse]
+	removeReaction    *connect.Client[v1.RemoveReactionRequest, v1.RemoveReactionResponse]
+	subscribeThread   *connect.Client[v1.SubscribeThreadRequest, v1.SubscribeThreadResponse]
+	postBlockAction   *connect.Client[v1.PostBlockActionRequest, v1.PostBlockActionResponse]
+	pinMessage        *connect.Client[v1.PinMessageRequest, v1.PinMessageResponse]
+	unpinMessage      *connect.Client[v1.UnpinMessageRequest, v1.UnpinMessageResponse]
+	listPins          *connect.Client[v1.ListPinsRequest, v1.ListPinsResponse]
+	saveMessage       *connect.Client[v1.SaveMessageRequest, v1.SaveMessageResponse]
+	unsaveMessage     *connect.Client[v1.UnsaveMessageRequest, v1.UnsaveMessageResponse]
+	listSaved         *connect.Client[v1.ListSavedRequest, v1.ListSavedResponse]
 }
 
 // PostMessage calls tank.message.v1.ChatService.PostMessage.
@@ -284,6 +295,11 @@ func (c *chatServiceClient) GetMessage(ctx context.Context, req *connect.Request
 // MarkRead calls tank.message.v1.ChatService.MarkRead.
 func (c *chatServiceClient) MarkRead(ctx context.Context, req *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error) {
 	return c.markRead.CallUnary(ctx, req)
+}
+
+// ListReadPositions calls tank.message.v1.ChatService.ListReadPositions.
+func (c *chatServiceClient) ListReadPositions(ctx context.Context, req *connect.Request[v1.ListReadPositionsRequest]) (*connect.Response[v1.ListReadPositionsResponse], error) {
+	return c.listReadPositions.CallUnary(ctx, req)
 }
 
 // AddReaction calls tank.message.v1.ChatService.AddReaction.
@@ -346,6 +362,7 @@ type ChatServiceHandler interface {
 	GetThread(context.Context, *connect.Request[v1.GetThreadRequest]) (*connect.Response[v1.GetThreadResponse], error)
 	GetMessage(context.Context, *connect.Request[v1.GetMessageRequest]) (*connect.Response[v1.GetMessageResponse], error)
 	MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error)
+	ListReadPositions(context.Context, *connect.Request[v1.ListReadPositionsRequest]) (*connect.Response[v1.ListReadPositionsResponse], error)
 	AddReaction(context.Context, *connect.Request[v1.AddReactionRequest]) (*connect.Response[v1.AddReactionResponse], error)
 	RemoveReaction(context.Context, *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error)
 	SubscribeThread(context.Context, *connect.Request[v1.SubscribeThreadRequest]) (*connect.Response[v1.SubscribeThreadResponse], error)
@@ -411,6 +428,12 @@ func NewChatServiceHandler(svc ChatServiceHandler, opts ...connect.HandlerOption
 		ChatServiceMarkReadProcedure,
 		svc.MarkRead,
 		connect.WithSchema(chatServiceMethods.ByName("MarkRead")),
+		connect.WithHandlerOptions(opts...),
+	)
+	chatServiceListReadPositionsHandler := connect.NewUnaryHandler(
+		ChatServiceListReadPositionsProcedure,
+		svc.ListReadPositions,
+		connect.WithSchema(chatServiceMethods.ByName("ListReadPositions")),
 		connect.WithHandlerOptions(opts...),
 	)
 	chatServiceAddReactionHandler := connect.NewUnaryHandler(
@@ -491,6 +514,8 @@ func NewChatServiceHandler(svc ChatServiceHandler, opts ...connect.HandlerOption
 			chatServiceGetMessageHandler.ServeHTTP(w, r)
 		case ChatServiceMarkReadProcedure:
 			chatServiceMarkReadHandler.ServeHTTP(w, r)
+		case ChatServiceListReadPositionsProcedure:
+			chatServiceListReadPositionsHandler.ServeHTTP(w, r)
 		case ChatServiceAddReactionProcedure:
 			chatServiceAddReactionHandler.ServeHTTP(w, r)
 		case ChatServiceRemoveReactionProcedure:
@@ -550,6 +575,10 @@ func (UnimplementedChatServiceHandler) GetMessage(context.Context, *connect.Requ
 
 func (UnimplementedChatServiceHandler) MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.MarkRead is not implemented"))
+}
+
+func (UnimplementedChatServiceHandler) ListReadPositions(context.Context, *connect.Request[v1.ListReadPositionsRequest]) (*connect.Response[v1.ListReadPositionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.ListReadPositions is not implemented"))
 }
 
 func (UnimplementedChatServiceHandler) AddReaction(context.Context, *connect.Request[v1.AddReactionRequest]) (*connect.Response[v1.AddReactionResponse], error) {

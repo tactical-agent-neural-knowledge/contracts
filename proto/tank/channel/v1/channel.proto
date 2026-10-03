@@ -54,6 +54,10 @@ message Channel {
   bool joined = 14;
   // A generated or uploaded picture for the Tread; empty means the # or lock glyph.
   string icon_file_id = 15;
+  // Whether members see who has read each message here (ticks on their own messages,
+  // "seen by" on any). On by default; a Tread admin can turn it off. The server always
+  // sets it, so a missing value on the wire means off.
+  bool read_receipts = 16;
 }
 
 // Where the viewer has read to in one thread. Served with the bootstrap so a
@@ -195,6 +199,7 @@ message UpdateChannelRequest {
   optional string name = 2;
   optional string topic = 3;
   optional string purpose = 4;
+  optional bool read_receipts = 5;
 }
 message UpdateChannelResponse {
   Channel channel = 1;

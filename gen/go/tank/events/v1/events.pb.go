@@ -531,6 +531,9 @@ func (x *ReactionRemoved) GetEmoji() string {
 	return ""
 }
 
+// read_state.updated goes to the reader's own devices. The same shape is also sent as
+// read_position.updated on the channel subject (and the thread subject for a thread read)
+// when the channel has read receipts on, so every member's ticks move.
 type ReadStateUpdated struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
 	UserId            string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`

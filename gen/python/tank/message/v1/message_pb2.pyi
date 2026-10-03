@@ -247,6 +247,28 @@ class MarkReadResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class ListReadPositionsRequest(_message.Message):
+    __slots__ = ("channel_id", "thread_root_id")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    thread_root_id: str
+    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ...) -> None: ...
+
+class ReadPosition(_message.Message):
+    __slots__ = ("user_id", "seq")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    SEQ_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    seq: int
+    def __init__(self, user_id: _Optional[str] = ..., seq: _Optional[int] = ...) -> None: ...
+
+class ListReadPositionsResponse(_message.Message):
+    __slots__ = ("positions",)
+    POSITIONS_FIELD_NUMBER: _ClassVar[int]
+    positions: _containers.RepeatedCompositeFieldContainer[ReadPosition]
+    def __init__(self, positions: _Optional[_Iterable[_Union[ReadPosition, _Mapping]]] = ...) -> None: ...
+
 class AddReactionRequest(_message.Message):
     __slots__ = ("message_id", "emoji")
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]

@@ -67,6 +67,9 @@ message ReactionRemoved {
   string user_id = 2;
   string emoji = 3;
 }
+// read_state.updated goes to the reader's own devices. The same shape is also sent as
+// read_position.updated on the channel subject (and the thread subject for a thread read)
+// when the channel has read receipts on, so every member's ticks move.
 message ReadStateUpdated {
   string user_id = 1;
   string channel_id = 2;
