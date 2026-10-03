@@ -198,6 +198,11 @@ message TreadSettings {
   bool auto_accept_plans = 2;    // skip the plan gate: the agent goes straight from plan to work
   double max_run_usd = 3;        // a single run's ceiling; 0 keeps the workspace default
   double daily_usd = 4;          // this Tread's ceiling for a day; 0 keeps the workspace default
+  // What happens to a pull request the agent opens: "review" (default) posts it and
+  // mentions pr_reviewer_ids in the thread; "merge_when_green" has TANK watch the
+  // checks and merge it, so the agent's work keeps flowing without a person.
+  string pull_requests = 5;
+  repeated string pr_reviewer_ids = 6; // user ids mentioned when a pull request is ready
 }
 message HourBucket {
   google.protobuf.Timestamp hour = 1;
