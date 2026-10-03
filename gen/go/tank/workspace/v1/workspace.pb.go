@@ -662,9 +662,13 @@ type GetBootstrapResponse struct {
 	// What this workspace's plan allows, so clients can mark premium surfaces
 	// before anyone hits a wall. The server is still the authority: every gated
 	// call is checked again server-side.
-	Entitlements  *Entitlements `protobuf:"bytes,10,opt,name=entitlements,proto3" json:"entitlements,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Entitlements *Entitlements `protobuf:"bytes,10,opt,name=entitlements,proto3" json:"entitlements,omitempty"`
+	// The viewer's read position in the threads they follow, most recently
+	// active first; capped. Threads not listed are read to wherever the client
+	// last marked them, or unread if it never has.
+	ThreadReadStates []*v11.ThreadReadState `protobuf:"bytes,11,rep,name=thread_read_states,json=threadReadStates,proto3" json:"thread_read_states,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *GetBootstrapResponse) Reset() {
@@ -763,6 +767,13 @@ func (x *GetBootstrapResponse) GetUserGroups() []*UserGroup {
 func (x *GetBootstrapResponse) GetEntitlements() *Entitlements {
 	if x != nil {
 		return x.Entitlements
+	}
+	return nil
+}
+
+func (x *GetBootstrapResponse) GetThreadReadStates() []*v11.ThreadReadState {
+	if x != nil {
+		return x.ThreadReadStates
 	}
 	return nil
 }
@@ -6308,7 +6319,7 @@ var file_tank_workspace_v1_workspace_proto_rawDesc = string([]byte{
 	0x38, 0x0a, 0x13, 0x47, 0x65, 0x74, 0x42, 0x6f, 0x6f, 0x74, 0x73, 0x74, 0x72, 0x61, 0x70, 0x52,
 	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x77, 0x6f, 0x72, 0x6b, 0x73, 0x70,
 	0x61, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x77, 0x6f,
-	0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x49, 0x64, 0x22, 0xda, 0x04, 0x0a, 0x14, 0x47, 0x65,
+	0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x49, 0x64, 0x22, 0xaa, 0x05, 0x0a, 0x14, 0x47, 0x65,
 	0x74, 0x42, 0x6f, 0x6f, 0x74, 0x73, 0x74, 0x72, 0x61, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
 	0x73, 0x65, 0x12, 0x3a, 0x0a, 0x09, 0x77, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x77, 0x6f, 0x72,
@@ -6346,7 +6357,12 @@ var file_tank_workspace_v1_workspace_proto_rawDesc = string([]byte{
 	0x73, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x77,
 	0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x6e, 0x74, 0x69,
 	0x74, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x0c, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x6c,
-	0x65, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x22, 0xe6, 0x02, 0x0a, 0x0c, 0x45, 0x6e, 0x74, 0x69, 0x74,
+	0x65, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x4e, 0x0a, 0x12, 0x74, 0x68, 0x72, 0x65, 0x61, 0x64,
+	0x5f, 0x72, 0x65, 0x61, 0x64, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x73, 0x18, 0x0b, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x20, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65,
+	0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x61, 0x64, 0x53,
+	0x74, 0x61, 0x74, 0x65, 0x52, 0x10, 0x74, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x61, 0x64,
+	0x53, 0x74, 0x61, 0x74, 0x65, 0x73, 0x22, 0xe6, 0x02, 0x0a, 0x0c, 0x45, 0x6e, 0x74, 0x69, 0x74,
 	0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x70, 0x6c, 0x61, 0x6e, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x70, 0x6c, 0x61, 0x6e, 0x12, 0x1d, 0x0a, 0x0a, 0x61,
 	0x67, 0x65, 0x6e, 0x74, 0x5f, 0x72, 0x75, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52,
@@ -7475,9 +7491,10 @@ var file_tank_workspace_v1_workspace_proto_goTypes = []any{
 	(*v1.Principal)(nil),                   // 107: tank.auth.v1.Principal
 	(*v11.Channel)(nil),                    // 108: tank.channel.v1.Channel
 	(*v11.ChannelReadState)(nil),           // 109: tank.channel.v1.ChannelReadState
-	(v11.NotifyPref)(0),                    // 110: tank.channel.v1.NotifyPref
-	(v12.MarkType)(0),                      // 111: tank.topo.v1.MarkType
-	(*v13.RichText)(nil),                   // 112: tank.richtext.v1.RichText
+	(*v11.ThreadReadState)(nil),            // 110: tank.channel.v1.ThreadReadState
+	(v11.NotifyPref)(0),                    // 111: tank.channel.v1.NotifyPref
+	(v12.MarkType)(0),                      // 112: tank.topo.v1.MarkType
+	(*v13.RichText)(nil),                   // 113: tank.richtext.v1.RichText
 }
 var file_tank_workspace_v1_workspace_proto_depIdxs = []int32{
 	106, // 0: tank.workspace.v1.Workspace.created_at:type_name -> google.protobuf.Timestamp
@@ -7496,160 +7513,161 @@ var file_tank_workspace_v1_workspace_proto_depIdxs = []int32{
 	31,  // 13: tank.workspace.v1.GetBootstrapResponse.preferences:type_name -> tank.workspace.v1.Preferences
 	46,  // 14: tank.workspace.v1.GetBootstrapResponse.user_groups:type_name -> tank.workspace.v1.UserGroup
 	11,  // 15: tank.workspace.v1.GetBootstrapResponse.entitlements:type_name -> tank.workspace.v1.Entitlements
-	4,   // 16: tank.workspace.v1.ListMembersResponse.members:type_name -> tank.workspace.v1.Member
-	0,   // 17: tank.workspace.v1.InviteMemberRequest.role:type_name -> tank.workspace.v1.Role
-	0,   // 18: tank.workspace.v1.Invite.role:type_name -> tank.workspace.v1.Role
-	106, // 19: tank.workspace.v1.Invite.expires_at:type_name -> google.protobuf.Timestamp
-	16,  // 20: tank.workspace.v1.ListInvitesResponse.invites:type_name -> tank.workspace.v1.Invite
-	0,   // 21: tank.workspace.v1.PendingInvite.role:type_name -> tank.workspace.v1.Role
-	106, // 22: tank.workspace.v1.PendingInvite.expires_at:type_name -> google.protobuf.Timestamp
-	21,  // 23: tank.workspace.v1.ListMyInvitesResponse.invites:type_name -> tank.workspace.v1.PendingInvite
-	2,   // 24: tank.workspace.v1.AcceptInviteResponse.workspace:type_name -> tank.workspace.v1.Workspace
-	4,   // 25: tank.workspace.v1.AcceptInviteResponse.me:type_name -> tank.workspace.v1.Member
-	2,   // 26: tank.workspace.v1.JoinWorkspaceResponse.workspace:type_name -> tank.workspace.v1.Workspace
-	4,   // 27: tank.workspace.v1.JoinWorkspaceResponse.me:type_name -> tank.workspace.v1.Member
-	4,   // 28: tank.workspace.v1.UpdateProfileResponse.me:type_name -> tank.workspace.v1.Member
-	110, // 29: tank.workspace.v1.Preferences.notify_default:type_name -> tank.channel.v1.NotifyPref
-	110, // 30: tank.workspace.v1.Preferences.dm_notify_default:type_name -> tank.channel.v1.NotifyPref
-	30,  // 31: tank.workspace.v1.Preferences.armor_mode_schedule:type_name -> tank.workspace.v1.ArmorModeSchedule
-	34,  // 32: tank.workspace.v1.Preferences.topo:type_name -> tank.workspace.v1.TopoPreferences
-	3,   // 33: tank.workspace.v1.Preferences.custom_theme:type_name -> tank.workspace.v1.Theme
-	33,  // 34: tank.workspace.v1.Preferences.home:type_name -> tank.workspace.v1.HomeLayout
-	32,  // 35: tank.workspace.v1.Preferences.sounds:type_name -> tank.workspace.v1.SoundChoice
-	111, // 36: tank.workspace.v1.TopoPreferences.visible:type_name -> tank.topo.v1.MarkType
-	31,  // 37: tank.workspace.v1.GetPreferencesResponse.preferences:type_name -> tank.workspace.v1.Preferences
-	31,  // 38: tank.workspace.v1.UpdatePreferencesRequest.preferences:type_name -> tank.workspace.v1.Preferences
-	31,  // 39: tank.workspace.v1.UpdatePreferencesResponse.preferences:type_name -> tank.workspace.v1.Preferences
-	106, // 40: tank.workspace.v1.CustomEmoji.created_at:type_name -> google.protobuf.Timestamp
-	39,  // 41: tank.workspace.v1.ListEmojiResponse.emoji:type_name -> tank.workspace.v1.CustomEmoji
-	39,  // 42: tank.workspace.v1.CreateEmojiResponse.emoji:type_name -> tank.workspace.v1.CustomEmoji
-	106, // 43: tank.workspace.v1.UserGroup.created_at:type_name -> google.protobuf.Timestamp
-	46,  // 44: tank.workspace.v1.ListUserGroupsResponse.groups:type_name -> tank.workspace.v1.UserGroup
-	46,  // 45: tank.workspace.v1.CreateUserGroupResponse.group:type_name -> tank.workspace.v1.UserGroup
-	46,  // 46: tank.workspace.v1.UpdateUserGroupMembersResponse.group:type_name -> tank.workspace.v1.UserGroup
-	106, // 47: tank.workspace.v1.ChannelBookmark.created_at:type_name -> google.protobuf.Timestamp
-	55,  // 48: tank.workspace.v1.ListBookmarksResponse.bookmarks:type_name -> tank.workspace.v1.ChannelBookmark
-	55,  // 49: tank.workspace.v1.AddBookmarkResponse.bookmark:type_name -> tank.workspace.v1.ChannelBookmark
-	112, // 50: tank.workspace.v1.Draft.rich_text:type_name -> tank.richtext.v1.RichText
-	106, // 51: tank.workspace.v1.Draft.updated_at:type_name -> google.protobuf.Timestamp
-	62,  // 52: tank.workspace.v1.GetDraftResponse.draft:type_name -> tank.workspace.v1.Draft
-	62,  // 53: tank.workspace.v1.PutDraftRequest.draft:type_name -> tank.workspace.v1.Draft
-	62,  // 54: tank.workspace.v1.PutDraftResponse.draft:type_name -> tank.workspace.v1.Draft
-	62,  // 55: tank.workspace.v1.ListDraftsResponse.drafts:type_name -> tank.workspace.v1.Draft
-	112, // 56: tank.workspace.v1.ScheduledMessage.rich_text:type_name -> tank.richtext.v1.RichText
-	106, // 57: tank.workspace.v1.ScheduledMessage.send_at:type_name -> google.protobuf.Timestamp
-	106, // 58: tank.workspace.v1.ScheduledMessage.created_at:type_name -> google.protobuf.Timestamp
-	106, // 59: tank.workspace.v1.ScheduledMessage.sent_at:type_name -> google.protobuf.Timestamp
-	106, // 60: tank.workspace.v1.ScheduledMessage.no_later_than:type_name -> google.protobuf.Timestamp
-	112, // 61: tank.workspace.v1.ScheduleMessageRequest.rich_text:type_name -> tank.richtext.v1.RichText
-	106, // 62: tank.workspace.v1.ScheduleMessageRequest.send_at:type_name -> google.protobuf.Timestamp
-	106, // 63: tank.workspace.v1.ScheduleMessageRequest.no_later_than:type_name -> google.protobuf.Timestamp
-	71,  // 64: tank.workspace.v1.ScheduleMessageResponse.scheduled:type_name -> tank.workspace.v1.ScheduledMessage
-	71,  // 65: tank.workspace.v1.ListScheduledResponse.scheduled:type_name -> tank.workspace.v1.ScheduledMessage
-	78,  // 66: tank.workspace.v1.ListAgenturesResponse.agentures:type_name -> tank.workspace.v1.Agenture
-	78,  // 67: tank.workspace.v1.AgentActivityResponse.agentures:type_name -> tank.workspace.v1.Agenture
-	106, // 68: tank.workspace.v1.AgentureWork.asked_at:type_name -> google.protobuf.Timestamp
-	106, // 69: tank.workspace.v1.AgentureWork.delivered_at:type_name -> google.protobuf.Timestamp
-	83,  // 70: tank.workspace.v1.AgentureDetail.work:type_name -> tank.workspace.v1.AgentureWork
-	84,  // 71: tank.workspace.v1.GetAgentureResponse.agenture:type_name -> tank.workspace.v1.AgentureDetail
-	2,   // 72: tank.workspace.v1.ClaimAgentureResponse.workspace:type_name -> tank.workspace.v1.Workspace
-	3,   // 73: tank.workspace.v1.GenerateThemeResponse.theme:type_name -> tank.workspace.v1.Theme
-	3,   // 74: tank.workspace.v1.SetWorkspaceThemeRequest.theme:type_name -> tank.workspace.v1.Theme
-	2,   // 75: tank.workspace.v1.SetWorkspaceThemeResponse.workspace:type_name -> tank.workspace.v1.Workspace
-	1,   // 76: tank.workspace.v1.GenerateArtRequest.kind:type_name -> tank.workspace.v1.ArtKind
-	2,   // 77: tank.workspace.v1.SetWorkspaceIconResponse.workspace:type_name -> tank.workspace.v1.Workspace
-	33,  // 78: tank.workspace.v1.DescribeHomeLayoutResponse.home:type_name -> tank.workspace.v1.HomeLayout
-	32,  // 79: tank.workspace.v1.DescribeSoundPackResponse.sounds:type_name -> tank.workspace.v1.SoundChoice
-	103, // 80: tank.workspace.v1.ListSoundPacksResponse.packs:type_name -> tank.workspace.v1.SoundPack
-	5,   // 81: tank.workspace.v1.WorkspaceService.CreateWorkspace:input_type -> tank.workspace.v1.CreateWorkspaceRequest
-	7,   // 82: tank.workspace.v1.WorkspaceService.ListWorkspaces:input_type -> tank.workspace.v1.ListWorkspacesRequest
-	79,  // 83: tank.workspace.v1.WorkspaceService.ListAgentures:input_type -> tank.workspace.v1.ListAgenturesRequest
-	81,  // 84: tank.workspace.v1.WorkspaceService.AgentActivity:input_type -> tank.workspace.v1.AgentActivityRequest
-	85,  // 85: tank.workspace.v1.WorkspaceService.GetAgenture:input_type -> tank.workspace.v1.GetAgentureRequest
-	87,  // 86: tank.workspace.v1.WorkspaceService.ClaimAgenture:input_type -> tank.workspace.v1.ClaimAgentureRequest
-	9,   // 87: tank.workspace.v1.WorkspaceService.GetBootstrap:input_type -> tank.workspace.v1.GetBootstrapRequest
-	12,  // 88: tank.workspace.v1.WorkspaceService.ListMembers:input_type -> tank.workspace.v1.ListMembersRequest
-	14,  // 89: tank.workspace.v1.WorkspaceService.InviteMember:input_type -> tank.workspace.v1.InviteMemberRequest
-	26,  // 90: tank.workspace.v1.WorkspaceService.JoinWorkspace:input_type -> tank.workspace.v1.JoinWorkspaceRequest
-	17,  // 91: tank.workspace.v1.WorkspaceService.ListInvites:input_type -> tank.workspace.v1.ListInvitesRequest
-	22,  // 92: tank.workspace.v1.WorkspaceService.ListMyInvites:input_type -> tank.workspace.v1.ListMyInvitesRequest
-	24,  // 93: tank.workspace.v1.WorkspaceService.AcceptInvite:input_type -> tank.workspace.v1.AcceptInviteRequest
-	19,  // 94: tank.workspace.v1.WorkspaceService.RevokeInvite:input_type -> tank.workspace.v1.RevokeInviteRequest
-	28,  // 95: tank.workspace.v1.WorkspaceService.UpdateProfile:input_type -> tank.workspace.v1.UpdateProfileRequest
-	35,  // 96: tank.workspace.v1.WorkspaceService.GetPreferences:input_type -> tank.workspace.v1.GetPreferencesRequest
-	37,  // 97: tank.workspace.v1.WorkspaceService.UpdatePreferences:input_type -> tank.workspace.v1.UpdatePreferencesRequest
-	89,  // 98: tank.workspace.v1.WorkspaceService.GenerateTheme:input_type -> tank.workspace.v1.GenerateThemeRequest
-	91,  // 99: tank.workspace.v1.WorkspaceService.SetWorkspaceTheme:input_type -> tank.workspace.v1.SetWorkspaceThemeRequest
-	93,  // 100: tank.workspace.v1.WorkspaceService.GenerateArt:input_type -> tank.workspace.v1.GenerateArtRequest
-	95,  // 101: tank.workspace.v1.WorkspaceService.SetWorkspaceIcon:input_type -> tank.workspace.v1.SetWorkspaceIconRequest
-	97,  // 102: tank.workspace.v1.WorkspaceService.DescribeHomeLayout:input_type -> tank.workspace.v1.DescribeHomeLayoutRequest
-	99,  // 103: tank.workspace.v1.WorkspaceService.RewriteText:input_type -> tank.workspace.v1.RewriteTextRequest
-	101, // 104: tank.workspace.v1.WorkspaceService.DescribeSoundPack:input_type -> tank.workspace.v1.DescribeSoundPackRequest
-	104, // 105: tank.workspace.v1.WorkspaceService.ListSoundPacks:input_type -> tank.workspace.v1.ListSoundPacksRequest
-	40,  // 106: tank.workspace.v1.WorkspaceService.ListEmoji:input_type -> tank.workspace.v1.ListEmojiRequest
-	42,  // 107: tank.workspace.v1.WorkspaceService.CreateEmoji:input_type -> tank.workspace.v1.CreateEmojiRequest
-	44,  // 108: tank.workspace.v1.WorkspaceService.DeleteEmoji:input_type -> tank.workspace.v1.DeleteEmojiRequest
-	47,  // 109: tank.workspace.v1.WorkspaceService.ListUserGroups:input_type -> tank.workspace.v1.ListUserGroupsRequest
-	49,  // 110: tank.workspace.v1.WorkspaceService.CreateUserGroup:input_type -> tank.workspace.v1.CreateUserGroupRequest
-	51,  // 111: tank.workspace.v1.WorkspaceService.UpdateUserGroupMembers:input_type -> tank.workspace.v1.UpdateUserGroupMembersRequest
-	53,  // 112: tank.workspace.v1.WorkspaceService.DeleteUserGroup:input_type -> tank.workspace.v1.DeleteUserGroupRequest
-	56,  // 113: tank.workspace.v1.WorkspaceService.ListBookmarks:input_type -> tank.workspace.v1.ListBookmarksRequest
-	58,  // 114: tank.workspace.v1.WorkspaceService.AddBookmark:input_type -> tank.workspace.v1.AddBookmarkRequest
-	60,  // 115: tank.workspace.v1.WorkspaceService.RemoveBookmark:input_type -> tank.workspace.v1.RemoveBookmarkRequest
-	63,  // 116: tank.workspace.v1.WorkspaceService.GetDraft:input_type -> tank.workspace.v1.GetDraftRequest
-	65,  // 117: tank.workspace.v1.WorkspaceService.PutDraft:input_type -> tank.workspace.v1.PutDraftRequest
-	67,  // 118: tank.workspace.v1.WorkspaceService.DeleteDraft:input_type -> tank.workspace.v1.DeleteDraftRequest
-	69,  // 119: tank.workspace.v1.WorkspaceService.ListDrafts:input_type -> tank.workspace.v1.ListDraftsRequest
-	72,  // 120: tank.workspace.v1.WorkspaceService.ScheduleMessage:input_type -> tank.workspace.v1.ScheduleMessageRequest
-	74,  // 121: tank.workspace.v1.WorkspaceService.ListScheduled:input_type -> tank.workspace.v1.ListScheduledRequest
-	76,  // 122: tank.workspace.v1.WorkspaceService.CancelScheduled:input_type -> tank.workspace.v1.CancelScheduledRequest
-	6,   // 123: tank.workspace.v1.WorkspaceService.CreateWorkspace:output_type -> tank.workspace.v1.CreateWorkspaceResponse
-	8,   // 124: tank.workspace.v1.WorkspaceService.ListWorkspaces:output_type -> tank.workspace.v1.ListWorkspacesResponse
-	80,  // 125: tank.workspace.v1.WorkspaceService.ListAgentures:output_type -> tank.workspace.v1.ListAgenturesResponse
-	82,  // 126: tank.workspace.v1.WorkspaceService.AgentActivity:output_type -> tank.workspace.v1.AgentActivityResponse
-	86,  // 127: tank.workspace.v1.WorkspaceService.GetAgenture:output_type -> tank.workspace.v1.GetAgentureResponse
-	88,  // 128: tank.workspace.v1.WorkspaceService.ClaimAgenture:output_type -> tank.workspace.v1.ClaimAgentureResponse
-	10,  // 129: tank.workspace.v1.WorkspaceService.GetBootstrap:output_type -> tank.workspace.v1.GetBootstrapResponse
-	13,  // 130: tank.workspace.v1.WorkspaceService.ListMembers:output_type -> tank.workspace.v1.ListMembersResponse
-	15,  // 131: tank.workspace.v1.WorkspaceService.InviteMember:output_type -> tank.workspace.v1.InviteMemberResponse
-	27,  // 132: tank.workspace.v1.WorkspaceService.JoinWorkspace:output_type -> tank.workspace.v1.JoinWorkspaceResponse
-	18,  // 133: tank.workspace.v1.WorkspaceService.ListInvites:output_type -> tank.workspace.v1.ListInvitesResponse
-	23,  // 134: tank.workspace.v1.WorkspaceService.ListMyInvites:output_type -> tank.workspace.v1.ListMyInvitesResponse
-	25,  // 135: tank.workspace.v1.WorkspaceService.AcceptInvite:output_type -> tank.workspace.v1.AcceptInviteResponse
-	20,  // 136: tank.workspace.v1.WorkspaceService.RevokeInvite:output_type -> tank.workspace.v1.RevokeInviteResponse
-	29,  // 137: tank.workspace.v1.WorkspaceService.UpdateProfile:output_type -> tank.workspace.v1.UpdateProfileResponse
-	36,  // 138: tank.workspace.v1.WorkspaceService.GetPreferences:output_type -> tank.workspace.v1.GetPreferencesResponse
-	38,  // 139: tank.workspace.v1.WorkspaceService.UpdatePreferences:output_type -> tank.workspace.v1.UpdatePreferencesResponse
-	90,  // 140: tank.workspace.v1.WorkspaceService.GenerateTheme:output_type -> tank.workspace.v1.GenerateThemeResponse
-	92,  // 141: tank.workspace.v1.WorkspaceService.SetWorkspaceTheme:output_type -> tank.workspace.v1.SetWorkspaceThemeResponse
-	94,  // 142: tank.workspace.v1.WorkspaceService.GenerateArt:output_type -> tank.workspace.v1.GenerateArtResponse
-	96,  // 143: tank.workspace.v1.WorkspaceService.SetWorkspaceIcon:output_type -> tank.workspace.v1.SetWorkspaceIconResponse
-	98,  // 144: tank.workspace.v1.WorkspaceService.DescribeHomeLayout:output_type -> tank.workspace.v1.DescribeHomeLayoutResponse
-	100, // 145: tank.workspace.v1.WorkspaceService.RewriteText:output_type -> tank.workspace.v1.RewriteTextResponse
-	102, // 146: tank.workspace.v1.WorkspaceService.DescribeSoundPack:output_type -> tank.workspace.v1.DescribeSoundPackResponse
-	105, // 147: tank.workspace.v1.WorkspaceService.ListSoundPacks:output_type -> tank.workspace.v1.ListSoundPacksResponse
-	41,  // 148: tank.workspace.v1.WorkspaceService.ListEmoji:output_type -> tank.workspace.v1.ListEmojiResponse
-	43,  // 149: tank.workspace.v1.WorkspaceService.CreateEmoji:output_type -> tank.workspace.v1.CreateEmojiResponse
-	45,  // 150: tank.workspace.v1.WorkspaceService.DeleteEmoji:output_type -> tank.workspace.v1.DeleteEmojiResponse
-	48,  // 151: tank.workspace.v1.WorkspaceService.ListUserGroups:output_type -> tank.workspace.v1.ListUserGroupsResponse
-	50,  // 152: tank.workspace.v1.WorkspaceService.CreateUserGroup:output_type -> tank.workspace.v1.CreateUserGroupResponse
-	52,  // 153: tank.workspace.v1.WorkspaceService.UpdateUserGroupMembers:output_type -> tank.workspace.v1.UpdateUserGroupMembersResponse
-	54,  // 154: tank.workspace.v1.WorkspaceService.DeleteUserGroup:output_type -> tank.workspace.v1.DeleteUserGroupResponse
-	57,  // 155: tank.workspace.v1.WorkspaceService.ListBookmarks:output_type -> tank.workspace.v1.ListBookmarksResponse
-	59,  // 156: tank.workspace.v1.WorkspaceService.AddBookmark:output_type -> tank.workspace.v1.AddBookmarkResponse
-	61,  // 157: tank.workspace.v1.WorkspaceService.RemoveBookmark:output_type -> tank.workspace.v1.RemoveBookmarkResponse
-	64,  // 158: tank.workspace.v1.WorkspaceService.GetDraft:output_type -> tank.workspace.v1.GetDraftResponse
-	66,  // 159: tank.workspace.v1.WorkspaceService.PutDraft:output_type -> tank.workspace.v1.PutDraftResponse
-	68,  // 160: tank.workspace.v1.WorkspaceService.DeleteDraft:output_type -> tank.workspace.v1.DeleteDraftResponse
-	70,  // 161: tank.workspace.v1.WorkspaceService.ListDrafts:output_type -> tank.workspace.v1.ListDraftsResponse
-	73,  // 162: tank.workspace.v1.WorkspaceService.ScheduleMessage:output_type -> tank.workspace.v1.ScheduleMessageResponse
-	75,  // 163: tank.workspace.v1.WorkspaceService.ListScheduled:output_type -> tank.workspace.v1.ListScheduledResponse
-	77,  // 164: tank.workspace.v1.WorkspaceService.CancelScheduled:output_type -> tank.workspace.v1.CancelScheduledResponse
-	123, // [123:165] is the sub-list for method output_type
-	81,  // [81:123] is the sub-list for method input_type
-	81,  // [81:81] is the sub-list for extension type_name
-	81,  // [81:81] is the sub-list for extension extendee
-	0,   // [0:81] is the sub-list for field type_name
+	110, // 16: tank.workspace.v1.GetBootstrapResponse.thread_read_states:type_name -> tank.channel.v1.ThreadReadState
+	4,   // 17: tank.workspace.v1.ListMembersResponse.members:type_name -> tank.workspace.v1.Member
+	0,   // 18: tank.workspace.v1.InviteMemberRequest.role:type_name -> tank.workspace.v1.Role
+	0,   // 19: tank.workspace.v1.Invite.role:type_name -> tank.workspace.v1.Role
+	106, // 20: tank.workspace.v1.Invite.expires_at:type_name -> google.protobuf.Timestamp
+	16,  // 21: tank.workspace.v1.ListInvitesResponse.invites:type_name -> tank.workspace.v1.Invite
+	0,   // 22: tank.workspace.v1.PendingInvite.role:type_name -> tank.workspace.v1.Role
+	106, // 23: tank.workspace.v1.PendingInvite.expires_at:type_name -> google.protobuf.Timestamp
+	21,  // 24: tank.workspace.v1.ListMyInvitesResponse.invites:type_name -> tank.workspace.v1.PendingInvite
+	2,   // 25: tank.workspace.v1.AcceptInviteResponse.workspace:type_name -> tank.workspace.v1.Workspace
+	4,   // 26: tank.workspace.v1.AcceptInviteResponse.me:type_name -> tank.workspace.v1.Member
+	2,   // 27: tank.workspace.v1.JoinWorkspaceResponse.workspace:type_name -> tank.workspace.v1.Workspace
+	4,   // 28: tank.workspace.v1.JoinWorkspaceResponse.me:type_name -> tank.workspace.v1.Member
+	4,   // 29: tank.workspace.v1.UpdateProfileResponse.me:type_name -> tank.workspace.v1.Member
+	111, // 30: tank.workspace.v1.Preferences.notify_default:type_name -> tank.channel.v1.NotifyPref
+	111, // 31: tank.workspace.v1.Preferences.dm_notify_default:type_name -> tank.channel.v1.NotifyPref
+	30,  // 32: tank.workspace.v1.Preferences.armor_mode_schedule:type_name -> tank.workspace.v1.ArmorModeSchedule
+	34,  // 33: tank.workspace.v1.Preferences.topo:type_name -> tank.workspace.v1.TopoPreferences
+	3,   // 34: tank.workspace.v1.Preferences.custom_theme:type_name -> tank.workspace.v1.Theme
+	33,  // 35: tank.workspace.v1.Preferences.home:type_name -> tank.workspace.v1.HomeLayout
+	32,  // 36: tank.workspace.v1.Preferences.sounds:type_name -> tank.workspace.v1.SoundChoice
+	112, // 37: tank.workspace.v1.TopoPreferences.visible:type_name -> tank.topo.v1.MarkType
+	31,  // 38: tank.workspace.v1.GetPreferencesResponse.preferences:type_name -> tank.workspace.v1.Preferences
+	31,  // 39: tank.workspace.v1.UpdatePreferencesRequest.preferences:type_name -> tank.workspace.v1.Preferences
+	31,  // 40: tank.workspace.v1.UpdatePreferencesResponse.preferences:type_name -> tank.workspace.v1.Preferences
+	106, // 41: tank.workspace.v1.CustomEmoji.created_at:type_name -> google.protobuf.Timestamp
+	39,  // 42: tank.workspace.v1.ListEmojiResponse.emoji:type_name -> tank.workspace.v1.CustomEmoji
+	39,  // 43: tank.workspace.v1.CreateEmojiResponse.emoji:type_name -> tank.workspace.v1.CustomEmoji
+	106, // 44: tank.workspace.v1.UserGroup.created_at:type_name -> google.protobuf.Timestamp
+	46,  // 45: tank.workspace.v1.ListUserGroupsResponse.groups:type_name -> tank.workspace.v1.UserGroup
+	46,  // 46: tank.workspace.v1.CreateUserGroupResponse.group:type_name -> tank.workspace.v1.UserGroup
+	46,  // 47: tank.workspace.v1.UpdateUserGroupMembersResponse.group:type_name -> tank.workspace.v1.UserGroup
+	106, // 48: tank.workspace.v1.ChannelBookmark.created_at:type_name -> google.protobuf.Timestamp
+	55,  // 49: tank.workspace.v1.ListBookmarksResponse.bookmarks:type_name -> tank.workspace.v1.ChannelBookmark
+	55,  // 50: tank.workspace.v1.AddBookmarkResponse.bookmark:type_name -> tank.workspace.v1.ChannelBookmark
+	113, // 51: tank.workspace.v1.Draft.rich_text:type_name -> tank.richtext.v1.RichText
+	106, // 52: tank.workspace.v1.Draft.updated_at:type_name -> google.protobuf.Timestamp
+	62,  // 53: tank.workspace.v1.GetDraftResponse.draft:type_name -> tank.workspace.v1.Draft
+	62,  // 54: tank.workspace.v1.PutDraftRequest.draft:type_name -> tank.workspace.v1.Draft
+	62,  // 55: tank.workspace.v1.PutDraftResponse.draft:type_name -> tank.workspace.v1.Draft
+	62,  // 56: tank.workspace.v1.ListDraftsResponse.drafts:type_name -> tank.workspace.v1.Draft
+	113, // 57: tank.workspace.v1.ScheduledMessage.rich_text:type_name -> tank.richtext.v1.RichText
+	106, // 58: tank.workspace.v1.ScheduledMessage.send_at:type_name -> google.protobuf.Timestamp
+	106, // 59: tank.workspace.v1.ScheduledMessage.created_at:type_name -> google.protobuf.Timestamp
+	106, // 60: tank.workspace.v1.ScheduledMessage.sent_at:type_name -> google.protobuf.Timestamp
+	106, // 61: tank.workspace.v1.ScheduledMessage.no_later_than:type_name -> google.protobuf.Timestamp
+	113, // 62: tank.workspace.v1.ScheduleMessageRequest.rich_text:type_name -> tank.richtext.v1.RichText
+	106, // 63: tank.workspace.v1.ScheduleMessageRequest.send_at:type_name -> google.protobuf.Timestamp
+	106, // 64: tank.workspace.v1.ScheduleMessageRequest.no_later_than:type_name -> google.protobuf.Timestamp
+	71,  // 65: tank.workspace.v1.ScheduleMessageResponse.scheduled:type_name -> tank.workspace.v1.ScheduledMessage
+	71,  // 66: tank.workspace.v1.ListScheduledResponse.scheduled:type_name -> tank.workspace.v1.ScheduledMessage
+	78,  // 67: tank.workspace.v1.ListAgenturesResponse.agentures:type_name -> tank.workspace.v1.Agenture
+	78,  // 68: tank.workspace.v1.AgentActivityResponse.agentures:type_name -> tank.workspace.v1.Agenture
+	106, // 69: tank.workspace.v1.AgentureWork.asked_at:type_name -> google.protobuf.Timestamp
+	106, // 70: tank.workspace.v1.AgentureWork.delivered_at:type_name -> google.protobuf.Timestamp
+	83,  // 71: tank.workspace.v1.AgentureDetail.work:type_name -> tank.workspace.v1.AgentureWork
+	84,  // 72: tank.workspace.v1.GetAgentureResponse.agenture:type_name -> tank.workspace.v1.AgentureDetail
+	2,   // 73: tank.workspace.v1.ClaimAgentureResponse.workspace:type_name -> tank.workspace.v1.Workspace
+	3,   // 74: tank.workspace.v1.GenerateThemeResponse.theme:type_name -> tank.workspace.v1.Theme
+	3,   // 75: tank.workspace.v1.SetWorkspaceThemeRequest.theme:type_name -> tank.workspace.v1.Theme
+	2,   // 76: tank.workspace.v1.SetWorkspaceThemeResponse.workspace:type_name -> tank.workspace.v1.Workspace
+	1,   // 77: tank.workspace.v1.GenerateArtRequest.kind:type_name -> tank.workspace.v1.ArtKind
+	2,   // 78: tank.workspace.v1.SetWorkspaceIconResponse.workspace:type_name -> tank.workspace.v1.Workspace
+	33,  // 79: tank.workspace.v1.DescribeHomeLayoutResponse.home:type_name -> tank.workspace.v1.HomeLayout
+	32,  // 80: tank.workspace.v1.DescribeSoundPackResponse.sounds:type_name -> tank.workspace.v1.SoundChoice
+	103, // 81: tank.workspace.v1.ListSoundPacksResponse.packs:type_name -> tank.workspace.v1.SoundPack
+	5,   // 82: tank.workspace.v1.WorkspaceService.CreateWorkspace:input_type -> tank.workspace.v1.CreateWorkspaceRequest
+	7,   // 83: tank.workspace.v1.WorkspaceService.ListWorkspaces:input_type -> tank.workspace.v1.ListWorkspacesRequest
+	79,  // 84: tank.workspace.v1.WorkspaceService.ListAgentures:input_type -> tank.workspace.v1.ListAgenturesRequest
+	81,  // 85: tank.workspace.v1.WorkspaceService.AgentActivity:input_type -> tank.workspace.v1.AgentActivityRequest
+	85,  // 86: tank.workspace.v1.WorkspaceService.GetAgenture:input_type -> tank.workspace.v1.GetAgentureRequest
+	87,  // 87: tank.workspace.v1.WorkspaceService.ClaimAgenture:input_type -> tank.workspace.v1.ClaimAgentureRequest
+	9,   // 88: tank.workspace.v1.WorkspaceService.GetBootstrap:input_type -> tank.workspace.v1.GetBootstrapRequest
+	12,  // 89: tank.workspace.v1.WorkspaceService.ListMembers:input_type -> tank.workspace.v1.ListMembersRequest
+	14,  // 90: tank.workspace.v1.WorkspaceService.InviteMember:input_type -> tank.workspace.v1.InviteMemberRequest
+	26,  // 91: tank.workspace.v1.WorkspaceService.JoinWorkspace:input_type -> tank.workspace.v1.JoinWorkspaceRequest
+	17,  // 92: tank.workspace.v1.WorkspaceService.ListInvites:input_type -> tank.workspace.v1.ListInvitesRequest
+	22,  // 93: tank.workspace.v1.WorkspaceService.ListMyInvites:input_type -> tank.workspace.v1.ListMyInvitesRequest
+	24,  // 94: tank.workspace.v1.WorkspaceService.AcceptInvite:input_type -> tank.workspace.v1.AcceptInviteRequest
+	19,  // 95: tank.workspace.v1.WorkspaceService.RevokeInvite:input_type -> tank.workspace.v1.RevokeInviteRequest
+	28,  // 96: tank.workspace.v1.WorkspaceService.UpdateProfile:input_type -> tank.workspace.v1.UpdateProfileRequest
+	35,  // 97: tank.workspace.v1.WorkspaceService.GetPreferences:input_type -> tank.workspace.v1.GetPreferencesRequest
+	37,  // 98: tank.workspace.v1.WorkspaceService.UpdatePreferences:input_type -> tank.workspace.v1.UpdatePreferencesRequest
+	89,  // 99: tank.workspace.v1.WorkspaceService.GenerateTheme:input_type -> tank.workspace.v1.GenerateThemeRequest
+	91,  // 100: tank.workspace.v1.WorkspaceService.SetWorkspaceTheme:input_type -> tank.workspace.v1.SetWorkspaceThemeRequest
+	93,  // 101: tank.workspace.v1.WorkspaceService.GenerateArt:input_type -> tank.workspace.v1.GenerateArtRequest
+	95,  // 102: tank.workspace.v1.WorkspaceService.SetWorkspaceIcon:input_type -> tank.workspace.v1.SetWorkspaceIconRequest
+	97,  // 103: tank.workspace.v1.WorkspaceService.DescribeHomeLayout:input_type -> tank.workspace.v1.DescribeHomeLayoutRequest
+	99,  // 104: tank.workspace.v1.WorkspaceService.RewriteText:input_type -> tank.workspace.v1.RewriteTextRequest
+	101, // 105: tank.workspace.v1.WorkspaceService.DescribeSoundPack:input_type -> tank.workspace.v1.DescribeSoundPackRequest
+	104, // 106: tank.workspace.v1.WorkspaceService.ListSoundPacks:input_type -> tank.workspace.v1.ListSoundPacksRequest
+	40,  // 107: tank.workspace.v1.WorkspaceService.ListEmoji:input_type -> tank.workspace.v1.ListEmojiRequest
+	42,  // 108: tank.workspace.v1.WorkspaceService.CreateEmoji:input_type -> tank.workspace.v1.CreateEmojiRequest
+	44,  // 109: tank.workspace.v1.WorkspaceService.DeleteEmoji:input_type -> tank.workspace.v1.DeleteEmojiRequest
+	47,  // 110: tank.workspace.v1.WorkspaceService.ListUserGroups:input_type -> tank.workspace.v1.ListUserGroupsRequest
+	49,  // 111: tank.workspace.v1.WorkspaceService.CreateUserGroup:input_type -> tank.workspace.v1.CreateUserGroupRequest
+	51,  // 112: tank.workspace.v1.WorkspaceService.UpdateUserGroupMembers:input_type -> tank.workspace.v1.UpdateUserGroupMembersRequest
+	53,  // 113: tank.workspace.v1.WorkspaceService.DeleteUserGroup:input_type -> tank.workspace.v1.DeleteUserGroupRequest
+	56,  // 114: tank.workspace.v1.WorkspaceService.ListBookmarks:input_type -> tank.workspace.v1.ListBookmarksRequest
+	58,  // 115: tank.workspace.v1.WorkspaceService.AddBookmark:input_type -> tank.workspace.v1.AddBookmarkRequest
+	60,  // 116: tank.workspace.v1.WorkspaceService.RemoveBookmark:input_type -> tank.workspace.v1.RemoveBookmarkRequest
+	63,  // 117: tank.workspace.v1.WorkspaceService.GetDraft:input_type -> tank.workspace.v1.GetDraftRequest
+	65,  // 118: tank.workspace.v1.WorkspaceService.PutDraft:input_type -> tank.workspace.v1.PutDraftRequest
+	67,  // 119: tank.workspace.v1.WorkspaceService.DeleteDraft:input_type -> tank.workspace.v1.DeleteDraftRequest
+	69,  // 120: tank.workspace.v1.WorkspaceService.ListDrafts:input_type -> tank.workspace.v1.ListDraftsRequest
+	72,  // 121: tank.workspace.v1.WorkspaceService.ScheduleMessage:input_type -> tank.workspace.v1.ScheduleMessageRequest
+	74,  // 122: tank.workspace.v1.WorkspaceService.ListScheduled:input_type -> tank.workspace.v1.ListScheduledRequest
+	76,  // 123: tank.workspace.v1.WorkspaceService.CancelScheduled:input_type -> tank.workspace.v1.CancelScheduledRequest
+	6,   // 124: tank.workspace.v1.WorkspaceService.CreateWorkspace:output_type -> tank.workspace.v1.CreateWorkspaceResponse
+	8,   // 125: tank.workspace.v1.WorkspaceService.ListWorkspaces:output_type -> tank.workspace.v1.ListWorkspacesResponse
+	80,  // 126: tank.workspace.v1.WorkspaceService.ListAgentures:output_type -> tank.workspace.v1.ListAgenturesResponse
+	82,  // 127: tank.workspace.v1.WorkspaceService.AgentActivity:output_type -> tank.workspace.v1.AgentActivityResponse
+	86,  // 128: tank.workspace.v1.WorkspaceService.GetAgenture:output_type -> tank.workspace.v1.GetAgentureResponse
+	88,  // 129: tank.workspace.v1.WorkspaceService.ClaimAgenture:output_type -> tank.workspace.v1.ClaimAgentureResponse
+	10,  // 130: tank.workspace.v1.WorkspaceService.GetBootstrap:output_type -> tank.workspace.v1.GetBootstrapResponse
+	13,  // 131: tank.workspace.v1.WorkspaceService.ListMembers:output_type -> tank.workspace.v1.ListMembersResponse
+	15,  // 132: tank.workspace.v1.WorkspaceService.InviteMember:output_type -> tank.workspace.v1.InviteMemberResponse
+	27,  // 133: tank.workspace.v1.WorkspaceService.JoinWorkspace:output_type -> tank.workspace.v1.JoinWorkspaceResponse
+	18,  // 134: tank.workspace.v1.WorkspaceService.ListInvites:output_type -> tank.workspace.v1.ListInvitesResponse
+	23,  // 135: tank.workspace.v1.WorkspaceService.ListMyInvites:output_type -> tank.workspace.v1.ListMyInvitesResponse
+	25,  // 136: tank.workspace.v1.WorkspaceService.AcceptInvite:output_type -> tank.workspace.v1.AcceptInviteResponse
+	20,  // 137: tank.workspace.v1.WorkspaceService.RevokeInvite:output_type -> tank.workspace.v1.RevokeInviteResponse
+	29,  // 138: tank.workspace.v1.WorkspaceService.UpdateProfile:output_type -> tank.workspace.v1.UpdateProfileResponse
+	36,  // 139: tank.workspace.v1.WorkspaceService.GetPreferences:output_type -> tank.workspace.v1.GetPreferencesResponse
+	38,  // 140: tank.workspace.v1.WorkspaceService.UpdatePreferences:output_type -> tank.workspace.v1.UpdatePreferencesResponse
+	90,  // 141: tank.workspace.v1.WorkspaceService.GenerateTheme:output_type -> tank.workspace.v1.GenerateThemeResponse
+	92,  // 142: tank.workspace.v1.WorkspaceService.SetWorkspaceTheme:output_type -> tank.workspace.v1.SetWorkspaceThemeResponse
+	94,  // 143: tank.workspace.v1.WorkspaceService.GenerateArt:output_type -> tank.workspace.v1.GenerateArtResponse
+	96,  // 144: tank.workspace.v1.WorkspaceService.SetWorkspaceIcon:output_type -> tank.workspace.v1.SetWorkspaceIconResponse
+	98,  // 145: tank.workspace.v1.WorkspaceService.DescribeHomeLayout:output_type -> tank.workspace.v1.DescribeHomeLayoutResponse
+	100, // 146: tank.workspace.v1.WorkspaceService.RewriteText:output_type -> tank.workspace.v1.RewriteTextResponse
+	102, // 147: tank.workspace.v1.WorkspaceService.DescribeSoundPack:output_type -> tank.workspace.v1.DescribeSoundPackResponse
+	105, // 148: tank.workspace.v1.WorkspaceService.ListSoundPacks:output_type -> tank.workspace.v1.ListSoundPacksResponse
+	41,  // 149: tank.workspace.v1.WorkspaceService.ListEmoji:output_type -> tank.workspace.v1.ListEmojiResponse
+	43,  // 150: tank.workspace.v1.WorkspaceService.CreateEmoji:output_type -> tank.workspace.v1.CreateEmojiResponse
+	45,  // 151: tank.workspace.v1.WorkspaceService.DeleteEmoji:output_type -> tank.workspace.v1.DeleteEmojiResponse
+	48,  // 152: tank.workspace.v1.WorkspaceService.ListUserGroups:output_type -> tank.workspace.v1.ListUserGroupsResponse
+	50,  // 153: tank.workspace.v1.WorkspaceService.CreateUserGroup:output_type -> tank.workspace.v1.CreateUserGroupResponse
+	52,  // 154: tank.workspace.v1.WorkspaceService.UpdateUserGroupMembers:output_type -> tank.workspace.v1.UpdateUserGroupMembersResponse
+	54,  // 155: tank.workspace.v1.WorkspaceService.DeleteUserGroup:output_type -> tank.workspace.v1.DeleteUserGroupResponse
+	57,  // 156: tank.workspace.v1.WorkspaceService.ListBookmarks:output_type -> tank.workspace.v1.ListBookmarksResponse
+	59,  // 157: tank.workspace.v1.WorkspaceService.AddBookmark:output_type -> tank.workspace.v1.AddBookmarkResponse
+	61,  // 158: tank.workspace.v1.WorkspaceService.RemoveBookmark:output_type -> tank.workspace.v1.RemoveBookmarkResponse
+	64,  // 159: tank.workspace.v1.WorkspaceService.GetDraft:output_type -> tank.workspace.v1.GetDraftResponse
+	66,  // 160: tank.workspace.v1.WorkspaceService.PutDraft:output_type -> tank.workspace.v1.PutDraftResponse
+	68,  // 161: tank.workspace.v1.WorkspaceService.DeleteDraft:output_type -> tank.workspace.v1.DeleteDraftResponse
+	70,  // 162: tank.workspace.v1.WorkspaceService.ListDrafts:output_type -> tank.workspace.v1.ListDraftsResponse
+	73,  // 163: tank.workspace.v1.WorkspaceService.ScheduleMessage:output_type -> tank.workspace.v1.ScheduleMessageResponse
+	75,  // 164: tank.workspace.v1.WorkspaceService.ListScheduled:output_type -> tank.workspace.v1.ListScheduledResponse
+	77,  // 165: tank.workspace.v1.WorkspaceService.CancelScheduled:output_type -> tank.workspace.v1.CancelScheduledResponse
+	124, // [124:166] is the sub-list for method output_type
+	82,  // [82:124] is the sub-list for method input_type
+	82,  // [82:82] is the sub-list for extension type_name
+	82,  // [82:82] is the sub-list for extension extendee
+	0,   // [0:82] is the sub-list for field type_name
 }
 
 func init() { file_tank_workspace_v1_workspace_proto_init() }

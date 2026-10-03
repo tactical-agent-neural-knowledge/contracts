@@ -81,6 +81,14 @@ class Channel(_message.Message):
     icon_file_id: str
     def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., type: _Optional[_Union[ChannelType, str]] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., last_seq: _Optional[int] = ..., member_count: _Optional[int] = ..., last_message_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., archived_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., goal: _Optional[_Union[TreadGoal, _Mapping]] = ..., member_ids: _Optional[_Iterable[str]] = ..., joined: bool = ..., icon_file_id: _Optional[str] = ...) -> None: ...
 
+class ThreadReadState(_message.Message):
+    __slots__ = ("thread_root_id", "last_read_thread_seq")
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    LAST_READ_THREAD_SEQ_FIELD_NUMBER: _ClassVar[int]
+    thread_root_id: str
+    last_read_thread_seq: int
+    def __init__(self, thread_root_id: _Optional[str] = ..., last_read_thread_seq: _Optional[int] = ...) -> None: ...
+
 class ChannelReadState(_message.Message):
     __slots__ = ("channel_id", "last_read_seq", "mention_count", "muted", "starred", "notify_pref", "unread_count")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]

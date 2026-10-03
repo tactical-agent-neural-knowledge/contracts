@@ -122,7 +122,7 @@ class GetBootstrapRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
 
 class GetBootstrapResponse(_message.Message):
-    __slots__ = ("workspace", "me", "channels", "read_states", "members", "custom_emoji_hash", "unread_notification_count", "preferences", "user_groups", "entitlements")
+    __slots__ = ("workspace", "me", "channels", "read_states", "members", "custom_emoji_hash", "unread_notification_count", "preferences", "user_groups", "entitlements", "thread_read_states")
     WORKSPACE_FIELD_NUMBER: _ClassVar[int]
     ME_FIELD_NUMBER: _ClassVar[int]
     CHANNELS_FIELD_NUMBER: _ClassVar[int]
@@ -133,6 +133,7 @@ class GetBootstrapResponse(_message.Message):
     PREFERENCES_FIELD_NUMBER: _ClassVar[int]
     USER_GROUPS_FIELD_NUMBER: _ClassVar[int]
     ENTITLEMENTS_FIELD_NUMBER: _ClassVar[int]
+    THREAD_READ_STATES_FIELD_NUMBER: _ClassVar[int]
     workspace: Workspace
     me: Member
     channels: _containers.RepeatedCompositeFieldContainer[_channel_pb2.Channel]
@@ -143,7 +144,8 @@ class GetBootstrapResponse(_message.Message):
     preferences: Preferences
     user_groups: _containers.RepeatedCompositeFieldContainer[UserGroup]
     entitlements: Entitlements
-    def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ..., me: _Optional[_Union[Member, _Mapping]] = ..., channels: _Optional[_Iterable[_Union[_channel_pb2.Channel, _Mapping]]] = ..., read_states: _Optional[_Iterable[_Union[_channel_pb2.ChannelReadState, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., custom_emoji_hash: _Optional[str] = ..., unread_notification_count: _Optional[int] = ..., preferences: _Optional[_Union[Preferences, _Mapping]] = ..., user_groups: _Optional[_Iterable[_Union[UserGroup, _Mapping]]] = ..., entitlements: _Optional[_Union[Entitlements, _Mapping]] = ...) -> None: ...
+    thread_read_states: _containers.RepeatedCompositeFieldContainer[_channel_pb2.ThreadReadState]
+    def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ..., me: _Optional[_Union[Member, _Mapping]] = ..., channels: _Optional[_Iterable[_Union[_channel_pb2.Channel, _Mapping]]] = ..., read_states: _Optional[_Iterable[_Union[_channel_pb2.ChannelReadState, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., custom_emoji_hash: _Optional[str] = ..., unread_notification_count: _Optional[int] = ..., preferences: _Optional[_Union[Preferences, _Mapping]] = ..., user_groups: _Optional[_Iterable[_Union[UserGroup, _Mapping]]] = ..., entitlements: _Optional[_Union[Entitlements, _Mapping]] = ..., thread_read_states: _Optional[_Iterable[_Union[_channel_pb2.ThreadReadState, _Mapping]]] = ...) -> None: ...
 
 class Entitlements(_message.Message):
     __slots__ = ("plan", "agent_runs", "neural_vault", "agent_runs_used", "agent_runs_limit", "vault_queries_used", "vault_queries_limit", "contact_email", "conditional_sends")
