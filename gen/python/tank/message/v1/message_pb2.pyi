@@ -161,6 +161,20 @@ class DeleteMessageResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class DeleteThreadRequest(_message.Message):
+    __slots__ = ("thread_root_id",)
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    thread_root_id: str
+    def __init__(self, thread_root_id: _Optional[str] = ...) -> None: ...
+
+class DeleteThreadResponse(_message.Message):
+    __slots__ = ("deleted", "cancelled_runs")
+    DELETED_FIELD_NUMBER: _ClassVar[int]
+    CANCELLED_RUNS_FIELD_NUMBER: _ClassVar[int]
+    deleted: int
+    cancelled_runs: int
+    def __init__(self, deleted: _Optional[int] = ..., cancelled_runs: _Optional[int] = ...) -> None: ...
+
 class ListMessagesRequest(_message.Message):
     __slots__ = ("channel_id", "before_seq", "after_seq", "limit", "kinds")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]

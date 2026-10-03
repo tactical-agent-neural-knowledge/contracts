@@ -41,6 +41,9 @@ const (
 	// ChatServiceDeleteMessageProcedure is the fully-qualified name of the ChatService's DeleteMessage
 	// RPC.
 	ChatServiceDeleteMessageProcedure = "/tank.message.v1.ChatService/DeleteMessage"
+	// ChatServiceDeleteThreadProcedure is the fully-qualified name of the ChatService's DeleteThread
+	// RPC.
+	ChatServiceDeleteThreadProcedure = "/tank.message.v1.ChatService/DeleteThread"
 	// ChatServiceListMessagesProcedure is the fully-qualified name of the ChatService's ListMessages
 	// RPC.
 	ChatServiceListMessagesProcedure = "/tank.message.v1.ChatService/ListMessages"
@@ -82,6 +85,7 @@ type ChatServiceClient interface {
 	PostMessage(context.Context, *connect.Request[v1.PostMessageRequest]) (*connect.Response[v1.PostMessageResponse], error)
 	UpdateMessage(context.Context, *connect.Request[v1.UpdateMessageRequest]) (*connect.Response[v1.UpdateMessageResponse], error)
 	DeleteMessage(context.Context, *connect.Request[v1.DeleteMessageRequest]) (*connect.Response[v1.DeleteMessageResponse], error)
+	DeleteThread(context.Context, *connect.Request[v1.DeleteThreadRequest]) (*connect.Response[v1.DeleteThreadResponse], error)
 	ListMessages(context.Context, *connect.Request[v1.ListMessagesRequest]) (*connect.Response[v1.ListMessagesResponse], error)
 	GetThread(context.Context, *connect.Request[v1.GetThreadRequest]) (*connect.Response[v1.GetThreadResponse], error)
 	GetMessage(context.Context, *connect.Request[v1.GetMessageRequest]) (*connect.Response[v1.GetMessageResponse], error)
@@ -125,6 +129,12 @@ func NewChatServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			httpClient,
 			baseURL+ChatServiceDeleteMessageProcedure,
 			connect.WithSchema(chatServiceMethods.ByName("DeleteMessage")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteThread: connect.NewClient[v1.DeleteThreadRequest, v1.DeleteThreadResponse](
+			httpClient,
+			baseURL+ChatServiceDeleteThreadProcedure,
+			connect.WithSchema(chatServiceMethods.ByName("DeleteThread")),
 			connect.WithClientOptions(opts...),
 		),
 		listMessages: connect.NewClient[v1.ListMessagesRequest, v1.ListMessagesResponse](
@@ -219,6 +229,7 @@ type chatServiceClient struct {
 	postMessage     *connect.Client[v1.PostMessageRequest, v1.PostMessageResponse]
 	updateMessage   *connect.Client[v1.UpdateMessageRequest, v1.UpdateMessageResponse]
 	deleteMessage   *connect.Client[v1.DeleteMessageRequest, v1.DeleteMessageResponse]
+	deleteThread    *connect.Client[v1.DeleteThreadRequest, v1.DeleteThreadResponse]
 	listMessages    *connect.Client[v1.ListMessagesRequest, v1.ListMessagesResponse]
 	getThread       *connect.Client[v1.GetThreadRequest, v1.GetThreadResponse]
 	getMessage      *connect.Client[v1.GetMessageRequest, v1.GetMessageResponse]
@@ -248,6 +259,11 @@ func (c *chatServiceClient) UpdateMessage(ctx context.Context, req *connect.Requ
 // DeleteMessage calls tank.message.v1.ChatService.DeleteMessage.
 func (c *chatServiceClient) DeleteMessage(ctx context.Context, req *connect.Request[v1.DeleteMessageRequest]) (*connect.Response[v1.DeleteMessageResponse], error) {
 	return c.deleteMessage.CallUnary(ctx, req)
+}
+
+// DeleteThread calls tank.message.v1.ChatService.DeleteThread.
+func (c *chatServiceClient) DeleteThread(ctx context.Context, req *connect.Request[v1.DeleteThreadRequest]) (*connect.Response[v1.DeleteThreadResponse], error) {
+	return c.deleteThread.CallUnary(ctx, req)
 }
 
 // ListMessages calls tank.message.v1.ChatService.ListMessages.
@@ -325,6 +341,7 @@ type ChatServiceHandler interface {
 	PostMessage(context.Context, *connect.Request[v1.PostMessageRequest]) (*connect.Response[v1.PostMessageResponse], error)
 	UpdateMessage(context.Context, *connect.Request[v1.UpdateMessageRequest]) (*connect.Response[v1.UpdateMessageResponse], error)
 	DeleteMessage(context.Context, *connect.Request[v1.DeleteMessageRequest]) (*connect.Response[v1.DeleteMessageResponse], error)
+	DeleteThread(context.Context, *connect.Request[v1.DeleteThreadRequest]) (*connect.Response[v1.DeleteThreadResponse], error)
 	ListMessages(context.Context, *connect.Request[v1.ListMessagesRequest]) (*connect.Response[v1.ListMessagesResponse], error)
 	GetThread(context.Context, *connect.Request[v1.GetThreadRequest]) (*connect.Response[v1.GetThreadResponse], error)
 	GetMessage(context.Context, *connect.Request[v1.GetMessageRequest]) (*connect.Response[v1.GetMessageResponse], error)
@@ -364,6 +381,12 @@ func NewChatServiceHandler(svc ChatServiceHandler, opts ...connect.HandlerOption
 		ChatServiceDeleteMessageProcedure,
 		svc.DeleteMessage,
 		connect.WithSchema(chatServiceMethods.ByName("DeleteMessage")),
+		connect.WithHandlerOptions(opts...),
+	)
+	chatServiceDeleteThreadHandler := connect.NewUnaryHandler(
+		ChatServiceDeleteThreadProcedure,
+		svc.DeleteThread,
+		connect.WithSchema(chatServiceMethods.ByName("DeleteThread")),
 		connect.WithHandlerOptions(opts...),
 	)
 	chatServiceListMessagesHandler := connect.NewUnaryHandler(
@@ -458,6 +481,8 @@ func NewChatServiceHandler(svc ChatServiceHandler, opts ...connect.HandlerOption
 			chatServiceUpdateMessageHandler.ServeHTTP(w, r)
 		case ChatServiceDeleteMessageProcedure:
 			chatServiceDeleteMessageHandler.ServeHTTP(w, r)
+		case ChatServiceDeleteThreadProcedure:
+			chatServiceDeleteThreadHandler.ServeHTTP(w, r)
 		case ChatServiceListMessagesProcedure:
 			chatServiceListMessagesHandler.ServeHTTP(w, r)
 		case ChatServiceGetThreadProcedure:
@@ -505,6 +530,10 @@ func (UnimplementedChatServiceHandler) UpdateMessage(context.Context, *connect.R
 
 func (UnimplementedChatServiceHandler) DeleteMessage(context.Context, *connect.Request[v1.DeleteMessageRequest]) (*connect.Response[v1.DeleteMessageResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.DeleteMessage is not implemented"))
+}
+
+func (UnimplementedChatServiceHandler) DeleteThread(context.Context, *connect.Request[v1.DeleteThreadRequest]) (*connect.Response[v1.DeleteThreadResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.message.v1.ChatService.DeleteThread is not implemented"))
 }
 
 func (UnimplementedChatServiceHandler) ListMessages(context.Context, *connect.Request[v1.ListMessagesRequest]) (*connect.Response[v1.ListMessagesResponse], error) {

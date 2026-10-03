@@ -94,6 +94,16 @@ message DeleteMessageRequest {
 }
 message DeleteMessageResponse {}
 
+// DeleteThread removes a thread for everyone: the root, every reply, and any agent run
+// bound to it, which is cancelled. The root's author or a channel admin may do it.
+message DeleteThreadRequest {
+  string thread_root_id = 1;
+}
+message DeleteThreadResponse {
+  int32 deleted = 1;         // messages removed, the root included
+  int32 cancelled_runs = 2;  // agent runs that were still open
+}
+
 message ListMessagesRequest {
   string channel_id = 1;
   int64 before_seq = 2;
@@ -216,6 +226,7 @@ service ChatService {
   rpc PostMessage(PostMessageRequest) returns (PostMessageResponse);
   rpc UpdateMessage(UpdateMessageRequest) returns (UpdateMessageResponse);
   rpc DeleteMessage(DeleteMessageRequest) returns (DeleteMessageResponse);
+  rpc DeleteThread(DeleteThreadRequest) returns (DeleteThreadResponse);
   rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
   rpc GetThread(GetThreadRequest) returns (GetThreadResponse);
   rpc GetMessage(GetMessageRequest) returns (GetMessageResponse);

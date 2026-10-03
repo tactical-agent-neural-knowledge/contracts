@@ -58,6 +58,18 @@ class MessageDeleted(_message.Message):
     thread_root_id: str
     def __init__(self, message_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ...) -> None: ...
 
+class ThreadDeleted(_message.Message):
+    __slots__ = ("thread_root_id", "channel_id", "actor_id", "cancelled_runs")
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    CANCELLED_RUNS_FIELD_NUMBER: _ClassVar[int]
+    thread_root_id: str
+    channel_id: str
+    actor_id: str
+    cancelled_runs: int
+    def __init__(self, thread_root_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., actor_id: _Optional[str] = ..., cancelled_runs: _Optional[int] = ...) -> None: ...
+
 class FileDeleted(_message.Message):
     __slots__ = ("file_id", "workspace_id", "message_ids")
     FILE_ID_FIELD_NUMBER: _ClassVar[int]

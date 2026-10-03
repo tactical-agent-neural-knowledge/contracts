@@ -328,8 +328,10 @@ class DeleteChannelRequest(_message.Message):
     def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
 
 class DeleteChannelResponse(_message.Message):
-    __slots__ = ()
-    def __init__(self) -> None: ...
+    __slots__ = ("cancelled_runs",)
+    CANCELLED_RUNS_FIELD_NUMBER: _ClassVar[int]
+    cancelled_runs: int
+    def __init__(self, cancelled_runs: _Optional[int] = ...) -> None: ...
 
 class UnarchiveChannelRequest(_message.Message):
     __slots__ = ("channel_id",)

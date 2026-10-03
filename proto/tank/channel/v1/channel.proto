@@ -206,7 +206,9 @@ message ArchiveChannelResponse {
 message DeleteChannelRequest {
   string channel_id = 1;
 }
-message DeleteChannelResponse {}
+message DeleteChannelResponse {
+  int32 cancelled_runs = 1; // agent runs that were still open in it and were cancelled
+}
 
 message UnarchiveChannelRequest {
   string channel_id = 1;

@@ -40,6 +40,15 @@ message MessageDeleted {
   string channel_id = 2;
   string thread_root_id = 3;
 }
+// A whole thread was deleted: the root and every reply go, and any agent run bound to
+// it was cancelled. Clients drop the root and its replies rather than showing a
+// tombstone, which is what makes this different from MessageDeleted on a root.
+message ThreadDeleted {
+  string thread_root_id = 1;
+  string channel_id = 2;
+  string actor_id = 3;
+  int32 cancelled_runs = 4;
+}
 // A file was removed. Sent on every channel it was shared in, so each open
 // Tread drops the chip; the messages are re-sent as MessageUpdated with the id
 // gone, and this exists for clients that keep a files index of their own.
