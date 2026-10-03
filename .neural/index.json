@@ -1,0 +1,71 @@
+{
+  "generated_by": "TANK Neural Knowledge",
+  "commit": "c5e2e604e1c6bc2b0d29eef4b6688c52e3380cbf",
+  "refreshed_at": "2026-10-03T12:19:40.782Z",
+  "areas": {
+    ".": {
+      "neurons": ".neural/neurons/root.md",
+      "hot": [
+        "CLAUDE.md",
+        "Makefile",
+        "README.md",
+        "buf.gen.yaml",
+        "buf.yaml",
+        "go.mod"
+      ],
+      "files": [
+        "CLAUDE.md",
+        "Makefile",
+        "README.md",
+        "buf.gen.yaml",
+        "buf.yaml",
+        "go.mod",
+        "go.sum"
+      ]
+    },
+    ".github": {
+      "neurons": ".neural/neurons/github.md",
+      "hot": [
+        ".github/workflows/ci.yml"
+      ],
+      "files": [
+        ".github/workflows/ci.yml"
+      ]
+    },
+    "proto": {
+      "neurons": ".neural/neurons/proto.md",
+      "hot": [
+        "proto/tank/workspace/v1/workspace.proto",
+        "proto/tank/agentctl/v1/agentctl.proto",
+        "proto/tank/catalog/v1/catalog.proto",
+        "proto/tank/channel/v1/channel.proto",
+        "proto/tank/agent/v1/agent.proto",
+        "proto/tank/events/v1/events.proto"
+      ],
+      "files": [
+        "proto/tank/admin/v1/admin.proto",
+        "proto/tank/agent/v1/agent.proto",
+        "proto/tank/agentctl/v1/agentctl.proto",
+        "proto/tank/auth/v1/auth.proto",
+        "proto/tank/billing/v1/billing.proto",
+        "proto/tank/blocks/v1/blocks.proto",
+        "proto/tank/catalog/v1/catalog.proto",
+        "proto/tank/channel/v1/channel.proto",
+        "proto/tank/command/v1/command.proto",
+        "proto/tank/events/v1/events.proto",
+        "proto/tank/files/v1/files.proto",
+        "proto/tank/huddle/v1/huddle.proto",
+        "proto/tank/message/v1/message.proto",
+        "proto/tank/monitor/v1/monitor.proto",
+        "proto/tank/notification/v1/notification.proto",
+        "proto/tank/platform/v1/platform.proto",
+        "proto/tank/presence/v1/presence.proto",
+        "proto/tank/realtime/v1/realtime.proto",
+        "proto/tank/richtext/v1/richtext.proto",
+        "proto/tank/search/v1/search.proto",
+        "proto/tank/topo/v1/topo.proto",
+        "proto/tank/workspace/v1/workspace.proto"
+      ]
+    }
+  }
+}
