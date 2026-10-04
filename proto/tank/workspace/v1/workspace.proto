@@ -260,6 +260,8 @@ message HomeLayout {
   repeated string order = 1;
   repeated string hidden = 2;
   string description = 3;
+  // The person hid the first-week setup cards on Home.
+  bool setup_hidden = 4;
 }
 
 // Which Topo mark families the strip draws for this person.

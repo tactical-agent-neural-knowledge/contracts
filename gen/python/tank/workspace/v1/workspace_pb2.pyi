@@ -372,14 +372,16 @@ class SoundChoice(_message.Message):
     def __init__(self, pack: _Optional[str] = ..., mention: _Optional[str] = ..., dm: _Optional[str] = ..., agent: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
 
 class HomeLayout(_message.Message):
-    __slots__ = ("order", "hidden", "description")
+    __slots__ = ("order", "hidden", "description", "setup_hidden")
     ORDER_FIELD_NUMBER: _ClassVar[int]
     HIDDEN_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    SETUP_HIDDEN_FIELD_NUMBER: _ClassVar[int]
     order: _containers.RepeatedScalarFieldContainer[str]
     hidden: _containers.RepeatedScalarFieldContainer[str]
     description: str
-    def __init__(self, order: _Optional[_Iterable[str]] = ..., hidden: _Optional[_Iterable[str]] = ..., description: _Optional[str] = ...) -> None: ...
+    setup_hidden: bool
+    def __init__(self, order: _Optional[_Iterable[str]] = ..., hidden: _Optional[_Iterable[str]] = ..., description: _Optional[str] = ..., setup_hidden: bool = ...) -> None: ...
 
 class TopoPreferences(_message.Message):
     __slots__ = ("configured", "visible", "time_axis")

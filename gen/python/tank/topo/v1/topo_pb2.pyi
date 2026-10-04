@@ -326,13 +326,43 @@ class BriefingPerson(_message.Message):
     def __init__(self, user_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class GetBriefingResponse(_message.Message):
-    __slots__ = ("treads", "people", "quiet_since", "narrative")
+    __slots__ = ("treads", "people", "quiet_since", "narrative", "hours", "setup")
     TREADS_FIELD_NUMBER: _ClassVar[int]
     PEOPLE_FIELD_NUMBER: _ClassVar[int]
     QUIET_SINCE_FIELD_NUMBER: _ClassVar[int]
     NARRATIVE_FIELD_NUMBER: _ClassVar[int]
+    HOURS_FIELD_NUMBER: _ClassVar[int]
+    SETUP_FIELD_NUMBER: _ClassVar[int]
     treads: _containers.RepeatedCompositeFieldContainer[BriefingTread]
     people: _containers.RepeatedCompositeFieldContainer[BriefingPerson]
     quiet_since: _timestamp_pb2.Timestamp
     narrative: str
-    def __init__(self, treads: _Optional[_Iterable[_Union[BriefingTread, _Mapping]]] = ..., people: _Optional[_Iterable[_Union[BriefingPerson, _Mapping]]] = ..., quiet_since: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., narrative: _Optional[str] = ...) -> None: ...
+    hours: _containers.RepeatedCompositeFieldContainer[BriefingHour]
+    setup: BriefingSetup
+    def __init__(self, treads: _Optional[_Iterable[_Union[BriefingTread, _Mapping]]] = ..., people: _Optional[_Iterable[_Union[BriefingPerson, _Mapping]]] = ..., quiet_since: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., narrative: _Optional[str] = ..., hours: _Optional[_Iterable[_Union[BriefingHour, _Mapping]]] = ..., setup: _Optional[_Union[BriefingSetup, _Mapping]] = ...) -> None: ...
+
+class BriefingHour(_message.Message):
+    __slots__ = ("hour", "messages", "runs")
+    HOUR_FIELD_NUMBER: _ClassVar[int]
+    MESSAGES_FIELD_NUMBER: _ClassVar[int]
+    RUNS_FIELD_NUMBER: _ClassVar[int]
+    hour: _timestamp_pb2.Timestamp
+    messages: int
+    runs: int
+    def __init__(self, hour: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., messages: _Optional[int] = ..., runs: _Optional[int] = ...) -> None: ...
+
+class BriefingSetup(_message.Message):
+    __slots__ = ("goal_set", "github_connected", "agent_summoned", "someone_invited", "avatar_set", "done")
+    GOAL_SET_FIELD_NUMBER: _ClassVar[int]
+    GITHUB_CONNECTED_FIELD_NUMBER: _ClassVar[int]
+    AGENT_SUMMONED_FIELD_NUMBER: _ClassVar[int]
+    SOMEONE_INVITED_FIELD_NUMBER: _ClassVar[int]
+    AVATAR_SET_FIELD_NUMBER: _ClassVar[int]
+    DONE_FIELD_NUMBER: _ClassVar[int]
+    goal_set: bool
+    github_connected: bool
+    agent_summoned: bool
+    someone_invited: bool
+    avatar_set: bool
+    done: bool
+    def __init__(self, goal_set: bool = ..., github_connected: bool = ..., agent_summoned: bool = ..., someone_invited: bool = ..., avatar_set: bool = ..., done: bool = ...) -> None: ...

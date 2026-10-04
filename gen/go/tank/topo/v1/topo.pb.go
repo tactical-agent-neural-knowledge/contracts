@@ -1860,7 +1860,13 @@ type GetBriefingResponse struct {
 	// When the workspace last spoke, across the Treads you can see.
 	QuietSince *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=quiet_since,json=quietSince,proto3" json:"quiet_since,omitempty"`
 	// A few sentences on what moved, in the person's digest voice; empty unless narrate was set.
-	Narrative     string `protobuf:"bytes,4,opt,name=narrative,proto3" json:"narrative,omitempty"`
+	Narrative string `protobuf:"bytes,4,opt,name=narrative,proto3" json:"narrative,omitempty"`
+	// The last twenty-four hours, oldest first: how much was said and how many agent runs
+	// started in each hour, across the Treads you can see. Home draws the day ring from it.
+	Hours []*BriefingHour `protobuf:"bytes,5,rep,name=hours,proto3" json:"hours,omitempty"`
+	// What a new workspace has and has not done yet. Home shows the first-week cards until
+	// every one is true or the person hides them.
+	Setup         *BriefingSetup `protobuf:"bytes,6,opt,name=setup,proto3" json:"setup,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1921,6 +1927,164 @@ func (x *GetBriefingResponse) GetNarrative() string {
 		return x.Narrative
 	}
 	return ""
+}
+
+func (x *GetBriefingResponse) GetHours() []*BriefingHour {
+	if x != nil {
+		return x.Hours
+	}
+	return nil
+}
+
+func (x *GetBriefingResponse) GetSetup() *BriefingSetup {
+	if x != nil {
+		return x.Setup
+	}
+	return nil
+}
+
+type BriefingHour struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Hour          *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=hour,proto3" json:"hour,omitempty"`
+	Messages      int32                  `protobuf:"varint,2,opt,name=messages,proto3" json:"messages,omitempty"`
+	Runs          int32                  `protobuf:"varint,3,opt,name=runs,proto3" json:"runs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BriefingHour) Reset() {
+	*x = BriefingHour{}
+	mi := &file_tank_topo_v1_topo_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BriefingHour) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BriefingHour) ProtoMessage() {}
+
+func (x *BriefingHour) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_topo_v1_topo_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BriefingHour.ProtoReflect.Descriptor instead.
+func (*BriefingHour) Descriptor() ([]byte, []int) {
+	return file_tank_topo_v1_topo_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *BriefingHour) GetHour() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Hour
+	}
+	return nil
+}
+
+func (x *BriefingHour) GetMessages() int32 {
+	if x != nil {
+		return x.Messages
+	}
+	return 0
+}
+
+func (x *BriefingHour) GetRuns() int32 {
+	if x != nil {
+		return x.Runs
+	}
+	return 0
+}
+
+type BriefingSetup struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	GoalSet         bool                   `protobuf:"varint,1,opt,name=goal_set,json=goalSet,proto3" json:"goal_set,omitempty"`                         // some Tread has a goal
+	GithubConnected bool                   `protobuf:"varint,2,opt,name=github_connected,json=githubConnected,proto3" json:"github_connected,omitempty"` // the workspace has a GitHub installation
+	AgentSummoned   bool                   `protobuf:"varint,3,opt,name=agent_summoned,json=agentSummoned,proto3" json:"agent_summoned,omitempty"`       // an agent run has ever started here
+	SomeoneInvited  bool                   `protobuf:"varint,4,opt,name=someone_invited,json=someoneInvited,proto3" json:"someone_invited,omitempty"`    // more than one member
+	AvatarSet       bool                   `protobuf:"varint,5,opt,name=avatar_set,json=avatarSet,proto3" json:"avatar_set,omitempty"`                   // the person has a picture
+	Done            bool                   `protobuf:"varint,6,opt,name=done,proto3" json:"done,omitempty"`                                              // all of the above
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *BriefingSetup) Reset() {
+	*x = BriefingSetup{}
+	mi := &file_tank_topo_v1_topo_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BriefingSetup) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BriefingSetup) ProtoMessage() {}
+
+func (x *BriefingSetup) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_topo_v1_topo_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BriefingSetup.ProtoReflect.Descriptor instead.
+func (*BriefingSetup) Descriptor() ([]byte, []int) {
+	return file_tank_topo_v1_topo_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *BriefingSetup) GetGoalSet() bool {
+	if x != nil {
+		return x.GoalSet
+	}
+	return false
+}
+
+func (x *BriefingSetup) GetGithubConnected() bool {
+	if x != nil {
+		return x.GithubConnected
+	}
+	return false
+}
+
+func (x *BriefingSetup) GetAgentSummoned() bool {
+	if x != nil {
+		return x.AgentSummoned
+	}
+	return false
+}
+
+func (x *BriefingSetup) GetSomeoneInvited() bool {
+	if x != nil {
+		return x.SomeoneInvited
+	}
+	return false
+}
+
+func (x *BriefingSetup) GetAvatarSet() bool {
+	if x != nil {
+		return x.AvatarSet
+	}
+	return false
+}
+
+func (x *BriefingSetup) GetDone() bool {
+	if x != nil {
+		return x.Done
+	}
+	return false
 }
 
 var File_tank_topo_v1_topo_proto protoreflect.FileDescriptor
@@ -2152,7 +2316,7 @@ var file_tank_topo_v1_topo_proto_rawDesc = string([]byte{
 	0x28, 0x09, 0x52, 0x09, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x49, 0x64, 0x12, 0x2a, 0x0a,
 	0x02, 0x61, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
 	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65,
-	0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x02, 0x61, 0x74, 0x22, 0xdb, 0x01, 0x0a, 0x13, 0x47, 0x65,
+	0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x02, 0x61, 0x74, 0x22, 0xc0, 0x02, 0x0a, 0x13, 0x47, 0x65,
 	0x74, 0x42, 0x72, 0x69, 0x65, 0x66, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x12, 0x33, 0x0a, 0x06, 0x74, 0x72, 0x65, 0x61, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
 	0x0b, 0x32, 0x1b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x74, 0x6f, 0x70, 0x6f, 0x2e, 0x76, 0x31,
@@ -2166,7 +2330,34 @@ var file_tank_topo_v1_topo_proto_rawDesc = string([]byte{
 	0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0a, 0x71,
 	0x75, 0x69, 0x65, 0x74, 0x53, 0x69, 0x6e, 0x63, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x6e, 0x61, 0x72,
 	0x72, 0x61, 0x74, 0x69, 0x76, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x6e, 0x61,
-	0x72, 0x72, 0x61, 0x74, 0x69, 0x76, 0x65, 0x2a, 0x90, 0x02, 0x0a, 0x08, 0x4d, 0x61, 0x72, 0x6b,
+	0x72, 0x72, 0x61, 0x74, 0x69, 0x76, 0x65, 0x12, 0x30, 0x0a, 0x05, 0x68, 0x6f, 0x75, 0x72, 0x73,
+	0x18, 0x05, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x74, 0x6f,
+	0x70, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x72, 0x69, 0x65, 0x66, 0x69, 0x6e, 0x67, 0x48, 0x6f,
+	0x75, 0x72, 0x52, 0x05, 0x68, 0x6f, 0x75, 0x72, 0x73, 0x12, 0x31, 0x0a, 0x05, 0x73, 0x65, 0x74,
+	0x75, 0x70, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x74, 0x6f, 0x70, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x72, 0x69, 0x65, 0x66, 0x69, 0x6e, 0x67,
+	0x53, 0x65, 0x74, 0x75, 0x70, 0x52, 0x05, 0x73, 0x65, 0x74, 0x75, 0x70, 0x22, 0x6e, 0x0a, 0x0c,
+	0x42, 0x72, 0x69, 0x65, 0x66, 0x69, 0x6e, 0x67, 0x48, 0x6f, 0x75, 0x72, 0x12, 0x2e, 0x0a, 0x04,
+	0x68, 0x6f, 0x75, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x04, 0x68, 0x6f, 0x75, 0x72, 0x12, 0x1a, 0x0a, 0x08,
+	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08,
+	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x72, 0x75, 0x6e, 0x73,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x72, 0x75, 0x6e, 0x73, 0x22, 0xd8, 0x01, 0x0a,
+	0x0d, 0x42, 0x72, 0x69, 0x65, 0x66, 0x69, 0x6e, 0x67, 0x53, 0x65, 0x74, 0x75, 0x70, 0x12, 0x19,
+	0x0a, 0x08, 0x67, 0x6f, 0x61, 0x6c, 0x5f, 0x73, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x07, 0x67, 0x6f, 0x61, 0x6c, 0x53, 0x65, 0x74, 0x12, 0x29, 0x0a, 0x10, 0x67, 0x69, 0x74,
+	0x68, 0x75, 0x62, 0x5f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x65, 0x64, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x0f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x43, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x65, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x5f, 0x73, 0x75,
+	0x6d, 0x6d, 0x6f, 0x6e, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0d, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x53, 0x75, 0x6d, 0x6d, 0x6f, 0x6e, 0x65, 0x64, 0x12, 0x27, 0x0a, 0x0f, 0x73,
+	0x6f, 0x6d, 0x65, 0x6f, 0x6e, 0x65, 0x5f, 0x69, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x64, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x0e, 0x73, 0x6f, 0x6d, 0x65, 0x6f, 0x6e, 0x65, 0x49, 0x6e, 0x76,
+	0x69, 0x74, 0x65, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x61, 0x76, 0x61, 0x74, 0x61, 0x72, 0x5f, 0x73,
+	0x65, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x61, 0x76, 0x61, 0x74, 0x61, 0x72,
+	0x53, 0x65, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x6f, 0x6e, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28,
+	0x08, 0x52, 0x04, 0x64, 0x6f, 0x6e, 0x65, 0x2a, 0x90, 0x02, 0x0a, 0x08, 0x4d, 0x61, 0x72, 0x6b,
 	0x54, 0x79, 0x70, 0x65, 0x12, 0x19, 0x0a, 0x15, 0x4d, 0x41, 0x52, 0x4b, 0x5f, 0x54, 0x59, 0x50,
 	0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12,
 	0x15, 0x0a, 0x11, 0x4d, 0x41, 0x52, 0x4b, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4d, 0x45, 0x4e,
@@ -2288,7 +2479,7 @@ func file_tank_topo_v1_topo_proto_rawDescGZIP() []byte {
 }
 
 var file_tank_topo_v1_topo_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_tank_topo_v1_topo_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_tank_topo_v1_topo_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_tank_topo_v1_topo_proto_goTypes = []any{
 	(MarkType)(0),                        // 0: tank.topo.v1.MarkType
 	(ArtifactKind)(0),                    // 1: tank.topo.v1.ArtifactKind
@@ -2318,15 +2509,17 @@ var file_tank_topo_v1_topo_proto_goTypes = []any{
 	(*BriefingTread)(nil),                // 25: tank.topo.v1.BriefingTread
 	(*BriefingPerson)(nil),               // 26: tank.topo.v1.BriefingPerson
 	(*GetBriefingResponse)(nil),          // 27: tank.topo.v1.GetBriefingResponse
-	(*timestamppb.Timestamp)(nil),        // 28: google.protobuf.Timestamp
-	(*v1.Message)(nil),                   // 29: tank.message.v1.Message
+	(*BriefingHour)(nil),                 // 28: tank.topo.v1.BriefingHour
+	(*BriefingSetup)(nil),                // 29: tank.topo.v1.BriefingSetup
+	(*timestamppb.Timestamp)(nil),        // 30: google.protobuf.Timestamp
+	(*v1.Message)(nil),                   // 31: tank.message.v1.Message
 }
 var file_tank_topo_v1_topo_proto_depIdxs = []int32{
 	0,  // 0: tank.topo.v1.Mark.type:type_name -> tank.topo.v1.MarkType
 	3,  // 1: tank.topo.v1.Mark.lane:type_name -> tank.topo.v1.Lane
-	28, // 2: tank.topo.v1.Mark.created_at:type_name -> google.protobuf.Timestamp
+	30, // 2: tank.topo.v1.Mark.created_at:type_name -> google.protobuf.Timestamp
 	2,  // 3: tank.topo.v1.Mark.status:type_name -> tank.topo.v1.MarkStatus
-	28, // 4: tank.topo.v1.Mark.resolved_at:type_name -> google.protobuf.Timestamp
+	30, // 4: tank.topo.v1.Mark.resolved_at:type_name -> google.protobuf.Timestamp
 	1,  // 5: tank.topo.v1.Mark.artifact_kind:type_name -> tank.topo.v1.ArtifactKind
 	7,  // 6: tank.topo.v1.Mark.survey:type_name -> tank.topo.v1.SurveyOrigin
 	0,  // 7: tank.topo.v1.ListMarksRequest.types:type_name -> tank.topo.v1.MarkType
@@ -2335,42 +2528,45 @@ var file_tank_topo_v1_topo_proto_depIdxs = []int32{
 	6,  // 10: tank.topo.v1.ResolveWaitingOnResponse.mark:type_name -> tank.topo.v1.Mark
 	4,  // 11: tank.topo.v1.ListWaitingOnRequest.direction:type_name -> tank.topo.v1.WaitingDirection
 	6,  // 12: tank.topo.v1.WaitingOnItem.mark:type_name -> tank.topo.v1.Mark
-	29, // 13: tank.topo.v1.WaitingOnItem.message:type_name -> tank.message.v1.Message
+	31, // 13: tank.topo.v1.WaitingOnItem.message:type_name -> tank.message.v1.Message
 	2,  // 14: tank.topo.v1.Benchmark.status:type_name -> tank.topo.v1.MarkStatus
-	28, // 15: tank.topo.v1.Benchmark.decided_at:type_name -> google.protobuf.Timestamp
+	30, // 15: tank.topo.v1.Benchmark.decided_at:type_name -> google.protobuf.Timestamp
 	7,  // 16: tank.topo.v1.Benchmark.survey:type_name -> tank.topo.v1.SurveyOrigin
-	28, // 17: tank.topo.v1.Benchmark.created_at:type_name -> google.protobuf.Timestamp
+	30, // 17: tank.topo.v1.Benchmark.created_at:type_name -> google.protobuf.Timestamp
 	16, // 18: tank.topo.v1.ListBenchmarksResponse.benchmarks:type_name -> tank.topo.v1.Benchmark
 	5,  // 19: tank.topo.v1.DecideBenchmarkRequest.decision:type_name -> tank.topo.v1.DecideBenchmarkRequest.Decision
 	16, // 20: tank.topo.v1.DecideBenchmarkResponse.benchmark:type_name -> tank.topo.v1.Benchmark
 	6,  // 21: tank.topo.v1.RecordEventResponse.mark:type_name -> tank.topo.v1.Mark
 	15, // 22: tank.topo.v1.ListWaitingOnResponse.items:type_name -> tank.topo.v1.WaitingOnItem
-	28, // 23: tank.topo.v1.BriefingTread.last_message_at:type_name -> google.protobuf.Timestamp
-	28, // 24: tank.topo.v1.BriefingPerson.at:type_name -> google.protobuf.Timestamp
+	30, // 23: tank.topo.v1.BriefingTread.last_message_at:type_name -> google.protobuf.Timestamp
+	30, // 24: tank.topo.v1.BriefingPerson.at:type_name -> google.protobuf.Timestamp
 	25, // 25: tank.topo.v1.GetBriefingResponse.treads:type_name -> tank.topo.v1.BriefingTread
 	26, // 26: tank.topo.v1.GetBriefingResponse.people:type_name -> tank.topo.v1.BriefingPerson
-	28, // 27: tank.topo.v1.GetBriefingResponse.quiet_since:type_name -> google.protobuf.Timestamp
-	8,  // 28: tank.topo.v1.TopoService.ListMarks:input_type -> tank.topo.v1.ListMarksRequest
-	10, // 29: tank.topo.v1.TopoService.FlagWaitingOn:input_type -> tank.topo.v1.FlagWaitingOnRequest
-	12, // 30: tank.topo.v1.TopoService.ResolveWaitingOn:input_type -> tank.topo.v1.ResolveWaitingOnRequest
-	14, // 31: tank.topo.v1.TopoService.ListWaitingOn:input_type -> tank.topo.v1.ListWaitingOnRequest
-	24, // 32: tank.topo.v1.TopoService.GetBriefing:input_type -> tank.topo.v1.GetBriefingRequest
-	21, // 33: tank.topo.v1.TopoService.RecordEvent:input_type -> tank.topo.v1.RecordEventRequest
-	17, // 34: tank.topo.v1.TopoService.ListBenchmarks:input_type -> tank.topo.v1.ListBenchmarksRequest
-	19, // 35: tank.topo.v1.TopoService.DecideBenchmark:input_type -> tank.topo.v1.DecideBenchmarkRequest
-	9,  // 36: tank.topo.v1.TopoService.ListMarks:output_type -> tank.topo.v1.ListMarksResponse
-	11, // 37: tank.topo.v1.TopoService.FlagWaitingOn:output_type -> tank.topo.v1.FlagWaitingOnResponse
-	13, // 38: tank.topo.v1.TopoService.ResolveWaitingOn:output_type -> tank.topo.v1.ResolveWaitingOnResponse
-	23, // 39: tank.topo.v1.TopoService.ListWaitingOn:output_type -> tank.topo.v1.ListWaitingOnResponse
-	27, // 40: tank.topo.v1.TopoService.GetBriefing:output_type -> tank.topo.v1.GetBriefingResponse
-	22, // 41: tank.topo.v1.TopoService.RecordEvent:output_type -> tank.topo.v1.RecordEventResponse
-	18, // 42: tank.topo.v1.TopoService.ListBenchmarks:output_type -> tank.topo.v1.ListBenchmarksResponse
-	20, // 43: tank.topo.v1.TopoService.DecideBenchmark:output_type -> tank.topo.v1.DecideBenchmarkResponse
-	36, // [36:44] is the sub-list for method output_type
-	28, // [28:36] is the sub-list for method input_type
-	28, // [28:28] is the sub-list for extension type_name
-	28, // [28:28] is the sub-list for extension extendee
-	0,  // [0:28] is the sub-list for field type_name
+	30, // 27: tank.topo.v1.GetBriefingResponse.quiet_since:type_name -> google.protobuf.Timestamp
+	28, // 28: tank.topo.v1.GetBriefingResponse.hours:type_name -> tank.topo.v1.BriefingHour
+	29, // 29: tank.topo.v1.GetBriefingResponse.setup:type_name -> tank.topo.v1.BriefingSetup
+	30, // 30: tank.topo.v1.BriefingHour.hour:type_name -> google.protobuf.Timestamp
+	8,  // 31: tank.topo.v1.TopoService.ListMarks:input_type -> tank.topo.v1.ListMarksRequest
+	10, // 32: tank.topo.v1.TopoService.FlagWaitingOn:input_type -> tank.topo.v1.FlagWaitingOnRequest
+	12, // 33: tank.topo.v1.TopoService.ResolveWaitingOn:input_type -> tank.topo.v1.ResolveWaitingOnRequest
+	14, // 34: tank.topo.v1.TopoService.ListWaitingOn:input_type -> tank.topo.v1.ListWaitingOnRequest
+	24, // 35: tank.topo.v1.TopoService.GetBriefing:input_type -> tank.topo.v1.GetBriefingRequest
+	21, // 36: tank.topo.v1.TopoService.RecordEvent:input_type -> tank.topo.v1.RecordEventRequest
+	17, // 37: tank.topo.v1.TopoService.ListBenchmarks:input_type -> tank.topo.v1.ListBenchmarksRequest
+	19, // 38: tank.topo.v1.TopoService.DecideBenchmark:input_type -> tank.topo.v1.DecideBenchmarkRequest
+	9,  // 39: tank.topo.v1.TopoService.ListMarks:output_type -> tank.topo.v1.ListMarksResponse
+	11, // 40: tank.topo.v1.TopoService.FlagWaitingOn:output_type -> tank.topo.v1.FlagWaitingOnResponse
+	13, // 41: tank.topo.v1.TopoService.ResolveWaitingOn:output_type -> tank.topo.v1.ResolveWaitingOnResponse
+	23, // 42: tank.topo.v1.TopoService.ListWaitingOn:output_type -> tank.topo.v1.ListWaitingOnResponse
+	27, // 43: tank.topo.v1.TopoService.GetBriefing:output_type -> tank.topo.v1.GetBriefingResponse
+	22, // 44: tank.topo.v1.TopoService.RecordEvent:output_type -> tank.topo.v1.RecordEventResponse
+	18, // 45: tank.topo.v1.TopoService.ListBenchmarks:output_type -> tank.topo.v1.ListBenchmarksResponse
+	20, // 46: tank.topo.v1.TopoService.DecideBenchmark:output_type -> tank.topo.v1.DecideBenchmarkResponse
+	39, // [39:47] is the sub-list for method output_type
+	31, // [31:39] is the sub-list for method input_type
+	31, // [31:31] is the sub-list for extension type_name
+	31, // [31:31] is the sub-list for extension extendee
+	0,  // [0:31] is the sub-list for field type_name
 }
 
 func init() { file_tank_topo_v1_topo_proto_init() }
@@ -2385,7 +2581,7 @@ func file_tank_topo_v1_topo_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tank_topo_v1_topo_proto_rawDesc), len(file_tank_topo_v1_topo_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   22,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
