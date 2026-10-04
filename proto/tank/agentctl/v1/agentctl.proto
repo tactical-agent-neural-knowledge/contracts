@@ -677,6 +677,32 @@ service ControlService {
   // asleep by default and a new image never wakes it: waking is a decision — a
   // preview, a sale — made here, and recorded in GitOps like everything else.
   rpc SetProductReplicas(SetProductReplicasRequest) returns (SetProductReplicasResponse);
+  // Hosting for a repository TANK did not generate: writes the slug's deployment file
+  // naming that repository, so its CI may push images for the slug and the app can be
+  // woken like a product. The workspace's own installation must reach the repository.
+  rpc RegisterDeployment(RegisterDeploymentRequest) returns (RegisterDeploymentResponse);
+  // What GitOps holds for a slug right now, and whether the repository carries the
+  // deploy workflow yet.
+  rpc GetDeployment(GetDeploymentRequest) returns (GetDeploymentResponse);
+}
+
+message RegisterDeploymentRequest {
+  string workspace_id = 1;
+  string slug = 2;         // <slug>.tank.chat
+  string repo = 3;         // owner/name the images come from
+  string description = 4;
+}
+message RegisterDeploymentResponse {
+  string url = 1;
+}
+message GetDeploymentRequest { string slug = 1; }
+message GetDeploymentResponse {
+  string repo = 1;              // owner/name recorded for the slug
+  string url = 2;
+  string image_tag = 3;         // empty until a build on main has landed
+  int32 replicas = 4;
+  bool workflow_present = 5;    // .github/workflows/tank.yml exists on the repository's default branch
+  bool managed = 6;             // TANK generated the repository (agenture-<slug> in TANK's org)
 }
 
 message SetProductReplicasRequest {

@@ -959,6 +959,46 @@ class OpenThreadResponse(_message.Message):
     thread_root_id: str
     def __init__(self, thread_root_id: _Optional[str] = ...) -> None: ...
 
+class RegisterDeploymentRequest(_message.Message):
+    __slots__ = ("workspace_id", "slug", "repo", "description")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    slug: str
+    repo: str
+    description: str
+    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., repo: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
+
+class RegisterDeploymentResponse(_message.Message):
+    __slots__ = ("url",)
+    URL_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    def __init__(self, url: _Optional[str] = ...) -> None: ...
+
+class GetDeploymentRequest(_message.Message):
+    __slots__ = ("slug",)
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    def __init__(self, slug: _Optional[str] = ...) -> None: ...
+
+class GetDeploymentResponse(_message.Message):
+    __slots__ = ("repo", "url", "image_tag", "replicas", "workflow_present", "managed")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    IMAGE_TAG_FIELD_NUMBER: _ClassVar[int]
+    REPLICAS_FIELD_NUMBER: _ClassVar[int]
+    WORKFLOW_PRESENT_FIELD_NUMBER: _ClassVar[int]
+    MANAGED_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    url: str
+    image_tag: str
+    replicas: int
+    workflow_present: bool
+    managed: bool
+    def __init__(self, repo: _Optional[str] = ..., url: _Optional[str] = ..., image_tag: _Optional[str] = ..., replicas: _Optional[int] = ..., workflow_present: bool = ..., managed: bool = ...) -> None: ...
+
 class SetProductReplicasRequest(_message.Message):
     __slots__ = ("slug", "replicas", "reason")
     SLUG_FIELD_NUMBER: _ClassVar[int]

@@ -459,18 +459,26 @@ class UnbindRepoResponse(_message.Message):
     def __init__(self) -> None: ...
 
 class TreadDeployment(_message.Message):
-    __slots__ = ("slug", "repo", "url", "awake", "updated_at")
+    __slots__ = ("slug", "repo", "url", "awake", "updated_at", "managed", "workflow_present", "image_tag", "workflow_snippet")
     SLUG_FIELD_NUMBER: _ClassVar[int]
     REPO_FIELD_NUMBER: _ClassVar[int]
     URL_FIELD_NUMBER: _ClassVar[int]
     AWAKE_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    MANAGED_FIELD_NUMBER: _ClassVar[int]
+    WORKFLOW_PRESENT_FIELD_NUMBER: _ClassVar[int]
+    IMAGE_TAG_FIELD_NUMBER: _ClassVar[int]
+    WORKFLOW_SNIPPET_FIELD_NUMBER: _ClassVar[int]
     slug: str
     repo: str
     url: str
     awake: bool
     updated_at: _timestamp_pb2.Timestamp
-    def __init__(self, slug: _Optional[str] = ..., repo: _Optional[str] = ..., url: _Optional[str] = ..., awake: bool = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    managed: bool
+    workflow_present: bool
+    image_tag: str
+    workflow_snippet: str
+    def __init__(self, slug: _Optional[str] = ..., repo: _Optional[str] = ..., url: _Optional[str] = ..., awake: bool = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., managed: bool = ..., workflow_present: bool = ..., image_tag: _Optional[str] = ..., workflow_snippet: _Optional[str] = ...) -> None: ...
 
 class CreateTreadRepoRequest(_message.Message):
     __slots__ = ("channel_id",)

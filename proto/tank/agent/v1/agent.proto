@@ -268,6 +268,10 @@ message TreadDeployment {
   string url = 3;    // https://<slug>.tank.chat
   bool awake = 4;    // running (1 replica) or asleep (0); builds never wake it
   google.protobuf.Timestamp updated_at = 5;
+  bool managed = 6;            // TANK generated the repository; otherwise it is the workspace's own
+  bool workflow_present = 7;   // the repository carries .github/workflows/tank.yml on its default branch
+  string image_tag = 8;        // empty until the first build on main has landed
+  string workflow_snippet = 9; // the workflow file to add, for a repository the workspace brought
 }
 // CreateTreadRepo asks TANK to generate a repository for this Tread from its template, in
 // TANK's organization, and bind it. Premium workspaces, admins only, one per Tread.

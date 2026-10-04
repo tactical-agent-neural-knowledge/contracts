@@ -147,6 +147,12 @@ const (
 	// ControlServiceSetProductReplicasProcedure is the fully-qualified name of the ControlService's
 	// SetProductReplicas RPC.
 	ControlServiceSetProductReplicasProcedure = "/tank.agentctl.v1.ControlService/SetProductReplicas"
+	// ControlServiceRegisterDeploymentProcedure is the fully-qualified name of the ControlService's
+	// RegisterDeployment RPC.
+	ControlServiceRegisterDeploymentProcedure = "/tank.agentctl.v1.ControlService/RegisterDeployment"
+	// ControlServiceGetDeploymentProcedure is the fully-qualified name of the ControlService's
+	// GetDeployment RPC.
+	ControlServiceGetDeploymentProcedure = "/tank.agentctl.v1.ControlService/GetDeployment"
 )
 
 // RunnerServiceClient is a client for the tank.agentctl.v1.RunnerService service.
@@ -945,6 +951,13 @@ type ControlServiceClient interface {
 	// asleep by default and a new image never wakes it: waking is a decision — a
 	// preview, a sale — made here, and recorded in GitOps like everything else.
 	SetProductReplicas(context.Context, *connect.Request[v1.SetProductReplicasRequest]) (*connect.Response[v1.SetProductReplicasResponse], error)
+	// Hosting for a repository TANK did not generate: writes the slug's deployment file
+	// naming that repository, so its CI may push images for the slug and the app can be
+	// woken like a product. The workspace's own installation must reach the repository.
+	RegisterDeployment(context.Context, *connect.Request[v1.RegisterDeploymentRequest]) (*connect.Response[v1.RegisterDeploymentResponse], error)
+	// What GitOps holds for a slug right now, and whether the repository carries the
+	// deploy workflow yet.
+	GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error)
 }
 
 // NewControlServiceClient constructs a client for the tank.agentctl.v1.ControlService service. By
@@ -1030,6 +1043,18 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("SetProductReplicas")),
 			connect.WithClientOptions(opts...),
 		),
+		registerDeployment: connect.NewClient[v1.RegisterDeploymentRequest, v1.RegisterDeploymentResponse](
+			httpClient,
+			baseURL+ControlServiceRegisterDeploymentProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("RegisterDeployment")),
+			connect.WithClientOptions(opts...),
+		),
+		getDeployment: connect.NewClient[v1.GetDeploymentRequest, v1.GetDeploymentResponse](
+			httpClient,
+			baseURL+ControlServiceGetDeploymentProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("GetDeployment")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -1047,6 +1072,8 @@ type controlServiceClient struct {
 	createProductRepo      *connect.Client[v1.CreateProductRepoRequest, v1.CreateProductRepoResponse]
 	commitProductFiles     *connect.Client[v1.CommitProductFilesRequest, v1.CommitProductFilesResponse]
 	setProductReplicas     *connect.Client[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse]
+	registerDeployment     *connect.Client[v1.RegisterDeploymentRequest, v1.RegisterDeploymentResponse]
+	getDeployment          *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
 }
 
 // StartRun calls tank.agentctl.v1.ControlService.StartRun.
@@ -1109,6 +1136,16 @@ func (c *controlServiceClient) SetProductReplicas(ctx context.Context, req *conn
 	return c.setProductReplicas.CallUnary(ctx, req)
 }
 
+// RegisterDeployment calls tank.agentctl.v1.ControlService.RegisterDeployment.
+func (c *controlServiceClient) RegisterDeployment(ctx context.Context, req *connect.Request[v1.RegisterDeploymentRequest]) (*connect.Response[v1.RegisterDeploymentResponse], error) {
+	return c.registerDeployment.CallUnary(ctx, req)
+}
+
+// GetDeployment calls tank.agentctl.v1.ControlService.GetDeployment.
+func (c *controlServiceClient) GetDeployment(ctx context.Context, req *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error) {
+	return c.getDeployment.CallUnary(ctx, req)
+}
+
 // ControlServiceHandler is an implementation of the tank.agentctl.v1.ControlService service.
 type ControlServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
@@ -1129,6 +1166,13 @@ type ControlServiceHandler interface {
 	// asleep by default and a new image never wakes it: waking is a decision — a
 	// preview, a sale — made here, and recorded in GitOps like everything else.
 	SetProductReplicas(context.Context, *connect.Request[v1.SetProductReplicasRequest]) (*connect.Response[v1.SetProductReplicasResponse], error)
+	// Hosting for a repository TANK did not generate: writes the slug's deployment file
+	// naming that repository, so its CI may push images for the slug and the app can be
+	// woken like a product. The workspace's own installation must reach the repository.
+	RegisterDeployment(context.Context, *connect.Request[v1.RegisterDeploymentRequest]) (*connect.Response[v1.RegisterDeploymentResponse], error)
+	// What GitOps holds for a slug right now, and whether the repository carries the
+	// deploy workflow yet.
+	GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error)
 }
 
 // NewControlServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -1210,6 +1254,18 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("SetProductReplicas")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceRegisterDeploymentHandler := connect.NewUnaryHandler(
+		ControlServiceRegisterDeploymentProcedure,
+		svc.RegisterDeployment,
+		connect.WithSchema(controlServiceMethods.ByName("RegisterDeployment")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceGetDeploymentHandler := connect.NewUnaryHandler(
+		ControlServiceGetDeploymentProcedure,
+		svc.GetDeployment,
+		connect.WithSchema(controlServiceMethods.ByName("GetDeployment")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agentctl.v1.ControlService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ControlServiceStartRunProcedure:
@@ -1236,6 +1292,10 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceCommitProductFilesHandler.ServeHTTP(w, r)
 		case ControlServiceSetProductReplicasProcedure:
 			controlServiceSetProductReplicasHandler.ServeHTTP(w, r)
+		case ControlServiceRegisterDeploymentProcedure:
+			controlServiceRegisterDeploymentHandler.ServeHTTP(w, r)
+		case ControlServiceGetDeploymentProcedure:
+			controlServiceGetDeploymentHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -1291,4 +1351,12 @@ func (UnimplementedControlServiceHandler) CommitProductFiles(context.Context, *c
 
 func (UnimplementedControlServiceHandler) SetProductReplicas(context.Context, *connect.Request[v1.SetProductReplicasRequest]) (*connect.Response[v1.SetProductReplicasResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.SetProductReplicas is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) RegisterDeployment(context.Context, *connect.Request[v1.RegisterDeploymentRequest]) (*connect.Response[v1.RegisterDeploymentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.RegisterDeployment is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.GetDeployment is not implemented"))
 }
