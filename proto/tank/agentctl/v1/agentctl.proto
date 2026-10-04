@@ -106,6 +106,10 @@ message RunContext {
   // True when this run must not read or write the repository's Neural Knowledge:
   // the Tread turned it off, or the run is the control half of a measurement.
   bool skip_neural_knowledge = 26;
+  // How the control plane classed the ask: "single_area" (one place in the code, implemented
+  // without a plan stage, on the cheaper model) or "multi_area". Empty on older runs and
+  // special modes.
+  string task_class = 27;
 }
 
 message GetRunContextRequest {}
