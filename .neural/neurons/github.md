@@ -1,8 +1,8 @@
 # Neurons · .github
 
-refreshed 2026-10-03 · c5e2e604e1c6
+refreshed 2026-10-04 · 5793da46de47
 
-- `.github/workflows/ci.yml` is the only workflow in the repo. Two jobs: `check` (PRs, main, `v*` tags) and `publish-ts` (pushes only, `needs: check`).
+- `.github/workflows/ci.yml` is the only workflow in the repo. Two jobs: `check` (PRs, main, `v*` tags) and `publish-ts` (pushes only, `needs: check`). Unchanged since the last refresh.
 - CI calls `buf` directly from `bufbuild/buf-setup-action@v1`, never `make`. A change to the `Makefile` alone is therefore not exercised by CI — the two must be kept in step by hand.
 - The breaking check is the point of the whole file: `.github/workflows/ci.yml:31` says a wire break here "would be a production incident in web/mobile/agent-runner, so it is caught at the source". It runs only `if: github.event_name == 'pull_request'`.
 - Trap, and the reason the step has three lines instead of one: `actions/checkout` leaves a PR on a detached merge commit with no local `main`, so the step must `git fetch --no-tags origin main:main` before `buf breaking --against ".git#branch=main"` can read it. The same applies locally on a fresh clone.

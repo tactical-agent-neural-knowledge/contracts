@@ -1,4 +1,4 @@
-# Neural Knowledge by TANK · refreshed 2026-10-03 · c5e2e604e1c6
+# Neural Knowledge by TANK · refreshed 2026-10-04 · 5793da46de47
 
 `contracts` is the single source of truth for every wire format in TANK: 22 Protobuf/Connect packages
 under `proto/tank/<domain>/v1/`, covering auth, workspaces, channels, messages, files, events, the
