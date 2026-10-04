@@ -180,6 +180,11 @@ message RepoConnection {
   RepoBinding binding = 4;        // this Tread's binding, absent when unbound
   bool can_manage = 5;            // the caller may connect and bind: workspace admins only
   repeated RepoAccess access = 6; // the further repositories this Tread may reach
+  // Premium workspaces may ask TANK for a repository and hosting; both are requests an
+  // admin makes, never a side effect of anything else.
+  bool premium = 7;
+  bool hosting_available = 8;     // the platform can create repositories and host them right now
+  TreadDeployment deployment = 9; // present once TANK made this Tread's repository
 }
 
 // SetRepoAccess replaces the Tread's list of further repositories. Admins only; every
@@ -255,6 +260,29 @@ message BindRepoResponse { RepoBinding binding = 1; }
 message UnbindRepoRequest { string channel_id = 1; }
 message UnbindRepoResponse {}
 
+// A Tread's hosting on TANK's own cluster: the repository TANK generated for it and
+// whether the app built from it is awake at its URL.
+message TreadDeployment {
+  string slug = 1;   // <slug>.tank.chat and the repository agenture-<slug>
+  string repo = 2;   // owner/name
+  string url = 3;    // https://<slug>.tank.chat
+  bool awake = 4;    // running (1 replica) or asleep (0); builds never wake it
+  google.protobuf.Timestamp updated_at = 5;
+}
+// CreateTreadRepo asks TANK to generate a repository for this Tread from its template, in
+// TANK's organization, and bind it. Premium workspaces, admins only, one per Tread.
+message CreateTreadRepoRequest { string channel_id = 1; }
+message CreateTreadRepoResponse {
+  RepoBinding binding = 1;
+  TreadDeployment deployment = 2;
+}
+// SetTreadDeployment wakes the Tread's app on TANK's cluster or puts it to sleep.
+message SetTreadDeploymentRequest {
+  string channel_id = 1;
+  bool awake = 2;
+}
+message SetTreadDeploymentResponse { TreadDeployment deployment = 1; }
+
 service AgentService {
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
   rpc StopRun(StopRunRequest) returns (StopRunResponse);
@@ -275,6 +303,9 @@ service AgentService {
   rpc BindRepo(BindRepoRequest) returns (BindRepoResponse);
   rpc UnbindRepo(UnbindRepoRequest) returns (UnbindRepoResponse);
   rpc SetRepoAccess(SetRepoAccessRequest) returns (SetRepoAccessResponse);
+  // Repositories and hosting on request, for premium workspaces.
+  rpc CreateTreadRepo(CreateTreadRepoRequest) returns (CreateTreadRepoResponse);
+  rpc SetTreadDeployment(SetTreadDeploymentRequest) returns (SetTreadDeploymentResponse);
   // The Tread's switchboard: metrics for members, settings for admins.
   rpc GetTreadSwitchboard(GetTreadSwitchboardRequest) returns (GetTreadSwitchboardResponse);
   rpc SetTreadSettings(SetTreadSettingsRequest) returns (SetTreadSettingsResponse);

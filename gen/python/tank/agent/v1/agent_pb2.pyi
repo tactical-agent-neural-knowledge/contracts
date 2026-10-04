@@ -289,20 +289,26 @@ class RepoAccess(_message.Message):
     def __init__(self, repo: _Optional[str] = ..., access: _Optional[str] = ...) -> None: ...
 
 class RepoConnection(_message.Message):
-    __slots__ = ("connected", "account_login", "repos", "binding", "can_manage", "access")
+    __slots__ = ("connected", "account_login", "repos", "binding", "can_manage", "access", "premium", "hosting_available", "deployment")
     CONNECTED_FIELD_NUMBER: _ClassVar[int]
     ACCOUNT_LOGIN_FIELD_NUMBER: _ClassVar[int]
     REPOS_FIELD_NUMBER: _ClassVar[int]
     BINDING_FIELD_NUMBER: _ClassVar[int]
     CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
     ACCESS_FIELD_NUMBER: _ClassVar[int]
+    PREMIUM_FIELD_NUMBER: _ClassVar[int]
+    HOSTING_AVAILABLE_FIELD_NUMBER: _ClassVar[int]
+    DEPLOYMENT_FIELD_NUMBER: _ClassVar[int]
     connected: bool
     account_login: str
     repos: _containers.RepeatedScalarFieldContainer[str]
     binding: RepoBinding
     can_manage: bool
     access: _containers.RepeatedCompositeFieldContainer[RepoAccess]
-    def __init__(self, connected: bool = ..., account_login: _Optional[str] = ..., repos: _Optional[_Iterable[str]] = ..., binding: _Optional[_Union[RepoBinding, _Mapping]] = ..., can_manage: bool = ..., access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ...) -> None: ...
+    premium: bool
+    hosting_available: bool
+    deployment: TreadDeployment
+    def __init__(self, connected: bool = ..., account_login: _Optional[str] = ..., repos: _Optional[_Iterable[str]] = ..., binding: _Optional[_Union[RepoBinding, _Mapping]] = ..., can_manage: bool = ..., access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., premium: bool = ..., hosting_available: bool = ..., deployment: _Optional[_Union[TreadDeployment, _Mapping]] = ...) -> None: ...
 
 class SetRepoAccessRequest(_message.Message):
     __slots__ = ("channel_id", "access")
@@ -451,3 +457,45 @@ class UnbindRepoRequest(_message.Message):
 class UnbindRepoResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class TreadDeployment(_message.Message):
+    __slots__ = ("slug", "repo", "url", "awake", "updated_at")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    AWAKE_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    repo: str
+    url: str
+    awake: bool
+    updated_at: _timestamp_pb2.Timestamp
+    def __init__(self, slug: _Optional[str] = ..., repo: _Optional[str] = ..., url: _Optional[str] = ..., awake: bool = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class CreateTreadRepoRequest(_message.Message):
+    __slots__ = ("channel_id",)
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
+
+class CreateTreadRepoResponse(_message.Message):
+    __slots__ = ("binding", "deployment")
+    BINDING_FIELD_NUMBER: _ClassVar[int]
+    DEPLOYMENT_FIELD_NUMBER: _ClassVar[int]
+    binding: RepoBinding
+    deployment: TreadDeployment
+    def __init__(self, binding: _Optional[_Union[RepoBinding, _Mapping]] = ..., deployment: _Optional[_Union[TreadDeployment, _Mapping]] = ...) -> None: ...
+
+class SetTreadDeploymentRequest(_message.Message):
+    __slots__ = ("channel_id", "awake")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    AWAKE_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    awake: bool
+    def __init__(self, channel_id: _Optional[str] = ..., awake: bool = ...) -> None: ...
+
+class SetTreadDeploymentResponse(_message.Message):
+    __slots__ = ("deployment",)
+    DEPLOYMENT_FIELD_NUMBER: _ClassVar[int]
+    deployment: TreadDeployment
+    def __init__(self, deployment: _Optional[_Union[TreadDeployment, _Mapping]] = ...) -> None: ...
