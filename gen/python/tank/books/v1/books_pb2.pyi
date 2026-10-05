@@ -23,7 +23,7 @@ INVOICE_STATUS_PAID: InvoiceStatus
 INVOICE_STATUS_VOID: InvoiceStatus
 
 class Settings(_message.Message):
-    __slots__ = ("enabled", "currency", "business_name", "invoice_prefix", "next_invoice_number", "default_due_days", "chase_every_days")
+    __slots__ = ("enabled", "currency", "business_name", "invoice_prefix", "next_invoice_number", "default_due_days", "chase_every_days", "competes_with", "payment_instructions")
     ENABLED_FIELD_NUMBER: _ClassVar[int]
     CURRENCY_FIELD_NUMBER: _ClassVar[int]
     BUSINESS_NAME_FIELD_NUMBER: _ClassVar[int]
@@ -31,6 +31,8 @@ class Settings(_message.Message):
     NEXT_INVOICE_NUMBER_FIELD_NUMBER: _ClassVar[int]
     DEFAULT_DUE_DAYS_FIELD_NUMBER: _ClassVar[int]
     CHASE_EVERY_DAYS_FIELD_NUMBER: _ClassVar[int]
+    COMPETES_WITH_FIELD_NUMBER: _ClassVar[int]
+    PAYMENT_INSTRUCTIONS_FIELD_NUMBER: _ClassVar[int]
     enabled: bool
     currency: str
     business_name: str
@@ -38,7 +40,9 @@ class Settings(_message.Message):
     next_invoice_number: int
     default_due_days: int
     chase_every_days: int
-    def __init__(self, enabled: bool = ..., currency: _Optional[str] = ..., business_name: _Optional[str] = ..., invoice_prefix: _Optional[str] = ..., next_invoice_number: _Optional[int] = ..., default_due_days: _Optional[int] = ..., chase_every_days: _Optional[int] = ...) -> None: ...
+    competes_with: _containers.RepeatedScalarFieldContainer[str]
+    payment_instructions: str
+    def __init__(self, enabled: bool = ..., currency: _Optional[str] = ..., business_name: _Optional[str] = ..., invoice_prefix: _Optional[str] = ..., next_invoice_number: _Optional[int] = ..., default_due_days: _Optional[int] = ..., chase_every_days: _Optional[int] = ..., competes_with: _Optional[_Iterable[str]] = ..., payment_instructions: _Optional[str] = ...) -> None: ...
 
 class Customer(_message.Message):
     __slots__ = ("id", "name", "email", "notes", "created_at", "owed_cents")
@@ -69,7 +73,7 @@ class InvoiceLine(_message.Message):
     def __init__(self, description: _Optional[str] = ..., quantity: _Optional[float] = ..., unit_cents: _Optional[int] = ..., total_cents: _Optional[int] = ...) -> None: ...
 
 class Invoice(_message.Message):
-    __slots__ = ("id", "customer_id", "customer_name", "number", "status", "lines", "subtotal_cents", "tax_cents", "total_cents", "paid_cents", "due_cents", "issued_at", "due_at", "sent_at", "paid_at", "notes", "thread_root_id", "predicted_paid_at", "predicted_confidence", "last_chased_at", "chase_count")
+    __slots__ = ("id", "customer_id", "customer_name", "number", "status", "lines", "subtotal_cents", "tax_cents", "total_cents", "paid_cents", "due_cents", "issued_at", "due_at", "sent_at", "paid_at", "notes", "thread_root_id", "predicted_paid_at", "predicted_confidence", "last_chased_at", "chase_count", "share_url")
     ID_FIELD_NUMBER: _ClassVar[int]
     CUSTOMER_ID_FIELD_NUMBER: _ClassVar[int]
     CUSTOMER_NAME_FIELD_NUMBER: _ClassVar[int]
@@ -91,6 +95,7 @@ class Invoice(_message.Message):
     PREDICTED_CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
     LAST_CHASED_AT_FIELD_NUMBER: _ClassVar[int]
     CHASE_COUNT_FIELD_NUMBER: _ClassVar[int]
+    SHARE_URL_FIELD_NUMBER: _ClassVar[int]
     id: str
     customer_id: str
     customer_name: str
@@ -112,7 +117,8 @@ class Invoice(_message.Message):
     predicted_confidence: float
     last_chased_at: _timestamp_pb2.Timestamp
     chase_count: int
-    def __init__(self, id: _Optional[str] = ..., customer_id: _Optional[str] = ..., customer_name: _Optional[str] = ..., number: _Optional[str] = ..., status: _Optional[_Union[InvoiceStatus, str]] = ..., lines: _Optional[_Iterable[_Union[InvoiceLine, _Mapping]]] = ..., subtotal_cents: _Optional[int] = ..., tax_cents: _Optional[int] = ..., total_cents: _Optional[int] = ..., paid_cents: _Optional[int] = ..., due_cents: _Optional[int] = ..., issued_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., due_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., sent_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., paid_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., notes: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., predicted_paid_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., predicted_confidence: _Optional[float] = ..., last_chased_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., chase_count: _Optional[int] = ...) -> None: ...
+    share_url: str
+    def __init__(self, id: _Optional[str] = ..., customer_id: _Optional[str] = ..., customer_name: _Optional[str] = ..., number: _Optional[str] = ..., status: _Optional[_Union[InvoiceStatus, str]] = ..., lines: _Optional[_Iterable[_Union[InvoiceLine, _Mapping]]] = ..., subtotal_cents: _Optional[int] = ..., tax_cents: _Optional[int] = ..., total_cents: _Optional[int] = ..., paid_cents: _Optional[int] = ..., due_cents: _Optional[int] = ..., issued_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., due_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., sent_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., paid_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., notes: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., predicted_paid_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., predicted_confidence: _Optional[float] = ..., last_chased_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., chase_count: _Optional[int] = ..., share_url: _Optional[str] = ...) -> None: ...
 
 class Payment(_message.Message):
     __slots__ = ("id", "invoice_id", "amount_cents", "at", "method", "reference")
