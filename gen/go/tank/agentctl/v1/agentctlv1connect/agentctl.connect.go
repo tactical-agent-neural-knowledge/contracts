@@ -96,6 +96,14 @@ const (
 	// RunnerServiceBooksReportProcedure is the fully-qualified name of the RunnerService's BooksReport
 	// RPC.
 	RunnerServiceBooksReportProcedure = "/tank.agentctl.v1.RunnerService/BooksReport"
+	// RunnerServiceWriteUpThreadProcedure is the fully-qualified name of the RunnerService's
+	// WriteUpThread RPC.
+	RunnerServiceWriteUpThreadProcedure = "/tank.agentctl.v1.RunnerService/WriteUpThread"
+	// RunnerServiceReadCanvasProcedure is the fully-qualified name of the RunnerService's ReadCanvas
+	// RPC.
+	RunnerServiceReadCanvasProcedure = "/tank.agentctl.v1.RunnerService/ReadCanvas"
+	// RunnerServiceAskCanvasProcedure is the fully-qualified name of the RunnerService's AskCanvas RPC.
+	RunnerServiceAskCanvasProcedure = "/tank.agentctl.v1.RunnerService/AskCanvas"
 	// RunnerServicePollInboxProcedure is the fully-qualified name of the RunnerService's PollInbox RPC.
 	RunnerServicePollInboxProcedure = "/tank.agentctl.v1.RunnerService/PollInbox"
 	// RunnerServiceOpenPullRequestProcedure is the fully-qualified name of the RunnerService's
@@ -193,6 +201,9 @@ type RunnerServiceClient interface {
 	BooksRecordExpense(context.Context, *connect.Request[v1.BooksRecordExpenseRequest]) (*connect.Response[v1.BooksRecordExpenseResponse], error)
 	BooksRecordPayment(context.Context, *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error)
 	BooksReport(context.Context, *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error)
+	WriteUpThread(context.Context, *connect.Request[v1.WriteUpThreadRequest]) (*connect.Response[v1.WriteUpThreadResponse], error)
+	ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error)
+	AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -346,6 +357,24 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("BooksReport")),
 			connect.WithClientOptions(opts...),
 		),
+		writeUpThread: connect.NewClient[v1.WriteUpThreadRequest, v1.WriteUpThreadResponse](
+			httpClient,
+			baseURL+RunnerServiceWriteUpThreadProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("WriteUpThread")),
+			connect.WithClientOptions(opts...),
+		),
+		readCanvas: connect.NewClient[v1.ReadCanvasRequest, v1.ReadCanvasResponse](
+			httpClient,
+			baseURL+RunnerServiceReadCanvasProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ReadCanvas")),
+			connect.WithClientOptions(opts...),
+		),
+		askCanvas: connect.NewClient[v1.AskCanvasRequest, v1.AskCanvasResponse](
+			httpClient,
+			baseURL+RunnerServiceAskCanvasProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("AskCanvas")),
+			connect.WithClientOptions(opts...),
+		),
 		pollInbox: connect.NewClient[v1.PollInboxRequest, v1.PollInboxResponse](
 			httpClient,
 			baseURL+RunnerServicePollInboxProcedure,
@@ -444,6 +473,9 @@ type runnerServiceClient struct {
 	booksRecordExpense       *connect.Client[v1.BooksRecordExpenseRequest, v1.BooksRecordExpenseResponse]
 	booksRecordPayment       *connect.Client[v1.BooksRecordPaymentRequest, v1.BooksRecordPaymentResponse]
 	booksReport              *connect.Client[v1.BooksReportRequest, v1.BooksReportResponse]
+	writeUpThread            *connect.Client[v1.WriteUpThreadRequest, v1.WriteUpThreadResponse]
+	readCanvas               *connect.Client[v1.ReadCanvasRequest, v1.ReadCanvasResponse]
+	askCanvas                *connect.Client[v1.AskCanvasRequest, v1.AskCanvasResponse]
 	pollInbox                *connect.Client[v1.PollInboxRequest, v1.PollInboxResponse]
 	openPullRequest          *connect.Client[v1.OpenPullRequestRequest, v1.OpenPullRequestResponse]
 	requestCiWatch           *connect.Client[v1.RequestCiWatchRequest, v1.RequestCiWatchResponse]
@@ -563,6 +595,21 @@ func (c *runnerServiceClient) BooksReport(ctx context.Context, req *connect.Requ
 	return c.booksReport.CallUnary(ctx, req)
 }
 
+// WriteUpThread calls tank.agentctl.v1.RunnerService.WriteUpThread.
+func (c *runnerServiceClient) WriteUpThread(ctx context.Context, req *connect.Request[v1.WriteUpThreadRequest]) (*connect.Response[v1.WriteUpThreadResponse], error) {
+	return c.writeUpThread.CallUnary(ctx, req)
+}
+
+// ReadCanvas calls tank.agentctl.v1.RunnerService.ReadCanvas.
+func (c *runnerServiceClient) ReadCanvas(ctx context.Context, req *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error) {
+	return c.readCanvas.CallUnary(ctx, req)
+}
+
+// AskCanvas calls tank.agentctl.v1.RunnerService.AskCanvas.
+func (c *runnerServiceClient) AskCanvas(ctx context.Context, req *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error) {
+	return c.askCanvas.CallUnary(ctx, req)
+}
+
 // PollInbox calls tank.agentctl.v1.RunnerService.PollInbox.
 func (c *runnerServiceClient) PollInbox(ctx context.Context, req *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error) {
 	return c.pollInbox.CallUnary(ctx, req)
@@ -646,6 +693,9 @@ type RunnerServiceHandler interface {
 	BooksRecordExpense(context.Context, *connect.Request[v1.BooksRecordExpenseRequest]) (*connect.Response[v1.BooksRecordExpenseResponse], error)
 	BooksRecordPayment(context.Context, *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error)
 	BooksReport(context.Context, *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error)
+	WriteUpThread(context.Context, *connect.Request[v1.WriteUpThreadRequest]) (*connect.Response[v1.WriteUpThreadResponse], error)
+	ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error)
+	AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -795,6 +845,24 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("BooksReport")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceWriteUpThreadHandler := connect.NewUnaryHandler(
+		RunnerServiceWriteUpThreadProcedure,
+		svc.WriteUpThread,
+		connect.WithSchema(runnerServiceMethods.ByName("WriteUpThread")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceReadCanvasHandler := connect.NewUnaryHandler(
+		RunnerServiceReadCanvasProcedure,
+		svc.ReadCanvas,
+		connect.WithSchema(runnerServiceMethods.ByName("ReadCanvas")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceAskCanvasHandler := connect.NewUnaryHandler(
+		RunnerServiceAskCanvasProcedure,
+		svc.AskCanvas,
+		connect.WithSchema(runnerServiceMethods.ByName("AskCanvas")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServicePollInboxHandler := connect.NewUnaryHandler(
 		RunnerServicePollInboxProcedure,
 		svc.PollInbox,
@@ -911,6 +979,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceBooksRecordPaymentHandler.ServeHTTP(w, r)
 		case RunnerServiceBooksReportProcedure:
 			runnerServiceBooksReportHandler.ServeHTTP(w, r)
+		case RunnerServiceWriteUpThreadProcedure:
+			runnerServiceWriteUpThreadHandler.ServeHTTP(w, r)
+		case RunnerServiceReadCanvasProcedure:
+			runnerServiceReadCanvasHandler.ServeHTTP(w, r)
+		case RunnerServiceAskCanvasProcedure:
+			runnerServiceAskCanvasHandler.ServeHTTP(w, r)
 		case RunnerServicePollInboxProcedure:
 			runnerServicePollInboxHandler.ServeHTTP(w, r)
 		case RunnerServiceOpenPullRequestProcedure:
@@ -1026,6 +1100,18 @@ func (UnimplementedRunnerServiceHandler) BooksRecordPayment(context.Context, *co
 
 func (UnimplementedRunnerServiceHandler) BooksReport(context.Context, *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BooksReport is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) WriteUpThread(context.Context, *connect.Request[v1.WriteUpThreadRequest]) (*connect.Response[v1.WriteUpThreadResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.WriteUpThread is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReadCanvas is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.AskCanvas is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error) {

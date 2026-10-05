@@ -3,6 +3,7 @@ from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from tank.agent.v1 import agent_pb2 as _agent_pb2
 from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
 from tank.books.v1 import books_pb2 as _books_pb2
+from tank.canvas.v1 import canvas_pb2 as _canvas_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
@@ -559,6 +560,52 @@ class BooksReportRequest(_message.Message):
     PERIOD_FIELD_NUMBER: _ClassVar[int]
     period: str
     def __init__(self, period: _Optional[str] = ...) -> None: ...
+
+class WriteUpThreadRequest(_message.Message):
+    __slots__ = ("title",)
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    title: str
+    def __init__(self, title: _Optional[str] = ...) -> None: ...
+
+class WriteUpThreadResponse(_message.Message):
+    __slots__ = ("canvas_id", "title", "blocks", "decisions")
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    BLOCKS_FIELD_NUMBER: _ClassVar[int]
+    DECISIONS_FIELD_NUMBER: _ClassVar[int]
+    canvas_id: str
+    title: str
+    blocks: int
+    decisions: int
+    def __init__(self, canvas_id: _Optional[str] = ..., title: _Optional[str] = ..., blocks: _Optional[int] = ..., decisions: _Optional[int] = ...) -> None: ...
+
+class ReadCanvasRequest(_message.Message):
+    __slots__ = ("canvas_id",)
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    canvas_id: str
+    def __init__(self, canvas_id: _Optional[str] = ...) -> None: ...
+
+class ReadCanvasResponse(_message.Message):
+    __slots__ = ("canvas",)
+    CANVAS_FIELD_NUMBER: _ClassVar[int]
+    canvas: _canvas_pb2.Canvas
+    def __init__(self, canvas: _Optional[_Union[_canvas_pb2.Canvas, _Mapping]] = ...) -> None: ...
+
+class AskCanvasRequest(_message.Message):
+    __slots__ = ("question", "limit")
+    QUESTION_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    question: str
+    limit: int
+    def __init__(self, question: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class AskCanvasResponse(_message.Message):
+    __slots__ = ("summary", "answers")
+    SUMMARY_FIELD_NUMBER: _ClassVar[int]
+    ANSWERS_FIELD_NUMBER: _ClassVar[int]
+    summary: str
+    answers: _containers.RepeatedCompositeFieldContainer[_canvas_pb2.Answer]
+    def __init__(self, summary: _Optional[str] = ..., answers: _Optional[_Iterable[_Union[_canvas_pb2.Answer, _Mapping]]] = ...) -> None: ...
 
 class BooksReportResponse(_message.Message):
     __slots__ = ("enabled", "report")

@@ -7,6 +7,7 @@ import "google/protobuf/timestamp.proto";
 import "tank/agent/v1/agent.proto";
 import "tank/blocks/v1/blocks.proto";
 import "tank/books/v1/books.proto";
+import "tank/canvas/v1/canvas.proto";
 
 // Runner <-> control-plane contract. The in-sandbox agent runner talks only to
 // agent-control (never to the messaging core directly): every thread post, card
@@ -340,6 +341,29 @@ message BooksRecordPaymentResponse { tank.books.v1.Invoice invoice = 1; }
 message BooksReportRequest {
   string period = 1;               // this_month | last_month | this_quarter | this_year | last_30_days
 }
+// Neuralcanvas from the thread: write the page up, read one, ask the pages.
+message WriteUpThreadRequest {
+  string title = 1;                 // empty lets the server name it from the thread
+}
+message WriteUpThreadResponse {
+  string canvas_id = 1;
+  string title = 2;
+  int32 blocks = 3;
+  int32 decisions = 4;
+}
+message ReadCanvasRequest { string canvas_id = 1; }
+message ReadCanvasResponse {
+  tank.canvas.v1.Canvas canvas = 1;
+}
+message AskCanvasRequest {
+  string question = 1;
+  int32 limit = 2;
+}
+message AskCanvasResponse {
+  string summary = 1;
+  repeated tank.canvas.v1.Answer answers = 2;
+}
+
 message BooksReportResponse {
   bool enabled = 1;
   tank.books.v1.Report report = 2;
@@ -564,6 +588,9 @@ service RunnerService {
   rpc BooksRecordExpense(BooksRecordExpenseRequest) returns (BooksRecordExpenseResponse);
   rpc BooksRecordPayment(BooksRecordPaymentRequest) returns (BooksRecordPaymentResponse);
   rpc BooksReport(BooksReportRequest) returns (BooksReportResponse);
+  rpc WriteUpThread(WriteUpThreadRequest) returns (WriteUpThreadResponse);
+  rpc ReadCanvas(ReadCanvasRequest) returns (ReadCanvasResponse);
+  rpc AskCanvas(AskCanvasRequest) returns (AskCanvasResponse);
   rpc PollInbox(PollInboxRequest) returns (PollInboxResponse);
 
   rpc OpenPullRequest(OpenPullRequestRequest) returns (OpenPullRequestResponse);
