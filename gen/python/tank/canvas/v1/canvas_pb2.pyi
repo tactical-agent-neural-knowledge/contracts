@@ -22,6 +22,7 @@ class BlockKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     BLOCK_KIND_LIVE: _ClassVar[BlockKind]
     BLOCK_KIND_MESSAGE: _ClassVar[BlockKind]
     BLOCK_KIND_IMAGE: _ClassVar[BlockKind]
+    BLOCK_KIND_TABLE: _ClassVar[BlockKind]
 BLOCK_KIND_UNSPECIFIED: BlockKind
 BLOCK_KIND_HEADING: BlockKind
 BLOCK_KIND_TEXT: BlockKind
@@ -35,6 +36,21 @@ BLOCK_KIND_DECISION: BlockKind
 BLOCK_KIND_LIVE: BlockKind
 BLOCK_KIND_MESSAGE: BlockKind
 BLOCK_KIND_IMAGE: BlockKind
+BLOCK_KIND_TABLE: BlockKind
+
+class TableRow(_message.Message):
+    __slots__ = ("cells",)
+    CELLS_FIELD_NUMBER: _ClassVar[int]
+    cells: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, cells: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class Table(_message.Message):
+    __slots__ = ("headers", "rows")
+    HEADERS_FIELD_NUMBER: _ClassVar[int]
+    ROWS_FIELD_NUMBER: _ClassVar[int]
+    headers: _containers.RepeatedScalarFieldContainer[str]
+    rows: _containers.RepeatedCompositeFieldContainer[TableRow]
+    def __init__(self, headers: _Optional[_Iterable[str]] = ..., rows: _Optional[_Iterable[_Union[TableRow, _Mapping]]] = ...) -> None: ...
 
 class Decision(_message.Message):
     __slots__ = ("what", "decided_by", "decided_at", "because", "supersedes_block_id", "thread_root_id", "needs_revisiting", "revisit_note")
@@ -75,7 +91,7 @@ class Live(_message.Message):
     def __init__(self, kind: _Optional[str] = ..., ref: _Optional[str] = ..., label: _Optional[str] = ..., value: _Optional[str] = ..., detail: _Optional[str] = ..., as_of: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[str] = ...) -> None: ...
 
 class Block(_message.Message):
-    __slots__ = ("id", "kind", "text", "depth", "checked", "lang", "decision", "live", "message_id", "file_id")
+    __slots__ = ("id", "kind", "text", "depth", "checked", "lang", "decision", "live", "message_id", "file_id", "table", "file_url")
     ID_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
@@ -86,6 +102,8 @@ class Block(_message.Message):
     LIVE_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    TABLE_FIELD_NUMBER: _ClassVar[int]
+    FILE_URL_FIELD_NUMBER: _ClassVar[int]
     id: str
     kind: BlockKind
     text: str
@@ -96,7 +114,9 @@ class Block(_message.Message):
     live: Live
     message_id: str
     file_id: str
-    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[BlockKind, str]] = ..., text: _Optional[str] = ..., depth: _Optional[int] = ..., checked: bool = ..., lang: _Optional[str] = ..., decision: _Optional[_Union[Decision, _Mapping]] = ..., live: _Optional[_Union[Live, _Mapping]] = ..., message_id: _Optional[str] = ..., file_id: _Optional[str] = ...) -> None: ...
+    table: Table
+    file_url: str
+    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[BlockKind, str]] = ..., text: _Optional[str] = ..., depth: _Optional[int] = ..., checked: bool = ..., lang: _Optional[str] = ..., decision: _Optional[_Union[Decision, _Mapping]] = ..., live: _Optional[_Union[Live, _Mapping]] = ..., message_id: _Optional[str] = ..., file_id: _Optional[str] = ..., table: _Optional[_Union[Table, _Mapping]] = ..., file_url: _Optional[str] = ...) -> None: ...
 
 class Source(_message.Message):
     __slots__ = ("kind", "ref", "label", "seen_at", "changed", "changed_note")
@@ -115,7 +135,7 @@ class Source(_message.Message):
     def __init__(self, kind: _Optional[str] = ..., ref: _Optional[str] = ..., label: _Optional[str] = ..., seen_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., changed: bool = ..., changed_note: _Optional[str] = ...) -> None: ...
 
 class Canvas(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "blocks", "sources", "staleness", "staleness_note", "created_by", "created_at", "updated_by", "updated_at", "version", "written_by_agent", "summary")
+    __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "blocks", "sources", "staleness", "staleness_note", "created_by", "created_at", "updated_by", "updated_at", "version", "written_by_agent", "summary", "parent_id", "children")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -132,6 +152,8 @@ class Canvas(_message.Message):
     VERSION_FIELD_NUMBER: _ClassVar[int]
     WRITTEN_BY_AGENT_FIELD_NUMBER: _ClassVar[int]
     SUMMARY_FIELD_NUMBER: _ClassVar[int]
+    PARENT_ID_FIELD_NUMBER: _ClassVar[int]
+    CHILDREN_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -148,10 +170,12 @@ class Canvas(_message.Message):
     version: int
     written_by_agent: bool
     summary: str
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., version: _Optional[int] = ..., written_by_agent: bool = ..., summary: _Optional[str] = ...) -> None: ...
+    parent_id: str
+    children: _containers.RepeatedCompositeFieldContainer[CanvasSummary]
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., version: _Optional[int] = ..., written_by_agent: bool = ..., summary: _Optional[str] = ..., parent_id: _Optional[str] = ..., children: _Optional[_Iterable[_Union[CanvasSummary, _Mapping]]] = ...) -> None: ...
 
 class CanvasSummary(_message.Message):
-    __slots__ = ("id", "title", "icon", "channel_id", "summary", "staleness", "staleness_note", "updated_at", "updated_by", "written_by_agent", "decisions")
+    __slots__ = ("id", "title", "icon", "channel_id", "summary", "staleness", "staleness_note", "updated_at", "updated_by", "written_by_agent", "decisions", "parent_id", "child_count")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     ICON_FIELD_NUMBER: _ClassVar[int]
@@ -163,6 +187,8 @@ class CanvasSummary(_message.Message):
     UPDATED_BY_FIELD_NUMBER: _ClassVar[int]
     WRITTEN_BY_AGENT_FIELD_NUMBER: _ClassVar[int]
     DECISIONS_FIELD_NUMBER: _ClassVar[int]
+    PARENT_ID_FIELD_NUMBER: _ClassVar[int]
+    CHILD_COUNT_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     icon: str
@@ -174,17 +200,23 @@ class CanvasSummary(_message.Message):
     updated_by: str
     written_by_agent: bool
     decisions: int
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., channel_id: _Optional[str] = ..., summary: _Optional[str] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., written_by_agent: bool = ..., decisions: _Optional[int] = ...) -> None: ...
+    parent_id: str
+    child_count: int
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., channel_id: _Optional[str] = ..., summary: _Optional[str] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., written_by_agent: bool = ..., decisions: _Optional[int] = ..., parent_id: _Optional[str] = ..., child_count: _Optional[int] = ...) -> None: ...
 
 class ListCanvasesRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "stale_only")
+    __slots__ = ("workspace_id", "channel_id", "stale_only", "parent_id", "top_level")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     STALE_ONLY_FIELD_NUMBER: _ClassVar[int]
+    PARENT_ID_FIELD_NUMBER: _ClassVar[int]
+    TOP_LEVEL_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     stale_only: bool
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., stale_only: bool = ...) -> None: ...
+    parent_id: str
+    top_level: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., stale_only: bool = ..., parent_id: _Optional[str] = ..., top_level: bool = ...) -> None: ...
 
 class ListCanvasesResponse(_message.Message):
     __slots__ = ("canvases",)
@@ -207,20 +239,24 @@ class GetCanvasResponse(_message.Message):
     def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ...) -> None: ...
 
 class CreateCanvasRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "title", "icon", "blocks", "sources")
+    __slots__ = ("workspace_id", "channel_id", "title", "icon", "blocks", "sources", "parent_id", "template")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     ICON_FIELD_NUMBER: _ClassVar[int]
     BLOCKS_FIELD_NUMBER: _ClassVar[int]
     SOURCES_FIELD_NUMBER: _ClassVar[int]
+    PARENT_ID_FIELD_NUMBER: _ClassVar[int]
+    TEMPLATE_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     title: str
     icon: str
     blocks: _containers.RepeatedCompositeFieldContainer[Block]
     sources: _containers.RepeatedCompositeFieldContainer[Source]
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ...) -> None: ...
+    parent_id: str
+    template: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., parent_id: _Optional[str] = ..., template: _Optional[str] = ...) -> None: ...
 
 class CreateCanvasResponse(_message.Message):
     __slots__ = ("canvas",)
@@ -268,6 +304,48 @@ class DeleteCanvasResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class UpdateBlockRequest(_message.Message):
+    __slots__ = ("workspace_id", "canvas_id", "block", "delete", "after_block_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    BLOCK_FIELD_NUMBER: _ClassVar[int]
+    DELETE_FIELD_NUMBER: _ClassVar[int]
+    AFTER_BLOCK_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    canvas_id: str
+    block: Block
+    delete: bool
+    after_block_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., canvas_id: _Optional[str] = ..., block: _Optional[_Union[Block, _Mapping]] = ..., delete: bool = ..., after_block_id: _Optional[str] = ...) -> None: ...
+
+class UpdateBlockResponse(_message.Message):
+    __slots__ = ("canvas",)
+    CANVAS_FIELD_NUMBER: _ClassVar[int]
+    canvas: Canvas
+    def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ...) -> None: ...
+
+class Template(_message.Message):
+    __slots__ = ("name", "title", "icon", "about")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    ICON_FIELD_NUMBER: _ClassVar[int]
+    ABOUT_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    title: str
+    icon: str
+    about: str
+    def __init__(self, name: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., about: _Optional[str] = ...) -> None: ...
+
+class ListTemplatesRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListTemplatesResponse(_message.Message):
+    __slots__ = ("templates",)
+    TEMPLATES_FIELD_NUMBER: _ClassVar[int]
+    templates: _containers.RepeatedCompositeFieldContainer[Template]
+    def __init__(self, templates: _Optional[_Iterable[_Union[Template, _Mapping]]] = ...) -> None: ...
+
 class WriteFromThreadRequest(_message.Message):
     __slots__ = ("workspace_id", "thread_root_id", "title")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
@@ -295,25 +373,29 @@ class AskRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ..., question: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
 
 class Answer(_message.Message):
-    __slots__ = ("canvas_id", "title", "icon", "passage", "block_id", "score")
+    __slots__ = ("canvas_id", "title", "icon", "passage", "block_id", "score", "matched")
     CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     ICON_FIELD_NUMBER: _ClassVar[int]
     PASSAGE_FIELD_NUMBER: _ClassVar[int]
     BLOCK_ID_FIELD_NUMBER: _ClassVar[int]
     SCORE_FIELD_NUMBER: _ClassVar[int]
+    MATCHED_FIELD_NUMBER: _ClassVar[int]
     canvas_id: str
     title: str
     icon: str
     passage: str
     block_id: str
     score: float
-    def __init__(self, canvas_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., passage: _Optional[str] = ..., block_id: _Optional[str] = ..., score: _Optional[float] = ...) -> None: ...
+    matched: str
+    def __init__(self, canvas_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., passage: _Optional[str] = ..., block_id: _Optional[str] = ..., score: _Optional[float] = ..., matched: _Optional[str] = ...) -> None: ...
 
 class AskResponse(_message.Message):
-    __slots__ = ("answers", "summary")
+    __slots__ = ("answers", "summary", "semantic")
     ANSWERS_FIELD_NUMBER: _ClassVar[int]
     SUMMARY_FIELD_NUMBER: _ClassVar[int]
+    SEMANTIC_FIELD_NUMBER: _ClassVar[int]
     answers: _containers.RepeatedCompositeFieldContainer[Answer]
     summary: str
-    def __init__(self, answers: _Optional[_Iterable[_Union[Answer, _Mapping]]] = ..., summary: _Optional[str] = ...) -> None: ...
+    semantic: bool
+    def __init__(self, answers: _Optional[_Iterable[_Union[Answer, _Mapping]]] = ..., summary: _Optional[str] = ..., semantic: bool = ...) -> None: ...

@@ -30,6 +30,15 @@ enum BlockKind {
   // A message from a thread, quoted with its author.
   BLOCK_KIND_MESSAGE = 11;
   BLOCK_KIND_IMAGE = 12;
+  // Rows and columns, for the things a page is otherwise bad at holding.
+  BLOCK_KIND_TABLE = 13;
+}
+
+message TableRow { repeated string cells = 1; }
+
+message Table {
+  repeated string headers = 1;
+  repeated TableRow rows = 2;
 }
 
 // A decision is answerable: what, who, when, why, and what it replaced.
@@ -68,6 +77,9 @@ message Block {
   Live live = 8;
   string message_id = 9;        // the quoted message
   string file_id = 10;          // the image
+  Table table = 11;
+  // For an image: where to fetch it, filled in by the server when the page is read.
+  string file_url = 12;
 }
 
 // Where the page came from, and whether it still holds.
@@ -100,6 +112,10 @@ message Canvas {
   // Set when the agent wrote or last revised it, so a reader always knows.
   bool written_by_agent = 15;
   string summary = 16;          // one line, for lists and search
+  // The page this one sits under; empty for a page at the top level.
+  string parent_id = 17;
+  // Pages directly under this one, for the reader to walk down.
+  repeated CanvasSummary children = 18;
 }
 
 // A canvas as it appears in a list: no blocks.
@@ -115,12 +131,17 @@ message CanvasSummary {
   string updated_by = 9;
   bool written_by_agent = 10;
   int32 decisions = 11;         // how many decision blocks it holds
+  string parent_id = 12;
+  int32 child_count = 13;
 }
 
 message ListCanvasesRequest {
   string workspace_id = 1;
   string channel_id = 2;        // empty for every canvas the caller can read
   bool stale_only = 3;
+  // Only the pages directly under this one. Set top_level to list the roots.
+  string parent_id = 4;
+  bool top_level = 5;
 }
 message ListCanvasesResponse { repeated CanvasSummary canvases = 1; }
 
@@ -137,6 +158,10 @@ message CreateCanvasRequest {
   string icon = 4;
   repeated Block blocks = 5;
   repeated Source sources = 6;
+  string parent_id = 7;
+  // A starting shape rather than a blank page: see ListTemplates. Ignored when
+  // blocks are given.
+  string template = 8;
 }
 message CreateCanvasResponse { Canvas canvas = 1; }
 
@@ -162,6 +187,27 @@ message DeleteCanvasResponse {}
 
 // Write a page from what was actually said. The thread's decisions and the shape of
 // the conversation become the first draft; a person edits from there.
+// Editing one block does not touch the rest of the page, so two people writing in
+// different places both succeed. This is what a page needs far more often than it
+// needs cursors.
+message UpdateBlockRequest {
+  string workspace_id = 1;
+  string canvas_id = 2;
+  Block block = 3;                // its id names the block; a new id appends
+  bool delete = 4;
+  string after_block_id = 5;      // where a new block goes; empty appends
+}
+message UpdateBlockResponse { Canvas canvas = 1; }
+
+message Template {
+  string name = 1;                // what to pass as CreateCanvasRequest.template
+  string title = 2;
+  string icon = 3;
+  string about = 4;               // one line: when to reach for it
+}
+message ListTemplatesRequest {}
+message ListTemplatesResponse { repeated Template templates = 1; }
+
 message WriteFromThreadRequest {
   string workspace_id = 1;
   string thread_root_id = 2;
@@ -182,11 +228,17 @@ message Answer {
   string passage = 4;           // the part that answers it
   string block_id = 5;
   double score = 6;
+  // How this page was found: "words", "meaning", or "both". A reader deserves to
+  // know whether the Vault understood the question or merely matched it.
+  string matched = 7;
 }
 message AskResponse {
   repeated Answer answers = 1;
   // One sentence over the top when the pages agree on an answer.
   string summary = 2;
+  // False when the Vault could not be reached and this is words only, so the
+  // caller can say so rather than implying the pages were understood.
+  bool semantic = 3;
 }
 
 service CanvasService {
@@ -197,4 +249,6 @@ service CanvasService {
   rpc DeleteCanvas(DeleteCanvasRequest) returns (DeleteCanvasResponse);
   rpc WriteFromThread(WriteFromThreadRequest) returns (WriteFromThreadResponse);
   rpc Ask(AskRequest) returns (AskResponse);
+  rpc UpdateBlock(UpdateBlockRequest) returns (UpdateBlockResponse);
+  rpc ListTemplates(ListTemplatesRequest) returns (ListTemplatesResponse);
 }
