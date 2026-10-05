@@ -337,6 +337,13 @@ message BooksRecordPaymentRequest {
   string reference = 4;
 }
 message BooksRecordPaymentResponse { tank.books.v1.Invoice invoice = 1; }
+message BooksReportRequest {
+  string period = 1;               // this_month | last_month | this_quarter | this_year | last_30_days
+}
+message BooksReportResponse {
+  bool enabled = 1;
+  tank.books.v1.Report report = 2;
+}
 
 // --------------------------------------------------------------------- GitHub
 
@@ -556,6 +563,7 @@ service RunnerService {
   rpc BooksCreateInvoice(BooksCreateInvoiceRequest) returns (BooksCreateInvoiceResponse);
   rpc BooksRecordExpense(BooksRecordExpenseRequest) returns (BooksRecordExpenseResponse);
   rpc BooksRecordPayment(BooksRecordPaymentRequest) returns (BooksRecordPaymentResponse);
+  rpc BooksReport(BooksReportRequest) returns (BooksReportResponse);
   rpc PollInbox(PollInboxRequest) returns (PollInboxResponse);
 
   rpc OpenPullRequest(OpenPullRequestRequest) returns (OpenPullRequestResponse);

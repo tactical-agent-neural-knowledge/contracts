@@ -554,6 +554,20 @@ class BooksRecordPaymentResponse(_message.Message):
     invoice: _books_pb2.Invoice
     def __init__(self, invoice: _Optional[_Union[_books_pb2.Invoice, _Mapping]] = ...) -> None: ...
 
+class BooksReportRequest(_message.Message):
+    __slots__ = ("period",)
+    PERIOD_FIELD_NUMBER: _ClassVar[int]
+    period: str
+    def __init__(self, period: _Optional[str] = ...) -> None: ...
+
+class BooksReportResponse(_message.Message):
+    __slots__ = ("enabled", "report")
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    REPORT_FIELD_NUMBER: _ClassVar[int]
+    enabled: bool
+    report: _books_pb2.Report
+    def __init__(self, enabled: bool = ..., report: _Optional[_Union[_books_pb2.Report, _Mapping]] = ...) -> None: ...
+
 class OpenPullRequestRequest(_message.Message):
     __slots__ = ("title", "body", "head_sha", "draft")
     TITLE_FIELD_NUMBER: _ClassVar[int]
