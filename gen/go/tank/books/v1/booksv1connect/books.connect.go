@@ -80,6 +80,8 @@ const (
 	// BooksServiceMatchBankTransactionProcedure is the fully-qualified name of the BooksService's
 	// MatchBankTransaction RPC.
 	BooksServiceMatchBankTransactionProcedure = "/tank.books.v1.BooksService/MatchBankTransaction"
+	// BooksServiceGetReportProcedure is the fully-qualified name of the BooksService's GetReport RPC.
+	BooksServiceGetReportProcedure = "/tank.books.v1.BooksService/GetReport"
 )
 
 // BooksServiceClient is a client for the tank.books.v1.BooksService service.
@@ -100,6 +102,7 @@ type BooksServiceClient interface {
 	ImportBankTransactions(context.Context, *connect.Request[v1.ImportBankTransactionsRequest]) (*connect.Response[v1.ImportBankTransactionsResponse], error)
 	ListBankTransactions(context.Context, *connect.Request[v1.ListBankTransactionsRequest]) (*connect.Response[v1.ListBankTransactionsResponse], error)
 	MatchBankTransaction(context.Context, *connect.Request[v1.MatchBankTransactionRequest]) (*connect.Response[v1.MatchBankTransactionResponse], error)
+	GetReport(context.Context, *connect.Request[v1.GetReportRequest]) (*connect.Response[v1.GetReportResponse], error)
 }
 
 // NewBooksServiceClient constructs a client for the tank.books.v1.BooksService service. By default,
@@ -209,6 +212,12 @@ func NewBooksServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(booksServiceMethods.ByName("MatchBankTransaction")),
 			connect.WithClientOptions(opts...),
 		),
+		getReport: connect.NewClient[v1.GetReportRequest, v1.GetReportResponse](
+			httpClient,
+			baseURL+BooksServiceGetReportProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("GetReport")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -230,6 +239,7 @@ type booksServiceClient struct {
 	importBankTransactions *connect.Client[v1.ImportBankTransactionsRequest, v1.ImportBankTransactionsResponse]
 	listBankTransactions   *connect.Client[v1.ListBankTransactionsRequest, v1.ListBankTransactionsResponse]
 	matchBankTransaction   *connect.Client[v1.MatchBankTransactionRequest, v1.MatchBankTransactionResponse]
+	getReport              *connect.Client[v1.GetReportRequest, v1.GetReportResponse]
 }
 
 // GetSettings calls tank.books.v1.BooksService.GetSettings.
@@ -312,6 +322,11 @@ func (c *booksServiceClient) MatchBankTransaction(ctx context.Context, req *conn
 	return c.matchBankTransaction.CallUnary(ctx, req)
 }
 
+// GetReport calls tank.books.v1.BooksService.GetReport.
+func (c *booksServiceClient) GetReport(ctx context.Context, req *connect.Request[v1.GetReportRequest]) (*connect.Response[v1.GetReportResponse], error) {
+	return c.getReport.CallUnary(ctx, req)
+}
+
 // BooksServiceHandler is an implementation of the tank.books.v1.BooksService service.
 type BooksServiceHandler interface {
 	GetSettings(context.Context, *connect.Request[v1.GetSettingsRequest]) (*connect.Response[v1.GetSettingsResponse], error)
@@ -330,6 +345,7 @@ type BooksServiceHandler interface {
 	ImportBankTransactions(context.Context, *connect.Request[v1.ImportBankTransactionsRequest]) (*connect.Response[v1.ImportBankTransactionsResponse], error)
 	ListBankTransactions(context.Context, *connect.Request[v1.ListBankTransactionsRequest]) (*connect.Response[v1.ListBankTransactionsResponse], error)
 	MatchBankTransaction(context.Context, *connect.Request[v1.MatchBankTransactionRequest]) (*connect.Response[v1.MatchBankTransactionResponse], error)
+	GetReport(context.Context, *connect.Request[v1.GetReportRequest]) (*connect.Response[v1.GetReportResponse], error)
 }
 
 // NewBooksServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -435,6 +451,12 @@ func NewBooksServiceHandler(svc BooksServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(booksServiceMethods.ByName("MatchBankTransaction")),
 		connect.WithHandlerOptions(opts...),
 	)
+	booksServiceGetReportHandler := connect.NewUnaryHandler(
+		BooksServiceGetReportProcedure,
+		svc.GetReport,
+		connect.WithSchema(booksServiceMethods.ByName("GetReport")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.books.v1.BooksService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BooksServiceGetSettingsProcedure:
@@ -469,6 +491,8 @@ func NewBooksServiceHandler(svc BooksServiceHandler, opts ...connect.HandlerOpti
 			booksServiceListBankTransactionsHandler.ServeHTTP(w, r)
 		case BooksServiceMatchBankTransactionProcedure:
 			booksServiceMatchBankTransactionHandler.ServeHTTP(w, r)
+		case BooksServiceGetReportProcedure:
+			booksServiceGetReportHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -540,4 +564,8 @@ func (UnimplementedBooksServiceHandler) ListBankTransactions(context.Context, *c
 
 func (UnimplementedBooksServiceHandler) MatchBankTransaction(context.Context, *connect.Request[v1.MatchBankTransactionRequest]) (*connect.Response[v1.MatchBankTransactionResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.MatchBankTransaction is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) GetReport(context.Context, *connect.Request[v1.GetReportRequest]) (*connect.Response[v1.GetReportResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.GetReport is not implemented"))
 }

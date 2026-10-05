@@ -248,6 +248,32 @@ message MatchBankTransactionRequest {
 }
 message MatchBankTransactionResponse { BankTransaction transaction = 1; }
 
+// A report is an answer: how the period went, from the journal, in the words a person
+// asks with. Profit is revenue less expenses; cash is what the journal says is in hand.
+message ReportLine {
+  string label = 1;              // e.g. "hosting", or a customer's name
+  int64 cents = 2;
+}
+message Report {
+  google.protobuf.Timestamp from = 1;
+  google.protobuf.Timestamp to = 2;
+  string currency = 3;
+  int64 revenue_cents = 4;       // invoiced in the period
+  int64 expenses_cents = 5;
+  int64 profit_cents = 6;        // revenue − expenses
+  int64 received_cents = 7;      // payments that arrived
+  int64 cash_cents = 8;          // cash account balance, all time
+  int64 receivable_cents = 9;    // still owed, all time
+  repeated ReportLine expenses_by_category = 10;
+  repeated ReportLine revenue_by_customer = 11;
+  string sentence = 12;          // the report in one sentence
+}
+message GetReportRequest {
+  string workspace_id = 1;
+  string period = 2;             // this_month | last_month | this_quarter | this_year | last_30_days (default)
+}
+message GetReportResponse { Report report = 1; }
+
 service BooksService {
   rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
   rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
@@ -265,4 +291,5 @@ service BooksService {
   rpc ImportBankTransactions(ImportBankTransactionsRequest) returns (ImportBankTransactionsResponse);
   rpc ListBankTransactions(ListBankTransactionsRequest) returns (ListBankTransactionsResponse);
   rpc MatchBankTransaction(MatchBankTransactionRequest) returns (MatchBankTransactionResponse);
+  rpc GetReport(GetReportRequest) returns (GetReportResponse);
 }

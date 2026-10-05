@@ -491,3 +491,52 @@ class MatchBankTransactionResponse(_message.Message):
     TRANSACTION_FIELD_NUMBER: _ClassVar[int]
     transaction: BankTransaction
     def __init__(self, transaction: _Optional[_Union[BankTransaction, _Mapping]] = ...) -> None: ...
+
+class ReportLine(_message.Message):
+    __slots__ = ("label", "cents")
+    LABEL_FIELD_NUMBER: _ClassVar[int]
+    CENTS_FIELD_NUMBER: _ClassVar[int]
+    label: str
+    cents: int
+    def __init__(self, label: _Optional[str] = ..., cents: _Optional[int] = ...) -> None: ...
+
+class Report(_message.Message):
+    __slots__ = ("to", "currency", "revenue_cents", "expenses_cents", "profit_cents", "received_cents", "cash_cents", "receivable_cents", "expenses_by_category", "revenue_by_customer", "sentence")
+    FROM_FIELD_NUMBER: _ClassVar[int]
+    TO_FIELD_NUMBER: _ClassVar[int]
+    CURRENCY_FIELD_NUMBER: _ClassVar[int]
+    REVENUE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    EXPENSES_CENTS_FIELD_NUMBER: _ClassVar[int]
+    PROFIT_CENTS_FIELD_NUMBER: _ClassVar[int]
+    RECEIVED_CENTS_FIELD_NUMBER: _ClassVar[int]
+    CASH_CENTS_FIELD_NUMBER: _ClassVar[int]
+    RECEIVABLE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    EXPENSES_BY_CATEGORY_FIELD_NUMBER: _ClassVar[int]
+    REVENUE_BY_CUSTOMER_FIELD_NUMBER: _ClassVar[int]
+    SENTENCE_FIELD_NUMBER: _ClassVar[int]
+    to: _timestamp_pb2.Timestamp
+    currency: str
+    revenue_cents: int
+    expenses_cents: int
+    profit_cents: int
+    received_cents: int
+    cash_cents: int
+    receivable_cents: int
+    expenses_by_category: _containers.RepeatedCompositeFieldContainer[ReportLine]
+    revenue_by_customer: _containers.RepeatedCompositeFieldContainer[ReportLine]
+    sentence: str
+    def __init__(self, to: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., currency: _Optional[str] = ..., revenue_cents: _Optional[int] = ..., expenses_cents: _Optional[int] = ..., profit_cents: _Optional[int] = ..., received_cents: _Optional[int] = ..., cash_cents: _Optional[int] = ..., receivable_cents: _Optional[int] = ..., expenses_by_category: _Optional[_Iterable[_Union[ReportLine, _Mapping]]] = ..., revenue_by_customer: _Optional[_Iterable[_Union[ReportLine, _Mapping]]] = ..., sentence: _Optional[str] = ..., **kwargs) -> None: ...
+
+class GetReportRequest(_message.Message):
+    __slots__ = ("workspace_id", "period")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    PERIOD_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    period: str
+    def __init__(self, workspace_id: _Optional[str] = ..., period: _Optional[str] = ...) -> None: ...
+
+class GetReportResponse(_message.Message):
+    __slots__ = ("report",)
+    REPORT_FIELD_NUMBER: _ClassVar[int]
+    report: Report
+    def __init__(self, report: _Optional[_Union[Report, _Mapping]] = ...) -> None: ...
