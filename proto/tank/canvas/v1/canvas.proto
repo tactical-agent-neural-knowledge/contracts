@@ -1,0 +1,200 @@
+syntax = "proto3";
+
+package tank.canvas.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/canvas/v1;canvasv1";
+
+// Neuralcanvas: the written side of a team's work, inside the workspace.
+//
+// What separates a canvas from a document is that it remembers what it was written
+// from. A page cites the threads, decisions and repositories behind it; when those
+// move, the page says so instead of quietly going out of date. The failure of every
+// wiki is not that writing is hard, it is that nobody can tell what is still true.
+
+enum BlockKind {
+  BLOCK_KIND_UNSPECIFIED = 0;
+  BLOCK_KIND_HEADING = 1;
+  BLOCK_KIND_TEXT = 2;
+  BLOCK_KIND_BULLET = 3;
+  BLOCK_KIND_NUMBER = 4;
+  BLOCK_KIND_QUOTE = 5;
+  BLOCK_KIND_CODE = 6;
+  BLOCK_KIND_DIVIDER = 7;
+  BLOCK_KIND_TODO = 8;
+  // What the team settled, kept as structure rather than a paragraph.
+  BLOCK_KIND_DECISION = 9;
+  // A real figure from the workspace, current when the page is read.
+  BLOCK_KIND_LIVE = 10;
+  // A message from a thread, quoted with its author.
+  BLOCK_KIND_MESSAGE = 11;
+  BLOCK_KIND_IMAGE = 12;
+}
+
+// A decision is answerable: what, who, when, why, and what it replaced.
+message Decision {
+  string what = 1;                              // one sentence, in the present tense
+  repeated string decided_by = 2;               // user ids
+  google.protobuf.Timestamp decided_at = 3;
+  string because = 4;                           // the reason, when one was given
+  string supersedes_block_id = 5;               // the decision this replaces
+  string thread_root_id = 6;                    // where it was made
+  // Set when something this decision rested on has since changed.
+  bool needs_revisiting = 7;
+  string revisit_note = 8;
+}
+
+// A live block is the real number, not a screenshot of it. Values are filled in by
+// the server when the page is read, so a canvas is never stale about its own data.
+message Live {
+  string kind = 1;      // books.cash | books.overdue | radar.widget | agent.runs | catalog.product
+  string ref = 2;       // which widget, which product; empty when the kind is enough
+  string label = 3;     // what to call it on the page
+  string value = 4;     // server-filled
+  string detail = 5;    // server-filled
+  google.protobuf.Timestamp as_of = 6;
+  string error = 7;     // why it could not be read, in a sentence
+}
+
+message Block {
+  string id = 1;
+  BlockKind kind = 2;
+  string text = 3;
+  int32 depth = 4;              // nesting for bullets and numbers
+  bool checked = 5;             // todo
+  string lang = 6;              // code
+  Decision decision = 7;
+  Live live = 8;
+  string message_id = 9;        // the quoted message
+  string file_id = 10;          // the image
+}
+
+// Where the page came from, and whether it still holds.
+message Source {
+  string kind = 1;              // thread | decision | repo | canvas
+  string ref = 2;               // thread root id, decision id, owner/repo, canvas id
+  string label = 3;             // what to call it
+  google.protobuf.Timestamp seen_at = 4;   // the state of it the page was written from
+  bool changed = 5;
+  string changed_note = 6;      // "9 messages since", "the decision was replaced"
+}
+
+message Canvas {
+  string id = 1;
+  string workspace_id = 2;
+  string channel_id = 3;        // the Tread it belongs to; empty for workspace-wide
+  string title = 4;
+  string icon = 5;              // one emoji
+  repeated Block blocks = 6;
+  repeated Source sources = 7;
+  // 0 is current; 100 is nothing it rests on is still as it was.
+  int32 staleness = 8;
+  // What has moved, in a sentence. Empty when the page is current.
+  string staleness_note = 9;
+  string created_by = 10;
+  google.protobuf.Timestamp created_at = 11;
+  string updated_by = 12;
+  google.protobuf.Timestamp updated_at = 13;
+  int32 version = 14;
+  // Set when the agent wrote or last revised it, so a reader always knows.
+  bool written_by_agent = 15;
+  string summary = 16;          // one line, for lists and search
+}
+
+// A canvas as it appears in a list: no blocks.
+message CanvasSummary {
+  string id = 1;
+  string title = 2;
+  string icon = 3;
+  string channel_id = 4;
+  string summary = 5;
+  int32 staleness = 6;
+  string staleness_note = 7;
+  google.protobuf.Timestamp updated_at = 8;
+  string updated_by = 9;
+  bool written_by_agent = 10;
+  int32 decisions = 11;         // how many decision blocks it holds
+}
+
+message ListCanvasesRequest {
+  string workspace_id = 1;
+  string channel_id = 2;        // empty for every canvas the caller can read
+  bool stale_only = 3;
+}
+message ListCanvasesResponse { repeated CanvasSummary canvases = 1; }
+
+message GetCanvasRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message GetCanvasResponse { Canvas canvas = 1; }
+
+message CreateCanvasRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string title = 3;
+  string icon = 4;
+  repeated Block blocks = 5;
+  repeated Source sources = 6;
+}
+message CreateCanvasResponse { Canvas canvas = 1; }
+
+message UpdateCanvasRequest {
+  string workspace_id = 1;
+  string id = 2;
+  string title = 3;             // empty leaves it
+  string icon = 4;
+  repeated Block blocks = 5;    // the whole page; empty leaves the blocks alone
+  bool set_blocks = 6;          // true to replace the blocks, even with none
+  repeated Source sources = 7;
+  bool set_sources = 8;
+  // The version the editor last read. A mismatch is refused rather than overwritten.
+  int32 base_version = 9;
+}
+message UpdateCanvasResponse { Canvas canvas = 1; }
+
+message DeleteCanvasRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message DeleteCanvasResponse {}
+
+// Write a page from what was actually said. The thread's decisions and the shape of
+// the conversation become the first draft; a person edits from there.
+message WriteFromThreadRequest {
+  string workspace_id = 1;
+  string thread_root_id = 2;
+  string title = 3;             // empty lets the server name it from the thread
+}
+message WriteFromThreadResponse { Canvas canvas = 1; }
+
+// Ask the pages a question and get the passage that answers it.
+message AskRequest {
+  string workspace_id = 1;
+  string question = 2;
+  int32 limit = 3;
+}
+message Answer {
+  string canvas_id = 1;
+  string title = 2;
+  string icon = 3;
+  string passage = 4;           // the part that answers it
+  string block_id = 5;
+  double score = 6;
+}
+message AskResponse {
+  repeated Answer answers = 1;
+  // One sentence over the top when the pages agree on an answer.
+  string summary = 2;
+}
+
+service CanvasService {
+  rpc ListCanvases(ListCanvasesRequest) returns (ListCanvasesResponse);
+  rpc GetCanvas(GetCanvasRequest) returns (GetCanvasResponse);
+  rpc CreateCanvas(CreateCanvasRequest) returns (CreateCanvasResponse);
+  rpc UpdateCanvas(UpdateCanvasRequest) returns (UpdateCanvasResponse);
+  rpc DeleteCanvas(DeleteCanvasRequest) returns (DeleteCanvasResponse);
+  rpc WriteFromThread(WriteFromThreadRequest) returns (WriteFromThreadResponse);
+  rpc Ask(AskRequest) returns (AskResponse);
+}
