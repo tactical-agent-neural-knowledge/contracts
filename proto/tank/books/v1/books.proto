@@ -33,6 +33,12 @@ message Settings {
   repeated string competes_with = 8;
   // How a customer pays: bank details or instructions, printed on the invoice page.
   string payment_instructions = 9;
+  // The business's own Stripe secret key, so money goes to the business, not to TANK.
+  // Write-only: set it to store it, send it empty to leave it alone, and read it back
+  // as the last four characters in stripe_key_hint.
+  string stripe_secret_key = 10;
+  string stripe_key_hint = 11;   // e.g. "…a4F2"; empty when no key is stored
+  bool payments_ready = 12;      // a key is stored, so sent invoices carry a pay link
 }
 
 message Customer {
@@ -78,6 +84,9 @@ message Invoice {
   // A page the customer can open without an account: the invoice, how to pay, and
   // its state. Set once the invoice is sent.
   string share_url = 22;
+  // Where the customer pays by card, when the business has connected Stripe. Minted
+  // when the invoice is sent.
+  string pay_url = 23;
 }
 
 message Payment {
@@ -268,6 +277,33 @@ message Report {
   repeated ReportLine revenue_by_customer = 11;
   string sentence = 12;          // the report in one sentence
 }
+// A receipt, read by the model: what a person would have typed in.
+message ReadReceiptRequest {
+  string workspace_id = 1;
+  string file_id = 2;              // an image or PDF already uploaded to this workspace
+}
+message ReadReceiptResponse {
+  string vendor = 1;
+  string category = 2;
+  int64 amount_cents = 3;
+  google.protobuf.Timestamp at = 4;
+  double confidence = 5;           // 0 to 1; low means ask the person
+  string note = 6;                 // what could not be read, in a sentence
+  string currency = 7;             // as printed on the receipt, when it differs
+}
+
+// Everything in the period as a file an accountant can open.
+message ExportRequest {
+  string workspace_id = 1;
+  string period = 2;               // as in a report
+  string kind = 3;                 // invoices | expenses | journal
+}
+message ExportResponse {
+  string filename = 1;
+  string csv = 2;
+  int32 rows = 3;
+}
+
 message GetReportRequest {
   string workspace_id = 1;
   string period = 2;             // this_month | last_month | this_quarter | this_year | last_30_days (default)
@@ -292,4 +328,6 @@ service BooksService {
   rpc ListBankTransactions(ListBankTransactionsRequest) returns (ListBankTransactionsResponse);
   rpc MatchBankTransaction(MatchBankTransactionRequest) returns (MatchBankTransactionResponse);
   rpc GetReport(GetReportRequest) returns (GetReportResponse);
+  rpc ReadReceipt(ReadReceiptRequest) returns (ReadReceiptResponse);
+  rpc Export(ExportRequest) returns (ExportResponse);
 }

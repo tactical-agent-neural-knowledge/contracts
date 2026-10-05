@@ -82,6 +82,11 @@ const (
 	BooksServiceMatchBankTransactionProcedure = "/tank.books.v1.BooksService/MatchBankTransaction"
 	// BooksServiceGetReportProcedure is the fully-qualified name of the BooksService's GetReport RPC.
 	BooksServiceGetReportProcedure = "/tank.books.v1.BooksService/GetReport"
+	// BooksServiceReadReceiptProcedure is the fully-qualified name of the BooksService's ReadReceipt
+	// RPC.
+	BooksServiceReadReceiptProcedure = "/tank.books.v1.BooksService/ReadReceipt"
+	// BooksServiceExportProcedure is the fully-qualified name of the BooksService's Export RPC.
+	BooksServiceExportProcedure = "/tank.books.v1.BooksService/Export"
 )
 
 // BooksServiceClient is a client for the tank.books.v1.BooksService service.
@@ -103,6 +108,8 @@ type BooksServiceClient interface {
 	ListBankTransactions(context.Context, *connect.Request[v1.ListBankTransactionsRequest]) (*connect.Response[v1.ListBankTransactionsResponse], error)
 	MatchBankTransaction(context.Context, *connect.Request[v1.MatchBankTransactionRequest]) (*connect.Response[v1.MatchBankTransactionResponse], error)
 	GetReport(context.Context, *connect.Request[v1.GetReportRequest]) (*connect.Response[v1.GetReportResponse], error)
+	ReadReceipt(context.Context, *connect.Request[v1.ReadReceiptRequest]) (*connect.Response[v1.ReadReceiptResponse], error)
+	Export(context.Context, *connect.Request[v1.ExportRequest]) (*connect.Response[v1.ExportResponse], error)
 }
 
 // NewBooksServiceClient constructs a client for the tank.books.v1.BooksService service. By default,
@@ -218,6 +225,18 @@ func NewBooksServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(booksServiceMethods.ByName("GetReport")),
 			connect.WithClientOptions(opts...),
 		),
+		readReceipt: connect.NewClient[v1.ReadReceiptRequest, v1.ReadReceiptResponse](
+			httpClient,
+			baseURL+BooksServiceReadReceiptProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("ReadReceipt")),
+			connect.WithClientOptions(opts...),
+		),
+		export: connect.NewClient[v1.ExportRequest, v1.ExportResponse](
+			httpClient,
+			baseURL+BooksServiceExportProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("Export")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -240,6 +259,8 @@ type booksServiceClient struct {
 	listBankTransactions   *connect.Client[v1.ListBankTransactionsRequest, v1.ListBankTransactionsResponse]
 	matchBankTransaction   *connect.Client[v1.MatchBankTransactionRequest, v1.MatchBankTransactionResponse]
 	getReport              *connect.Client[v1.GetReportRequest, v1.GetReportResponse]
+	readReceipt            *connect.Client[v1.ReadReceiptRequest, v1.ReadReceiptResponse]
+	export                 *connect.Client[v1.ExportRequest, v1.ExportResponse]
 }
 
 // GetSettings calls tank.books.v1.BooksService.GetSettings.
@@ -327,6 +348,16 @@ func (c *booksServiceClient) GetReport(ctx context.Context, req *connect.Request
 	return c.getReport.CallUnary(ctx, req)
 }
 
+// ReadReceipt calls tank.books.v1.BooksService.ReadReceipt.
+func (c *booksServiceClient) ReadReceipt(ctx context.Context, req *connect.Request[v1.ReadReceiptRequest]) (*connect.Response[v1.ReadReceiptResponse], error) {
+	return c.readReceipt.CallUnary(ctx, req)
+}
+
+// Export calls tank.books.v1.BooksService.Export.
+func (c *booksServiceClient) Export(ctx context.Context, req *connect.Request[v1.ExportRequest]) (*connect.Response[v1.ExportResponse], error) {
+	return c.export.CallUnary(ctx, req)
+}
+
 // BooksServiceHandler is an implementation of the tank.books.v1.BooksService service.
 type BooksServiceHandler interface {
 	GetSettings(context.Context, *connect.Request[v1.GetSettingsRequest]) (*connect.Response[v1.GetSettingsResponse], error)
@@ -346,6 +377,8 @@ type BooksServiceHandler interface {
 	ListBankTransactions(context.Context, *connect.Request[v1.ListBankTransactionsRequest]) (*connect.Response[v1.ListBankTransactionsResponse], error)
 	MatchBankTransaction(context.Context, *connect.Request[v1.MatchBankTransactionRequest]) (*connect.Response[v1.MatchBankTransactionResponse], error)
 	GetReport(context.Context, *connect.Request[v1.GetReportRequest]) (*connect.Response[v1.GetReportResponse], error)
+	ReadReceipt(context.Context, *connect.Request[v1.ReadReceiptRequest]) (*connect.Response[v1.ReadReceiptResponse], error)
+	Export(context.Context, *connect.Request[v1.ExportRequest]) (*connect.Response[v1.ExportResponse], error)
 }
 
 // NewBooksServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -457,6 +490,18 @@ func NewBooksServiceHandler(svc BooksServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(booksServiceMethods.ByName("GetReport")),
 		connect.WithHandlerOptions(opts...),
 	)
+	booksServiceReadReceiptHandler := connect.NewUnaryHandler(
+		BooksServiceReadReceiptProcedure,
+		svc.ReadReceipt,
+		connect.WithSchema(booksServiceMethods.ByName("ReadReceipt")),
+		connect.WithHandlerOptions(opts...),
+	)
+	booksServiceExportHandler := connect.NewUnaryHandler(
+		BooksServiceExportProcedure,
+		svc.Export,
+		connect.WithSchema(booksServiceMethods.ByName("Export")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.books.v1.BooksService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BooksServiceGetSettingsProcedure:
@@ -493,6 +538,10 @@ func NewBooksServiceHandler(svc BooksServiceHandler, opts ...connect.HandlerOpti
 			booksServiceMatchBankTransactionHandler.ServeHTTP(w, r)
 		case BooksServiceGetReportProcedure:
 			booksServiceGetReportHandler.ServeHTTP(w, r)
+		case BooksServiceReadReceiptProcedure:
+			booksServiceReadReceiptHandler.ServeHTTP(w, r)
+		case BooksServiceExportProcedure:
+			booksServiceExportHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -568,4 +617,12 @@ func (UnimplementedBooksServiceHandler) MatchBankTransaction(context.Context, *c
 
 func (UnimplementedBooksServiceHandler) GetReport(context.Context, *connect.Request[v1.GetReportRequest]) (*connect.Response[v1.GetReportResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.GetReport is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) ReadReceipt(context.Context, *connect.Request[v1.ReadReceiptRequest]) (*connect.Response[v1.ReadReceiptResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.ReadReceipt is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) Export(context.Context, *connect.Request[v1.ExportRequest]) (*connect.Response[v1.ExportResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.Export is not implemented"))
 }
