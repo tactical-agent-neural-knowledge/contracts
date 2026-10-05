@@ -1,0 +1,212 @@
+syntax = "proto3";
+
+package tank.books.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/books/v1;booksv1";
+
+// Neuralbooks: the money side of a small business, kept by an agent inside the
+// workspace. Double entry underneath; the surface is customers, invoices,
+// payments, expenses and a cash summary. Amounts are integer cents in the
+// workspace's currency. Ids are Snowflake ids as strings, like everything else.
+
+enum InvoiceStatus {
+  INVOICE_STATUS_UNSPECIFIED = 0;
+  INVOICE_STATUS_DRAFT = 1;   // written, not sent
+  INVOICE_STATUS_SENT = 2;    // sent, unpaid, not yet due
+  INVOICE_STATUS_OVERDUE = 3; // sent, unpaid, past due
+  INVOICE_STATUS_PAID = 4;    // paid in full
+  INVOICE_STATUS_VOID = 5;    // cancelled; never counted
+}
+
+message Settings {
+  bool enabled = 1;            // Neuralbooks is on for this workspace (premium)
+  string currency = 2;         // ISO 4217, e.g. "USD"
+  string business_name = 3;    // on invoices
+  string invoice_prefix = 4;   // e.g. "INV-"
+  int32 next_invoice_number = 5;
+  int32 default_due_days = 6;  // invoices are due this many days after issue
+  int32 chase_every_days = 7;  // the agent chases an unpaid invoice on this cadence; 0 = never
+}
+
+message Customer {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string notes = 4;
+  google.protobuf.Timestamp created_at = 5;
+  int64 owed_cents = 6;        // open invoices, for the list
+}
+
+message InvoiceLine {
+  string description = 1;
+  double quantity = 2;
+  int64 unit_cents = 3;
+  int64 total_cents = 4;       // quantity × unit, server-computed
+}
+
+message Invoice {
+  string id = 1;
+  string customer_id = 2;
+  string customer_name = 3;
+  string number = 4;           // prefix + sequence, e.g. INV-0007
+  InvoiceStatus status = 5;
+  repeated InvoiceLine lines = 6;
+  int64 subtotal_cents = 7;
+  int64 tax_cents = 8;
+  int64 total_cents = 9;
+  int64 paid_cents = 10;
+  int64 due_cents = 11;        // total − paid
+  google.protobuf.Timestamp issued_at = 12;
+  google.protobuf.Timestamp due_at = 13;
+  google.protobuf.Timestamp sent_at = 14;
+  google.protobuf.Timestamp paid_at = 15;
+  string notes = 16;
+  // Where it came from: the thread it was asked for in, when a person asked the agent.
+  string thread_root_id = 17;
+  // The learning layer's read: when this invoice will actually be paid, and how sure.
+  google.protobuf.Timestamp predicted_paid_at = 18;
+  double predicted_confidence = 19;
+  google.protobuf.Timestamp last_chased_at = 20;
+  int32 chase_count = 21;
+}
+
+message Payment {
+  string id = 1;
+  string invoice_id = 2;
+  int64 amount_cents = 3;
+  google.protobuf.Timestamp at = 4;
+  string method = 5;           // bank, card, cash, other
+  string reference = 6;
+}
+
+message Expense {
+  string id = 1;
+  string vendor = 2;
+  string category = 3;         // e.g. software, travel, supplies
+  int64 amount_cents = 4;
+  google.protobuf.Timestamp at = 5;
+  string notes = 6;
+  string receipt_file_id = 7;  // a TANK file, when it came from a receipt
+  string booked_by = 8;        // user id, or "agent"
+  google.protobuf.Timestamp created_at = 9;
+}
+
+// The numbers a person asks for first, with nothing to click into.
+message CashSummary {
+  google.protobuf.Timestamp as_of = 1;
+  string currency = 2;
+  int64 owed_cents = 3;            // open invoices
+  int64 overdue_cents = 4;         // the part past due
+  int32 open_invoices = 5;
+  int32 overdue_invoices = 6;
+  int64 received_30d_cents = 7;    // payments in the last 30 days
+  int64 spent_30d_cents = 8;       // expenses in the last 30 days
+  int64 expected_30d_cents = 9;    // what the model expects to arrive in the next 30 days
+  int64 expected_6w_cents = 10;    // and in six weeks
+}
+
+message GetSettingsRequest { string workspace_id = 1; }
+message GetSettingsResponse { Settings settings = 1; }
+message UpdateSettingsRequest {
+  string workspace_id = 1;
+  Settings settings = 2;
+}
+message UpdateSettingsResponse { Settings settings = 1; }
+
+message ListCustomersRequest { string workspace_id = 1; }
+message ListCustomersResponse { repeated Customer customers = 1; }
+message UpsertCustomerRequest {
+  string workspace_id = 1;
+  string id = 2;               // empty to create
+  string name = 3;
+  string email = 4;
+  string notes = 5;
+}
+message UpsertCustomerResponse { Customer customer = 1; }
+
+message ListInvoicesRequest {
+  string workspace_id = 1;
+  InvoiceStatus status = 2;    // unspecified = all but void
+  string customer_id = 3;
+}
+message ListInvoicesResponse { repeated Invoice invoices = 1; }
+message GetInvoiceRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message GetInvoiceResponse {
+  Invoice invoice = 1;
+  repeated Payment payments = 2;
+}
+message CreateInvoiceRequest {
+  string workspace_id = 1;
+  string customer_id = 2;      // or customer_name to find-or-create
+  string customer_name = 3;
+  repeated InvoiceLine lines = 4;
+  int64 tax_cents = 5;
+  int32 due_days = 6;          // 0 = the workspace default
+  string notes = 7;
+  string thread_root_id = 8;
+  bool send = 9;               // send on creation
+}
+message CreateInvoiceResponse { Invoice invoice = 1; }
+message SendInvoiceRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message SendInvoiceResponse { Invoice invoice = 1; }
+message RecordPaymentRequest {
+  string workspace_id = 1;
+  string invoice_id = 2;
+  int64 amount_cents = 3;      // 0 = the amount due
+  string method = 4;
+  string reference = 5;
+  google.protobuf.Timestamp at = 6;
+}
+message RecordPaymentResponse {
+  Invoice invoice = 1;
+  Payment payment = 2;
+}
+message VoidInvoiceRequest {
+  string workspace_id = 1;
+  string id = 2;
+  string reason = 3;
+}
+message VoidInvoiceResponse { Invoice invoice = 1; }
+
+message ListExpensesRequest {
+  string workspace_id = 1;
+  int32 days = 2;              // 0 = 90
+}
+message ListExpensesResponse { repeated Expense expenses = 1; }
+message RecordExpenseRequest {
+  string workspace_id = 1;
+  string vendor = 2;
+  string category = 3;
+  int64 amount_cents = 4;
+  google.protobuf.Timestamp at = 5;
+  string notes = 6;
+  string receipt_file_id = 7;
+}
+message RecordExpenseResponse { Expense expense = 1; }
+
+message GetCashSummaryRequest { string workspace_id = 1; }
+message GetCashSummaryResponse { CashSummary summary = 1; }
+
+service BooksService {
+  rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
+  rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
+  rpc ListCustomers(ListCustomersRequest) returns (ListCustomersResponse);
+  rpc UpsertCustomer(UpsertCustomerRequest) returns (UpsertCustomerResponse);
+  rpc ListInvoices(ListInvoicesRequest) returns (ListInvoicesResponse);
+  rpc GetInvoice(GetInvoiceRequest) returns (GetInvoiceResponse);
+  rpc CreateInvoice(CreateInvoiceRequest) returns (CreateInvoiceResponse);
+  rpc SendInvoice(SendInvoiceRequest) returns (SendInvoiceResponse);
+  rpc RecordPayment(RecordPaymentRequest) returns (RecordPaymentResponse);
+  rpc VoidInvoice(VoidInvoiceRequest) returns (VoidInvoiceResponse);
+  rpc ListExpenses(ListExpensesRequest) returns (ListExpensesResponse);
+  rpc RecordExpense(RecordExpenseRequest) returns (RecordExpenseResponse);
+  rpc GetCashSummary(GetCashSummaryRequest) returns (GetCashSummaryResponse);
+}
