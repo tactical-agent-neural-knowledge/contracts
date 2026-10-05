@@ -80,6 +80,9 @@ message Block {
   Table table = 11;
   // For an image: where to fetch it, filled in by the server when the page is read.
   string file_url = 12;
+  // Bumped every time this block is written. Send it back as
+  // UpdateBlockRequest.base_rev and the server can tell an edit from a collision.
+  int32 rev = 13;
 }
 
 // Where the page came from, and whether it still holds.
@@ -196,8 +199,52 @@ message UpdateBlockRequest {
   Block block = 3;                // its id names the block; a new id appends
   bool delete = 4;
   string after_block_id = 5;      // where a new block goes; empty appends
+  // The rev the editor started from. When it no longer matches, the write is a
+  // collision on this one block rather than on the page, and the response says so
+  // instead of throwing the typing away. 0 means "do not check".
+  int32 base_rev = 6;
 }
-message UpdateBlockResponse { Canvas canvas = 1; }
+message UpdateBlockResponse {
+  Canvas canvas = 1;
+  // Someone else changed this block while it was being edited. The page comes back
+  // with their version in it; `theirs` is that block and `conflict_note` is what to
+  // tell the writer. Nothing was overwritten.
+  bool conflict = 2;
+  Block theirs = 3;
+  string conflict_note = 4;
+}
+
+// The decision ledger: every decision block on every page in the workspace, as rows.
+// "What did we decide about X" is a query, not a search, and a decision that has been
+// replaced says so and names its replacement.
+message DecisionRecord {
+  string block_id = 1;
+  string canvas_id = 2;
+  string canvas_title = 3;
+  string canvas_icon = 4;
+  string what = 5;
+  repeated string decided_by = 6;
+  google.protobuf.Timestamp decided_at = 7;
+  string because = 8;
+  string supersedes_block_id = 9;
+  string thread_root_id = 10;
+  bool needs_revisiting = 11;
+  string revisit_note = 12;
+  // Filled in when a later decision names this one as the one it replaces.
+  bool superseded = 13;
+  string superseded_by_block_id = 14;
+  string superseded_by_what = 15;
+  google.protobuf.Timestamp superseded_at = 16;
+}
+
+message ListDecisionsRequest {
+  string workspace_id = 1;
+  string query = 2;               // free text; empty lists the most recent
+  bool include_superseded = 3;    // default: only what still stands
+  string canvas_id = 4;           // one page's decisions; empty is the workspace
+  int32 limit = 5;
+}
+message ListDecisionsResponse { repeated DecisionRecord decisions = 1; }
 
 message Template {
   string name = 1;                // what to pass as CreateCanvasRequest.template
@@ -251,4 +298,5 @@ service CanvasService {
   rpc Ask(AskRequest) returns (AskResponse);
   rpc UpdateBlock(UpdateBlockRequest) returns (UpdateBlockResponse);
   rpc ListTemplates(ListTemplatesRequest) returns (ListTemplatesResponse);
+  rpc ListDecisions(ListDecisionsRequest) returns (ListDecisionsResponse);
 }

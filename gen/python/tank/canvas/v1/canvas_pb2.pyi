@@ -91,7 +91,7 @@ class Live(_message.Message):
     def __init__(self, kind: _Optional[str] = ..., ref: _Optional[str] = ..., label: _Optional[str] = ..., value: _Optional[str] = ..., detail: _Optional[str] = ..., as_of: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[str] = ...) -> None: ...
 
 class Block(_message.Message):
-    __slots__ = ("id", "kind", "text", "depth", "checked", "lang", "decision", "live", "message_id", "file_id", "table", "file_url")
+    __slots__ = ("id", "kind", "text", "depth", "checked", "lang", "decision", "live", "message_id", "file_id", "table", "file_url", "rev")
     ID_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
@@ -104,6 +104,7 @@ class Block(_message.Message):
     FILE_ID_FIELD_NUMBER: _ClassVar[int]
     TABLE_FIELD_NUMBER: _ClassVar[int]
     FILE_URL_FIELD_NUMBER: _ClassVar[int]
+    REV_FIELD_NUMBER: _ClassVar[int]
     id: str
     kind: BlockKind
     text: str
@@ -116,7 +117,8 @@ class Block(_message.Message):
     file_id: str
     table: Table
     file_url: str
-    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[BlockKind, str]] = ..., text: _Optional[str] = ..., depth: _Optional[int] = ..., checked: bool = ..., lang: _Optional[str] = ..., decision: _Optional[_Union[Decision, _Mapping]] = ..., live: _Optional[_Union[Live, _Mapping]] = ..., message_id: _Optional[str] = ..., file_id: _Optional[str] = ..., table: _Optional[_Union[Table, _Mapping]] = ..., file_url: _Optional[str] = ...) -> None: ...
+    rev: int
+    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[BlockKind, str]] = ..., text: _Optional[str] = ..., depth: _Optional[int] = ..., checked: bool = ..., lang: _Optional[str] = ..., decision: _Optional[_Union[Decision, _Mapping]] = ..., live: _Optional[_Union[Live, _Mapping]] = ..., message_id: _Optional[str] = ..., file_id: _Optional[str] = ..., table: _Optional[_Union[Table, _Mapping]] = ..., file_url: _Optional[str] = ..., rev: _Optional[int] = ...) -> None: ...
 
 class Source(_message.Message):
     __slots__ = ("kind", "ref", "label", "seen_at", "changed", "changed_note")
@@ -305,24 +307,88 @@ class DeleteCanvasResponse(_message.Message):
     def __init__(self) -> None: ...
 
 class UpdateBlockRequest(_message.Message):
-    __slots__ = ("workspace_id", "canvas_id", "block", "delete", "after_block_id")
+    __slots__ = ("workspace_id", "canvas_id", "block", "delete", "after_block_id", "base_rev")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
     BLOCK_FIELD_NUMBER: _ClassVar[int]
     DELETE_FIELD_NUMBER: _ClassVar[int]
     AFTER_BLOCK_ID_FIELD_NUMBER: _ClassVar[int]
+    BASE_REV_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     canvas_id: str
     block: Block
     delete: bool
     after_block_id: str
-    def __init__(self, workspace_id: _Optional[str] = ..., canvas_id: _Optional[str] = ..., block: _Optional[_Union[Block, _Mapping]] = ..., delete: bool = ..., after_block_id: _Optional[str] = ...) -> None: ...
+    base_rev: int
+    def __init__(self, workspace_id: _Optional[str] = ..., canvas_id: _Optional[str] = ..., block: _Optional[_Union[Block, _Mapping]] = ..., delete: bool = ..., after_block_id: _Optional[str] = ..., base_rev: _Optional[int] = ...) -> None: ...
 
 class UpdateBlockResponse(_message.Message):
-    __slots__ = ("canvas",)
+    __slots__ = ("canvas", "conflict", "theirs", "conflict_note")
     CANVAS_FIELD_NUMBER: _ClassVar[int]
+    CONFLICT_FIELD_NUMBER: _ClassVar[int]
+    THEIRS_FIELD_NUMBER: _ClassVar[int]
+    CONFLICT_NOTE_FIELD_NUMBER: _ClassVar[int]
     canvas: Canvas
-    def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ...) -> None: ...
+    conflict: bool
+    theirs: Block
+    conflict_note: str
+    def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ..., conflict: bool = ..., theirs: _Optional[_Union[Block, _Mapping]] = ..., conflict_note: _Optional[str] = ...) -> None: ...
+
+class DecisionRecord(_message.Message):
+    __slots__ = ("block_id", "canvas_id", "canvas_title", "canvas_icon", "what", "decided_by", "decided_at", "because", "supersedes_block_id", "thread_root_id", "needs_revisiting", "revisit_note", "superseded", "superseded_by_block_id", "superseded_by_what", "superseded_at")
+    BLOCK_ID_FIELD_NUMBER: _ClassVar[int]
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    CANVAS_TITLE_FIELD_NUMBER: _ClassVar[int]
+    CANVAS_ICON_FIELD_NUMBER: _ClassVar[int]
+    WHAT_FIELD_NUMBER: _ClassVar[int]
+    DECIDED_BY_FIELD_NUMBER: _ClassVar[int]
+    DECIDED_AT_FIELD_NUMBER: _ClassVar[int]
+    BECAUSE_FIELD_NUMBER: _ClassVar[int]
+    SUPERSEDES_BLOCK_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    NEEDS_REVISITING_FIELD_NUMBER: _ClassVar[int]
+    REVISIT_NOTE_FIELD_NUMBER: _ClassVar[int]
+    SUPERSEDED_FIELD_NUMBER: _ClassVar[int]
+    SUPERSEDED_BY_BLOCK_ID_FIELD_NUMBER: _ClassVar[int]
+    SUPERSEDED_BY_WHAT_FIELD_NUMBER: _ClassVar[int]
+    SUPERSEDED_AT_FIELD_NUMBER: _ClassVar[int]
+    block_id: str
+    canvas_id: str
+    canvas_title: str
+    canvas_icon: str
+    what: str
+    decided_by: _containers.RepeatedScalarFieldContainer[str]
+    decided_at: _timestamp_pb2.Timestamp
+    because: str
+    supersedes_block_id: str
+    thread_root_id: str
+    needs_revisiting: bool
+    revisit_note: str
+    superseded: bool
+    superseded_by_block_id: str
+    superseded_by_what: str
+    superseded_at: _timestamp_pb2.Timestamp
+    def __init__(self, block_id: _Optional[str] = ..., canvas_id: _Optional[str] = ..., canvas_title: _Optional[str] = ..., canvas_icon: _Optional[str] = ..., what: _Optional[str] = ..., decided_by: _Optional[_Iterable[str]] = ..., decided_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., because: _Optional[str] = ..., supersedes_block_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., needs_revisiting: bool = ..., revisit_note: _Optional[str] = ..., superseded: bool = ..., superseded_by_block_id: _Optional[str] = ..., superseded_by_what: _Optional[str] = ..., superseded_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ListDecisionsRequest(_message.Message):
+    __slots__ = ("workspace_id", "query", "include_superseded", "canvas_id", "limit")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    QUERY_FIELD_NUMBER: _ClassVar[int]
+    INCLUDE_SUPERSEDED_FIELD_NUMBER: _ClassVar[int]
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    query: str
+    include_superseded: bool
+    canvas_id: str
+    limit: int
+    def __init__(self, workspace_id: _Optional[str] = ..., query: _Optional[str] = ..., include_superseded: bool = ..., canvas_id: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListDecisionsResponse(_message.Message):
+    __slots__ = ("decisions",)
+    DECISIONS_FIELD_NUMBER: _ClassVar[int]
+    decisions: _containers.RepeatedCompositeFieldContainer[DecisionRecord]
+    def __init__(self, decisions: _Optional[_Iterable[_Union[DecisionRecord, _Mapping]]] = ...) -> None: ...
 
 class Template(_message.Message):
     __slots__ = ("name", "title", "icon", "about")

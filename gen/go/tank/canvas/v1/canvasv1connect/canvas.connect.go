@@ -58,6 +58,9 @@ const (
 	// CanvasServiceListTemplatesProcedure is the fully-qualified name of the CanvasService's
 	// ListTemplates RPC.
 	CanvasServiceListTemplatesProcedure = "/tank.canvas.v1.CanvasService/ListTemplates"
+	// CanvasServiceListDecisionsProcedure is the fully-qualified name of the CanvasService's
+	// ListDecisions RPC.
+	CanvasServiceListDecisionsProcedure = "/tank.canvas.v1.CanvasService/ListDecisions"
 )
 
 // CanvasServiceClient is a client for the tank.canvas.v1.CanvasService service.
@@ -71,6 +74,7 @@ type CanvasServiceClient interface {
 	Ask(context.Context, *connect.Request[v1.AskRequest]) (*connect.Response[v1.AskResponse], error)
 	UpdateBlock(context.Context, *connect.Request[v1.UpdateBlockRequest]) (*connect.Response[v1.UpdateBlockResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
+	ListDecisions(context.Context, *connect.Request[v1.ListDecisionsRequest]) (*connect.Response[v1.ListDecisionsResponse], error)
 }
 
 // NewCanvasServiceClient constructs a client for the tank.canvas.v1.CanvasService service. By
@@ -138,6 +142,12 @@ func NewCanvasServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(canvasServiceMethods.ByName("ListTemplates")),
 			connect.WithClientOptions(opts...),
 		),
+		listDecisions: connect.NewClient[v1.ListDecisionsRequest, v1.ListDecisionsResponse](
+			httpClient,
+			baseURL+CanvasServiceListDecisionsProcedure,
+			connect.WithSchema(canvasServiceMethods.ByName("ListDecisions")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -152,6 +162,7 @@ type canvasServiceClient struct {
 	ask             *connect.Client[v1.AskRequest, v1.AskResponse]
 	updateBlock     *connect.Client[v1.UpdateBlockRequest, v1.UpdateBlockResponse]
 	listTemplates   *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
+	listDecisions   *connect.Client[v1.ListDecisionsRequest, v1.ListDecisionsResponse]
 }
 
 // ListCanvases calls tank.canvas.v1.CanvasService.ListCanvases.
@@ -199,6 +210,11 @@ func (c *canvasServiceClient) ListTemplates(ctx context.Context, req *connect.Re
 	return c.listTemplates.CallUnary(ctx, req)
 }
 
+// ListDecisions calls tank.canvas.v1.CanvasService.ListDecisions.
+func (c *canvasServiceClient) ListDecisions(ctx context.Context, req *connect.Request[v1.ListDecisionsRequest]) (*connect.Response[v1.ListDecisionsResponse], error) {
+	return c.listDecisions.CallUnary(ctx, req)
+}
+
 // CanvasServiceHandler is an implementation of the tank.canvas.v1.CanvasService service.
 type CanvasServiceHandler interface {
 	ListCanvases(context.Context, *connect.Request[v1.ListCanvasesRequest]) (*connect.Response[v1.ListCanvasesResponse], error)
@@ -210,6 +226,7 @@ type CanvasServiceHandler interface {
 	Ask(context.Context, *connect.Request[v1.AskRequest]) (*connect.Response[v1.AskResponse], error)
 	UpdateBlock(context.Context, *connect.Request[v1.UpdateBlockRequest]) (*connect.Response[v1.UpdateBlockResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
+	ListDecisions(context.Context, *connect.Request[v1.ListDecisionsRequest]) (*connect.Response[v1.ListDecisionsResponse], error)
 }
 
 // NewCanvasServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -273,6 +290,12 @@ func NewCanvasServiceHandler(svc CanvasServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(canvasServiceMethods.ByName("ListTemplates")),
 		connect.WithHandlerOptions(opts...),
 	)
+	canvasServiceListDecisionsHandler := connect.NewUnaryHandler(
+		CanvasServiceListDecisionsProcedure,
+		svc.ListDecisions,
+		connect.WithSchema(canvasServiceMethods.ByName("ListDecisions")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.canvas.v1.CanvasService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case CanvasServiceListCanvasesProcedure:
@@ -293,6 +316,8 @@ func NewCanvasServiceHandler(svc CanvasServiceHandler, opts ...connect.HandlerOp
 			canvasServiceUpdateBlockHandler.ServeHTTP(w, r)
 		case CanvasServiceListTemplatesProcedure:
 			canvasServiceListTemplatesHandler.ServeHTTP(w, r)
+		case CanvasServiceListDecisionsProcedure:
+			canvasServiceListDecisionsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -336,4 +361,8 @@ func (UnimplementedCanvasServiceHandler) UpdateBlock(context.Context, *connect.R
 
 func (UnimplementedCanvasServiceHandler) ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.canvas.v1.CanvasService.ListTemplates is not implemented"))
+}
+
+func (UnimplementedCanvasServiceHandler) ListDecisions(context.Context, *connect.Request[v1.ListDecisionsRequest]) (*connect.Response[v1.ListDecisionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.canvas.v1.CanvasService.ListDecisions is not implemented"))
 }

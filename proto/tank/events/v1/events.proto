@@ -7,6 +7,7 @@ import "google/protobuf/timestamp.proto";
 import "tank/admin/v1/admin.proto";
 import "tank/agent/v1/agent.proto";
 import "tank/blocks/v1/blocks.proto";
+import "tank/canvas/v1/canvas.proto";
 import "tank/channel/v1/channel.proto";
 import "tank/files/v1/files.proto";
 import "tank/huddle/v1/huddle.proto";
@@ -253,4 +254,33 @@ message MonitorWidgetUpdated {
 message MonitorWidgetAlert {
   tank.monitor.v1.Widget widget = 1;
   tank.monitor.v1.Health previous = 2;
+}
+
+// canvas.block.changed on evt.{ws}.canvas.{canvas}: one block of a page was
+// written, inserted or removed. A client with that page open applies just that
+// block, which is why two people writing in different paragraphs see each other's
+// work arrive instead of being told to reload.
+message CanvasBlockChanged {
+  string canvas_id = 1;
+  tank.canvas.v1.Block block = 2;
+  string after_block_id = 3;
+  bool deleted = 4;
+  string actor_id = 5;
+  int32 version = 6;              // the page version after the write
+}
+
+// canvas.changed on the same subject: the page's own fields moved (title, icon,
+// sources, parent). Sent instead of a block change when the write was not a block.
+message CanvasChanged {
+  tank.canvas.v1.Canvas canvas = 1;
+  string actor_id = 2;
+}
+
+// Ephemeral, on typ.{ws}.canvas.{canvas}: who is in this page and where. Never
+// stored. An empty block_id means "on the page but not in a block".
+message CanvasEditing {
+  string canvas_id = 1;
+  string user_id = 2;
+  string block_id = 3;
+  bool left = 4;
 }

@@ -3,6 +3,7 @@ from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from tank.admin.v1 import admin_pb2 as _admin_pb2
 from tank.agent.v1 import agent_pb2 as _agent_pb2
 from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
+from tank.canvas.v1 import canvas_pb2 as _canvas_pb2
 from tank.channel.v1 import channel_pb2 as _channel_pb2
 from tank.files.v1 import files_pb2 as _files_pb2
 from tank.huddle.v1 import huddle_pb2 as _huddle_pb2
@@ -385,3 +386,39 @@ class MonitorWidgetAlert(_message.Message):
     widget: _monitor_pb2.Widget
     previous: _monitor_pb2.Health
     def __init__(self, widget: _Optional[_Union[_monitor_pb2.Widget, _Mapping]] = ..., previous: _Optional[_Union[_monitor_pb2.Health, str]] = ...) -> None: ...
+
+class CanvasBlockChanged(_message.Message):
+    __slots__ = ("canvas_id", "block", "after_block_id", "deleted", "actor_id", "version")
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    BLOCK_FIELD_NUMBER: _ClassVar[int]
+    AFTER_BLOCK_ID_FIELD_NUMBER: _ClassVar[int]
+    DELETED_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    canvas_id: str
+    block: _canvas_pb2.Block
+    after_block_id: str
+    deleted: bool
+    actor_id: str
+    version: int
+    def __init__(self, canvas_id: _Optional[str] = ..., block: _Optional[_Union[_canvas_pb2.Block, _Mapping]] = ..., after_block_id: _Optional[str] = ..., deleted: bool = ..., actor_id: _Optional[str] = ..., version: _Optional[int] = ...) -> None: ...
+
+class CanvasChanged(_message.Message):
+    __slots__ = ("canvas", "actor_id")
+    CANVAS_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    canvas: _canvas_pb2.Canvas
+    actor_id: str
+    def __init__(self, canvas: _Optional[_Union[_canvas_pb2.Canvas, _Mapping]] = ..., actor_id: _Optional[str] = ...) -> None: ...
+
+class CanvasEditing(_message.Message):
+    __slots__ = ("canvas_id", "user_id", "block_id", "left")
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    BLOCK_ID_FIELD_NUMBER: _ClassVar[int]
+    LEFT_FIELD_NUMBER: _ClassVar[int]
+    canvas_id: str
+    user_id: str
+    block_id: str
+    left: bool
+    def __init__(self, canvas_id: _Optional[str] = ..., user_id: _Optional[str] = ..., block_id: _Optional[str] = ..., left: bool = ...) -> None: ...
