@@ -6,6 +6,7 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "tank/agent/v1/agent.proto";
 import "tank/blocks/v1/blocks.proto";
+import "tank/books/v1/books.proto";
 
 // Runner <-> control-plane contract. The in-sandbox agent runner talks only to
 // agent-control (never to the messaging core directly): every thread post, card
@@ -303,6 +304,40 @@ message RecordFindingRequest {
 }
 message RecordFindingResponse {}
 
+// Neuralbooks, from the thread. The run acts as the workspace's agent: the same
+// service a person uses from the page, with the same checks.
+message BooksSummaryRequest {}
+message BooksSummaryResponse {
+  bool enabled = 1;                              // false: say so and stop; nothing else is set
+  tank.books.v1.CashSummary summary = 2;
+  repeated tank.books.v1.Invoice open_invoices = 3;
+  repeated tank.books.v1.Customer customers = 4;
+}
+message BooksCreateInvoiceRequest {
+  string customer_name = 1;                      // found or created, case-insensitively
+  repeated tank.books.v1.InvoiceLine lines = 2;  // description, quantity, unit_cents
+  int64 tax_cents = 3;
+  int32 due_days = 4;                            // 0 = the workspace default
+  string notes = 5;
+  bool send = 6;
+}
+message BooksCreateInvoiceResponse { tank.books.v1.Invoice invoice = 1; }
+message BooksRecordExpenseRequest {
+  string vendor = 1;
+  string category = 2;
+  int64 amount_cents = 3;
+  string notes = 4;
+  string receipt_file_id = 5;                    // from list_attachments, when it came from a receipt
+}
+message BooksRecordExpenseResponse { tank.books.v1.Expense expense = 1; }
+message BooksRecordPaymentRequest {
+  string invoice_number = 1;                     // e.g. INV-0007
+  int64 amount_cents = 2;                        // 0 = what is still due
+  string method = 3;
+  string reference = 4;
+}
+message BooksRecordPaymentResponse { tank.books.v1.Invoice invoice = 1; }
+
 // --------------------------------------------------------------------- GitHub
 
 message OpenPullRequestRequest {
@@ -517,6 +552,10 @@ service RunnerService {
   rpc SetBrand(SetBrandRequest) returns (SetBrandResponse);
   rpc SetLanding(SetLandingRequest) returns (SetLandingResponse);
   rpc RecordFinding(RecordFindingRequest) returns (RecordFindingResponse);
+  rpc BooksSummary(BooksSummaryRequest) returns (BooksSummaryResponse);
+  rpc BooksCreateInvoice(BooksCreateInvoiceRequest) returns (BooksCreateInvoiceResponse);
+  rpc BooksRecordExpense(BooksRecordExpenseRequest) returns (BooksRecordExpenseResponse);
+  rpc BooksRecordPayment(BooksRecordPaymentRequest) returns (BooksRecordPaymentResponse);
   rpc PollInbox(PollInboxRequest) returns (PollInboxResponse);
 
   rpc OpenPullRequest(OpenPullRequestRequest) returns (OpenPullRequestResponse);

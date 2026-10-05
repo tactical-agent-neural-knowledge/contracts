@@ -81,6 +81,18 @@ const (
 	// RunnerServiceRecordFindingProcedure is the fully-qualified name of the RunnerService's
 	// RecordFinding RPC.
 	RunnerServiceRecordFindingProcedure = "/tank.agentctl.v1.RunnerService/RecordFinding"
+	// RunnerServiceBooksSummaryProcedure is the fully-qualified name of the RunnerService's
+	// BooksSummary RPC.
+	RunnerServiceBooksSummaryProcedure = "/tank.agentctl.v1.RunnerService/BooksSummary"
+	// RunnerServiceBooksCreateInvoiceProcedure is the fully-qualified name of the RunnerService's
+	// BooksCreateInvoice RPC.
+	RunnerServiceBooksCreateInvoiceProcedure = "/tank.agentctl.v1.RunnerService/BooksCreateInvoice"
+	// RunnerServiceBooksRecordExpenseProcedure is the fully-qualified name of the RunnerService's
+	// BooksRecordExpense RPC.
+	RunnerServiceBooksRecordExpenseProcedure = "/tank.agentctl.v1.RunnerService/BooksRecordExpense"
+	// RunnerServiceBooksRecordPaymentProcedure is the fully-qualified name of the RunnerService's
+	// BooksRecordPayment RPC.
+	RunnerServiceBooksRecordPaymentProcedure = "/tank.agentctl.v1.RunnerService/BooksRecordPayment"
 	// RunnerServicePollInboxProcedure is the fully-qualified name of the RunnerService's PollInbox RPC.
 	RunnerServicePollInboxProcedure = "/tank.agentctl.v1.RunnerService/PollInbox"
 	// RunnerServiceOpenPullRequestProcedure is the fully-qualified name of the RunnerService's
@@ -173,6 +185,10 @@ type RunnerServiceClient interface {
 	SetBrand(context.Context, *connect.Request[v1.SetBrandRequest]) (*connect.Response[v1.SetBrandResponse], error)
 	SetLanding(context.Context, *connect.Request[v1.SetLandingRequest]) (*connect.Response[v1.SetLandingResponse], error)
 	RecordFinding(context.Context, *connect.Request[v1.RecordFindingRequest]) (*connect.Response[v1.RecordFindingResponse], error)
+	BooksSummary(context.Context, *connect.Request[v1.BooksSummaryRequest]) (*connect.Response[v1.BooksSummaryResponse], error)
+	BooksCreateInvoice(context.Context, *connect.Request[v1.BooksCreateInvoiceRequest]) (*connect.Response[v1.BooksCreateInvoiceResponse], error)
+	BooksRecordExpense(context.Context, *connect.Request[v1.BooksRecordExpenseRequest]) (*connect.Response[v1.BooksRecordExpenseResponse], error)
+	BooksRecordPayment(context.Context, *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -296,6 +312,30 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("RecordFinding")),
 			connect.WithClientOptions(opts...),
 		),
+		booksSummary: connect.NewClient[v1.BooksSummaryRequest, v1.BooksSummaryResponse](
+			httpClient,
+			baseURL+RunnerServiceBooksSummaryProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("BooksSummary")),
+			connect.WithClientOptions(opts...),
+		),
+		booksCreateInvoice: connect.NewClient[v1.BooksCreateInvoiceRequest, v1.BooksCreateInvoiceResponse](
+			httpClient,
+			baseURL+RunnerServiceBooksCreateInvoiceProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("BooksCreateInvoice")),
+			connect.WithClientOptions(opts...),
+		),
+		booksRecordExpense: connect.NewClient[v1.BooksRecordExpenseRequest, v1.BooksRecordExpenseResponse](
+			httpClient,
+			baseURL+RunnerServiceBooksRecordExpenseProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("BooksRecordExpense")),
+			connect.WithClientOptions(opts...),
+		),
+		booksRecordPayment: connect.NewClient[v1.BooksRecordPaymentRequest, v1.BooksRecordPaymentResponse](
+			httpClient,
+			baseURL+RunnerServiceBooksRecordPaymentProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("BooksRecordPayment")),
+			connect.WithClientOptions(opts...),
+		),
 		pollInbox: connect.NewClient[v1.PollInboxRequest, v1.PollInboxResponse](
 			httpClient,
 			baseURL+RunnerServicePollInboxProcedure,
@@ -389,6 +429,10 @@ type runnerServiceClient struct {
 	setBrand                 *connect.Client[v1.SetBrandRequest, v1.SetBrandResponse]
 	setLanding               *connect.Client[v1.SetLandingRequest, v1.SetLandingResponse]
 	recordFinding            *connect.Client[v1.RecordFindingRequest, v1.RecordFindingResponse]
+	booksSummary             *connect.Client[v1.BooksSummaryRequest, v1.BooksSummaryResponse]
+	booksCreateInvoice       *connect.Client[v1.BooksCreateInvoiceRequest, v1.BooksCreateInvoiceResponse]
+	booksRecordExpense       *connect.Client[v1.BooksRecordExpenseRequest, v1.BooksRecordExpenseResponse]
+	booksRecordPayment       *connect.Client[v1.BooksRecordPaymentRequest, v1.BooksRecordPaymentResponse]
 	pollInbox                *connect.Client[v1.PollInboxRequest, v1.PollInboxResponse]
 	openPullRequest          *connect.Client[v1.OpenPullRequestRequest, v1.OpenPullRequestResponse]
 	requestCiWatch           *connect.Client[v1.RequestCiWatchRequest, v1.RequestCiWatchResponse]
@@ -483,6 +527,26 @@ func (c *runnerServiceClient) RecordFinding(ctx context.Context, req *connect.Re
 	return c.recordFinding.CallUnary(ctx, req)
 }
 
+// BooksSummary calls tank.agentctl.v1.RunnerService.BooksSummary.
+func (c *runnerServiceClient) BooksSummary(ctx context.Context, req *connect.Request[v1.BooksSummaryRequest]) (*connect.Response[v1.BooksSummaryResponse], error) {
+	return c.booksSummary.CallUnary(ctx, req)
+}
+
+// BooksCreateInvoice calls tank.agentctl.v1.RunnerService.BooksCreateInvoice.
+func (c *runnerServiceClient) BooksCreateInvoice(ctx context.Context, req *connect.Request[v1.BooksCreateInvoiceRequest]) (*connect.Response[v1.BooksCreateInvoiceResponse], error) {
+	return c.booksCreateInvoice.CallUnary(ctx, req)
+}
+
+// BooksRecordExpense calls tank.agentctl.v1.RunnerService.BooksRecordExpense.
+func (c *runnerServiceClient) BooksRecordExpense(ctx context.Context, req *connect.Request[v1.BooksRecordExpenseRequest]) (*connect.Response[v1.BooksRecordExpenseResponse], error) {
+	return c.booksRecordExpense.CallUnary(ctx, req)
+}
+
+// BooksRecordPayment calls tank.agentctl.v1.RunnerService.BooksRecordPayment.
+func (c *runnerServiceClient) BooksRecordPayment(ctx context.Context, req *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error) {
+	return c.booksRecordPayment.CallUnary(ctx, req)
+}
+
 // PollInbox calls tank.agentctl.v1.RunnerService.PollInbox.
 func (c *runnerServiceClient) PollInbox(ctx context.Context, req *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error) {
 	return c.pollInbox.CallUnary(ctx, req)
@@ -561,6 +625,10 @@ type RunnerServiceHandler interface {
 	SetBrand(context.Context, *connect.Request[v1.SetBrandRequest]) (*connect.Response[v1.SetBrandResponse], error)
 	SetLanding(context.Context, *connect.Request[v1.SetLandingRequest]) (*connect.Response[v1.SetLandingResponse], error)
 	RecordFinding(context.Context, *connect.Request[v1.RecordFindingRequest]) (*connect.Response[v1.RecordFindingResponse], error)
+	BooksSummary(context.Context, *connect.Request[v1.BooksSummaryRequest]) (*connect.Response[v1.BooksSummaryResponse], error)
+	BooksCreateInvoice(context.Context, *connect.Request[v1.BooksCreateInvoiceRequest]) (*connect.Response[v1.BooksCreateInvoiceResponse], error)
+	BooksRecordExpense(context.Context, *connect.Request[v1.BooksRecordExpenseRequest]) (*connect.Response[v1.BooksRecordExpenseResponse], error)
+	BooksRecordPayment(context.Context, *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -680,6 +748,30 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("RecordFinding")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceBooksSummaryHandler := connect.NewUnaryHandler(
+		RunnerServiceBooksSummaryProcedure,
+		svc.BooksSummary,
+		connect.WithSchema(runnerServiceMethods.ByName("BooksSummary")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceBooksCreateInvoiceHandler := connect.NewUnaryHandler(
+		RunnerServiceBooksCreateInvoiceProcedure,
+		svc.BooksCreateInvoice,
+		connect.WithSchema(runnerServiceMethods.ByName("BooksCreateInvoice")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceBooksRecordExpenseHandler := connect.NewUnaryHandler(
+		RunnerServiceBooksRecordExpenseProcedure,
+		svc.BooksRecordExpense,
+		connect.WithSchema(runnerServiceMethods.ByName("BooksRecordExpense")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceBooksRecordPaymentHandler := connect.NewUnaryHandler(
+		RunnerServiceBooksRecordPaymentProcedure,
+		svc.BooksRecordPayment,
+		connect.WithSchema(runnerServiceMethods.ByName("BooksRecordPayment")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServicePollInboxHandler := connect.NewUnaryHandler(
 		RunnerServicePollInboxProcedure,
 		svc.PollInbox,
@@ -786,6 +878,14 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceSetLandingHandler.ServeHTTP(w, r)
 		case RunnerServiceRecordFindingProcedure:
 			runnerServiceRecordFindingHandler.ServeHTTP(w, r)
+		case RunnerServiceBooksSummaryProcedure:
+			runnerServiceBooksSummaryHandler.ServeHTTP(w, r)
+		case RunnerServiceBooksCreateInvoiceProcedure:
+			runnerServiceBooksCreateInvoiceHandler.ServeHTTP(w, r)
+		case RunnerServiceBooksRecordExpenseProcedure:
+			runnerServiceBooksRecordExpenseHandler.ServeHTTP(w, r)
+		case RunnerServiceBooksRecordPaymentProcedure:
+			runnerServiceBooksRecordPaymentHandler.ServeHTTP(w, r)
 		case RunnerServicePollInboxProcedure:
 			runnerServicePollInboxHandler.ServeHTTP(w, r)
 		case RunnerServiceOpenPullRequestProcedure:
@@ -881,6 +981,22 @@ func (UnimplementedRunnerServiceHandler) SetLanding(context.Context, *connect.Re
 
 func (UnimplementedRunnerServiceHandler) RecordFinding(context.Context, *connect.Request[v1.RecordFindingRequest]) (*connect.Response[v1.RecordFindingResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.RecordFinding is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) BooksSummary(context.Context, *connect.Request[v1.BooksSummaryRequest]) (*connect.Response[v1.BooksSummaryResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BooksSummary is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) BooksCreateInvoice(context.Context, *connect.Request[v1.BooksCreateInvoiceRequest]) (*connect.Response[v1.BooksCreateInvoiceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BooksCreateInvoice is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) BooksRecordExpense(context.Context, *connect.Request[v1.BooksRecordExpenseRequest]) (*connect.Response[v1.BooksRecordExpenseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BooksRecordExpense is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) BooksRecordPayment(context.Context, *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BooksRecordPayment is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error) {

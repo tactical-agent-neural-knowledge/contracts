@@ -2,6 +2,7 @@ from google.protobuf import struct_pb2 as _struct_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from tank.agent.v1 import agent_pb2 as _agent_pb2
 from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
+from tank.books.v1 import books_pb2 as _books_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
@@ -476,6 +477,82 @@ class RecordFindingRequest(_message.Message):
 class RecordFindingResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class BooksSummaryRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class BooksSummaryResponse(_message.Message):
+    __slots__ = ("enabled", "summary", "open_invoices", "customers")
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    SUMMARY_FIELD_NUMBER: _ClassVar[int]
+    OPEN_INVOICES_FIELD_NUMBER: _ClassVar[int]
+    CUSTOMERS_FIELD_NUMBER: _ClassVar[int]
+    enabled: bool
+    summary: _books_pb2.CashSummary
+    open_invoices: _containers.RepeatedCompositeFieldContainer[_books_pb2.Invoice]
+    customers: _containers.RepeatedCompositeFieldContainer[_books_pb2.Customer]
+    def __init__(self, enabled: bool = ..., summary: _Optional[_Union[_books_pb2.CashSummary, _Mapping]] = ..., open_invoices: _Optional[_Iterable[_Union[_books_pb2.Invoice, _Mapping]]] = ..., customers: _Optional[_Iterable[_Union[_books_pb2.Customer, _Mapping]]] = ...) -> None: ...
+
+class BooksCreateInvoiceRequest(_message.Message):
+    __slots__ = ("customer_name", "lines", "tax_cents", "due_days", "notes", "send")
+    CUSTOMER_NAME_FIELD_NUMBER: _ClassVar[int]
+    LINES_FIELD_NUMBER: _ClassVar[int]
+    TAX_CENTS_FIELD_NUMBER: _ClassVar[int]
+    DUE_DAYS_FIELD_NUMBER: _ClassVar[int]
+    NOTES_FIELD_NUMBER: _ClassVar[int]
+    SEND_FIELD_NUMBER: _ClassVar[int]
+    customer_name: str
+    lines: _containers.RepeatedCompositeFieldContainer[_books_pb2.InvoiceLine]
+    tax_cents: int
+    due_days: int
+    notes: str
+    send: bool
+    def __init__(self, customer_name: _Optional[str] = ..., lines: _Optional[_Iterable[_Union[_books_pb2.InvoiceLine, _Mapping]]] = ..., tax_cents: _Optional[int] = ..., due_days: _Optional[int] = ..., notes: _Optional[str] = ..., send: bool = ...) -> None: ...
+
+class BooksCreateInvoiceResponse(_message.Message):
+    __slots__ = ("invoice",)
+    INVOICE_FIELD_NUMBER: _ClassVar[int]
+    invoice: _books_pb2.Invoice
+    def __init__(self, invoice: _Optional[_Union[_books_pb2.Invoice, _Mapping]] = ...) -> None: ...
+
+class BooksRecordExpenseRequest(_message.Message):
+    __slots__ = ("vendor", "category", "amount_cents", "notes", "receipt_file_id")
+    VENDOR_FIELD_NUMBER: _ClassVar[int]
+    CATEGORY_FIELD_NUMBER: _ClassVar[int]
+    AMOUNT_CENTS_FIELD_NUMBER: _ClassVar[int]
+    NOTES_FIELD_NUMBER: _ClassVar[int]
+    RECEIPT_FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    vendor: str
+    category: str
+    amount_cents: int
+    notes: str
+    receipt_file_id: str
+    def __init__(self, vendor: _Optional[str] = ..., category: _Optional[str] = ..., amount_cents: _Optional[int] = ..., notes: _Optional[str] = ..., receipt_file_id: _Optional[str] = ...) -> None: ...
+
+class BooksRecordExpenseResponse(_message.Message):
+    __slots__ = ("expense",)
+    EXPENSE_FIELD_NUMBER: _ClassVar[int]
+    expense: _books_pb2.Expense
+    def __init__(self, expense: _Optional[_Union[_books_pb2.Expense, _Mapping]] = ...) -> None: ...
+
+class BooksRecordPaymentRequest(_message.Message):
+    __slots__ = ("invoice_number", "amount_cents", "method", "reference")
+    INVOICE_NUMBER_FIELD_NUMBER: _ClassVar[int]
+    AMOUNT_CENTS_FIELD_NUMBER: _ClassVar[int]
+    METHOD_FIELD_NUMBER: _ClassVar[int]
+    REFERENCE_FIELD_NUMBER: _ClassVar[int]
+    invoice_number: str
+    amount_cents: int
+    method: str
+    reference: str
+    def __init__(self, invoice_number: _Optional[str] = ..., amount_cents: _Optional[int] = ..., method: _Optional[str] = ..., reference: _Optional[str] = ...) -> None: ...
+
+class BooksRecordPaymentResponse(_message.Message):
+    __slots__ = ("invoice",)
+    INVOICE_FIELD_NUMBER: _ClassVar[int]
+    invoice: _books_pb2.Invoice
+    def __init__(self, invoice: _Optional[_Union[_books_pb2.Invoice, _Mapping]] = ...) -> None: ...
 
 class OpenPullRequestRequest(_message.Message):
     __slots__ = ("title", "body", "head_sha", "draft")
