@@ -403,3 +403,91 @@ class GetCashSummaryResponse(_message.Message):
     SUMMARY_FIELD_NUMBER: _ClassVar[int]
     summary: CashSummary
     def __init__(self, summary: _Optional[_Union[CashSummary, _Mapping]] = ...) -> None: ...
+
+class BankTransaction(_message.Message):
+    __slots__ = ("id", "at", "description", "amount_cents", "reference", "matched_kind", "matched_id", "matched_label", "explanation", "suggested_kind", "suggested_id", "suggested_label", "suggested_confidence")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    AMOUNT_CENTS_FIELD_NUMBER: _ClassVar[int]
+    REFERENCE_FIELD_NUMBER: _ClassVar[int]
+    MATCHED_KIND_FIELD_NUMBER: _ClassVar[int]
+    MATCHED_ID_FIELD_NUMBER: _ClassVar[int]
+    MATCHED_LABEL_FIELD_NUMBER: _ClassVar[int]
+    EXPLANATION_FIELD_NUMBER: _ClassVar[int]
+    SUGGESTED_KIND_FIELD_NUMBER: _ClassVar[int]
+    SUGGESTED_ID_FIELD_NUMBER: _ClassVar[int]
+    SUGGESTED_LABEL_FIELD_NUMBER: _ClassVar[int]
+    SUGGESTED_CONFIDENCE_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    at: _timestamp_pb2.Timestamp
+    description: str
+    amount_cents: int
+    reference: str
+    matched_kind: str
+    matched_id: str
+    matched_label: str
+    explanation: str
+    suggested_kind: str
+    suggested_id: str
+    suggested_label: str
+    suggested_confidence: float
+    def __init__(self, id: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., description: _Optional[str] = ..., amount_cents: _Optional[int] = ..., reference: _Optional[str] = ..., matched_kind: _Optional[str] = ..., matched_id: _Optional[str] = ..., matched_label: _Optional[str] = ..., explanation: _Optional[str] = ..., suggested_kind: _Optional[str] = ..., suggested_id: _Optional[str] = ..., suggested_label: _Optional[str] = ..., suggested_confidence: _Optional[float] = ...) -> None: ...
+
+class ImportBankTransactionsRequest(_message.Message):
+    __slots__ = ("workspace_id", "csv", "account_name")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CSV_FIELD_NUMBER: _ClassVar[int]
+    ACCOUNT_NAME_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    csv: str
+    account_name: str
+    def __init__(self, workspace_id: _Optional[str] = ..., csv: _Optional[str] = ..., account_name: _Optional[str] = ...) -> None: ...
+
+class ImportBankTransactionsResponse(_message.Message):
+    __slots__ = ("imported", "skipped", "auto_matched", "transactions")
+    IMPORTED_FIELD_NUMBER: _ClassVar[int]
+    SKIPPED_FIELD_NUMBER: _ClassVar[int]
+    AUTO_MATCHED_FIELD_NUMBER: _ClassVar[int]
+    TRANSACTIONS_FIELD_NUMBER: _ClassVar[int]
+    imported: int
+    skipped: int
+    auto_matched: int
+    transactions: _containers.RepeatedCompositeFieldContainer[BankTransaction]
+    def __init__(self, imported: _Optional[int] = ..., skipped: _Optional[int] = ..., auto_matched: _Optional[int] = ..., transactions: _Optional[_Iterable[_Union[BankTransaction, _Mapping]]] = ...) -> None: ...
+
+class ListBankTransactionsRequest(_message.Message):
+    __slots__ = ("workspace_id", "unmatched_only")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    UNMATCHED_ONLY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    unmatched_only: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., unmatched_only: bool = ...) -> None: ...
+
+class ListBankTransactionsResponse(_message.Message):
+    __slots__ = ("transactions",)
+    TRANSACTIONS_FIELD_NUMBER: _ClassVar[int]
+    transactions: _containers.RepeatedCompositeFieldContainer[BankTransaction]
+    def __init__(self, transactions: _Optional[_Iterable[_Union[BankTransaction, _Mapping]]] = ...) -> None: ...
+
+class MatchBankTransactionRequest(_message.Message):
+    __slots__ = ("workspace_id", "transaction_id", "invoice_id", "expense_id", "new_expense_vendor", "new_expense_category")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    TRANSACTION_ID_FIELD_NUMBER: _ClassVar[int]
+    INVOICE_ID_FIELD_NUMBER: _ClassVar[int]
+    EXPENSE_ID_FIELD_NUMBER: _ClassVar[int]
+    NEW_EXPENSE_VENDOR_FIELD_NUMBER: _ClassVar[int]
+    NEW_EXPENSE_CATEGORY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    transaction_id: str
+    invoice_id: str
+    expense_id: str
+    new_expense_vendor: str
+    new_expense_category: str
+    def __init__(self, workspace_id: _Optional[str] = ..., transaction_id: _Optional[str] = ..., invoice_id: _Optional[str] = ..., expense_id: _Optional[str] = ..., new_expense_vendor: _Optional[str] = ..., new_expense_category: _Optional[str] = ...) -> None: ...
+
+class MatchBankTransactionResponse(_message.Message):
+    __slots__ = ("transaction",)
+    TRANSACTION_FIELD_NUMBER: _ClassVar[int]
+    transaction: BankTransaction
+    def __init__(self, transaction: _Optional[_Union[BankTransaction, _Mapping]] = ...) -> None: ...

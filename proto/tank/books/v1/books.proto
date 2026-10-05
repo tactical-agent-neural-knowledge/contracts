@@ -203,6 +203,51 @@ message RecordExpenseResponse { Expense expense = 1; }
 message GetCashSummaryRequest { string workspace_id = 1; }
 message GetCashSummaryResponse { CashSummary summary = 1; }
 
+// The bank feed, as a file first. A line is money in (positive) or out (negative);
+// reconciliation is matching each line to an invoice or an expense, and the match
+// always says why in a sentence.
+message BankTransaction {
+  string id = 1;
+  google.protobuf.Timestamp at = 2;
+  string description = 3;
+  int64 amount_cents = 4;          // positive in, negative out
+  string reference = 5;
+  string matched_kind = 6;         // "" | invoice | expense
+  string matched_id = 7;
+  string matched_label = 8;        // e.g. "INV-0007 · Acme" or "AWS · hosting"
+  string explanation = 9;          // why it matched, or why it is suggested
+  // The best guess for an unmatched line, when there is one.
+  string suggested_kind = 10;      // invoice | expense | new_expense
+  string suggested_id = 11;
+  string suggested_label = 12;
+  double suggested_confidence = 13;
+}
+message ImportBankTransactionsRequest {
+  string workspace_id = 1;
+  string csv = 2;                  // a bank export: date, description, amount (or debit/credit), reference
+  string account_name = 3;
+}
+message ImportBankTransactionsResponse {
+  int32 imported = 1;
+  int32 skipped = 2;               // already known
+  int32 auto_matched = 3;          // matched on the spot, with an explanation
+  repeated BankTransaction transactions = 4;
+}
+message ListBankTransactionsRequest {
+  string workspace_id = 1;
+  bool unmatched_only = 2;
+}
+message ListBankTransactionsResponse { repeated BankTransaction transactions = 1; }
+message MatchBankTransactionRequest {
+  string workspace_id = 1;
+  string transaction_id = 2;
+  string invoice_id = 3;           // money in: records a payment on it
+  string expense_id = 4;           // money out: ties to an expense already booked
+  string new_expense_vendor = 5;   // money out: books a new expense with this vendor
+  string new_expense_category = 6;
+}
+message MatchBankTransactionResponse { BankTransaction transaction = 1; }
+
 service BooksService {
   rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
   rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
@@ -217,4 +262,7 @@ service BooksService {
   rpc ListExpenses(ListExpensesRequest) returns (ListExpensesResponse);
   rpc RecordExpense(RecordExpenseRequest) returns (RecordExpenseResponse);
   rpc GetCashSummary(GetCashSummaryRequest) returns (GetCashSummaryResponse);
+  rpc ImportBankTransactions(ImportBankTransactionsRequest) returns (ImportBankTransactionsResponse);
+  rpc ListBankTransactions(ListBankTransactionsRequest) returns (ListBankTransactionsResponse);
+  rpc MatchBankTransaction(MatchBankTransactionRequest) returns (MatchBankTransactionResponse);
 }

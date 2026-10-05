@@ -71,6 +71,15 @@ const (
 	// BooksServiceGetCashSummaryProcedure is the fully-qualified name of the BooksService's
 	// GetCashSummary RPC.
 	BooksServiceGetCashSummaryProcedure = "/tank.books.v1.BooksService/GetCashSummary"
+	// BooksServiceImportBankTransactionsProcedure is the fully-qualified name of the BooksService's
+	// ImportBankTransactions RPC.
+	BooksServiceImportBankTransactionsProcedure = "/tank.books.v1.BooksService/ImportBankTransactions"
+	// BooksServiceListBankTransactionsProcedure is the fully-qualified name of the BooksService's
+	// ListBankTransactions RPC.
+	BooksServiceListBankTransactionsProcedure = "/tank.books.v1.BooksService/ListBankTransactions"
+	// BooksServiceMatchBankTransactionProcedure is the fully-qualified name of the BooksService's
+	// MatchBankTransaction RPC.
+	BooksServiceMatchBankTransactionProcedure = "/tank.books.v1.BooksService/MatchBankTransaction"
 )
 
 // BooksServiceClient is a client for the tank.books.v1.BooksService service.
@@ -88,6 +97,9 @@ type BooksServiceClient interface {
 	ListExpenses(context.Context, *connect.Request[v1.ListExpensesRequest]) (*connect.Response[v1.ListExpensesResponse], error)
 	RecordExpense(context.Context, *connect.Request[v1.RecordExpenseRequest]) (*connect.Response[v1.RecordExpenseResponse], error)
 	GetCashSummary(context.Context, *connect.Request[v1.GetCashSummaryRequest]) (*connect.Response[v1.GetCashSummaryResponse], error)
+	ImportBankTransactions(context.Context, *connect.Request[v1.ImportBankTransactionsRequest]) (*connect.Response[v1.ImportBankTransactionsResponse], error)
+	ListBankTransactions(context.Context, *connect.Request[v1.ListBankTransactionsRequest]) (*connect.Response[v1.ListBankTransactionsResponse], error)
+	MatchBankTransaction(context.Context, *connect.Request[v1.MatchBankTransactionRequest]) (*connect.Response[v1.MatchBankTransactionResponse], error)
 }
 
 // NewBooksServiceClient constructs a client for the tank.books.v1.BooksService service. By default,
@@ -179,24 +191,45 @@ func NewBooksServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(booksServiceMethods.ByName("GetCashSummary")),
 			connect.WithClientOptions(opts...),
 		),
+		importBankTransactions: connect.NewClient[v1.ImportBankTransactionsRequest, v1.ImportBankTransactionsResponse](
+			httpClient,
+			baseURL+BooksServiceImportBankTransactionsProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("ImportBankTransactions")),
+			connect.WithClientOptions(opts...),
+		),
+		listBankTransactions: connect.NewClient[v1.ListBankTransactionsRequest, v1.ListBankTransactionsResponse](
+			httpClient,
+			baseURL+BooksServiceListBankTransactionsProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("ListBankTransactions")),
+			connect.WithClientOptions(opts...),
+		),
+		matchBankTransaction: connect.NewClient[v1.MatchBankTransactionRequest, v1.MatchBankTransactionResponse](
+			httpClient,
+			baseURL+BooksServiceMatchBankTransactionProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("MatchBankTransaction")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // booksServiceClient implements BooksServiceClient.
 type booksServiceClient struct {
-	getSettings    *connect.Client[v1.GetSettingsRequest, v1.GetSettingsResponse]
-	updateSettings *connect.Client[v1.UpdateSettingsRequest, v1.UpdateSettingsResponse]
-	listCustomers  *connect.Client[v1.ListCustomersRequest, v1.ListCustomersResponse]
-	upsertCustomer *connect.Client[v1.UpsertCustomerRequest, v1.UpsertCustomerResponse]
-	listInvoices   *connect.Client[v1.ListInvoicesRequest, v1.ListInvoicesResponse]
-	getInvoice     *connect.Client[v1.GetInvoiceRequest, v1.GetInvoiceResponse]
-	createInvoice  *connect.Client[v1.CreateInvoiceRequest, v1.CreateInvoiceResponse]
-	sendInvoice    *connect.Client[v1.SendInvoiceRequest, v1.SendInvoiceResponse]
-	recordPayment  *connect.Client[v1.RecordPaymentRequest, v1.RecordPaymentResponse]
-	voidInvoice    *connect.Client[v1.VoidInvoiceRequest, v1.VoidInvoiceResponse]
-	listExpenses   *connect.Client[v1.ListExpensesRequest, v1.ListExpensesResponse]
-	recordExpense  *connect.Client[v1.RecordExpenseRequest, v1.RecordExpenseResponse]
-	getCashSummary *connect.Client[v1.GetCashSummaryRequest, v1.GetCashSummaryResponse]
+	getSettings            *connect.Client[v1.GetSettingsRequest, v1.GetSettingsResponse]
+	updateSettings         *connect.Client[v1.UpdateSettingsRequest, v1.UpdateSettingsResponse]
+	listCustomers          *connect.Client[v1.ListCustomersRequest, v1.ListCustomersResponse]
+	upsertCustomer         *connect.Client[v1.UpsertCustomerRequest, v1.UpsertCustomerResponse]
+	listInvoices           *connect.Client[v1.ListInvoicesRequest, v1.ListInvoicesResponse]
+	getInvoice             *connect.Client[v1.GetInvoiceRequest, v1.GetInvoiceResponse]
+	createInvoice          *connect.Client[v1.CreateInvoiceRequest, v1.CreateInvoiceResponse]
+	sendInvoice            *connect.Client[v1.SendInvoiceRequest, v1.SendInvoiceResponse]
+	recordPayment          *connect.Client[v1.RecordPaymentRequest, v1.RecordPaymentResponse]
+	voidInvoice            *connect.Client[v1.VoidInvoiceRequest, v1.VoidInvoiceResponse]
+	listExpenses           *connect.Client[v1.ListExpensesRequest, v1.ListExpensesResponse]
+	recordExpense          *connect.Client[v1.RecordExpenseRequest, v1.RecordExpenseResponse]
+	getCashSummary         *connect.Client[v1.GetCashSummaryRequest, v1.GetCashSummaryResponse]
+	importBankTransactions *connect.Client[v1.ImportBankTransactionsRequest, v1.ImportBankTransactionsResponse]
+	listBankTransactions   *connect.Client[v1.ListBankTransactionsRequest, v1.ListBankTransactionsResponse]
+	matchBankTransaction   *connect.Client[v1.MatchBankTransactionRequest, v1.MatchBankTransactionResponse]
 }
 
 // GetSettings calls tank.books.v1.BooksService.GetSettings.
@@ -264,6 +297,21 @@ func (c *booksServiceClient) GetCashSummary(ctx context.Context, req *connect.Re
 	return c.getCashSummary.CallUnary(ctx, req)
 }
 
+// ImportBankTransactions calls tank.books.v1.BooksService.ImportBankTransactions.
+func (c *booksServiceClient) ImportBankTransactions(ctx context.Context, req *connect.Request[v1.ImportBankTransactionsRequest]) (*connect.Response[v1.ImportBankTransactionsResponse], error) {
+	return c.importBankTransactions.CallUnary(ctx, req)
+}
+
+// ListBankTransactions calls tank.books.v1.BooksService.ListBankTransactions.
+func (c *booksServiceClient) ListBankTransactions(ctx context.Context, req *connect.Request[v1.ListBankTransactionsRequest]) (*connect.Response[v1.ListBankTransactionsResponse], error) {
+	return c.listBankTransactions.CallUnary(ctx, req)
+}
+
+// MatchBankTransaction calls tank.books.v1.BooksService.MatchBankTransaction.
+func (c *booksServiceClient) MatchBankTransaction(ctx context.Context, req *connect.Request[v1.MatchBankTransactionRequest]) (*connect.Response[v1.MatchBankTransactionResponse], error) {
+	return c.matchBankTransaction.CallUnary(ctx, req)
+}
+
 // BooksServiceHandler is an implementation of the tank.books.v1.BooksService service.
 type BooksServiceHandler interface {
 	GetSettings(context.Context, *connect.Request[v1.GetSettingsRequest]) (*connect.Response[v1.GetSettingsResponse], error)
@@ -279,6 +327,9 @@ type BooksServiceHandler interface {
 	ListExpenses(context.Context, *connect.Request[v1.ListExpensesRequest]) (*connect.Response[v1.ListExpensesResponse], error)
 	RecordExpense(context.Context, *connect.Request[v1.RecordExpenseRequest]) (*connect.Response[v1.RecordExpenseResponse], error)
 	GetCashSummary(context.Context, *connect.Request[v1.GetCashSummaryRequest]) (*connect.Response[v1.GetCashSummaryResponse], error)
+	ImportBankTransactions(context.Context, *connect.Request[v1.ImportBankTransactionsRequest]) (*connect.Response[v1.ImportBankTransactionsResponse], error)
+	ListBankTransactions(context.Context, *connect.Request[v1.ListBankTransactionsRequest]) (*connect.Response[v1.ListBankTransactionsResponse], error)
+	MatchBankTransaction(context.Context, *connect.Request[v1.MatchBankTransactionRequest]) (*connect.Response[v1.MatchBankTransactionResponse], error)
 }
 
 // NewBooksServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -366,6 +417,24 @@ func NewBooksServiceHandler(svc BooksServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(booksServiceMethods.ByName("GetCashSummary")),
 		connect.WithHandlerOptions(opts...),
 	)
+	booksServiceImportBankTransactionsHandler := connect.NewUnaryHandler(
+		BooksServiceImportBankTransactionsProcedure,
+		svc.ImportBankTransactions,
+		connect.WithSchema(booksServiceMethods.ByName("ImportBankTransactions")),
+		connect.WithHandlerOptions(opts...),
+	)
+	booksServiceListBankTransactionsHandler := connect.NewUnaryHandler(
+		BooksServiceListBankTransactionsProcedure,
+		svc.ListBankTransactions,
+		connect.WithSchema(booksServiceMethods.ByName("ListBankTransactions")),
+		connect.WithHandlerOptions(opts...),
+	)
+	booksServiceMatchBankTransactionHandler := connect.NewUnaryHandler(
+		BooksServiceMatchBankTransactionProcedure,
+		svc.MatchBankTransaction,
+		connect.WithSchema(booksServiceMethods.ByName("MatchBankTransaction")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.books.v1.BooksService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BooksServiceGetSettingsProcedure:
@@ -394,6 +463,12 @@ func NewBooksServiceHandler(svc BooksServiceHandler, opts ...connect.HandlerOpti
 			booksServiceRecordExpenseHandler.ServeHTTP(w, r)
 		case BooksServiceGetCashSummaryProcedure:
 			booksServiceGetCashSummaryHandler.ServeHTTP(w, r)
+		case BooksServiceImportBankTransactionsProcedure:
+			booksServiceImportBankTransactionsHandler.ServeHTTP(w, r)
+		case BooksServiceListBankTransactionsProcedure:
+			booksServiceListBankTransactionsHandler.ServeHTTP(w, r)
+		case BooksServiceMatchBankTransactionProcedure:
+			booksServiceMatchBankTransactionHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -453,4 +528,16 @@ func (UnimplementedBooksServiceHandler) RecordExpense(context.Context, *connect.
 
 func (UnimplementedBooksServiceHandler) GetCashSummary(context.Context, *connect.Request[v1.GetCashSummaryRequest]) (*connect.Response[v1.GetCashSummaryResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.GetCashSummary is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) ImportBankTransactions(context.Context, *connect.Request[v1.ImportBankTransactionsRequest]) (*connect.Response[v1.ImportBankTransactionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.ImportBankTransactions is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) ListBankTransactions(context.Context, *connect.Request[v1.ListBankTransactionsRequest]) (*connect.Response[v1.ListBankTransactionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.ListBankTransactions is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) MatchBankTransaction(context.Context, *connect.Request[v1.MatchBankTransactionRequest]) (*connect.Response[v1.MatchBankTransactionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.MatchBankTransaction is not implemented"))
 }
