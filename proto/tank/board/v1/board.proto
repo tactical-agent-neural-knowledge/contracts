@@ -204,6 +204,21 @@ message BoardTemplate {
 message ListTemplatesRequest {}
 message ListTemplatesResponse { repeated BoardTemplate templates = 1; }
 
+// Export a board, or part of one, as a file somebody can send to a person who does
+// not have a TANK account.
+message ExportBoardRequest {
+  string workspace_id = 1;
+  string id = 2;
+  string format = 3;            // "svg"
+  repeated string object_ids = 4;  // empty exports everything
+  bool transparent = 5;
+}
+message ExportBoardResponse {
+  string filename = 1;
+  string content_type = 2;
+  bytes body = 3;
+}
+
 service BoardService {
   rpc ListBoards(ListBoardsRequest) returns (ListBoardsResponse);
   rpc GetBoard(GetBoardRequest) returns (GetBoardResponse);
@@ -213,4 +228,5 @@ service BoardService {
   rpc PutObjects(PutObjectsRequest) returns (PutObjectsResponse);
   rpc RequestChange(RequestChangeRequest) returns (RequestChangeResponse);
   rpc ListTemplates(ListTemplatesRequest) returns (ListTemplatesResponse);
+  rpc ExportBoard(ExportBoardRequest) returns (ExportBoardResponse);
 }

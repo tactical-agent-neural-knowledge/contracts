@@ -54,6 +54,9 @@ const (
 	// BoardServiceListTemplatesProcedure is the fully-qualified name of the BoardService's
 	// ListTemplates RPC.
 	BoardServiceListTemplatesProcedure = "/tank.board.v1.BoardService/ListTemplates"
+	// BoardServiceExportBoardProcedure is the fully-qualified name of the BoardService's ExportBoard
+	// RPC.
+	BoardServiceExportBoardProcedure = "/tank.board.v1.BoardService/ExportBoard"
 )
 
 // BoardServiceClient is a client for the tank.board.v1.BoardService service.
@@ -66,6 +69,7 @@ type BoardServiceClient interface {
 	PutObjects(context.Context, *connect.Request[v1.PutObjectsRequest]) (*connect.Response[v1.PutObjectsResponse], error)
 	RequestChange(context.Context, *connect.Request[v1.RequestChangeRequest]) (*connect.Response[v1.RequestChangeResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
+	ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error)
 }
 
 // NewBoardServiceClient constructs a client for the tank.board.v1.BoardService service. By default,
@@ -127,6 +131,12 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(boardServiceMethods.ByName("ListTemplates")),
 			connect.WithClientOptions(opts...),
 		),
+		exportBoard: connect.NewClient[v1.ExportBoardRequest, v1.ExportBoardResponse](
+			httpClient,
+			baseURL+BoardServiceExportBoardProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ExportBoard")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -140,6 +150,7 @@ type boardServiceClient struct {
 	putObjects    *connect.Client[v1.PutObjectsRequest, v1.PutObjectsResponse]
 	requestChange *connect.Client[v1.RequestChangeRequest, v1.RequestChangeResponse]
 	listTemplates *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
+	exportBoard   *connect.Client[v1.ExportBoardRequest, v1.ExportBoardResponse]
 }
 
 // ListBoards calls tank.board.v1.BoardService.ListBoards.
@@ -182,6 +193,11 @@ func (c *boardServiceClient) ListTemplates(ctx context.Context, req *connect.Req
 	return c.listTemplates.CallUnary(ctx, req)
 }
 
+// ExportBoard calls tank.board.v1.BoardService.ExportBoard.
+func (c *boardServiceClient) ExportBoard(ctx context.Context, req *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error) {
+	return c.exportBoard.CallUnary(ctx, req)
+}
+
 // BoardServiceHandler is an implementation of the tank.board.v1.BoardService service.
 type BoardServiceHandler interface {
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
@@ -192,6 +208,7 @@ type BoardServiceHandler interface {
 	PutObjects(context.Context, *connect.Request[v1.PutObjectsRequest]) (*connect.Response[v1.PutObjectsResponse], error)
 	RequestChange(context.Context, *connect.Request[v1.RequestChangeRequest]) (*connect.Response[v1.RequestChangeResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
+	ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error)
 }
 
 // NewBoardServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -249,6 +266,12 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(boardServiceMethods.ByName("ListTemplates")),
 		connect.WithHandlerOptions(opts...),
 	)
+	boardServiceExportBoardHandler := connect.NewUnaryHandler(
+		BoardServiceExportBoardProcedure,
+		svc.ExportBoard,
+		connect.WithSchema(boardServiceMethods.ByName("ExportBoard")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.board.v1.BoardService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BoardServiceListBoardsProcedure:
@@ -267,6 +290,8 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 			boardServiceRequestChangeHandler.ServeHTTP(w, r)
 		case BoardServiceListTemplatesProcedure:
 			boardServiceListTemplatesHandler.ServeHTTP(w, r)
+		case BoardServiceExportBoardProcedure:
+			boardServiceExportBoardHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -306,4 +331,8 @@ func (UnimplementedBoardServiceHandler) RequestChange(context.Context, *connect.
 
 func (UnimplementedBoardServiceHandler) ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ListTemplates is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ExportBoard is not implemented"))
 }

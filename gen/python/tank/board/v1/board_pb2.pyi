@@ -346,3 +346,27 @@ class ListTemplatesResponse(_message.Message):
     TEMPLATES_FIELD_NUMBER: _ClassVar[int]
     templates: _containers.RepeatedCompositeFieldContainer[BoardTemplate]
     def __init__(self, templates: _Optional[_Iterable[_Union[BoardTemplate, _Mapping]]] = ...) -> None: ...
+
+class ExportBoardRequest(_message.Message):
+    __slots__ = ("workspace_id", "id", "format", "object_ids", "transparent")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
+    FORMAT_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_IDS_FIELD_NUMBER: _ClassVar[int]
+    TRANSPARENT_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    id: str
+    format: str
+    object_ids: _containers.RepeatedScalarFieldContainer[str]
+    transparent: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ..., format: _Optional[str] = ..., object_ids: _Optional[_Iterable[str]] = ..., transparent: bool = ...) -> None: ...
+
+class ExportBoardResponse(_message.Message):
+    __slots__ = ("filename", "content_type", "body")
+    FILENAME_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    BODY_FIELD_NUMBER: _ClassVar[int]
+    filename: str
+    content_type: str
+    body: bytes
+    def __init__(self, filename: _Optional[str] = ..., content_type: _Optional[str] = ..., body: _Optional[bytes] = ...) -> None: ...
