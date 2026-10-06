@@ -280,6 +280,47 @@ message GenerateTestResponse {
   repeated string skipped = 5;
 }
 
+// A preview somebody else's CI published.
+//
+// TANK serves previews of the applications it builds, which is no use to a workspace
+// that builds its own. Rather than make every customer hand TANK their pipeline, a
+// workspace's CI tells TANK where it has already put the build, and a frame points at
+// that. The workspace keeps its own CI; TANK keeps the board.
+message ReportPreviewRequest {
+  string workspace_id = 1;
+  string repo = 2;          // owner/name, as the frame names it
+  string ref = 3;           // the branch this build is of; "main" is allowed
+  string sha = 4;           // the commit it was built from
+  string url = 5;           // where it is served, e.g. https://preview.example.com/abc123
+  // How long to trust it. The publisher knows its own retention; TANK will not claim
+  // a build is there after this. Zero means the workspace's default.
+  int32 retain_days = 6;
+}
+message ReportPreviewResponse {
+  string repo = 1;
+  string ref = 2;
+  string sha = 3;
+  string url = 4;
+  google.protobuf.Timestamp built_at = 5;
+  google.protobuf.Timestamp expires_at = 6;
+}
+
+message ListPreviewsRequest {
+  string workspace_id = 1;
+  string repo = 2;          // empty lists every repo the workspace has reported
+  int32 limit = 3;
+}
+message ListPreviewsResponse { repeated ReportPreviewResponse previews = 1; }
+
+// Stop trusting one. A build that has been taken down should stop being offered the
+// moment its publisher says so, rather than when TANK's clock runs out.
+message ForgetPreviewRequest {
+  string workspace_id = 1;
+  string repo = 2;
+  string ref = 3;           // empty forgets every ref of that repo
+}
+message ForgetPreviewResponse { int32 forgotten = 1; }
+
 service BoardService {
   rpc ListBoards(ListBoardsRequest) returns (ListBoardsResponse);
   rpc GetBoard(GetBoardRequest) returns (GetBoardResponse);
@@ -291,4 +332,7 @@ service BoardService {
   rpc ListTemplates(ListTemplatesRequest) returns (ListTemplatesResponse);
   rpc ExportBoard(ExportBoardRequest) returns (ExportBoardResponse);
   rpc GenerateTest(GenerateTestRequest) returns (GenerateTestResponse);
+  rpc ReportPreview(ReportPreviewRequest) returns (ReportPreviewResponse);
+  rpc ListPreviews(ListPreviewsRequest) returns (ListPreviewsResponse);
+  rpc ForgetPreview(ForgetPreviewRequest) returns (ForgetPreviewResponse);
 }

@@ -438,3 +438,67 @@ class GenerateTestResponse(_message.Message):
     maestro: str
     skipped: _containers.RepeatedScalarFieldContainer[str]
     def __init__(self, playwright_path: _Optional[str] = ..., playwright: _Optional[str] = ..., maestro_path: _Optional[str] = ..., maestro: _Optional[str] = ..., skipped: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ReportPreviewRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo", "ref", "sha", "url", "retain_days")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    RETAIN_DAYS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    ref: str
+    sha: str
+    url: str
+    retain_days: int
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., ref: _Optional[str] = ..., sha: _Optional[str] = ..., url: _Optional[str] = ..., retain_days: _Optional[int] = ...) -> None: ...
+
+class ReportPreviewResponse(_message.Message):
+    __slots__ = ("repo", "ref", "sha", "url", "built_at", "expires_at")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    BUILT_AT_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    ref: str
+    sha: str
+    url: str
+    built_at: _timestamp_pb2.Timestamp
+    expires_at: _timestamp_pb2.Timestamp
+    def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., sha: _Optional[str] = ..., url: _Optional[str] = ..., built_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ListPreviewsRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo", "limit")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    limit: int
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListPreviewsResponse(_message.Message):
+    __slots__ = ("previews",)
+    PREVIEWS_FIELD_NUMBER: _ClassVar[int]
+    previews: _containers.RepeatedCompositeFieldContainer[ReportPreviewResponse]
+    def __init__(self, previews: _Optional[_Iterable[_Union[ReportPreviewResponse, _Mapping]]] = ...) -> None: ...
+
+class ForgetPreviewRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo", "ref")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    ref: str
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., ref: _Optional[str] = ...) -> None: ...
+
+class ForgetPreviewResponse(_message.Message):
+    __slots__ = ("forgotten",)
+    FORGOTTEN_FIELD_NUMBER: _ClassVar[int]
+    forgotten: int
+    def __init__(self, forgotten: _Optional[int] = ...) -> None: ...

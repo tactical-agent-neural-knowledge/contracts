@@ -60,6 +60,15 @@ const (
 	// BoardServiceGenerateTestProcedure is the fully-qualified name of the BoardService's GenerateTest
 	// RPC.
 	BoardServiceGenerateTestProcedure = "/tank.board.v1.BoardService/GenerateTest"
+	// BoardServiceReportPreviewProcedure is the fully-qualified name of the BoardService's
+	// ReportPreview RPC.
+	BoardServiceReportPreviewProcedure = "/tank.board.v1.BoardService/ReportPreview"
+	// BoardServiceListPreviewsProcedure is the fully-qualified name of the BoardService's ListPreviews
+	// RPC.
+	BoardServiceListPreviewsProcedure = "/tank.board.v1.BoardService/ListPreviews"
+	// BoardServiceForgetPreviewProcedure is the fully-qualified name of the BoardService's
+	// ForgetPreview RPC.
+	BoardServiceForgetPreviewProcedure = "/tank.board.v1.BoardService/ForgetPreview"
 )
 
 // BoardServiceClient is a client for the tank.board.v1.BoardService service.
@@ -74,6 +83,9 @@ type BoardServiceClient interface {
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
 	ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error)
 	GenerateTest(context.Context, *connect.Request[v1.GenerateTestRequest]) (*connect.Response[v1.GenerateTestResponse], error)
+	ReportPreview(context.Context, *connect.Request[v1.ReportPreviewRequest]) (*connect.Response[v1.ReportPreviewResponse], error)
+	ListPreviews(context.Context, *connect.Request[v1.ListPreviewsRequest]) (*connect.Response[v1.ListPreviewsResponse], error)
+	ForgetPreview(context.Context, *connect.Request[v1.ForgetPreviewRequest]) (*connect.Response[v1.ForgetPreviewResponse], error)
 }
 
 // NewBoardServiceClient constructs a client for the tank.board.v1.BoardService service. By default,
@@ -147,6 +159,24 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(boardServiceMethods.ByName("GenerateTest")),
 			connect.WithClientOptions(opts...),
 		),
+		reportPreview: connect.NewClient[v1.ReportPreviewRequest, v1.ReportPreviewResponse](
+			httpClient,
+			baseURL+BoardServiceReportPreviewProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ReportPreview")),
+			connect.WithClientOptions(opts...),
+		),
+		listPreviews: connect.NewClient[v1.ListPreviewsRequest, v1.ListPreviewsResponse](
+			httpClient,
+			baseURL+BoardServiceListPreviewsProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ListPreviews")),
+			connect.WithClientOptions(opts...),
+		),
+		forgetPreview: connect.NewClient[v1.ForgetPreviewRequest, v1.ForgetPreviewResponse](
+			httpClient,
+			baseURL+BoardServiceForgetPreviewProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ForgetPreview")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -162,6 +192,9 @@ type boardServiceClient struct {
 	listTemplates *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
 	exportBoard   *connect.Client[v1.ExportBoardRequest, v1.ExportBoardResponse]
 	generateTest  *connect.Client[v1.GenerateTestRequest, v1.GenerateTestResponse]
+	reportPreview *connect.Client[v1.ReportPreviewRequest, v1.ReportPreviewResponse]
+	listPreviews  *connect.Client[v1.ListPreviewsRequest, v1.ListPreviewsResponse]
+	forgetPreview *connect.Client[v1.ForgetPreviewRequest, v1.ForgetPreviewResponse]
 }
 
 // ListBoards calls tank.board.v1.BoardService.ListBoards.
@@ -214,6 +247,21 @@ func (c *boardServiceClient) GenerateTest(ctx context.Context, req *connect.Requ
 	return c.generateTest.CallUnary(ctx, req)
 }
 
+// ReportPreview calls tank.board.v1.BoardService.ReportPreview.
+func (c *boardServiceClient) ReportPreview(ctx context.Context, req *connect.Request[v1.ReportPreviewRequest]) (*connect.Response[v1.ReportPreviewResponse], error) {
+	return c.reportPreview.CallUnary(ctx, req)
+}
+
+// ListPreviews calls tank.board.v1.BoardService.ListPreviews.
+func (c *boardServiceClient) ListPreviews(ctx context.Context, req *connect.Request[v1.ListPreviewsRequest]) (*connect.Response[v1.ListPreviewsResponse], error) {
+	return c.listPreviews.CallUnary(ctx, req)
+}
+
+// ForgetPreview calls tank.board.v1.BoardService.ForgetPreview.
+func (c *boardServiceClient) ForgetPreview(ctx context.Context, req *connect.Request[v1.ForgetPreviewRequest]) (*connect.Response[v1.ForgetPreviewResponse], error) {
+	return c.forgetPreview.CallUnary(ctx, req)
+}
+
 // BoardServiceHandler is an implementation of the tank.board.v1.BoardService service.
 type BoardServiceHandler interface {
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
@@ -226,6 +274,9 @@ type BoardServiceHandler interface {
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
 	ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error)
 	GenerateTest(context.Context, *connect.Request[v1.GenerateTestRequest]) (*connect.Response[v1.GenerateTestResponse], error)
+	ReportPreview(context.Context, *connect.Request[v1.ReportPreviewRequest]) (*connect.Response[v1.ReportPreviewResponse], error)
+	ListPreviews(context.Context, *connect.Request[v1.ListPreviewsRequest]) (*connect.Response[v1.ListPreviewsResponse], error)
+	ForgetPreview(context.Context, *connect.Request[v1.ForgetPreviewRequest]) (*connect.Response[v1.ForgetPreviewResponse], error)
 }
 
 // NewBoardServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -295,6 +346,24 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(boardServiceMethods.ByName("GenerateTest")),
 		connect.WithHandlerOptions(opts...),
 	)
+	boardServiceReportPreviewHandler := connect.NewUnaryHandler(
+		BoardServiceReportPreviewProcedure,
+		svc.ReportPreview,
+		connect.WithSchema(boardServiceMethods.ByName("ReportPreview")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceListPreviewsHandler := connect.NewUnaryHandler(
+		BoardServiceListPreviewsProcedure,
+		svc.ListPreviews,
+		connect.WithSchema(boardServiceMethods.ByName("ListPreviews")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceForgetPreviewHandler := connect.NewUnaryHandler(
+		BoardServiceForgetPreviewProcedure,
+		svc.ForgetPreview,
+		connect.WithSchema(boardServiceMethods.ByName("ForgetPreview")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.board.v1.BoardService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BoardServiceListBoardsProcedure:
@@ -317,6 +386,12 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 			boardServiceExportBoardHandler.ServeHTTP(w, r)
 		case BoardServiceGenerateTestProcedure:
 			boardServiceGenerateTestHandler.ServeHTTP(w, r)
+		case BoardServiceReportPreviewProcedure:
+			boardServiceReportPreviewHandler.ServeHTTP(w, r)
+		case BoardServiceListPreviewsProcedure:
+			boardServiceListPreviewsHandler.ServeHTTP(w, r)
+		case BoardServiceForgetPreviewProcedure:
+			boardServiceForgetPreviewHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -364,4 +439,16 @@ func (UnimplementedBoardServiceHandler) ExportBoard(context.Context, *connect.Re
 
 func (UnimplementedBoardServiceHandler) GenerateTest(context.Context, *connect.Request[v1.GenerateTestRequest]) (*connect.Response[v1.GenerateTestResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.GenerateTest is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ReportPreview(context.Context, *connect.Request[v1.ReportPreviewRequest]) (*connect.Response[v1.ReportPreviewResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ReportPreview is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ListPreviews(context.Context, *connect.Request[v1.ListPreviewsRequest]) (*connect.Response[v1.ListPreviewsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ListPreviews is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ForgetPreview(context.Context, *connect.Request[v1.ForgetPreviewRequest]) (*connect.Response[v1.ForgetPreviewResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ForgetPreview is not implemented"))
 }
