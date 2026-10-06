@@ -193,14 +193,16 @@ class BoardSummary(_message.Message):
     def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[int] = ..., app_frames: _Optional[int] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., channel_id: _Optional[str] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ...) -> None: ...
 
 class ListBoardsRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "limit")
+    __slots__ = ("workspace_id", "channel_id", "limit", "stale_only")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
+    STALE_ONLY_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     limit: int
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+    stale_only: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., limit: _Optional[int] = ..., stale_only: bool = ...) -> None: ...
 
 class ListBoardsResponse(_message.Message):
     __slots__ = ("boards",)

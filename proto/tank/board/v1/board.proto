@@ -135,6 +135,9 @@ message ListBoardsRequest {
   string workspace_id = 1;
   string channel_id = 2;
   int32 limit = 3;
+  // Only the boards the product has moved past. The same filter ListCanvases has,
+  // for the same reason: finding what needs a look should not mean reading the lot.
+  bool stale_only = 4;
 }
 message ListBoardsResponse { repeated BoardSummary boards = 1; }
 
