@@ -3,6 +3,7 @@ from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from tank.admin.v1 import admin_pb2 as _admin_pb2
 from tank.agent.v1 import agent_pb2 as _agent_pb2
 from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
+from tank.board.v1 import board_pb2 as _board_pb2
 from tank.canvas.v1 import canvas_pb2 as _canvas_pb2
 from tank.channel.v1 import channel_pb2 as _channel_pb2
 from tank.files.v1 import files_pb2 as _files_pb2
@@ -422,3 +423,43 @@ class CanvasEditing(_message.Message):
     block_id: str
     left: bool
     def __init__(self, canvas_id: _Optional[str] = ..., user_id: _Optional[str] = ..., block_id: _Optional[str] = ..., left: bool = ...) -> None: ...
+
+class BoardObjectsChanged(_message.Message):
+    __slots__ = ("board_id", "objects", "deleted_ids", "actor_id", "version")
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    OBJECTS_FIELD_NUMBER: _ClassVar[int]
+    DELETED_IDS_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    board_id: str
+    objects: _containers.RepeatedCompositeFieldContainer[_board_pb2.BoardObject]
+    deleted_ids: _containers.RepeatedScalarFieldContainer[str]
+    actor_id: str
+    version: int
+    def __init__(self, board_id: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[_board_pb2.BoardObject, _Mapping]]] = ..., deleted_ids: _Optional[_Iterable[str]] = ..., actor_id: _Optional[str] = ..., version: _Optional[int] = ...) -> None: ...
+
+class BoardChanged(_message.Message):
+    __slots__ = ("board", "actor_id")
+    BOARD_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    board: _board_pb2.Board
+    actor_id: str
+    def __init__(self, board: _Optional[_Union[_board_pb2.Board, _Mapping]] = ..., actor_id: _Optional[str] = ...) -> None: ...
+
+class BoardPointer(_message.Message):
+    __slots__ = ("board_id", "user_id", "x", "y", "selected_ids", "left", "kind")
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    X_FIELD_NUMBER: _ClassVar[int]
+    Y_FIELD_NUMBER: _ClassVar[int]
+    SELECTED_IDS_FIELD_NUMBER: _ClassVar[int]
+    LEFT_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    board_id: str
+    user_id: str
+    x: float
+    y: float
+    selected_ids: _containers.RepeatedScalarFieldContainer[str]
+    left: bool
+    kind: str
+    def __init__(self, board_id: _Optional[str] = ..., user_id: _Optional[str] = ..., x: _Optional[float] = ..., y: _Optional[float] = ..., selected_ids: _Optional[_Iterable[str]] = ..., left: bool = ..., kind: _Optional[str] = ...) -> None: ...

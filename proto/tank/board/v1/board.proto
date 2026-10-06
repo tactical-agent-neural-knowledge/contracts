@@ -1,0 +1,170 @@
+syntax = "proto3";
+
+package tank.board.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// Neuralboards: an infinite board inside the workspace, shared by people and the
+// agent. Its difference from every other canvas is that a frame can hold the running
+// application rather than a picture of one — see Frame.app below.
+
+enum ObjectKind {
+  OBJECT_KIND_UNSPECIFIED = 0;
+  OBJECT_KIND_FRAME = 1;      // an artboard; may hold the running app
+  OBJECT_KIND_RECT = 2;
+  OBJECT_KIND_ELLIPSE = 3;
+  OBJECT_KIND_LINE = 4;
+  OBJECT_KIND_ARROW = 5;
+  OBJECT_KIND_TEXT = 6;
+  OBJECT_KIND_STICKY = 7;     // the FigJam/Lucidspark note
+  OBJECT_KIND_IMAGE = 8;
+  OBJECT_KIND_CONNECTOR = 9;  // joins two objects and follows them
+  OBJECT_KIND_DRAW = 10;      // freehand, a path of points
+}
+
+// Where a thing sits. Boards are infinite, so these are board coordinates, not pixels
+// on anybody's screen.
+message Rect {
+  double x = 1;
+  double y = 2;
+  double w = 3;
+  double h = 4;
+}
+
+message Style {
+  string fill = 1;          // #rrggbb, or empty for none
+  string stroke = 2;
+  double stroke_width = 3;
+  double opacity = 4;       // 0..1; 0 is treated as 1 so an unset style is visible
+  double corner_radius = 5;
+  string dash = 6;          // "", "dashed", "dotted"
+  int32 font_size = 7;
+  string font_weight = 8;   // "", "500", "700"
+  string align = 9;         // "", "center", "right"
+}
+
+// A frame holding the running application. This is the product: not a screenshot, the
+// app itself at a commit, which a person can click into and ask for changes.
+message AppFrame {
+  string repo = 1;               // owner/name
+  string ref = 2;                // branch or sha the frame is showing
+  string path = 3;               // route inside the app, e.g. /w/acme/books
+  string platform = 4;           // "web" | "ios" | "android"
+  int32 viewport_width = 5;      // the device the frame is standing in for
+  int32 viewport_height = 6;
+  string preview_url = 7;        // server-filled: where the running app is served
+  string status = 8;             // server-filled: building | live | failed | asleep
+  string note = 9;               // server-filled: why it is not live, in a sentence
+}
+
+message BoardObject {
+  string id = 1;
+  ObjectKind kind = 2;
+  Rect at = 3;
+  Style style = 4;
+  string text = 5;              // text, sticky, and a label on a shape
+  double rotation = 6;
+  int32 z = 7;                  // paint order
+  string parent_id = 8;         // the frame it belongs to, when it is inside one
+  // Connector: the two things it joins, so it follows them when they move.
+  string from_id = 9;
+  string to_id = 10;
+  repeated double points = 11;  // freehand: x,y pairs in board coordinates
+  string file_id = 12;          // image
+  string file_url = 13;         // server-filled
+  AppFrame app = 14;            // frame only
+  bool locked = 15;
+  string created_by = 16;
+  // Bumped on every write, so two people editing different objects never collide and
+  // the same object twice is reported rather than silently overwritten.
+  int32 rev = 17;
+}
+
+message Board {
+  string id = 1;
+  string workspace_id = 2;
+  string channel_id = 3;        // the Tread it belongs to; empty for workspace-wide
+  string title = 4;
+  string icon = 5;
+  repeated BoardObject objects = 6;
+  int32 version = 7;
+  string created_by = 8;
+  google.protobuf.Timestamp created_at = 9;
+  string updated_by = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message BoardSummary {
+  string id = 1;
+  string title = 2;
+  string icon = 3;
+  int32 objects = 4;
+  int32 app_frames = 5;
+  google.protobuf.Timestamp updated_at = 6;
+  string channel_id = 7;
+}
+
+message ListBoardsRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  int32 limit = 3;
+}
+message ListBoardsResponse { repeated BoardSummary boards = 1; }
+
+message GetBoardRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message GetBoardResponse { Board board = 1; }
+
+message CreateBoardRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string title = 3;
+  string icon = 4;
+  repeated BoardObject objects = 5;
+}
+message CreateBoardResponse { Board board = 1; }
+
+message UpdateBoardRequest {
+  string workspace_id = 1;
+  string id = 2;
+  string title = 3;
+  string icon = 4;
+}
+message UpdateBoardResponse { Board board = 1; }
+
+message DeleteBoardRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message DeleteBoardResponse {}
+
+// One object at a time, for the same reason a canvas page writes one block at a time:
+// two people moving different shapes are not in conflict, and the only real collision
+// is the same shape twice.
+message PutObjectsRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  repeated BoardObject objects = 3;   // created when the id is unknown, else updated
+  repeated string delete_ids = 4;
+  // The revs the editor started from, keyed by object id. A mismatch is reported
+  // rather than overwritten. Empty means "do not check".
+  map<string, int32> base_revs = 5;
+}
+message PutObjectsResponse {
+  Board board = 1;
+  // Objects somebody else changed while this editor was working on them. Nothing was
+  // overwritten; these are their versions.
+  repeated BoardObject conflicts = 2;
+  string conflict_note = 3;
+}
+
+service BoardService {
+  rpc ListBoards(ListBoardsRequest) returns (ListBoardsResponse);
+  rpc GetBoard(GetBoardRequest) returns (GetBoardResponse);
+  rpc CreateBoard(CreateBoardRequest) returns (CreateBoardResponse);
+  rpc UpdateBoard(UpdateBoardRequest) returns (UpdateBoardResponse);
+  rpc DeleteBoard(DeleteBoardRequest) returns (DeleteBoardResponse);
+  rpc PutObjects(PutObjectsRequest) returns (PutObjectsResponse);
+}

@@ -49,24 +49,28 @@ class Resume(_message.Message):
     def __init__(self, session_id: _Optional[str] = ..., resume_token: _Optional[str] = ..., cursors: _Optional[_Mapping[str, int]] = ...) -> None: ...
 
 class Subscribe(_message.Message):
-    __slots__ = ("channel_ids", "thread_root_ids", "canvas_ids")
+    __slots__ = ("channel_ids", "thread_root_ids", "canvas_ids", "board_ids")
     CHANNEL_IDS_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_IDS_FIELD_NUMBER: _ClassVar[int]
     CANVAS_IDS_FIELD_NUMBER: _ClassVar[int]
+    BOARD_IDS_FIELD_NUMBER: _ClassVar[int]
     channel_ids: _containers.RepeatedScalarFieldContainer[str]
     thread_root_ids: _containers.RepeatedScalarFieldContainer[str]
     canvas_ids: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, channel_ids: _Optional[_Iterable[str]] = ..., thread_root_ids: _Optional[_Iterable[str]] = ..., canvas_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+    board_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, channel_ids: _Optional[_Iterable[str]] = ..., thread_root_ids: _Optional[_Iterable[str]] = ..., canvas_ids: _Optional[_Iterable[str]] = ..., board_ids: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class Unsubscribe(_message.Message):
-    __slots__ = ("channel_ids", "thread_root_ids", "canvas_ids")
+    __slots__ = ("channel_ids", "thread_root_ids", "canvas_ids", "board_ids")
     CHANNEL_IDS_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_IDS_FIELD_NUMBER: _ClassVar[int]
     CANVAS_IDS_FIELD_NUMBER: _ClassVar[int]
+    BOARD_IDS_FIELD_NUMBER: _ClassVar[int]
     channel_ids: _containers.RepeatedScalarFieldContainer[str]
     thread_root_ids: _containers.RepeatedScalarFieldContainer[str]
     canvas_ids: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, channel_ids: _Optional[_Iterable[str]] = ..., thread_root_ids: _Optional[_Iterable[str]] = ..., canvas_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+    board_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, channel_ids: _Optional[_Iterable[str]] = ..., thread_root_ids: _Optional[_Iterable[str]] = ..., canvas_ids: _Optional[_Iterable[str]] = ..., board_ids: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class PresenceSubscribe(_message.Message):
     __slots__ = ("user_ids",)
@@ -92,6 +96,20 @@ class CanvasEditingFrame(_message.Message):
     left: bool
     def __init__(self, canvas_id: _Optional[str] = ..., block_id: _Optional[str] = ..., left: bool = ...) -> None: ...
 
+class BoardPointerFrame(_message.Message):
+    __slots__ = ("board_id", "x", "y", "selected_ids", "left")
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    X_FIELD_NUMBER: _ClassVar[int]
+    Y_FIELD_NUMBER: _ClassVar[int]
+    SELECTED_IDS_FIELD_NUMBER: _ClassVar[int]
+    LEFT_FIELD_NUMBER: _ClassVar[int]
+    board_id: str
+    x: float
+    y: float
+    selected_ids: _containers.RepeatedScalarFieldContainer[str]
+    left: bool
+    def __init__(self, board_id: _Optional[str] = ..., x: _Optional[float] = ..., y: _Optional[float] = ..., selected_ids: _Optional[_Iterable[str]] = ..., left: bool = ...) -> None: ...
+
 class Focus(_message.Message):
     __slots__ = ("channel_id",)
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -103,7 +121,7 @@ class Ping(_message.Message):
     def __init__(self) -> None: ...
 
 class ClientFrame(_message.Message):
-    __slots__ = ("hello", "resume", "subscribe", "unsubscribe", "presence_subscribe", "typing", "focus", "ping", "canvas_editing")
+    __slots__ = ("hello", "resume", "subscribe", "unsubscribe", "presence_subscribe", "typing", "focus", "ping", "canvas_editing", "board_pointer")
     HELLO_FIELD_NUMBER: _ClassVar[int]
     RESUME_FIELD_NUMBER: _ClassVar[int]
     SUBSCRIBE_FIELD_NUMBER: _ClassVar[int]
@@ -113,6 +131,7 @@ class ClientFrame(_message.Message):
     FOCUS_FIELD_NUMBER: _ClassVar[int]
     PING_FIELD_NUMBER: _ClassVar[int]
     CANVAS_EDITING_FIELD_NUMBER: _ClassVar[int]
+    BOARD_POINTER_FIELD_NUMBER: _ClassVar[int]
     hello: Hello
     resume: Resume
     subscribe: Subscribe
@@ -122,7 +141,8 @@ class ClientFrame(_message.Message):
     focus: Focus
     ping: Ping
     canvas_editing: CanvasEditingFrame
-    def __init__(self, hello: _Optional[_Union[Hello, _Mapping]] = ..., resume: _Optional[_Union[Resume, _Mapping]] = ..., subscribe: _Optional[_Union[Subscribe, _Mapping]] = ..., unsubscribe: _Optional[_Union[Unsubscribe, _Mapping]] = ..., presence_subscribe: _Optional[_Union[PresenceSubscribe, _Mapping]] = ..., typing: _Optional[_Union[TypingFrame, _Mapping]] = ..., focus: _Optional[_Union[Focus, _Mapping]] = ..., ping: _Optional[_Union[Ping, _Mapping]] = ..., canvas_editing: _Optional[_Union[CanvasEditingFrame, _Mapping]] = ...) -> None: ...
+    board_pointer: BoardPointerFrame
+    def __init__(self, hello: _Optional[_Union[Hello, _Mapping]] = ..., resume: _Optional[_Union[Resume, _Mapping]] = ..., subscribe: _Optional[_Union[Subscribe, _Mapping]] = ..., unsubscribe: _Optional[_Union[Unsubscribe, _Mapping]] = ..., presence_subscribe: _Optional[_Union[PresenceSubscribe, _Mapping]] = ..., typing: _Optional[_Union[TypingFrame, _Mapping]] = ..., focus: _Optional[_Union[Focus, _Mapping]] = ..., ping: _Optional[_Union[Ping, _Mapping]] = ..., canvas_editing: _Optional[_Union[CanvasEditingFrame, _Mapping]] = ..., board_pointer: _Optional[_Union[BoardPointerFrame, _Mapping]] = ...) -> None: ...
 
 class Ready(_message.Message):
     __slots__ = ("session_id", "resume_token", "heartbeat_interval_ms", "server_time")
@@ -171,7 +191,7 @@ class Error(_message.Message):
     def __init__(self, code: _Optional[_Union[ErrorCode, str]] = ..., message: _Optional[str] = ...) -> None: ...
 
 class ServerFrame(_message.Message):
-    __slots__ = ("ready", "resumed", "resync_required", "event", "pong", "error", "typing", "presence", "agent_status", "canvas_editing")
+    __slots__ = ("ready", "resumed", "resync_required", "event", "pong", "error", "typing", "presence", "agent_status", "canvas_editing", "board_pointer")
     READY_FIELD_NUMBER: _ClassVar[int]
     RESUMED_FIELD_NUMBER: _ClassVar[int]
     RESYNC_REQUIRED_FIELD_NUMBER: _ClassVar[int]
@@ -182,6 +202,7 @@ class ServerFrame(_message.Message):
     PRESENCE_FIELD_NUMBER: _ClassVar[int]
     AGENT_STATUS_FIELD_NUMBER: _ClassVar[int]
     CANVAS_EDITING_FIELD_NUMBER: _ClassVar[int]
+    BOARD_POINTER_FIELD_NUMBER: _ClassVar[int]
     ready: Ready
     resumed: Resumed
     resync_required: ResyncRequired
@@ -192,4 +213,5 @@ class ServerFrame(_message.Message):
     presence: _events_pb2.PresenceChanged
     agent_status: _events_pb2.AgentStatus
     canvas_editing: _events_pb2.CanvasEditing
-    def __init__(self, ready: _Optional[_Union[Ready, _Mapping]] = ..., resumed: _Optional[_Union[Resumed, _Mapping]] = ..., resync_required: _Optional[_Union[ResyncRequired, _Mapping]] = ..., event: _Optional[_Union[Event, _Mapping]] = ..., pong: _Optional[_Union[Pong, _Mapping]] = ..., error: _Optional[_Union[Error, _Mapping]] = ..., typing: _Optional[_Union[_events_pb2.Typing, _Mapping]] = ..., presence: _Optional[_Union[_events_pb2.PresenceChanged, _Mapping]] = ..., agent_status: _Optional[_Union[_events_pb2.AgentStatus, _Mapping]] = ..., canvas_editing: _Optional[_Union[_events_pb2.CanvasEditing, _Mapping]] = ...) -> None: ...
+    board_pointer: _events_pb2.BoardPointer
+    def __init__(self, ready: _Optional[_Union[Ready, _Mapping]] = ..., resumed: _Optional[_Union[Resumed, _Mapping]] = ..., resync_required: _Optional[_Union[ResyncRequired, _Mapping]] = ..., event: _Optional[_Union[Event, _Mapping]] = ..., pong: _Optional[_Union[Pong, _Mapping]] = ..., error: _Optional[_Union[Error, _Mapping]] = ..., typing: _Optional[_Union[_events_pb2.Typing, _Mapping]] = ..., presence: _Optional[_Union[_events_pb2.PresenceChanged, _Mapping]] = ..., agent_status: _Optional[_Union[_events_pb2.AgentStatus, _Mapping]] = ..., canvas_editing: _Optional[_Union[_events_pb2.CanvasEditing, _Mapping]] = ..., board_pointer: _Optional[_Union[_events_pb2.BoardPointer, _Mapping]] = ...) -> None: ...

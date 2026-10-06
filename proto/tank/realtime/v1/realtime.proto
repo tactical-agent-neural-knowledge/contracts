@@ -27,12 +27,15 @@ message Subscribe {
   // Pages the client has open. Subscribing is what makes another person's edit
   // arrive; a client that never asks is unaffected.
   repeated string canvas_ids = 3;
+  // Boards the client has open.
+  repeated string board_ids = 4;
 }
 
 message Unsubscribe {
   repeated string channel_ids = 1;
   repeated string thread_root_ids = 2;
   repeated string canvas_ids = 3;
+  repeated string board_ids = 4;
 }
 
 message PresenceSubscribe {
@@ -49,6 +52,15 @@ message CanvasEditingFrame {
   string canvas_id = 1;
   string block_id = 2;            // empty: on the page, not in a block
   bool left = 3;
+}
+
+// "My pointer is here, and this is what I have selected." Rate-limited like typing.
+message BoardPointerFrame {
+  string board_id = 1;
+  double x = 2;
+  double y = 3;
+  repeated string selected_ids = 4;
+  bool left = 5;
 }
 
 message Focus {
@@ -68,6 +80,7 @@ message ClientFrame {
     Focus focus = 7;
     Ping ping = 8;
     CanvasEditingFrame canvas_editing = 9;
+    BoardPointerFrame board_pointer = 10;
   }
 }
 
@@ -119,5 +132,6 @@ message ServerFrame {
     tank.events.v1.PresenceChanged presence = 8;
     tank.events.v1.AgentStatus agent_status = 9;
     tank.events.v1.CanvasEditing canvas_editing = 10;
+    tank.events.v1.BoardPointer board_pointer = 11;
   }
 }

@@ -7,6 +7,7 @@ import "google/protobuf/timestamp.proto";
 import "tank/admin/v1/admin.proto";
 import "tank/agent/v1/agent.proto";
 import "tank/blocks/v1/blocks.proto";
+import "tank/board/v1/board.proto";
 import "tank/canvas/v1/canvas.proto";
 import "tank/channel/v1/channel.proto";
 import "tank/files/v1/files.proto";
@@ -283,4 +284,35 @@ message CanvasEditing {
   string user_id = 2;
   string block_id = 3;
   bool left = 4;
+}
+
+// board.objects.changed on evt.{ws}.board.{board}: objects were written or removed on
+// a board. A client with it open applies just those, which is why two people dragging
+// different shapes see each other rather than fighting over a whole document.
+message BoardObjectsChanged {
+  string board_id = 1;
+  repeated tank.board.v1.BoardObject objects = 2;
+  repeated string deleted_ids = 3;
+  string actor_id = 4;
+  int32 version = 5;
+}
+
+// board.changed on the same subject: the board's own fields moved (title, icon).
+message BoardChanged {
+  tank.board.v1.Board board = 1;
+  string actor_id = 2;
+}
+
+// Ephemeral, on typ.{ws}.board.{board}: a pointer moving across the board, and what
+// that person has selected. Never stored. This is what makes the agent visible in the
+// board beside the people.
+message BoardPointer {
+  string board_id = 1;
+  string user_id = 2;
+  double x = 3;
+  double y = 4;
+  repeated string selected_ids = 5;
+  bool left = 6;
+  // "user" | "agent", so the agent's cursor can be drawn as its own thing.
+  string kind = 7;
 }
