@@ -219,6 +219,33 @@ message ExportBoardResponse {
   bytes body = 3;
 }
 
+// One thing somebody did while clicking through a running frame.
+message FlowStep {
+  Element element = 1;
+  string action = 2;        // "click" | "fill" | "press" | "expect" | "goto"
+  string value = 3;         // what was typed, the key, or the text expected
+  string note = 4;          // what the person said about this step
+}
+
+// Turn a journey through the running app into a test. Clicking through a flow to
+// check it works and writing the test that checks it works are the same activity
+// done twice; this makes the second one fall out of the first.
+message GenerateTestRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  string object_id = 3;     // the frame the flow was recorded in
+  string name = 4;          // "a customer pays an invoice"
+  repeated FlowStep steps = 5;
+}
+message GenerateTestResponse {
+  string playwright_path = 1;   // e2e/<name>.spec.ts
+  string playwright = 2;
+  string maestro_path = 3;      // mobile/.maestro/<name>.yaml
+  string maestro = 4;
+  // Steps the recorder could not turn into an assertion anybody should trust.
+  repeated string skipped = 5;
+}
+
 service BoardService {
   rpc ListBoards(ListBoardsRequest) returns (ListBoardsResponse);
   rpc GetBoard(GetBoardRequest) returns (GetBoardResponse);
@@ -229,4 +256,5 @@ service BoardService {
   rpc RequestChange(RequestChangeRequest) returns (RequestChangeResponse);
   rpc ListTemplates(ListTemplatesRequest) returns (ListTemplatesResponse);
   rpc ExportBoard(ExportBoardRequest) returns (ExportBoardResponse);
+  rpc GenerateTest(GenerateTestRequest) returns (GenerateTestResponse);
 }

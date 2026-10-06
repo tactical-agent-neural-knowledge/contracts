@@ -370,3 +370,43 @@ class ExportBoardResponse(_message.Message):
     content_type: str
     body: bytes
     def __init__(self, filename: _Optional[str] = ..., content_type: _Optional[str] = ..., body: _Optional[bytes] = ...) -> None: ...
+
+class FlowStep(_message.Message):
+    __slots__ = ("element", "action", "value", "note")
+    ELEMENT_FIELD_NUMBER: _ClassVar[int]
+    ACTION_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    element: Element
+    action: str
+    value: str
+    note: str
+    def __init__(self, element: _Optional[_Union[Element, _Mapping]] = ..., action: _Optional[str] = ..., value: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
+
+class GenerateTestRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "object_id", "name", "steps")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    STEPS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    object_id: str
+    name: str
+    steps: _containers.RepeatedCompositeFieldContainer[FlowStep]
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., object_id: _Optional[str] = ..., name: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[FlowStep, _Mapping]]] = ...) -> None: ...
+
+class GenerateTestResponse(_message.Message):
+    __slots__ = ("playwright_path", "playwright", "maestro_path", "maestro", "skipped")
+    PLAYWRIGHT_PATH_FIELD_NUMBER: _ClassVar[int]
+    PLAYWRIGHT_FIELD_NUMBER: _ClassVar[int]
+    MAESTRO_PATH_FIELD_NUMBER: _ClassVar[int]
+    MAESTRO_FIELD_NUMBER: _ClassVar[int]
+    SKIPPED_FIELD_NUMBER: _ClassVar[int]
+    playwright_path: str
+    playwright: str
+    maestro_path: str
+    maestro: str
+    skipped: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, playwright_path: _Optional[str] = ..., playwright: _Optional[str] = ..., maestro_path: _Optional[str] = ..., maestro: _Optional[str] = ..., skipped: _Optional[_Iterable[str]] = ...) -> None: ...

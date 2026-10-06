@@ -57,6 +57,9 @@ const (
 	// BoardServiceExportBoardProcedure is the fully-qualified name of the BoardService's ExportBoard
 	// RPC.
 	BoardServiceExportBoardProcedure = "/tank.board.v1.BoardService/ExportBoard"
+	// BoardServiceGenerateTestProcedure is the fully-qualified name of the BoardService's GenerateTest
+	// RPC.
+	BoardServiceGenerateTestProcedure = "/tank.board.v1.BoardService/GenerateTest"
 )
 
 // BoardServiceClient is a client for the tank.board.v1.BoardService service.
@@ -70,6 +73,7 @@ type BoardServiceClient interface {
 	RequestChange(context.Context, *connect.Request[v1.RequestChangeRequest]) (*connect.Response[v1.RequestChangeResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
 	ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error)
+	GenerateTest(context.Context, *connect.Request[v1.GenerateTestRequest]) (*connect.Response[v1.GenerateTestResponse], error)
 }
 
 // NewBoardServiceClient constructs a client for the tank.board.v1.BoardService service. By default,
@@ -137,6 +141,12 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(boardServiceMethods.ByName("ExportBoard")),
 			connect.WithClientOptions(opts...),
 		),
+		generateTest: connect.NewClient[v1.GenerateTestRequest, v1.GenerateTestResponse](
+			httpClient,
+			baseURL+BoardServiceGenerateTestProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("GenerateTest")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -151,6 +161,7 @@ type boardServiceClient struct {
 	requestChange *connect.Client[v1.RequestChangeRequest, v1.RequestChangeResponse]
 	listTemplates *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
 	exportBoard   *connect.Client[v1.ExportBoardRequest, v1.ExportBoardResponse]
+	generateTest  *connect.Client[v1.GenerateTestRequest, v1.GenerateTestResponse]
 }
 
 // ListBoards calls tank.board.v1.BoardService.ListBoards.
@@ -198,6 +209,11 @@ func (c *boardServiceClient) ExportBoard(ctx context.Context, req *connect.Reque
 	return c.exportBoard.CallUnary(ctx, req)
 }
 
+// GenerateTest calls tank.board.v1.BoardService.GenerateTest.
+func (c *boardServiceClient) GenerateTest(ctx context.Context, req *connect.Request[v1.GenerateTestRequest]) (*connect.Response[v1.GenerateTestResponse], error) {
+	return c.generateTest.CallUnary(ctx, req)
+}
+
 // BoardServiceHandler is an implementation of the tank.board.v1.BoardService service.
 type BoardServiceHandler interface {
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
@@ -209,6 +225,7 @@ type BoardServiceHandler interface {
 	RequestChange(context.Context, *connect.Request[v1.RequestChangeRequest]) (*connect.Response[v1.RequestChangeResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
 	ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error)
+	GenerateTest(context.Context, *connect.Request[v1.GenerateTestRequest]) (*connect.Response[v1.GenerateTestResponse], error)
 }
 
 // NewBoardServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -272,6 +289,12 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(boardServiceMethods.ByName("ExportBoard")),
 		connect.WithHandlerOptions(opts...),
 	)
+	boardServiceGenerateTestHandler := connect.NewUnaryHandler(
+		BoardServiceGenerateTestProcedure,
+		svc.GenerateTest,
+		connect.WithSchema(boardServiceMethods.ByName("GenerateTest")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.board.v1.BoardService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BoardServiceListBoardsProcedure:
@@ -292,6 +315,8 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 			boardServiceListTemplatesHandler.ServeHTTP(w, r)
 		case BoardServiceExportBoardProcedure:
 			boardServiceExportBoardHandler.ServeHTTP(w, r)
+		case BoardServiceGenerateTestProcedure:
+			boardServiceGenerateTestHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -335,4 +360,8 @@ func (UnimplementedBoardServiceHandler) ListTemplates(context.Context, *connect.
 
 func (UnimplementedBoardServiceHandler) ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ExportBoard is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) GenerateTest(context.Context, *connect.Request[v1.GenerateTestRequest]) (*connect.Response[v1.GenerateTestResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.GenerateTest is not implemented"))
 }
