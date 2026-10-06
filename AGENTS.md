@@ -1,11 +1,11 @@
-# Neural Knowledge by TANK · refreshed 2026-10-03 · c5e2e604e1c6
+# Neural Knowledge by TANK · refreshed 2026-10-06 · fb6e2ffe6678
 
-`contracts` is the single source of truth for every wire format in TANK: 22 Protobuf/Connect packages
+`contracts` is the single source of truth for every wire format in TANK: 25 Protobuf/Connect packages
 under `proto/tank/<domain>/v1/`, covering auth, workspaces, channels, messages, files, events, the
-realtime gateway, and the agent control plane. The generated Go, TypeScript and Python clients are
-built with buf and **committed** under `gen/`, so consumers import them instead of regenerating.
-Nothing here runs: it is a schema repository whose job is to change without breaking api, web, mobile,
-sdk-ts, agent-control, agent-runner or knowledge.
+realtime gateway, Neuralboards, Neuralbooks, Neuralcanvas, and the agent control plane. The generated
+Go, TypeScript and Python clients are built with buf and **committed** under `gen/`, so consumers
+import them instead of regenerating. Nothing here runs: it is a schema repository whose job is to
+change without breaking api, web, mobile, sdk-ts, agent-control, agent-runner or knowledge.
 
 ## Commands
 
@@ -17,14 +17,13 @@ sdk-ts, agent-control, agent-runner or knowledge.
 - `make clean` — drop the generated `tank` subtree in all three languages
 - `npm install && npm run build` in `gen/ts` — the tsc compile CI performs
 - `go test ./...` is listed in the map but there are no `_test.go` files in this repo
-
-Every `make` target shells out to `npx --yes @bufbuild/buf`; pass `BUF=buf` if a real binary is on PATH.
+- Every `make` target shells out to `npx --yes @bufbuild/buf`; pass `BUF=buf` if a real binary is on PATH
 
 ## Areas
 
 - `.` — build surface: `Makefile`, `buf.yaml`, `buf.gen.yaml`, `go.mod`, the committed `gen/` tree → `.neural/neurons/root.md`
 - `.github` — the single `ci.yml` workflow: checks on PRs, npm publishing on pushes → `.neural/neurons/github.md`
-- `proto` — the schemas themselves, one package per domain → `.neural/neurons/proto.md`
+- `proto` — the 25 schemas themselves, one package per domain → `.neural/neurons/proto.md`
 
 ## Rules
 
