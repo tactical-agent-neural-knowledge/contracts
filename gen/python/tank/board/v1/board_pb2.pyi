@@ -45,7 +45,7 @@ class Rect(_message.Message):
     def __init__(self, x: _Optional[float] = ..., y: _Optional[float] = ..., w: _Optional[float] = ..., h: _Optional[float] = ...) -> None: ...
 
 class Style(_message.Message):
-    __slots__ = ("fill", "stroke", "stroke_width", "opacity", "corner_radius", "dash", "font_size", "font_weight", "align")
+    __slots__ = ("fill", "stroke", "stroke_width", "opacity", "corner_radius", "dash", "font_size", "font_weight", "align", "shadow", "blur")
     FILL_FIELD_NUMBER: _ClassVar[int]
     STROKE_FIELD_NUMBER: _ClassVar[int]
     STROKE_WIDTH_FIELD_NUMBER: _ClassVar[int]
@@ -55,6 +55,8 @@ class Style(_message.Message):
     FONT_SIZE_FIELD_NUMBER: _ClassVar[int]
     FONT_WEIGHT_FIELD_NUMBER: _ClassVar[int]
     ALIGN_FIELD_NUMBER: _ClassVar[int]
+    SHADOW_FIELD_NUMBER: _ClassVar[int]
+    BLUR_FIELD_NUMBER: _ClassVar[int]
     fill: str
     stroke: str
     stroke_width: float
@@ -64,7 +66,9 @@ class Style(_message.Message):
     font_size: int
     font_weight: str
     align: str
-    def __init__(self, fill: _Optional[str] = ..., stroke: _Optional[str] = ..., stroke_width: _Optional[float] = ..., opacity: _Optional[float] = ..., corner_radius: _Optional[float] = ..., dash: _Optional[str] = ..., font_size: _Optional[int] = ..., font_weight: _Optional[str] = ..., align: _Optional[str] = ...) -> None: ...
+    shadow: str
+    blur: float
+    def __init__(self, fill: _Optional[str] = ..., stroke: _Optional[str] = ..., stroke_width: _Optional[float] = ..., opacity: _Optional[float] = ..., corner_radius: _Optional[float] = ..., dash: _Optional[str] = ..., font_size: _Optional[int] = ..., font_weight: _Optional[str] = ..., align: _Optional[str] = ..., shadow: _Optional[str] = ..., blur: _Optional[float] = ...) -> None: ...
 
 class AppFrame(_message.Message):
     __slots__ = ("repo", "ref", "path", "platform", "viewport_width", "viewport_height", "preview_url", "status", "note")
@@ -89,7 +93,7 @@ class AppFrame(_message.Message):
     def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., platform: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., preview_url: _Optional[str] = ..., status: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
 
 class BoardObject(_message.Message):
-    __slots__ = ("id", "kind", "at", "style", "text", "rotation", "z", "parent_id", "from_id", "to_id", "points", "file_id", "file_url", "app", "locked", "created_by", "rev")
+    __slots__ = ("id", "kind", "at", "style", "text", "rotation", "z", "parent_id", "from_id", "to_id", "points", "file_id", "file_url", "app", "locked", "meta", "created_by", "rev")
     ID_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     AT_FIELD_NUMBER: _ClassVar[int]
@@ -105,6 +109,7 @@ class BoardObject(_message.Message):
     FILE_URL_FIELD_NUMBER: _ClassVar[int]
     APP_FIELD_NUMBER: _ClassVar[int]
     LOCKED_FIELD_NUMBER: _ClassVar[int]
+    META_FIELD_NUMBER: _ClassVar[int]
     CREATED_BY_FIELD_NUMBER: _ClassVar[int]
     REV_FIELD_NUMBER: _ClassVar[int]
     id: str
@@ -122,9 +127,10 @@ class BoardObject(_message.Message):
     file_url: str
     app: AppFrame
     locked: bool
+    meta: str
     created_by: str
     rev: int
-    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[ObjectKind, str]] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., style: _Optional[_Union[Style, _Mapping]] = ..., text: _Optional[str] = ..., rotation: _Optional[float] = ..., z: _Optional[int] = ..., parent_id: _Optional[str] = ..., from_id: _Optional[str] = ..., to_id: _Optional[str] = ..., points: _Optional[_Iterable[float]] = ..., file_id: _Optional[str] = ..., file_url: _Optional[str] = ..., app: _Optional[_Union[AppFrame, _Mapping]] = ..., locked: bool = ..., created_by: _Optional[str] = ..., rev: _Optional[int] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[ObjectKind, str]] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., style: _Optional[_Union[Style, _Mapping]] = ..., text: _Optional[str] = ..., rotation: _Optional[float] = ..., z: _Optional[int] = ..., parent_id: _Optional[str] = ..., from_id: _Optional[str] = ..., to_id: _Optional[str] = ..., points: _Optional[_Iterable[float]] = ..., file_id: _Optional[str] = ..., file_url: _Optional[str] = ..., app: _Optional[_Union[AppFrame, _Mapping]] = ..., locked: bool = ..., meta: _Optional[str] = ..., created_by: _Optional[str] = ..., rev: _Optional[int] = ...) -> None: ...
 
 class Board(_message.Message):
     __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "objects", "version", "created_by", "created_at", "updated_by", "updated_at")
@@ -223,16 +229,20 @@ class CreateBoardResponse(_message.Message):
     def __init__(self, board: _Optional[_Union[Board, _Mapping]] = ...) -> None: ...
 
 class UpdateBoardRequest(_message.Message):
-    __slots__ = ("workspace_id", "id", "title", "icon")
+    __slots__ = ("workspace_id", "id", "title", "icon", "channel_id", "set_channel")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     ICON_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    SET_CHANNEL_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     id: str
     title: str
     icon: str
-    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ...) -> None: ...
+    channel_id: str
+    set_channel: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., channel_id: _Optional[str] = ..., set_channel: bool = ...) -> None: ...
 
 class UpdateBoardResponse(_message.Message):
     __slots__ = ("board",)
