@@ -2,6 +2,7 @@ from google.protobuf import struct_pb2 as _struct_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from tank.agent.v1 import agent_pb2 as _agent_pb2
 from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
+from tank.board.v1 import board_pb2 as _board_pb2
 from tank.books.v1 import books_pb2 as _books_pb2
 from tank.canvas.v1 import canvas_pb2 as _canvas_pb2
 from google.protobuf.internal import containers as _containers
@@ -614,6 +615,134 @@ class BooksReportResponse(_message.Message):
     enabled: bool
     report: _books_pb2.Report
     def __init__(self, enabled: bool = ..., report: _Optional[_Union[_books_pb2.Report, _Mapping]] = ...) -> None: ...
+
+class ListBoardsRequest(_message.Message):
+    __slots__ = ("limit",)
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    limit: int
+    def __init__(self, limit: _Optional[int] = ...) -> None: ...
+
+class BoardListing(_message.Message):
+    __slots__ = ("board_id", "title", "objects", "app_frames")
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    OBJECTS_FIELD_NUMBER: _ClassVar[int]
+    APP_FRAMES_FIELD_NUMBER: _ClassVar[int]
+    board_id: str
+    title: str
+    objects: int
+    app_frames: int
+    def __init__(self, board_id: _Optional[str] = ..., title: _Optional[str] = ..., objects: _Optional[int] = ..., app_frames: _Optional[int] = ...) -> None: ...
+
+class ListBoardsResponse(_message.Message):
+    __slots__ = ("boards",)
+    BOARDS_FIELD_NUMBER: _ClassVar[int]
+    boards: _containers.RepeatedCompositeFieldContainer[BoardListing]
+    def __init__(self, boards: _Optional[_Iterable[_Union[BoardListing, _Mapping]]] = ...) -> None: ...
+
+class ReadBoardRequest(_message.Message):
+    __slots__ = ("board_id",)
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    board_id: str
+    def __init__(self, board_id: _Optional[str] = ...) -> None: ...
+
+class ReadBoardResponse(_message.Message):
+    __slots__ = ("board",)
+    BOARD_FIELD_NUMBER: _ClassVar[int]
+    board: _board_pb2.Board
+    def __init__(self, board: _Optional[_Union[_board_pb2.Board, _Mapping]] = ...) -> None: ...
+
+class BoardShape(_message.Message):
+    __slots__ = ("id", "kind", "x", "y", "w", "h", "text", "fill", "parent_id", "from_id", "to_id")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    X_FIELD_NUMBER: _ClassVar[int]
+    Y_FIELD_NUMBER: _ClassVar[int]
+    W_FIELD_NUMBER: _ClassVar[int]
+    H_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    FILL_FIELD_NUMBER: _ClassVar[int]
+    PARENT_ID_FIELD_NUMBER: _ClassVar[int]
+    FROM_ID_FIELD_NUMBER: _ClassVar[int]
+    TO_ID_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    kind: str
+    x: float
+    y: float
+    w: float
+    h: float
+    text: str
+    fill: str
+    parent_id: str
+    from_id: str
+    to_id: str
+    def __init__(self, id: _Optional[str] = ..., kind: _Optional[str] = ..., x: _Optional[float] = ..., y: _Optional[float] = ..., w: _Optional[float] = ..., h: _Optional[float] = ..., text: _Optional[str] = ..., fill: _Optional[str] = ..., parent_id: _Optional[str] = ..., from_id: _Optional[str] = ..., to_id: _Optional[str] = ...) -> None: ...
+
+class DrawOnBoardRequest(_message.Message):
+    __slots__ = ("board_id", "shapes", "delete_ids", "base_revs")
+    class BaseRevsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: int
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[int] = ...) -> None: ...
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    SHAPES_FIELD_NUMBER: _ClassVar[int]
+    DELETE_IDS_FIELD_NUMBER: _ClassVar[int]
+    BASE_REVS_FIELD_NUMBER: _ClassVar[int]
+    board_id: str
+    shapes: _containers.RepeatedCompositeFieldContainer[BoardShape]
+    delete_ids: _containers.RepeatedScalarFieldContainer[str]
+    base_revs: _containers.ScalarMap[str, int]
+    def __init__(self, board_id: _Optional[str] = ..., shapes: _Optional[_Iterable[_Union[BoardShape, _Mapping]]] = ..., delete_ids: _Optional[_Iterable[str]] = ..., base_revs: _Optional[_Mapping[str, int]] = ...) -> None: ...
+
+class DrawOnBoardResponse(_message.Message):
+    __slots__ = ("object_ids", "objects", "conflict_ids", "conflict_note")
+    OBJECT_IDS_FIELD_NUMBER: _ClassVar[int]
+    OBJECTS_FIELD_NUMBER: _ClassVar[int]
+    CONFLICT_IDS_FIELD_NUMBER: _ClassVar[int]
+    CONFLICT_NOTE_FIELD_NUMBER: _ClassVar[int]
+    object_ids: _containers.RepeatedScalarFieldContainer[str]
+    objects: int
+    conflict_ids: _containers.RepeatedScalarFieldContainer[str]
+    conflict_note: str
+    def __init__(self, object_ids: _Optional[_Iterable[str]] = ..., objects: _Optional[int] = ..., conflict_ids: _Optional[_Iterable[str]] = ..., conflict_note: _Optional[str] = ...) -> None: ...
+
+class ArrangeBoardRequest(_message.Message):
+    __slots__ = ("board_id", "object_ids", "layout", "gap", "columns", "base_revs")
+    class BaseRevsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: int
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[int] = ...) -> None: ...
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_IDS_FIELD_NUMBER: _ClassVar[int]
+    LAYOUT_FIELD_NUMBER: _ClassVar[int]
+    GAP_FIELD_NUMBER: _ClassVar[int]
+    COLUMNS_FIELD_NUMBER: _ClassVar[int]
+    BASE_REVS_FIELD_NUMBER: _ClassVar[int]
+    board_id: str
+    object_ids: _containers.RepeatedScalarFieldContainer[str]
+    layout: str
+    gap: float
+    columns: int
+    base_revs: _containers.ScalarMap[str, int]
+    def __init__(self, board_id: _Optional[str] = ..., object_ids: _Optional[_Iterable[str]] = ..., layout: _Optional[str] = ..., gap: _Optional[float] = ..., columns: _Optional[int] = ..., base_revs: _Optional[_Mapping[str, int]] = ...) -> None: ...
+
+class ArrangeBoardResponse(_message.Message):
+    __slots__ = ("moved", "note", "conflict_ids", "conflict_note")
+    MOVED_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    CONFLICT_IDS_FIELD_NUMBER: _ClassVar[int]
+    CONFLICT_NOTE_FIELD_NUMBER: _ClassVar[int]
+    moved: int
+    note: str
+    conflict_ids: _containers.RepeatedScalarFieldContainer[str]
+    conflict_note: str
+    def __init__(self, moved: _Optional[int] = ..., note: _Optional[str] = ..., conflict_ids: _Optional[_Iterable[str]] = ..., conflict_note: _Optional[str] = ...) -> None: ...
 
 class OpenPullRequestRequest(_message.Message):
     __slots__ = ("title", "body", "head_sha", "draft")

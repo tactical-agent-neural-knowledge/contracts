@@ -104,6 +104,17 @@ const (
 	RunnerServiceReadCanvasProcedure = "/tank.agentctl.v1.RunnerService/ReadCanvas"
 	// RunnerServiceAskCanvasProcedure is the fully-qualified name of the RunnerService's AskCanvas RPC.
 	RunnerServiceAskCanvasProcedure = "/tank.agentctl.v1.RunnerService/AskCanvas"
+	// RunnerServiceListBoardsProcedure is the fully-qualified name of the RunnerService's ListBoards
+	// RPC.
+	RunnerServiceListBoardsProcedure = "/tank.agentctl.v1.RunnerService/ListBoards"
+	// RunnerServiceReadBoardProcedure is the fully-qualified name of the RunnerService's ReadBoard RPC.
+	RunnerServiceReadBoardProcedure = "/tank.agentctl.v1.RunnerService/ReadBoard"
+	// RunnerServiceDrawOnBoardProcedure is the fully-qualified name of the RunnerService's DrawOnBoard
+	// RPC.
+	RunnerServiceDrawOnBoardProcedure = "/tank.agentctl.v1.RunnerService/DrawOnBoard"
+	// RunnerServiceArrangeBoardProcedure is the fully-qualified name of the RunnerService's
+	// ArrangeBoard RPC.
+	RunnerServiceArrangeBoardProcedure = "/tank.agentctl.v1.RunnerService/ArrangeBoard"
 	// RunnerServicePollInboxProcedure is the fully-qualified name of the RunnerService's PollInbox RPC.
 	RunnerServicePollInboxProcedure = "/tank.agentctl.v1.RunnerService/PollInbox"
 	// RunnerServiceOpenPullRequestProcedure is the fully-qualified name of the RunnerService's
@@ -204,6 +215,10 @@ type RunnerServiceClient interface {
 	WriteUpThread(context.Context, *connect.Request[v1.WriteUpThreadRequest]) (*connect.Response[v1.WriteUpThreadResponse], error)
 	ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error)
 	AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error)
+	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
+	ReadBoard(context.Context, *connect.Request[v1.ReadBoardRequest]) (*connect.Response[v1.ReadBoardResponse], error)
+	DrawOnBoard(context.Context, *connect.Request[v1.DrawOnBoardRequest]) (*connect.Response[v1.DrawOnBoardResponse], error)
+	ArrangeBoard(context.Context, *connect.Request[v1.ArrangeBoardRequest]) (*connect.Response[v1.ArrangeBoardResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -375,6 +390,30 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("AskCanvas")),
 			connect.WithClientOptions(opts...),
 		),
+		listBoards: connect.NewClient[v1.ListBoardsRequest, v1.ListBoardsResponse](
+			httpClient,
+			baseURL+RunnerServiceListBoardsProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ListBoards")),
+			connect.WithClientOptions(opts...),
+		),
+		readBoard: connect.NewClient[v1.ReadBoardRequest, v1.ReadBoardResponse](
+			httpClient,
+			baseURL+RunnerServiceReadBoardProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ReadBoard")),
+			connect.WithClientOptions(opts...),
+		),
+		drawOnBoard: connect.NewClient[v1.DrawOnBoardRequest, v1.DrawOnBoardResponse](
+			httpClient,
+			baseURL+RunnerServiceDrawOnBoardProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("DrawOnBoard")),
+			connect.WithClientOptions(opts...),
+		),
+		arrangeBoard: connect.NewClient[v1.ArrangeBoardRequest, v1.ArrangeBoardResponse](
+			httpClient,
+			baseURL+RunnerServiceArrangeBoardProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ArrangeBoard")),
+			connect.WithClientOptions(opts...),
+		),
 		pollInbox: connect.NewClient[v1.PollInboxRequest, v1.PollInboxResponse](
 			httpClient,
 			baseURL+RunnerServicePollInboxProcedure,
@@ -476,6 +515,10 @@ type runnerServiceClient struct {
 	writeUpThread            *connect.Client[v1.WriteUpThreadRequest, v1.WriteUpThreadResponse]
 	readCanvas               *connect.Client[v1.ReadCanvasRequest, v1.ReadCanvasResponse]
 	askCanvas                *connect.Client[v1.AskCanvasRequest, v1.AskCanvasResponse]
+	listBoards               *connect.Client[v1.ListBoardsRequest, v1.ListBoardsResponse]
+	readBoard                *connect.Client[v1.ReadBoardRequest, v1.ReadBoardResponse]
+	drawOnBoard              *connect.Client[v1.DrawOnBoardRequest, v1.DrawOnBoardResponse]
+	arrangeBoard             *connect.Client[v1.ArrangeBoardRequest, v1.ArrangeBoardResponse]
 	pollInbox                *connect.Client[v1.PollInboxRequest, v1.PollInboxResponse]
 	openPullRequest          *connect.Client[v1.OpenPullRequestRequest, v1.OpenPullRequestResponse]
 	requestCiWatch           *connect.Client[v1.RequestCiWatchRequest, v1.RequestCiWatchResponse]
@@ -610,6 +653,26 @@ func (c *runnerServiceClient) AskCanvas(ctx context.Context, req *connect.Reques
 	return c.askCanvas.CallUnary(ctx, req)
 }
 
+// ListBoards calls tank.agentctl.v1.RunnerService.ListBoards.
+func (c *runnerServiceClient) ListBoards(ctx context.Context, req *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error) {
+	return c.listBoards.CallUnary(ctx, req)
+}
+
+// ReadBoard calls tank.agentctl.v1.RunnerService.ReadBoard.
+func (c *runnerServiceClient) ReadBoard(ctx context.Context, req *connect.Request[v1.ReadBoardRequest]) (*connect.Response[v1.ReadBoardResponse], error) {
+	return c.readBoard.CallUnary(ctx, req)
+}
+
+// DrawOnBoard calls tank.agentctl.v1.RunnerService.DrawOnBoard.
+func (c *runnerServiceClient) DrawOnBoard(ctx context.Context, req *connect.Request[v1.DrawOnBoardRequest]) (*connect.Response[v1.DrawOnBoardResponse], error) {
+	return c.drawOnBoard.CallUnary(ctx, req)
+}
+
+// ArrangeBoard calls tank.agentctl.v1.RunnerService.ArrangeBoard.
+func (c *runnerServiceClient) ArrangeBoard(ctx context.Context, req *connect.Request[v1.ArrangeBoardRequest]) (*connect.Response[v1.ArrangeBoardResponse], error) {
+	return c.arrangeBoard.CallUnary(ctx, req)
+}
+
 // PollInbox calls tank.agentctl.v1.RunnerService.PollInbox.
 func (c *runnerServiceClient) PollInbox(ctx context.Context, req *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error) {
 	return c.pollInbox.CallUnary(ctx, req)
@@ -696,6 +759,10 @@ type RunnerServiceHandler interface {
 	WriteUpThread(context.Context, *connect.Request[v1.WriteUpThreadRequest]) (*connect.Response[v1.WriteUpThreadResponse], error)
 	ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error)
 	AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error)
+	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
+	ReadBoard(context.Context, *connect.Request[v1.ReadBoardRequest]) (*connect.Response[v1.ReadBoardResponse], error)
+	DrawOnBoard(context.Context, *connect.Request[v1.DrawOnBoardRequest]) (*connect.Response[v1.DrawOnBoardResponse], error)
+	ArrangeBoard(context.Context, *connect.Request[v1.ArrangeBoardRequest]) (*connect.Response[v1.ArrangeBoardResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -863,6 +930,30 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("AskCanvas")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceListBoardsHandler := connect.NewUnaryHandler(
+		RunnerServiceListBoardsProcedure,
+		svc.ListBoards,
+		connect.WithSchema(runnerServiceMethods.ByName("ListBoards")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceReadBoardHandler := connect.NewUnaryHandler(
+		RunnerServiceReadBoardProcedure,
+		svc.ReadBoard,
+		connect.WithSchema(runnerServiceMethods.ByName("ReadBoard")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceDrawOnBoardHandler := connect.NewUnaryHandler(
+		RunnerServiceDrawOnBoardProcedure,
+		svc.DrawOnBoard,
+		connect.WithSchema(runnerServiceMethods.ByName("DrawOnBoard")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceArrangeBoardHandler := connect.NewUnaryHandler(
+		RunnerServiceArrangeBoardProcedure,
+		svc.ArrangeBoard,
+		connect.WithSchema(runnerServiceMethods.ByName("ArrangeBoard")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServicePollInboxHandler := connect.NewUnaryHandler(
 		RunnerServicePollInboxProcedure,
 		svc.PollInbox,
@@ -985,6 +1076,14 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceReadCanvasHandler.ServeHTTP(w, r)
 		case RunnerServiceAskCanvasProcedure:
 			runnerServiceAskCanvasHandler.ServeHTTP(w, r)
+		case RunnerServiceListBoardsProcedure:
+			runnerServiceListBoardsHandler.ServeHTTP(w, r)
+		case RunnerServiceReadBoardProcedure:
+			runnerServiceReadBoardHandler.ServeHTTP(w, r)
+		case RunnerServiceDrawOnBoardProcedure:
+			runnerServiceDrawOnBoardHandler.ServeHTTP(w, r)
+		case RunnerServiceArrangeBoardProcedure:
+			runnerServiceArrangeBoardHandler.ServeHTTP(w, r)
 		case RunnerServicePollInboxProcedure:
 			runnerServicePollInboxHandler.ServeHTTP(w, r)
 		case RunnerServiceOpenPullRequestProcedure:
@@ -1112,6 +1211,22 @@ func (UnimplementedRunnerServiceHandler) ReadCanvas(context.Context, *connect.Re
 
 func (UnimplementedRunnerServiceHandler) AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.AskCanvas is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ListBoards is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ReadBoard(context.Context, *connect.Request[v1.ReadBoardRequest]) (*connect.Response[v1.ReadBoardResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReadBoard is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) DrawOnBoard(context.Context, *connect.Request[v1.DrawOnBoardRequest]) (*connect.Response[v1.DrawOnBoardResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.DrawOnBoard is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ArrangeBoard(context.Context, *connect.Request[v1.ArrangeBoardRequest]) (*connect.Response[v1.ArrangeBoardResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ArrangeBoard is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error) {
