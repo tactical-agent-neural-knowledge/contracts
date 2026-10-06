@@ -324,6 +324,66 @@ class SetRepoAccessResponse(_message.Message):
     access: _containers.RepeatedCompositeFieldContainer[RepoAccess]
     def __init__(self, access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ...) -> None: ...
 
+class SetUpRepoPreviewsRequest(_message.Message):
+    __slots__ = ("workspace_id", "repos", "base_branch", "rotate_token")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPOS_FIELD_NUMBER: _ClassVar[int]
+    BASE_BRANCH_FIELD_NUMBER: _ClassVar[int]
+    ROTATE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repos: _containers.RepeatedScalarFieldContainer[str]
+    base_branch: str
+    rotate_token: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., repos: _Optional[_Iterable[str]] = ..., base_branch: _Optional[str] = ..., rotate_token: bool = ...) -> None: ...
+
+class RepoPreviewSetup(_message.Message):
+    __slots__ = ("repo", "status", "pull_request_url", "branch", "workflow_path", "reason", "requested_at")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    PULL_REQUEST_URL_FIELD_NUMBER: _ClassVar[int]
+    BRANCH_FIELD_NUMBER: _ClassVar[int]
+    WORKFLOW_PATH_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_AT_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    status: str
+    pull_request_url: str
+    branch: str
+    workflow_path: str
+    reason: str
+    requested_at: _timestamp_pb2.Timestamp
+    def __init__(self, repo: _Optional[str] = ..., status: _Optional[str] = ..., pull_request_url: _Optional[str] = ..., branch: _Optional[str] = ..., workflow_path: _Optional[str] = ..., reason: _Optional[str] = ..., requested_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class SetUpRepoPreviewsResponse(_message.Message):
+    __slots__ = ("results", "token", "secret_name", "token_issued", "next_steps")
+    RESULTS_FIELD_NUMBER: _ClassVar[int]
+    TOKEN_FIELD_NUMBER: _ClassVar[int]
+    SECRET_NAME_FIELD_NUMBER: _ClassVar[int]
+    TOKEN_ISSUED_FIELD_NUMBER: _ClassVar[int]
+    NEXT_STEPS_FIELD_NUMBER: _ClassVar[int]
+    results: _containers.RepeatedCompositeFieldContainer[RepoPreviewSetup]
+    token: str
+    secret_name: str
+    token_issued: bool
+    next_steps: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, results: _Optional[_Iterable[_Union[RepoPreviewSetup, _Mapping]]] = ..., token: _Optional[str] = ..., secret_name: _Optional[str] = ..., token_issued: bool = ..., next_steps: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ListRepoPreviewSetupsRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class ListRepoPreviewSetupsResponse(_message.Message):
+    __slots__ = ("setups", "secret_name", "token_issued")
+    SETUPS_FIELD_NUMBER: _ClassVar[int]
+    SECRET_NAME_FIELD_NUMBER: _ClassVar[int]
+    TOKEN_ISSUED_FIELD_NUMBER: _ClassVar[int]
+    setups: _containers.RepeatedCompositeFieldContainer[RepoPreviewSetup]
+    secret_name: str
+    token_issued: bool
+    def __init__(self, setups: _Optional[_Iterable[_Union[RepoPreviewSetup, _Mapping]]] = ..., secret_name: _Optional[str] = ..., token_issued: bool = ...) -> None: ...
+
 class TreadSettings(_message.Message):
     __slots__ = ("concurrent_runs", "auto_accept_plans", "max_run_usd", "daily_usd", "pull_requests", "pr_reviewer_ids", "read_neural_knowledge")
     CONCURRENT_RUNS_FIELD_NUMBER: _ClassVar[int]

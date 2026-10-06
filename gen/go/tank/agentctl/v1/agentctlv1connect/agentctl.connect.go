@@ -187,6 +187,9 @@ const (
 	// ControlServiceGetDeploymentProcedure is the fully-qualified name of the ControlService's
 	// GetDeployment RPC.
 	ControlServiceGetDeploymentProcedure = "/tank.agentctl.v1.ControlService/GetDeployment"
+	// ControlServiceSetUpPreviewWorkflowProcedure is the fully-qualified name of the ControlService's
+	// SetUpPreviewWorkflow RPC.
+	ControlServiceSetUpPreviewWorkflowProcedure = "/tank.agentctl.v1.ControlService/SetUpPreviewWorkflow"
 )
 
 // RunnerServiceClient is a client for the tank.agentctl.v1.RunnerService service.
@@ -1304,6 +1307,12 @@ type ControlServiceClient interface {
 	// What GitOps holds for a slug right now, and whether the repository carries the
 	// deploy workflow yet.
 	GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error)
+	// Adds the preview-reporting workflow to repositories the workspace's own
+	// installation reaches, each as a pull request: branch, file, pull request. Nothing
+	// is merged and nothing is written to a default branch — TANK proposes, the
+	// workspace decides. Idempotent per repository, and one repository's refusal never
+	// stops the others.
+	SetUpPreviewWorkflow(context.Context, *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error)
 }
 
 // NewControlServiceClient constructs a client for the tank.agentctl.v1.ControlService service. By
@@ -1401,6 +1410,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("GetDeployment")),
 			connect.WithClientOptions(opts...),
 		),
+		setUpPreviewWorkflow: connect.NewClient[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse](
+			httpClient,
+			baseURL+ControlServiceSetUpPreviewWorkflowProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("SetUpPreviewWorkflow")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -1420,6 +1435,7 @@ type controlServiceClient struct {
 	setProductReplicas     *connect.Client[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse]
 	registerDeployment     *connect.Client[v1.RegisterDeploymentRequest, v1.RegisterDeploymentResponse]
 	getDeployment          *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
+	setUpPreviewWorkflow   *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
 }
 
 // StartRun calls tank.agentctl.v1.ControlService.StartRun.
@@ -1492,6 +1508,11 @@ func (c *controlServiceClient) GetDeployment(ctx context.Context, req *connect.R
 	return c.getDeployment.CallUnary(ctx, req)
 }
 
+// SetUpPreviewWorkflow calls tank.agentctl.v1.ControlService.SetUpPreviewWorkflow.
+func (c *controlServiceClient) SetUpPreviewWorkflow(ctx context.Context, req *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error) {
+	return c.setUpPreviewWorkflow.CallUnary(ctx, req)
+}
+
 // ControlServiceHandler is an implementation of the tank.agentctl.v1.ControlService service.
 type ControlServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
@@ -1519,6 +1540,12 @@ type ControlServiceHandler interface {
 	// What GitOps holds for a slug right now, and whether the repository carries the
 	// deploy workflow yet.
 	GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error)
+	// Adds the preview-reporting workflow to repositories the workspace's own
+	// installation reaches, each as a pull request: branch, file, pull request. Nothing
+	// is merged and nothing is written to a default branch — TANK proposes, the
+	// workspace decides. Idempotent per repository, and one repository's refusal never
+	// stops the others.
+	SetUpPreviewWorkflow(context.Context, *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error)
 }
 
 // NewControlServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -1612,6 +1639,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("GetDeployment")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceSetUpPreviewWorkflowHandler := connect.NewUnaryHandler(
+		ControlServiceSetUpPreviewWorkflowProcedure,
+		svc.SetUpPreviewWorkflow,
+		connect.WithSchema(controlServiceMethods.ByName("SetUpPreviewWorkflow")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agentctl.v1.ControlService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ControlServiceStartRunProcedure:
@@ -1642,6 +1675,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceRegisterDeploymentHandler.ServeHTTP(w, r)
 		case ControlServiceGetDeploymentProcedure:
 			controlServiceGetDeploymentHandler.ServeHTTP(w, r)
+		case ControlServiceSetUpPreviewWorkflowProcedure:
+			controlServiceSetUpPreviewWorkflowHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -1705,4 +1740,8 @@ func (UnimplementedControlServiceHandler) RegisterDeployment(context.Context, *c
 
 func (UnimplementedControlServiceHandler) GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.GetDeployment is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) SetUpPreviewWorkflow(context.Context, *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.SetUpPreviewWorkflow is not implemented"))
 }

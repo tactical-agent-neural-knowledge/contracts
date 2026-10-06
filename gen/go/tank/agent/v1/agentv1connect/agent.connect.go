@@ -75,6 +75,12 @@ const (
 	// AgentServiceSetTreadDeploymentProcedure is the fully-qualified name of the AgentService's
 	// SetTreadDeployment RPC.
 	AgentServiceSetTreadDeploymentProcedure = "/tank.agent.v1.AgentService/SetTreadDeployment"
+	// AgentServiceSetUpRepoPreviewsProcedure is the fully-qualified name of the AgentService's
+	// SetUpRepoPreviews RPC.
+	AgentServiceSetUpRepoPreviewsProcedure = "/tank.agent.v1.AgentService/SetUpRepoPreviews"
+	// AgentServiceListRepoPreviewSetupsProcedure is the fully-qualified name of the AgentService's
+	// ListRepoPreviewSetups RPC.
+	AgentServiceListRepoPreviewSetupsProcedure = "/tank.agent.v1.AgentService/ListRepoPreviewSetups"
 	// AgentServiceGetTreadSwitchboardProcedure is the fully-qualified name of the AgentService's
 	// GetTreadSwitchboard RPC.
 	AgentServiceGetTreadSwitchboardProcedure = "/tank.agent.v1.AgentService/GetTreadSwitchboard"
@@ -106,6 +112,11 @@ type AgentServiceClient interface {
 	// Repositories and hosting on request, for premium workspaces.
 	CreateTreadRepo(context.Context, *connect.Request[v1.CreateTreadRepoRequest]) (*connect.Response[v1.CreateTreadRepoResponse], error)
 	SetTreadDeployment(context.Context, *connect.Request[v1.SetTreadDeploymentRequest]) (*connect.Response[v1.SetTreadDeploymentResponse], error)
+	// Previews for repositories the workspace has already connected: TANK opens a pull
+	// request in each one adding the workflow that reports its builds, and hands back the
+	// token that CI will need. Admins only, premium only, never a side effect.
+	SetUpRepoPreviews(context.Context, *connect.Request[v1.SetUpRepoPreviewsRequest]) (*connect.Response[v1.SetUpRepoPreviewsResponse], error)
+	ListRepoPreviewSetups(context.Context, *connect.Request[v1.ListRepoPreviewSetupsRequest]) (*connect.Response[v1.ListRepoPreviewSetupsResponse], error)
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
@@ -224,6 +235,18 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("SetTreadDeployment")),
 			connect.WithClientOptions(opts...),
 		),
+		setUpRepoPreviews: connect.NewClient[v1.SetUpRepoPreviewsRequest, v1.SetUpRepoPreviewsResponse](
+			httpClient,
+			baseURL+AgentServiceSetUpRepoPreviewsProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("SetUpRepoPreviews")),
+			connect.WithClientOptions(opts...),
+		),
+		listRepoPreviewSetups: connect.NewClient[v1.ListRepoPreviewSetupsRequest, v1.ListRepoPreviewSetupsResponse](
+			httpClient,
+			baseURL+AgentServiceListRepoPreviewSetupsProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("ListRepoPreviewSetups")),
+			connect.WithClientOptions(opts...),
+		),
 		getTreadSwitchboard: connect.NewClient[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse](
 			httpClient,
 			baseURL+AgentServiceGetTreadSwitchboardProcedure,
@@ -241,25 +264,27 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 
 // agentServiceClient implements AgentServiceClient.
 type agentServiceClient struct {
-	startRun             *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
-	stopRun              *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
-	heartbeat            *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
-	setStatus            *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
-	setProductBrand      *connect.Client[v1.SetProductBrandRequest, v1.SetProductBrandResponse]
-	setProductLanding    *connect.Client[v1.SetProductLandingRequest, v1.SetProductLandingResponse]
-	recordProductFinding *connect.Client[v1.RecordProductFindingRequest, v1.RecordProductFindingResponse]
-	getRun               *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
-	listRuns             *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
-	listAgents           *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
-	getRepoConnection    *connect.Client[v1.GetRepoConnectionRequest, v1.GetRepoConnectionResponse]
-	startGitHubConnect   *connect.Client[v1.StartGitHubConnectRequest, v1.StartGitHubConnectResponse]
-	bindRepo             *connect.Client[v1.BindRepoRequest, v1.BindRepoResponse]
-	unbindRepo           *connect.Client[v1.UnbindRepoRequest, v1.UnbindRepoResponse]
-	setRepoAccess        *connect.Client[v1.SetRepoAccessRequest, v1.SetRepoAccessResponse]
-	createTreadRepo      *connect.Client[v1.CreateTreadRepoRequest, v1.CreateTreadRepoResponse]
-	setTreadDeployment   *connect.Client[v1.SetTreadDeploymentRequest, v1.SetTreadDeploymentResponse]
-	getTreadSwitchboard  *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
-	setTreadSettings     *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
+	startRun              *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	stopRun               *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
+	heartbeat             *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
+	setStatus             *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
+	setProductBrand       *connect.Client[v1.SetProductBrandRequest, v1.SetProductBrandResponse]
+	setProductLanding     *connect.Client[v1.SetProductLandingRequest, v1.SetProductLandingResponse]
+	recordProductFinding  *connect.Client[v1.RecordProductFindingRequest, v1.RecordProductFindingResponse]
+	getRun                *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	listRuns              *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
+	listAgents            *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
+	getRepoConnection     *connect.Client[v1.GetRepoConnectionRequest, v1.GetRepoConnectionResponse]
+	startGitHubConnect    *connect.Client[v1.StartGitHubConnectRequest, v1.StartGitHubConnectResponse]
+	bindRepo              *connect.Client[v1.BindRepoRequest, v1.BindRepoResponse]
+	unbindRepo            *connect.Client[v1.UnbindRepoRequest, v1.UnbindRepoResponse]
+	setRepoAccess         *connect.Client[v1.SetRepoAccessRequest, v1.SetRepoAccessResponse]
+	createTreadRepo       *connect.Client[v1.CreateTreadRepoRequest, v1.CreateTreadRepoResponse]
+	setTreadDeployment    *connect.Client[v1.SetTreadDeploymentRequest, v1.SetTreadDeploymentResponse]
+	setUpRepoPreviews     *connect.Client[v1.SetUpRepoPreviewsRequest, v1.SetUpRepoPreviewsResponse]
+	listRepoPreviewSetups *connect.Client[v1.ListRepoPreviewSetupsRequest, v1.ListRepoPreviewSetupsResponse]
+	getTreadSwitchboard   *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
+	setTreadSettings      *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
 }
 
 // StartRun calls tank.agent.v1.AgentService.StartRun.
@@ -347,6 +372,16 @@ func (c *agentServiceClient) SetTreadDeployment(ctx context.Context, req *connec
 	return c.setTreadDeployment.CallUnary(ctx, req)
 }
 
+// SetUpRepoPreviews calls tank.agent.v1.AgentService.SetUpRepoPreviews.
+func (c *agentServiceClient) SetUpRepoPreviews(ctx context.Context, req *connect.Request[v1.SetUpRepoPreviewsRequest]) (*connect.Response[v1.SetUpRepoPreviewsResponse], error) {
+	return c.setUpRepoPreviews.CallUnary(ctx, req)
+}
+
+// ListRepoPreviewSetups calls tank.agent.v1.AgentService.ListRepoPreviewSetups.
+func (c *agentServiceClient) ListRepoPreviewSetups(ctx context.Context, req *connect.Request[v1.ListRepoPreviewSetupsRequest]) (*connect.Response[v1.ListRepoPreviewSetupsResponse], error) {
+	return c.listRepoPreviewSetups.CallUnary(ctx, req)
+}
+
 // GetTreadSwitchboard calls tank.agent.v1.AgentService.GetTreadSwitchboard.
 func (c *agentServiceClient) GetTreadSwitchboard(ctx context.Context, req *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error) {
 	return c.getTreadSwitchboard.CallUnary(ctx, req)
@@ -380,6 +415,11 @@ type AgentServiceHandler interface {
 	// Repositories and hosting on request, for premium workspaces.
 	CreateTreadRepo(context.Context, *connect.Request[v1.CreateTreadRepoRequest]) (*connect.Response[v1.CreateTreadRepoResponse], error)
 	SetTreadDeployment(context.Context, *connect.Request[v1.SetTreadDeploymentRequest]) (*connect.Response[v1.SetTreadDeploymentResponse], error)
+	// Previews for repositories the workspace has already connected: TANK opens a pull
+	// request in each one adding the workflow that reports its builds, and hands back the
+	// token that CI will need. Admins only, premium only, never a side effect.
+	SetUpRepoPreviews(context.Context, *connect.Request[v1.SetUpRepoPreviewsRequest]) (*connect.Response[v1.SetUpRepoPreviewsResponse], error)
+	ListRepoPreviewSetups(context.Context, *connect.Request[v1.ListRepoPreviewSetupsRequest]) (*connect.Response[v1.ListRepoPreviewSetupsResponse], error)
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
@@ -494,6 +534,18 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("SetTreadDeployment")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceSetUpRepoPreviewsHandler := connect.NewUnaryHandler(
+		AgentServiceSetUpRepoPreviewsProcedure,
+		svc.SetUpRepoPreviews,
+		connect.WithSchema(agentServiceMethods.ByName("SetUpRepoPreviews")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceListRepoPreviewSetupsHandler := connect.NewUnaryHandler(
+		AgentServiceListRepoPreviewSetupsProcedure,
+		svc.ListRepoPreviewSetups,
+		connect.WithSchema(agentServiceMethods.ByName("ListRepoPreviewSetups")),
+		connect.WithHandlerOptions(opts...),
+	)
 	agentServiceGetTreadSwitchboardHandler := connect.NewUnaryHandler(
 		AgentServiceGetTreadSwitchboardProcedure,
 		svc.GetTreadSwitchboard,
@@ -542,6 +594,10 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceCreateTreadRepoHandler.ServeHTTP(w, r)
 		case AgentServiceSetTreadDeploymentProcedure:
 			agentServiceSetTreadDeploymentHandler.ServeHTTP(w, r)
+		case AgentServiceSetUpRepoPreviewsProcedure:
+			agentServiceSetUpRepoPreviewsHandler.ServeHTTP(w, r)
+		case AgentServiceListRepoPreviewSetupsProcedure:
+			agentServiceListRepoPreviewSetupsHandler.ServeHTTP(w, r)
 		case AgentServiceGetTreadSwitchboardProcedure:
 			agentServiceGetTreadSwitchboardHandler.ServeHTTP(w, r)
 		case AgentServiceSetTreadSettingsProcedure:
@@ -621,6 +677,14 @@ func (UnimplementedAgentServiceHandler) CreateTreadRepo(context.Context, *connec
 
 func (UnimplementedAgentServiceHandler) SetTreadDeployment(context.Context, *connect.Request[v1.SetTreadDeploymentRequest]) (*connect.Response[v1.SetTreadDeploymentResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetTreadDeployment is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) SetUpRepoPreviews(context.Context, *connect.Request[v1.SetUpRepoPreviewsRequest]) (*connect.Response[v1.SetUpRepoPreviewsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetUpRepoPreviews is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) ListRepoPreviewSetups(context.Context, *connect.Request[v1.ListRepoPreviewSetupsRequest]) (*connect.Response[v1.ListRepoPreviewSetupsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.ListRepoPreviewSetups is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error) {

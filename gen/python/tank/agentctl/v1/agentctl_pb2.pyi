@@ -1226,6 +1226,46 @@ class OpenThreadResponse(_message.Message):
     thread_root_id: str
     def __init__(self, thread_root_id: _Optional[str] = ...) -> None: ...
 
+class SetUpPreviewWorkflowRequest(_message.Message):
+    __slots__ = ("workspace_id", "repos", "base_branch", "api_url", "secret_name", "branch")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPOS_FIELD_NUMBER: _ClassVar[int]
+    BASE_BRANCH_FIELD_NUMBER: _ClassVar[int]
+    API_URL_FIELD_NUMBER: _ClassVar[int]
+    SECRET_NAME_FIELD_NUMBER: _ClassVar[int]
+    BRANCH_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repos: _containers.RepeatedScalarFieldContainer[str]
+    base_branch: str
+    api_url: str
+    secret_name: str
+    branch: str
+    def __init__(self, workspace_id: _Optional[str] = ..., repos: _Optional[_Iterable[str]] = ..., base_branch: _Optional[str] = ..., api_url: _Optional[str] = ..., secret_name: _Optional[str] = ..., branch: _Optional[str] = ...) -> None: ...
+
+class PreviewWorkflowResult(_message.Message):
+    __slots__ = ("repo", "status", "pull_request_url", "branch", "base_branch", "workflow_path", "reason")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    PULL_REQUEST_URL_FIELD_NUMBER: _ClassVar[int]
+    BRANCH_FIELD_NUMBER: _ClassVar[int]
+    BASE_BRANCH_FIELD_NUMBER: _ClassVar[int]
+    WORKFLOW_PATH_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    status: str
+    pull_request_url: str
+    branch: str
+    base_branch: str
+    workflow_path: str
+    reason: str
+    def __init__(self, repo: _Optional[str] = ..., status: _Optional[str] = ..., pull_request_url: _Optional[str] = ..., branch: _Optional[str] = ..., base_branch: _Optional[str] = ..., workflow_path: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+
+class SetUpPreviewWorkflowResponse(_message.Message):
+    __slots__ = ("results",)
+    RESULTS_FIELD_NUMBER: _ClassVar[int]
+    results: _containers.RepeatedCompositeFieldContainer[PreviewWorkflowResult]
+    def __init__(self, results: _Optional[_Iterable[_Union[PreviewWorkflowResult, _Mapping]]] = ...) -> None: ...
+
 class RegisterDeploymentRequest(_message.Message):
     __slots__ = ("workspace_id", "slug", "repo", "description")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]

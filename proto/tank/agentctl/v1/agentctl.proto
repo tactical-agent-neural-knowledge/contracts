@@ -830,7 +830,38 @@ service ControlService {
   // What GitOps holds for a slug right now, and whether the repository carries the
   // deploy workflow yet.
   rpc GetDeployment(GetDeploymentRequest) returns (GetDeploymentResponse);
+  // Adds the preview-reporting workflow to repositories the workspace's own
+  // installation reaches, each as a pull request: branch, file, pull request. Nothing
+  // is merged and nothing is written to a default branch — TANK proposes, the
+  // workspace decides. Idempotent per repository, and one repository's refusal never
+  // stops the others.
+  rpc SetUpPreviewWorkflow(SetUpPreviewWorkflowRequest) returns (SetUpPreviewWorkflowResponse);
 }
+
+// The control plane composes the workflow file itself: only it can see the repository,
+// so only it knows which workflows the file should run after and what the default
+// branch is called. api passes the things only api knows — where TANK answers, which
+// workspace is reporting, and the name of the secret holding the token.
+message SetUpPreviewWorkflowRequest {
+  string workspace_id = 1;
+  repeated string repos = 2;  // owner/name each
+  string base_branch = 3;     // empty = each repository's own default branch
+  string api_url = 4;         // the TANK origin their CI posts to, e.g. https://api.tank.chat
+  string secret_name = 5;     // the repository secret holding the TANK token
+  string branch = 6;          // head branch to push to; empty = tank/preview-reporting
+}
+
+message PreviewWorkflowResult {
+  string repo = 1;
+  string status = 2;            // opened | already_open | refused
+  string pull_request_url = 3;
+  string branch = 4;
+  string base_branch = 5;
+  string workflow_path = 6;
+  string reason = 7;            // why it was refused, in a sentence; empty otherwise
+}
+
+message SetUpPreviewWorkflowResponse { repeated PreviewWorkflowResult results = 1; }
 
 message RegisterDeploymentRequest {
   string workspace_id = 1;

@@ -196,6 +196,65 @@ message SetRepoAccessRequest {
 }
 message SetRepoAccessResponse { repeated RepoAccess access = 1; }
 
+// Previews for repositories the workspace has already connected.
+//
+// TANK serves previews of the applications it builds; a workspace that builds its own
+// tells TANK where it put each build (BoardService.ReportPreview) and a frame points
+// at that. Handing somebody a snippet and wishing them luck is the weak half of that
+// trade: if the workspace has connected GitHub and TANK can reach the repository, TANK
+// can open the pull request itself.
+//
+// It is a pull request and never a push: a workflow file in somebody else's repository
+// is their decision. Several repositories at once, because a workspace that connects a
+// front end and an API wants a frame of each, and one failing must not stop the rest.
+message SetUpRepoPreviewsRequest {
+  string workspace_id = 1;
+  repeated string repos = 2;  // owner/name each; one pull request per repository
+  // The branch each pull request targets. Empty means each repository's own default,
+  // which is nearly always the right answer and the only one TANK can work out.
+  string base_branch = 3;
+  // Issue a new token and revoke the one before it. The token is shown once and is
+  // not readable afterwards, so rotating is the only way back from losing it.
+  bool rotate_token = 4;
+}
+
+// What happened for one repository. A repository that could not be set up carries its
+// own sentence saying why; the others are unaffected by it.
+message RepoPreviewSetup {
+  string repo = 1;
+  // opened | already_open | refused. "already_open" is the idempotent answer: the
+  // pull request was there from an earlier ask and no second one was opened.
+  string status = 2;
+  string pull_request_url = 3;
+  string branch = 4;          // the head branch TANK pushed the workflow to
+  string workflow_path = 5;   // where the file sits in the pull request
+  string reason = 6;          // why it was refused, in a sentence; empty otherwise
+  google.protobuf.Timestamp requested_at = 7;
+}
+
+message SetUpRepoPreviewsResponse {
+  repeated RepoPreviewSetup results = 1;
+  // The token the repositories' CI authenticates with, returned exactly once and
+  // never readable again. Empty when a token had already been issued and
+  // rotate_token was not set. One token for the workspace, not one per repository:
+  // the same secret name goes in every repository.
+  string token = 2;
+  string secret_name = 3;
+  bool token_issued = 4;      // a token exists, whether or not it is in this response
+  // What the workspace still has to do by hand, in plain words, so a client can show
+  // it without knowing any of this.
+  repeated string next_steps = 5;
+}
+
+// What has been set up already, so a board's settings can show it without asking TANK
+// to open anything.
+message ListRepoPreviewSetupsRequest { string workspace_id = 1; }
+message ListRepoPreviewSetupsResponse {
+  repeated RepoPreviewSetup setups = 1;
+  string secret_name = 2;
+  bool token_issued = 3;
+}
+
 // The Tread's switchboard: what its agents cost and did, by the hour, and the knobs a
 // workspace admin turns. Spend is the workspace's own: the workspace pays for its agents.
 message TreadSettings {
@@ -310,6 +369,11 @@ service AgentService {
   // Repositories and hosting on request, for premium workspaces.
   rpc CreateTreadRepo(CreateTreadRepoRequest) returns (CreateTreadRepoResponse);
   rpc SetTreadDeployment(SetTreadDeploymentRequest) returns (SetTreadDeploymentResponse);
+  // Previews for repositories the workspace has already connected: TANK opens a pull
+  // request in each one adding the workflow that reports its builds, and hands back the
+  // token that CI will need. Admins only, premium only, never a side effect.
+  rpc SetUpRepoPreviews(SetUpRepoPreviewsRequest) returns (SetUpRepoPreviewsResponse);
+  rpc ListRepoPreviewSetups(ListRepoPreviewSetupsRequest) returns (ListRepoPreviewSetupsResponse);
   // The Tread's switchboard: metrics for members, settings for admins.
   rpc GetTreadSwitchboard(GetTreadSwitchboardRequest) returns (GetTreadSwitchboardResponse);
   rpc SetTreadSettings(SetTreadSettingsRequest) returns (SetTreadSettingsResponse);
