@@ -201,18 +201,20 @@ class GetBoardResponse(_message.Message):
     def __init__(self, board: _Optional[_Union[Board, _Mapping]] = ...) -> None: ...
 
 class CreateBoardRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "title", "icon", "objects")
+    __slots__ = ("workspace_id", "channel_id", "title", "icon", "objects", "template")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     ICON_FIELD_NUMBER: _ClassVar[int]
     OBJECTS_FIELD_NUMBER: _ClassVar[int]
+    TEMPLATE_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     title: str
     icon: str
     objects: _containers.RepeatedCompositeFieldContainer[BoardObject]
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ...) -> None: ...
+    template: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., template: _Optional[str] = ...) -> None: ...
 
 class CreateBoardResponse(_message.Message):
     __slots__ = ("board",)
@@ -320,3 +322,27 @@ class RequestChangeResponse(_message.Message):
     channel_id: str
     prompt: str
     def __init__(self, thread_root_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., prompt: _Optional[str] = ...) -> None: ...
+
+class BoardTemplate(_message.Message):
+    __slots__ = ("name", "title", "icon", "about", "group")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    ICON_FIELD_NUMBER: _ClassVar[int]
+    ABOUT_FIELD_NUMBER: _ClassVar[int]
+    GROUP_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    title: str
+    icon: str
+    about: str
+    group: str
+    def __init__(self, name: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., about: _Optional[str] = ..., group: _Optional[str] = ...) -> None: ...
+
+class ListTemplatesRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListTemplatesResponse(_message.Message):
+    __slots__ = ("templates",)
+    TEMPLATES_FIELD_NUMBER: _ClassVar[int]
+    templates: _containers.RepeatedCompositeFieldContainer[BoardTemplate]
+    def __init__(self, templates: _Optional[_Iterable[_Union[BoardTemplate, _Mapping]]] = ...) -> None: ...

@@ -123,6 +123,9 @@ message CreateBoardRequest {
   string title = 3;
   string icon = 4;
   repeated BoardObject objects = 5;
+  // A starting shape, from ListTemplates. Nobody opens a blank infinite canvas and
+  // feels invited; a flowchart that already has three boxes and two arrows does.
+  string template = 6;
 }
 message CreateBoardResponse { Board board = 1; }
 
@@ -190,6 +193,17 @@ message RequestChangeResponse {
   string prompt = 8;
 }
 
+message BoardTemplate {
+  string name = 1;          // what to pass as CreateBoardRequest.template
+  string title = 2;
+  string icon = 3;
+  string about = 4;         // one line: what it is for
+  string group = 5;         // "Diagram" | "Design" | "Together" | "From your code"
+}
+
+message ListTemplatesRequest {}
+message ListTemplatesResponse { repeated BoardTemplate templates = 1; }
+
 service BoardService {
   rpc ListBoards(ListBoardsRequest) returns (ListBoardsResponse);
   rpc GetBoard(GetBoardRequest) returns (GetBoardResponse);
@@ -198,4 +212,5 @@ service BoardService {
   rpc DeleteBoard(DeleteBoardRequest) returns (DeleteBoardResponse);
   rpc PutObjects(PutObjectsRequest) returns (PutObjectsResponse);
   rpc RequestChange(RequestChangeRequest) returns (RequestChangeResponse);
+  rpc ListTemplates(ListTemplatesRequest) returns (ListTemplatesResponse);
 }
