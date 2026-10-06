@@ -59,6 +59,13 @@ message AppFrame {
   string preview_url = 7;        // server-filled: where the running app is served
   string status = 8;             // server-filled: building | live | failed | asleep
   string note = 9;               // server-filled: why it is not live, in a sentence
+  // The commit this frame was drawn from. Set when somebody draws or refreshes it;
+  // comparing it with what is deployed now is how a board learns it has gone stale.
+  string drawn_from_sha = 10;
+  google.protobuf.Timestamp drawn_at = 11;
+  // Server-filled: the app has moved on since this frame was drawn.
+  bool moved_on = 12;
+  string moved_note = 13;        // "the app has moved 23 commits since this was drawn"
 }
 
 message BoardObject {
@@ -105,6 +112,11 @@ message Board {
   google.protobuf.Timestamp created_at = 9;
   string updated_by = 10;
   google.protobuf.Timestamp updated_at = 11;
+  // 0 is current; 100 is nothing it was drawn from is still as it was. The same idea
+  // as a Neuralcanvas page: a board nobody can trust is a board nobody opens.
+  int32 staleness = 12;
+  // What has moved, in a sentence. Empty when the board still matches the product.
+  string staleness_note = 13;
 }
 
 message BoardSummary {
@@ -115,6 +127,8 @@ message BoardSummary {
   int32 app_frames = 5;
   google.protobuf.Timestamp updated_at = 6;
   string channel_id = 7;
+  int32 staleness = 8;
+  string staleness_note = 9;
 }
 
 message ListBoardsRequest {

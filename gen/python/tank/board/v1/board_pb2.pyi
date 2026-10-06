@@ -71,7 +71,7 @@ class Style(_message.Message):
     def __init__(self, fill: _Optional[str] = ..., stroke: _Optional[str] = ..., stroke_width: _Optional[float] = ..., opacity: _Optional[float] = ..., corner_radius: _Optional[float] = ..., dash: _Optional[str] = ..., font_size: _Optional[int] = ..., font_weight: _Optional[str] = ..., align: _Optional[str] = ..., shadow: _Optional[str] = ..., blur: _Optional[float] = ...) -> None: ...
 
 class AppFrame(_message.Message):
-    __slots__ = ("repo", "ref", "path", "platform", "viewport_width", "viewport_height", "preview_url", "status", "note")
+    __slots__ = ("repo", "ref", "path", "platform", "viewport_width", "viewport_height", "preview_url", "status", "note", "drawn_from_sha", "drawn_at", "moved_on", "moved_note")
     REPO_FIELD_NUMBER: _ClassVar[int]
     REF_FIELD_NUMBER: _ClassVar[int]
     PATH_FIELD_NUMBER: _ClassVar[int]
@@ -81,6 +81,10 @@ class AppFrame(_message.Message):
     PREVIEW_URL_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
     NOTE_FIELD_NUMBER: _ClassVar[int]
+    DRAWN_FROM_SHA_FIELD_NUMBER: _ClassVar[int]
+    DRAWN_AT_FIELD_NUMBER: _ClassVar[int]
+    MOVED_ON_FIELD_NUMBER: _ClassVar[int]
+    MOVED_NOTE_FIELD_NUMBER: _ClassVar[int]
     repo: str
     ref: str
     path: str
@@ -90,7 +94,11 @@ class AppFrame(_message.Message):
     preview_url: str
     status: str
     note: str
-    def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., platform: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., preview_url: _Optional[str] = ..., status: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
+    drawn_from_sha: str
+    drawn_at: _timestamp_pb2.Timestamp
+    moved_on: bool
+    moved_note: str
+    def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., platform: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., preview_url: _Optional[str] = ..., status: _Optional[str] = ..., note: _Optional[str] = ..., drawn_from_sha: _Optional[str] = ..., drawn_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., moved_on: bool = ..., moved_note: _Optional[str] = ...) -> None: ...
 
 class BoardObject(_message.Message):
     __slots__ = ("id", "kind", "at", "style", "text", "rotation", "z", "parent_id", "from_id", "to_id", "points", "file_id", "file_url", "app", "locked", "meta", "created_by", "rev")
@@ -133,7 +141,7 @@ class BoardObject(_message.Message):
     def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[ObjectKind, str]] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., style: _Optional[_Union[Style, _Mapping]] = ..., text: _Optional[str] = ..., rotation: _Optional[float] = ..., z: _Optional[int] = ..., parent_id: _Optional[str] = ..., from_id: _Optional[str] = ..., to_id: _Optional[str] = ..., points: _Optional[_Iterable[float]] = ..., file_id: _Optional[str] = ..., file_url: _Optional[str] = ..., app: _Optional[_Union[AppFrame, _Mapping]] = ..., locked: bool = ..., meta: _Optional[str] = ..., created_by: _Optional[str] = ..., rev: _Optional[int] = ...) -> None: ...
 
 class Board(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "objects", "version", "created_by", "created_at", "updated_by", "updated_at")
+    __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "objects", "version", "created_by", "created_at", "updated_by", "updated_at", "staleness", "staleness_note")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -145,6 +153,8 @@ class Board(_message.Message):
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     UPDATED_BY_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    STALENESS_FIELD_NUMBER: _ClassVar[int]
+    STALENESS_NOTE_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -156,10 +166,12 @@ class Board(_message.Message):
     created_at: _timestamp_pb2.Timestamp
     updated_by: str
     updated_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., version: _Optional[int] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    staleness: int
+    staleness_note: str
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., version: _Optional[int] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ...) -> None: ...
 
 class BoardSummary(_message.Message):
-    __slots__ = ("id", "title", "icon", "objects", "app_frames", "updated_at", "channel_id")
+    __slots__ = ("id", "title", "icon", "objects", "app_frames", "updated_at", "channel_id", "staleness", "staleness_note")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     ICON_FIELD_NUMBER: _ClassVar[int]
@@ -167,6 +179,8 @@ class BoardSummary(_message.Message):
     APP_FRAMES_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    STALENESS_FIELD_NUMBER: _ClassVar[int]
+    STALENESS_NOTE_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     icon: str
@@ -174,7 +188,9 @@ class BoardSummary(_message.Message):
     app_frames: int
     updated_at: _timestamp_pb2.Timestamp
     channel_id: str
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[int] = ..., app_frames: _Optional[int] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., channel_id: _Optional[str] = ...) -> None: ...
+    staleness: int
+    staleness_note: str
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[int] = ..., app_frames: _Optional[int] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., channel_id: _Optional[str] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ...) -> None: ...
 
 class ListBoardsRequest(_message.Message):
     __slots__ = ("workspace_id", "channel_id", "limit")
