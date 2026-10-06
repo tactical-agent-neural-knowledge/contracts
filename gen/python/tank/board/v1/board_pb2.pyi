@@ -280,3 +280,43 @@ class PutObjectsResponse(_message.Message):
     conflicts: _containers.RepeatedCompositeFieldContainer[BoardObject]
     conflict_note: str
     def __init__(self, board: _Optional[_Union[Board, _Mapping]] = ..., conflicts: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., conflict_note: _Optional[str] = ...) -> None: ...
+
+class Element(_message.Message):
+    __slots__ = ("source", "tag", "text", "test_id", "at", "classes")
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    TAG_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    TEST_ID_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    CLASSES_FIELD_NUMBER: _ClassVar[int]
+    source: str
+    tag: str
+    text: str
+    test_id: str
+    at: Rect
+    classes: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, source: _Optional[str] = ..., tag: _Optional[str] = ..., text: _Optional[str] = ..., test_id: _Optional[str] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., classes: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class RequestChangeRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "object_id", "element", "ask")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    ELEMENT_FIELD_NUMBER: _ClassVar[int]
+    ASK_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    object_id: str
+    element: Element
+    ask: str
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., object_id: _Optional[str] = ..., element: _Optional[_Union[Element, _Mapping]] = ..., ask: _Optional[str] = ...) -> None: ...
+
+class RequestChangeResponse(_message.Message):
+    __slots__ = ("thread_root_id", "channel_id", "prompt")
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    PROMPT_FIELD_NUMBER: _ClassVar[int]
+    thread_root_id: str
+    channel_id: str
+    prompt: str
+    def __init__(self, thread_root_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., prompt: _Optional[str] = ...) -> None: ...

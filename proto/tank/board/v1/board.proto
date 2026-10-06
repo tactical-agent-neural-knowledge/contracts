@@ -160,6 +160,36 @@ message PutObjectsResponse {
   string conflict_note = 3;
 }
 
+// What was clicked inside a running frame: the element, and where it came from in
+// the source. The browser inside the frame reports this; it is the whole reason the
+// preview build stamps elements with their origin.
+message Element {
+  string source = 1;        // "src/features/shell/Logo.tsx:8:5"
+  string tag = 2;           // "button"
+  string text = 3;          // what it says, for a human to recognise it by
+  string test_id = 4;
+  Rect at = 5;              // where it sits inside the frame
+  repeated string classes = 6;
+}
+
+// Ask for a change to something in a running frame. This is the product's point: the
+// design and the code stop being two places.
+message RequestChangeRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  string object_id = 3;     // the frame it was asked of
+  Element element = 4;
+  string ask = 5;           // "make this the same blue as the header"
+}
+message RequestChangeResponse {
+  // Where the work is being discussed and watched: a thread in the Tread the board
+  // belongs to, which is where the agent posts its plan and its cards.
+  string thread_root_id = 6;
+  string channel_id = 7;
+  // What was asked, as it was sent to the agent, so the board can show it back.
+  string prompt = 8;
+}
+
 service BoardService {
   rpc ListBoards(ListBoardsRequest) returns (ListBoardsResponse);
   rpc GetBoard(GetBoardRequest) returns (GetBoardResponse);
@@ -167,4 +197,5 @@ service BoardService {
   rpc UpdateBoard(UpdateBoardRequest) returns (UpdateBoardResponse);
   rpc DeleteBoard(DeleteBoardRequest) returns (DeleteBoardResponse);
   rpc PutObjects(PutObjectsRequest) returns (PutObjectsResponse);
+  rpc RequestChange(RequestChangeRequest) returns (RequestChangeResponse);
 }

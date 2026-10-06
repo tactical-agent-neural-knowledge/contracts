@@ -48,6 +48,9 @@ const (
 	BoardServiceDeleteBoardProcedure = "/tank.board.v1.BoardService/DeleteBoard"
 	// BoardServicePutObjectsProcedure is the fully-qualified name of the BoardService's PutObjects RPC.
 	BoardServicePutObjectsProcedure = "/tank.board.v1.BoardService/PutObjects"
+	// BoardServiceRequestChangeProcedure is the fully-qualified name of the BoardService's
+	// RequestChange RPC.
+	BoardServiceRequestChangeProcedure = "/tank.board.v1.BoardService/RequestChange"
 )
 
 // BoardServiceClient is a client for the tank.board.v1.BoardService service.
@@ -58,6 +61,7 @@ type BoardServiceClient interface {
 	UpdateBoard(context.Context, *connect.Request[v1.UpdateBoardRequest]) (*connect.Response[v1.UpdateBoardResponse], error)
 	DeleteBoard(context.Context, *connect.Request[v1.DeleteBoardRequest]) (*connect.Response[v1.DeleteBoardResponse], error)
 	PutObjects(context.Context, *connect.Request[v1.PutObjectsRequest]) (*connect.Response[v1.PutObjectsResponse], error)
+	RequestChange(context.Context, *connect.Request[v1.RequestChangeRequest]) (*connect.Response[v1.RequestChangeResponse], error)
 }
 
 // NewBoardServiceClient constructs a client for the tank.board.v1.BoardService service. By default,
@@ -107,17 +111,24 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(boardServiceMethods.ByName("PutObjects")),
 			connect.WithClientOptions(opts...),
 		),
+		requestChange: connect.NewClient[v1.RequestChangeRequest, v1.RequestChangeResponse](
+			httpClient,
+			baseURL+BoardServiceRequestChangeProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("RequestChange")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // boardServiceClient implements BoardServiceClient.
 type boardServiceClient struct {
-	listBoards  *connect.Client[v1.ListBoardsRequest, v1.ListBoardsResponse]
-	getBoard    *connect.Client[v1.GetBoardRequest, v1.GetBoardResponse]
-	createBoard *connect.Client[v1.CreateBoardRequest, v1.CreateBoardResponse]
-	updateBoard *connect.Client[v1.UpdateBoardRequest, v1.UpdateBoardResponse]
-	deleteBoard *connect.Client[v1.DeleteBoardRequest, v1.DeleteBoardResponse]
-	putObjects  *connect.Client[v1.PutObjectsRequest, v1.PutObjectsResponse]
+	listBoards    *connect.Client[v1.ListBoardsRequest, v1.ListBoardsResponse]
+	getBoard      *connect.Client[v1.GetBoardRequest, v1.GetBoardResponse]
+	createBoard   *connect.Client[v1.CreateBoardRequest, v1.CreateBoardResponse]
+	updateBoard   *connect.Client[v1.UpdateBoardRequest, v1.UpdateBoardResponse]
+	deleteBoard   *connect.Client[v1.DeleteBoardRequest, v1.DeleteBoardResponse]
+	putObjects    *connect.Client[v1.PutObjectsRequest, v1.PutObjectsResponse]
+	requestChange *connect.Client[v1.RequestChangeRequest, v1.RequestChangeResponse]
 }
 
 // ListBoards calls tank.board.v1.BoardService.ListBoards.
@@ -150,6 +161,11 @@ func (c *boardServiceClient) PutObjects(ctx context.Context, req *connect.Reques
 	return c.putObjects.CallUnary(ctx, req)
 }
 
+// RequestChange calls tank.board.v1.BoardService.RequestChange.
+func (c *boardServiceClient) RequestChange(ctx context.Context, req *connect.Request[v1.RequestChangeRequest]) (*connect.Response[v1.RequestChangeResponse], error) {
+	return c.requestChange.CallUnary(ctx, req)
+}
+
 // BoardServiceHandler is an implementation of the tank.board.v1.BoardService service.
 type BoardServiceHandler interface {
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
@@ -158,6 +174,7 @@ type BoardServiceHandler interface {
 	UpdateBoard(context.Context, *connect.Request[v1.UpdateBoardRequest]) (*connect.Response[v1.UpdateBoardResponse], error)
 	DeleteBoard(context.Context, *connect.Request[v1.DeleteBoardRequest]) (*connect.Response[v1.DeleteBoardResponse], error)
 	PutObjects(context.Context, *connect.Request[v1.PutObjectsRequest]) (*connect.Response[v1.PutObjectsResponse], error)
+	RequestChange(context.Context, *connect.Request[v1.RequestChangeRequest]) (*connect.Response[v1.RequestChangeResponse], error)
 }
 
 // NewBoardServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -203,6 +220,12 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(boardServiceMethods.ByName("PutObjects")),
 		connect.WithHandlerOptions(opts...),
 	)
+	boardServiceRequestChangeHandler := connect.NewUnaryHandler(
+		BoardServiceRequestChangeProcedure,
+		svc.RequestChange,
+		connect.WithSchema(boardServiceMethods.ByName("RequestChange")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.board.v1.BoardService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BoardServiceListBoardsProcedure:
@@ -217,6 +240,8 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 			boardServiceDeleteBoardHandler.ServeHTTP(w, r)
 		case BoardServicePutObjectsProcedure:
 			boardServicePutObjectsHandler.ServeHTTP(w, r)
+		case BoardServiceRequestChangeProcedure:
+			boardServiceRequestChangeHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -248,4 +273,8 @@ func (UnimplementedBoardServiceHandler) DeleteBoard(context.Context, *connect.Re
 
 func (UnimplementedBoardServiceHandler) PutObjects(context.Context, *connect.Request[v1.PutObjectsRequest]) (*connect.Response[v1.PutObjectsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.PutObjects is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) RequestChange(context.Context, *connect.Request[v1.RequestChangeRequest]) (*connect.Response[v1.RequestChangeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.RequestChange is not implemented"))
 }

@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tank/board/v1/board.proto.
  */
 export const file_tank_board_v1_board: GenFile = /*@__PURE__*/
-  fileDesc("Chl0YW5rL2JvYXJkL3YxL2JvYXJkLnByb3RvEg10YW5rLmJvYXJkLnYxIjIKBFJlY3QSCQoBeBgBIAEoARIJCgF5GAIgASgBEgkKAXcYAyABKAESCQoBaBgEIAEoASKoAQoFU3R5bGUSDAoEZmlsbBgBIAEoCRIOCgZzdHJva2UYAiABKAkSFAoMc3Ryb2tlX3dpZHRoGAMgASgBEg8KB29wYWNpdHkYBCABKAESFQoNY29ybmVyX3JhZGl1cxgFIAEoARIMCgRkYXNoGAYgASgJEhEKCWZvbnRfc2l6ZRgHIAEoBRITCgtmb250X3dlaWdodBgIIAEoCRINCgVhbGlnbhgJIAEoCSKpAQoIQXBwRnJhbWUSDAoEcmVwbxgBIAEoCRILCgNyZWYYAiABKAkSDAoEcGF0aBgDIAEoCRIQCghwbGF0Zm9ybRgEIAEoCRIWCg52aWV3cG9ydF93aWR0aBgFIAEoBRIXCg92aWV3cG9ydF9oZWlnaHQYBiABKAUSEwoLcHJldmlld191cmwYByABKAkSDgoGc3RhdHVzGAggASgJEgwKBG5vdGUYCSABKAki8AIKC0JvYXJkT2JqZWN0EgoKAmlkGAEgASgJEicKBGtpbmQYAiABKA4yGS50YW5rLmJvYXJkLnYxLk9iamVjdEtpbmQSHwoCYXQYAyABKAsyEy50YW5rLmJvYXJkLnYxLlJlY3QSIwoFc3R5bGUYBCABKAsyFC50YW5rLmJvYXJkLnYxLlN0eWxlEgwKBHRleHQYBSABKAkSEAoIcm90YXRpb24YBiABKAESCQoBehgHIAEoBRIRCglwYXJlbnRfaWQYCCABKAkSDwoHZnJvbV9pZBgJIAEoCRINCgV0b19pZBgKIAEoCRIOCgZwb2ludHMYCyADKAESDwoHZmlsZV9pZBgMIAEoCRIQCghmaWxlX3VybBgNIAEoCRIkCgNhcHAYDiABKAsyFy50YW5rLmJvYXJkLnYxLkFwcEZyYW1lEg4KBmxvY2tlZBgPIAEoCBISCgpjcmVhdGVkX2J5GBAgASgJEgsKA3JldhgRIAEoBSKgAgoFQm9hcmQSCgoCaWQYASABKAkSFAoMd29ya3NwYWNlX2lkGAIgASgJEhIKCmNoYW5uZWxfaWQYAyABKAkSDQoFdGl0bGUYBCABKAkSDAoEaWNvbhgFIAEoCRIrCgdvYmplY3RzGAYgAygLMhoudGFuay5ib2FyZC52MS5Cb2FyZE9iamVjdBIPCgd2ZXJzaW9uGAcgASgFEhIKCmNyZWF0ZWRfYnkYCCABKAkSLgoKY3JlYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKdXBkYXRlZF9ieRgKIAEoCRIuCgp1cGRhdGVkX2F0GAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCKgAQoMQm9hcmRTdW1tYXJ5EgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEgwKBGljb24YAyABKAkSDwoHb2JqZWN0cxgEIAEoBRISCgphcHBfZnJhbWVzGAUgASgFEi4KCnVwZGF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhIKCmNoYW5uZWxfaWQYByABKAkiTAoRTGlzdEJvYXJkc1JlcXVlc3QSFAoMd29ya3NwYWNlX2lkGAEgASgJEhIKCmNoYW5uZWxfaWQYAiABKAkSDQoFbGltaXQYAyABKAUiQQoSTGlzdEJvYXJkc1Jlc3BvbnNlEisKBmJvYXJkcxgBIAMoCzIbLnRhbmsuYm9hcmQudjEuQm9hcmRTdW1tYXJ5IjMKD0dldEJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSCgoCaWQYAiABKAkiNwoQR2V0Qm9hcmRSZXNwb25zZRIjCgVib2FyZBgBIAEoCzIULnRhbmsuYm9hcmQudjEuQm9hcmQiiAEKEkNyZWF0ZUJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSEgoKY2hhbm5lbF9pZBgCIAEoCRINCgV0aXRsZRgDIAEoCRIMCgRpY29uGAQgASgJEisKB29iamVjdHMYBSADKAsyGi50YW5rLmJvYXJkLnYxLkJvYXJkT2JqZWN0IjoKE0NyZWF0ZUJvYXJkUmVzcG9uc2USIwoFYm9hcmQYASABKAsyFC50YW5rLmJvYXJkLnYxLkJvYXJkIlMKElVwZGF0ZUJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSCgoCaWQYAiABKAkSDQoFdGl0bGUYAyABKAkSDAoEaWNvbhgEIAEoCSI6ChNVcGRhdGVCb2FyZFJlc3BvbnNlEiMKBWJvYXJkGAEgASgLMhQudGFuay5ib2FyZC52MS5Cb2FyZCI2ChJEZWxldGVCb2FyZFJlcXVlc3QSFAoMd29ya3NwYWNlX2lkGAEgASgJEgoKAmlkGAIgASgJIhUKE0RlbGV0ZUJvYXJkUmVzcG9uc2Ui8AEKEVB1dE9iamVjdHNSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRIQCghib2FyZF9pZBgCIAEoCRIrCgdvYmplY3RzGAMgAygLMhoudGFuay5ib2FyZC52MS5Cb2FyZE9iamVjdBISCgpkZWxldGVfaWRzGAQgAygJEkEKCWJhc2VfcmV2cxgFIAMoCzIuLnRhbmsuYm9hcmQudjEuUHV0T2JqZWN0c1JlcXVlc3QuQmFzZVJldnNFbnRyeRovCg1CYXNlUmV2c0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoBToCOAEifwoSUHV0T2JqZWN0c1Jlc3BvbnNlEiMKBWJvYXJkGAEgASgLMhQudGFuay5ib2FyZC52MS5Cb2FyZBItCgljb25mbGljdHMYAiADKAsyGi50YW5rLmJvYXJkLnYxLkJvYXJkT2JqZWN0EhUKDWNvbmZsaWN0X25vdGUYAyABKAkqkgIKCk9iamVjdEtpbmQSGwoXT0JKRUNUX0tJTkRfVU5TUEVDSUZJRUQQABIVChFPQkpFQ1RfS0lORF9GUkFNRRABEhQKEE9CSkVDVF9LSU5EX1JFQ1QQAhIXChNPQkpFQ1RfS0lORF9FTExJUFNFEAMSFAoQT0JKRUNUX0tJTkRfTElORRAEEhUKEU9CSkVDVF9LSU5EX0FSUk9XEAUSFAoQT0JKRUNUX0tJTkRfVEVYVBAGEhYKEk9CSkVDVF9LSU5EX1NUSUNLWRAHEhUKEU9CSkVDVF9LSU5EX0lNQUdFEAgSGQoVT0JKRUNUX0tJTkRfQ09OTkVDVE9SEAkSFAoQT0JKRUNUX0tJTkRfRFJBVxAKMoMECgxCb2FyZFNlcnZpY2USUQoKTGlzdEJvYXJkcxIgLnRhbmsuYm9hcmQudjEuTGlzdEJvYXJkc1JlcXVlc3QaIS50YW5rLmJvYXJkLnYxLkxpc3RCb2FyZHNSZXNwb25zZRJLCghHZXRCb2FyZBIeLnRhbmsuYm9hcmQudjEuR2V0Qm9hcmRSZXF1ZXN0Gh8udGFuay5ib2FyZC52MS5HZXRCb2FyZFJlc3BvbnNlElQKC0NyZWF0ZUJvYXJkEiEudGFuay5ib2FyZC52MS5DcmVhdGVCb2FyZFJlcXVlc3QaIi50YW5rLmJvYXJkLnYxLkNyZWF0ZUJvYXJkUmVzcG9uc2USVAoLVXBkYXRlQm9hcmQSIS50YW5rLmJvYXJkLnYxLlVwZGF0ZUJvYXJkUmVxdWVzdBoiLnRhbmsuYm9hcmQudjEuVXBkYXRlQm9hcmRSZXNwb25zZRJUCgtEZWxldGVCb2FyZBIhLnRhbmsuYm9hcmQudjEuRGVsZXRlQm9hcmRSZXF1ZXN0GiIudGFuay5ib2FyZC52MS5EZWxldGVCb2FyZFJlc3BvbnNlElEKClB1dE9iamVjdHMSIC50YW5rLmJvYXJkLnYxLlB1dE9iamVjdHNSZXF1ZXN0GiEudGFuay5ib2FyZC52MS5QdXRPYmplY3RzUmVzcG9uc2VCyAEKEWNvbS50YW5rLmJvYXJkLnYxQgpCb2FyZFByb3RvUAFaUWdpdGh1Yi5jb20vdGFjdGljYWwtYWdlbnQtbmV1cmFsLWtub3dsZWRnZS9jb250cmFjdHMvZ2VuL2dvL3RhbmsvYm9hcmQvdjE7Ym9hcmR2MaICA1RCWKoCDVRhbmsuQm9hcmQuVjHKAg1UYW5rXEJvYXJkXFYx4gIZVGFua1xCb2FyZFxWMVxHUEJNZXRhZGF0YeoCD1Rhbms6OkJvYXJkOjpWMWIGcHJvdG8z", [file_google_protobuf_timestamp]);
+  fileDesc("Chl0YW5rL2JvYXJkL3YxL2JvYXJkLnByb3RvEg10YW5rLmJvYXJkLnYxIjIKBFJlY3QSCQoBeBgBIAEoARIJCgF5GAIgASgBEgkKAXcYAyABKAESCQoBaBgEIAEoASKoAQoFU3R5bGUSDAoEZmlsbBgBIAEoCRIOCgZzdHJva2UYAiABKAkSFAoMc3Ryb2tlX3dpZHRoGAMgASgBEg8KB29wYWNpdHkYBCABKAESFQoNY29ybmVyX3JhZGl1cxgFIAEoARIMCgRkYXNoGAYgASgJEhEKCWZvbnRfc2l6ZRgHIAEoBRITCgtmb250X3dlaWdodBgIIAEoCRINCgVhbGlnbhgJIAEoCSKpAQoIQXBwRnJhbWUSDAoEcmVwbxgBIAEoCRILCgNyZWYYAiABKAkSDAoEcGF0aBgDIAEoCRIQCghwbGF0Zm9ybRgEIAEoCRIWCg52aWV3cG9ydF93aWR0aBgFIAEoBRIXCg92aWV3cG9ydF9oZWlnaHQYBiABKAUSEwoLcHJldmlld191cmwYByABKAkSDgoGc3RhdHVzGAggASgJEgwKBG5vdGUYCSABKAki8AIKC0JvYXJkT2JqZWN0EgoKAmlkGAEgASgJEicKBGtpbmQYAiABKA4yGS50YW5rLmJvYXJkLnYxLk9iamVjdEtpbmQSHwoCYXQYAyABKAsyEy50YW5rLmJvYXJkLnYxLlJlY3QSIwoFc3R5bGUYBCABKAsyFC50YW5rLmJvYXJkLnYxLlN0eWxlEgwKBHRleHQYBSABKAkSEAoIcm90YXRpb24YBiABKAESCQoBehgHIAEoBRIRCglwYXJlbnRfaWQYCCABKAkSDwoHZnJvbV9pZBgJIAEoCRINCgV0b19pZBgKIAEoCRIOCgZwb2ludHMYCyADKAESDwoHZmlsZV9pZBgMIAEoCRIQCghmaWxlX3VybBgNIAEoCRIkCgNhcHAYDiABKAsyFy50YW5rLmJvYXJkLnYxLkFwcEZyYW1lEg4KBmxvY2tlZBgPIAEoCBISCgpjcmVhdGVkX2J5GBAgASgJEgsKA3JldhgRIAEoBSKgAgoFQm9hcmQSCgoCaWQYASABKAkSFAoMd29ya3NwYWNlX2lkGAIgASgJEhIKCmNoYW5uZWxfaWQYAyABKAkSDQoFdGl0bGUYBCABKAkSDAoEaWNvbhgFIAEoCRIrCgdvYmplY3RzGAYgAygLMhoudGFuay5ib2FyZC52MS5Cb2FyZE9iamVjdBIPCgd2ZXJzaW9uGAcgASgFEhIKCmNyZWF0ZWRfYnkYCCABKAkSLgoKY3JlYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKdXBkYXRlZF9ieRgKIAEoCRIuCgp1cGRhdGVkX2F0GAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCKgAQoMQm9hcmRTdW1tYXJ5EgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEgwKBGljb24YAyABKAkSDwoHb2JqZWN0cxgEIAEoBRISCgphcHBfZnJhbWVzGAUgASgFEi4KCnVwZGF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhIKCmNoYW5uZWxfaWQYByABKAkiTAoRTGlzdEJvYXJkc1JlcXVlc3QSFAoMd29ya3NwYWNlX2lkGAEgASgJEhIKCmNoYW5uZWxfaWQYAiABKAkSDQoFbGltaXQYAyABKAUiQQoSTGlzdEJvYXJkc1Jlc3BvbnNlEisKBmJvYXJkcxgBIAMoCzIbLnRhbmsuYm9hcmQudjEuQm9hcmRTdW1tYXJ5IjMKD0dldEJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSCgoCaWQYAiABKAkiNwoQR2V0Qm9hcmRSZXNwb25zZRIjCgVib2FyZBgBIAEoCzIULnRhbmsuYm9hcmQudjEuQm9hcmQiiAEKEkNyZWF0ZUJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSEgoKY2hhbm5lbF9pZBgCIAEoCRINCgV0aXRsZRgDIAEoCRIMCgRpY29uGAQgASgJEisKB29iamVjdHMYBSADKAsyGi50YW5rLmJvYXJkLnYxLkJvYXJkT2JqZWN0IjoKE0NyZWF0ZUJvYXJkUmVzcG9uc2USIwoFYm9hcmQYASABKAsyFC50YW5rLmJvYXJkLnYxLkJvYXJkIlMKElVwZGF0ZUJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSCgoCaWQYAiABKAkSDQoFdGl0bGUYAyABKAkSDAoEaWNvbhgEIAEoCSI6ChNVcGRhdGVCb2FyZFJlc3BvbnNlEiMKBWJvYXJkGAEgASgLMhQudGFuay5ib2FyZC52MS5Cb2FyZCI2ChJEZWxldGVCb2FyZFJlcXVlc3QSFAoMd29ya3NwYWNlX2lkGAEgASgJEgoKAmlkGAIgASgJIhUKE0RlbGV0ZUJvYXJkUmVzcG9uc2Ui8AEKEVB1dE9iamVjdHNSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRIQCghib2FyZF9pZBgCIAEoCRIrCgdvYmplY3RzGAMgAygLMhoudGFuay5ib2FyZC52MS5Cb2FyZE9iamVjdBISCgpkZWxldGVfaWRzGAQgAygJEkEKCWJhc2VfcmV2cxgFIAMoCzIuLnRhbmsuYm9hcmQudjEuUHV0T2JqZWN0c1JlcXVlc3QuQmFzZVJldnNFbnRyeRovCg1CYXNlUmV2c0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoBToCOAEifwoSUHV0T2JqZWN0c1Jlc3BvbnNlEiMKBWJvYXJkGAEgASgLMhQudGFuay5ib2FyZC52MS5Cb2FyZBItCgljb25mbGljdHMYAiADKAsyGi50YW5rLmJvYXJkLnYxLkJvYXJkT2JqZWN0EhUKDWNvbmZsaWN0X25vdGUYAyABKAkidwoHRWxlbWVudBIOCgZzb3VyY2UYASABKAkSCwoDdGFnGAIgASgJEgwKBHRleHQYAyABKAkSDwoHdGVzdF9pZBgEIAEoCRIfCgJhdBgFIAEoCzITLnRhbmsuYm9hcmQudjEuUmVjdBIPCgdjbGFzc2VzGAYgAygJIocBChRSZXF1ZXN0Q2hhbmdlUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSEAoIYm9hcmRfaWQYAiABKAkSEQoJb2JqZWN0X2lkGAMgASgJEicKB2VsZW1lbnQYBCABKAsyFi50YW5rLmJvYXJkLnYxLkVsZW1lbnQSCwoDYXNrGAUgASgJIlMKFVJlcXVlc3RDaGFuZ2VSZXNwb25zZRIWCg50aHJlYWRfcm9vdF9pZBgGIAEoCRISCgpjaGFubmVsX2lkGAcgASgJEg4KBnByb21wdBgIIAEoCSqSAgoKT2JqZWN0S2luZBIbChdPQkpFQ1RfS0lORF9VTlNQRUNJRklFRBAAEhUKEU9CSkVDVF9LSU5EX0ZSQU1FEAESFAoQT0JKRUNUX0tJTkRfUkVDVBACEhcKE09CSkVDVF9LSU5EX0VMTElQU0UQAxIUChBPQkpFQ1RfS0lORF9MSU5FEAQSFQoRT0JKRUNUX0tJTkRfQVJST1cQBRIUChBPQkpFQ1RfS0lORF9URVhUEAYSFgoST0JKRUNUX0tJTkRfU1RJQ0tZEAcSFQoRT0JKRUNUX0tJTkRfSU1BR0UQCBIZChVPQkpFQ1RfS0lORF9DT05ORUNUT1IQCRIUChBPQkpFQ1RfS0lORF9EUkFXEAoy3wQKDEJvYXJkU2VydmljZRJRCgpMaXN0Qm9hcmRzEiAudGFuay5ib2FyZC52MS5MaXN0Qm9hcmRzUmVxdWVzdBohLnRhbmsuYm9hcmQudjEuTGlzdEJvYXJkc1Jlc3BvbnNlEksKCEdldEJvYXJkEh4udGFuay5ib2FyZC52MS5HZXRCb2FyZFJlcXVlc3QaHy50YW5rLmJvYXJkLnYxLkdldEJvYXJkUmVzcG9uc2USVAoLQ3JlYXRlQm9hcmQSIS50YW5rLmJvYXJkLnYxLkNyZWF0ZUJvYXJkUmVxdWVzdBoiLnRhbmsuYm9hcmQudjEuQ3JlYXRlQm9hcmRSZXNwb25zZRJUCgtVcGRhdGVCb2FyZBIhLnRhbmsuYm9hcmQudjEuVXBkYXRlQm9hcmRSZXF1ZXN0GiIudGFuay5ib2FyZC52MS5VcGRhdGVCb2FyZFJlc3BvbnNlElQKC0RlbGV0ZUJvYXJkEiEudGFuay5ib2FyZC52MS5EZWxldGVCb2FyZFJlcXVlc3QaIi50YW5rLmJvYXJkLnYxLkRlbGV0ZUJvYXJkUmVzcG9uc2USUQoKUHV0T2JqZWN0cxIgLnRhbmsuYm9hcmQudjEuUHV0T2JqZWN0c1JlcXVlc3QaIS50YW5rLmJvYXJkLnYxLlB1dE9iamVjdHNSZXNwb25zZRJaCg1SZXF1ZXN0Q2hhbmdlEiMudGFuay5ib2FyZC52MS5SZXF1ZXN0Q2hhbmdlUmVxdWVzdBokLnRhbmsuYm9hcmQudjEuUmVxdWVzdENoYW5nZVJlc3BvbnNlQsgBChFjb20udGFuay5ib2FyZC52MUIKQm9hcmRQcm90b1ABWlFnaXRodWIuY29tL3RhY3RpY2FsLWFnZW50LW5ldXJhbC1rbm93bGVkZ2UvY29udHJhY3RzL2dlbi9nby90YW5rL2JvYXJkL3YxO2JvYXJkdjGiAgNUQliqAg1UYW5rLkJvYXJkLlYxygINVGFua1xCb2FyZFxWMeICGVRhbmtcQm9hcmRcVjFcR1BCTWV0YWRhdGHqAg9UYW5rOjpCb2FyZDo6VjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * Where a thing sits. Boards are infinite, so these are board coordinates, not pixels
@@ -722,6 +722,136 @@ export const PutObjectsResponseSchema: GenMessage<PutObjectsResponse> = /*@__PUR
   messageDesc(file_tank_board_v1_board, 17);
 
 /**
+ * What was clicked inside a running frame: the element, and where it came from in
+ * the source. The browser inside the frame reports this; it is the whole reason the
+ * preview build stamps elements with their origin.
+ *
+ * @generated from message tank.board.v1.Element
+ */
+export type Element = Message<"tank.board.v1.Element"> & {
+  /**
+   * "src/features/shell/Logo.tsx:8:5"
+   *
+   * @generated from field: string source = 1;
+   */
+  source: string;
+
+  /**
+   * "button"
+   *
+   * @generated from field: string tag = 2;
+   */
+  tag: string;
+
+  /**
+   * what it says, for a human to recognise it by
+   *
+   * @generated from field: string text = 3;
+   */
+  text: string;
+
+  /**
+   * @generated from field: string test_id = 4;
+   */
+  testId: string;
+
+  /**
+   * where it sits inside the frame
+   *
+   * @generated from field: tank.board.v1.Rect at = 5;
+   */
+  at?: Rect;
+
+  /**
+   * @generated from field: repeated string classes = 6;
+   */
+  classes: string[];
+};
+
+/**
+ * Describes the message tank.board.v1.Element.
+ * Use `create(ElementSchema)` to create a new message.
+ */
+export const ElementSchema: GenMessage<Element> = /*@__PURE__*/
+  messageDesc(file_tank_board_v1_board, 18);
+
+/**
+ * Ask for a change to something in a running frame. This is the product's point: the
+ * design and the code stop being two places.
+ *
+ * @generated from message tank.board.v1.RequestChangeRequest
+ */
+export type RequestChangeRequest = Message<"tank.board.v1.RequestChangeRequest"> & {
+  /**
+   * @generated from field: string workspace_id = 1;
+   */
+  workspaceId: string;
+
+  /**
+   * @generated from field: string board_id = 2;
+   */
+  boardId: string;
+
+  /**
+   * the frame it was asked of
+   *
+   * @generated from field: string object_id = 3;
+   */
+  objectId: string;
+
+  /**
+   * @generated from field: tank.board.v1.Element element = 4;
+   */
+  element?: Element;
+
+  /**
+   * "make this the same blue as the header"
+   *
+   * @generated from field: string ask = 5;
+   */
+  ask: string;
+};
+
+/**
+ * Describes the message tank.board.v1.RequestChangeRequest.
+ * Use `create(RequestChangeRequestSchema)` to create a new message.
+ */
+export const RequestChangeRequestSchema: GenMessage<RequestChangeRequest> = /*@__PURE__*/
+  messageDesc(file_tank_board_v1_board, 19);
+
+/**
+ * @generated from message tank.board.v1.RequestChangeResponse
+ */
+export type RequestChangeResponse = Message<"tank.board.v1.RequestChangeResponse"> & {
+  /**
+   * Where the work is being discussed and watched: a thread in the Tread the board
+   * belongs to, which is where the agent posts its plan and its cards.
+   *
+   * @generated from field: string thread_root_id = 6;
+   */
+  threadRootId: string;
+
+  /**
+   * @generated from field: string channel_id = 7;
+   */
+  channelId: string;
+
+  /**
+   * What was asked, as it was sent to the agent, so the board can show it back.
+   *
+   * @generated from field: string prompt = 8;
+   */
+  prompt: string;
+};
+
+/**
+ * Describes the message tank.board.v1.RequestChangeResponse.
+ * Use `create(RequestChangeResponseSchema)` to create a new message.
+ */
+export const RequestChangeResponseSchema: GenMessage<RequestChangeResponse> = /*@__PURE__*/
+  messageDesc(file_tank_board_v1_board, 20);
+
+/**
  * @generated from enum tank.board.v1.ObjectKind
  */
 export enum ObjectKind {
@@ -846,6 +976,14 @@ export const BoardService: GenService<{
     methodKind: "unary";
     input: typeof PutObjectsRequestSchema;
     output: typeof PutObjectsResponseSchema;
+  },
+  /**
+   * @generated from rpc tank.board.v1.BoardService.RequestChange
+   */
+  requestChange: {
+    methodKind: "unary";
+    input: typeof RequestChangeRequestSchema;
+    output: typeof RequestChangeResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_tank_board_v1_board, 0);
