@@ -98,6 +98,9 @@ message BoardObject {
   // Bumped on every write, so two people editing different objects never collide and
   // the same object twice is reported rather than silently overwritten.
   int32 rev = 17;
+  // Frame only: what this diagram was drawn from, when it was drawn from something
+  // rather than by hand. The same idea as AppFrame.drawn_from_sha one level up.
+  Derivation derived = 19;
 }
 
 message Board {
@@ -233,10 +236,59 @@ message BoardTemplate {
   string icon = 3;
   string about = 4;         // one line: what it is for
   string group = 5;         // "Diagram" | "Design" | "Together" | "From your code"
+  // What it actually looks like. A card with a name and an emoji on it tells nobody
+  // what they are about to get; a client that can draw a board can draw these.
+  repeated BoardObject objects = 6;
+  // The box the objects sit in, so a client can fit them to a card without measuring.
+  Rect viewbox = 7;
+  // The same picture the server would export, for a client that would rather not draw
+  // it a second time. Filled only when ListTemplatesRequest asked.
+  string thumbnail_svg = 8;
+  // One this workspace saved rather than one TANK ships. Only these can be deleted.
+  bool custom = 9;
+  string created_by = 10;
+  google.protobuf.Timestamp created_at = 11;
 }
 
-message ListTemplatesRequest {}
+message ListTemplatesRequest {
+  // Whose saved templates to include alongside the ones TANK ships. Empty lists only
+  // TANK's, which is what an unauthenticated gallery wants.
+  string workspace_id = 1;
+  // Render each one as well. A few kilobytes apiece, so it is asked for rather than
+  // always sent.
+  bool thumbnails = 2;
+}
 message ListTemplatesResponse { repeated BoardTemplate templates = 1; }
+
+// Save the board somebody is looking at as a template the rest of the workspace can
+// start from.
+//
+// `CreateBoardRequest.template` is a name the server resolves, so until there was an
+// RPC to register one this could not be done from a client at all — a team could make
+// the same board by hand every week and never turn it into a starting point.
+message SaveBoardTemplateRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  // What CreateBoardRequest.template will carry. Made from the title when empty.
+  string name = 3;
+  string title = 4;
+  string icon = 5;
+  string about = 6;
+  string group = 7;
+  // Empty saves the whole board. A selection saves those objects, which is how a
+  // corner of a board becomes a template without the rest of it coming too.
+  repeated string object_ids = 8;
+  // Overwrite one of this workspace's own by that name. Without it a clash is a
+  // refusal, because quietly replacing somebody else's template is not a save.
+  bool replace = 9;
+}
+message SaveBoardTemplateResponse { BoardTemplate template = 1; }
+
+message DeleteBoardTemplateRequest {
+  string workspace_id = 1;
+  string name = 2;
+}
+message DeleteBoardTemplateResponse {}
 
 // A named region of a board that exports on its own: the "slice" every design tool
 // has. A slice is an ordinary object carrying a record saying it is one, for the same
@@ -373,6 +425,106 @@ message ForgetPreviewRequest {
 }
 message ForgetPreviewResponse { int32 forgotten = 1; }
 
+// A column in a table somebody reported the schema of.
+message SchemaColumn {
+  string name = 1;
+  string type = 2;
+  bool primary_key = 3;
+  bool nullable = 4;
+  // "orders.id": the column this one points at, when it points at one.
+  string references = 5;
+}
+
+message SchemaTable {
+  string name = 1;
+  string schema = 2;        // "public"
+  repeated SchemaColumn columns = 3;
+}
+
+// One file of infrastructure-as-code, as the repository holds it.
+message InfraFile {
+  string path = 1;
+  string body = 2;
+}
+
+// Tell TANK what a database's schema is, or what is in a repository's `infra/`, so a
+// diagram can be drawn from the real thing instead of from somebody's memory of it.
+//
+// Deliberately the same shape as ReportPreview, and for the same reason. TANK holding
+// a connection string and reaching into somebody's network to read their database
+// would be a credential to store, to rotate and to lose, a route into their VPC, and
+// one more thing that can be breached — and the migration job that has just changed
+// the schema knows it better than any poller of ours would. So the workspace's own CI
+// says what it already knows, with a token whose only scope is board:preview, exactly
+// as it already does for previews.
+message ReportBoardSourceRequest {
+  string workspace_id = 1;
+  string kind = 2;          // "erd" | "architecture"
+  // What to call it on a board: a database name, or owner/name for a repository.
+  string name = 3;
+  string ref = 4;           // the branch; "main" when it does not apply
+  string sha = 5;           // the commit, or the migration version, it was read at
+  repeated SchemaTable tables = 6;  // kind = "erd"
+  repeated InfraFile files = 7;     // kind = "architecture"
+  int32 retain_days = 8;
+}
+
+message BoardSource {
+  string kind = 1;
+  string name = 2;
+  string ref = 3;
+  string sha = 4;
+  int32 items = 5;          // tables, or files
+  google.protobuf.Timestamp reported_at = 6;
+  google.protobuf.Timestamp expires_at = 7;
+}
+message ReportBoardSourceResponse { BoardSource source = 1; }
+
+message ListBoardSourcesRequest {
+  string workspace_id = 1;
+  string kind = 2;          // empty lists every kind
+}
+message ListBoardSourcesResponse { repeated BoardSource sources = 1; }
+
+// What a derived diagram was drawn from.
+//
+// The same idea as AppFrame.drawn_from_sha, applied to a drawing rather than to a
+// running app: a diagram that records what it rests on can say when that has moved,
+// and can be drawn again from the new thing instead of by hand. This is what makes
+// "the diagram re-derives itself when the code moves" a mechanism rather than a wish.
+message Derivation {
+  string kind = 1;
+  string source = 2;
+  string ref = 3;
+  string sha = 4;
+  google.protobuf.Timestamp derived_at = 5;
+  // Server-filled: something newer has been reported since this was drawn.
+  bool moved_on = 6;
+  string moved_note = 7;
+  string moved_to_sha = 8;
+}
+
+message DeriveDiagramRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  string kind = 3;          // "erd" | "architecture"
+  string source = 4;        // which reported source to draw
+  string ref = 5;
+  // Redraw a frame derived earlier rather than drawing a second one. With this set,
+  // kind, source and ref come from the frame itself and need not be repeated.
+  string frame_id = 6;
+  double x = 7;
+  double y = 8;
+}
+message DeriveDiagramResponse {
+  string frame_id = 1;
+  Board board = 2;
+  Derivation derivation = 3;
+  // What the source did not say: a foreign key with no table to point at, a resource
+  // nothing could be told about.
+  repeated string notes = 4;
+}
+
 service BoardService {
   rpc ListBoards(ListBoardsRequest) returns (ListBoardsResponse);
   rpc GetBoard(GetBoardRequest) returns (GetBoardResponse);
@@ -382,6 +534,8 @@ service BoardService {
   rpc PutObjects(PutObjectsRequest) returns (PutObjectsResponse);
   rpc RequestChange(RequestChangeRequest) returns (RequestChangeResponse);
   rpc ListTemplates(ListTemplatesRequest) returns (ListTemplatesResponse);
+  rpc SaveBoardTemplate(SaveBoardTemplateRequest) returns (SaveBoardTemplateResponse);
+  rpc DeleteBoardTemplate(DeleteBoardTemplateRequest) returns (DeleteBoardTemplateResponse);
   rpc ExportBoard(ExportBoardRequest) returns (ExportBoardResponse);
   rpc ListBoardSlices(ListBoardSlicesRequest) returns (ListBoardSlicesResponse);
   rpc BoardEmbed(BoardEmbedRequest) returns (BoardEmbedResponse);
@@ -389,4 +543,7 @@ service BoardService {
   rpc ReportPreview(ReportPreviewRequest) returns (ReportPreviewResponse);
   rpc ListPreviews(ListPreviewsRequest) returns (ListPreviewsResponse);
   rpc ForgetPreview(ForgetPreviewRequest) returns (ForgetPreviewResponse);
+  rpc ReportBoardSource(ReportBoardSourceRequest) returns (ReportBoardSourceResponse);
+  rpc ListBoardSources(ListBoardSourcesRequest) returns (ListBoardSourcesResponse);
+  rpc DeriveDiagram(DeriveDiagramRequest) returns (DeriveDiagramResponse);
 }

@@ -101,7 +101,7 @@ class AppFrame(_message.Message):
     def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., platform: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., preview_url: _Optional[str] = ..., status: _Optional[str] = ..., note: _Optional[str] = ..., drawn_from_sha: _Optional[str] = ..., drawn_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., moved_on: bool = ..., moved_note: _Optional[str] = ...) -> None: ...
 
 class BoardObject(_message.Message):
-    __slots__ = ("id", "kind", "at", "style", "text", "rotation", "z", "parent_id", "from_id", "to_id", "points", "file_id", "file_url", "app", "locked", "meta", "created_by", "rev")
+    __slots__ = ("id", "kind", "at", "style", "text", "rotation", "z", "parent_id", "from_id", "to_id", "points", "file_id", "file_url", "app", "locked", "meta", "created_by", "rev", "derived")
     ID_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     AT_FIELD_NUMBER: _ClassVar[int]
@@ -120,6 +120,7 @@ class BoardObject(_message.Message):
     META_FIELD_NUMBER: _ClassVar[int]
     CREATED_BY_FIELD_NUMBER: _ClassVar[int]
     REV_FIELD_NUMBER: _ClassVar[int]
+    DERIVED_FIELD_NUMBER: _ClassVar[int]
     id: str
     kind: ObjectKind
     at: Rect
@@ -138,7 +139,8 @@ class BoardObject(_message.Message):
     meta: str
     created_by: str
     rev: int
-    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[ObjectKind, str]] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., style: _Optional[_Union[Style, _Mapping]] = ..., text: _Optional[str] = ..., rotation: _Optional[float] = ..., z: _Optional[int] = ..., parent_id: _Optional[str] = ..., from_id: _Optional[str] = ..., to_id: _Optional[str] = ..., points: _Optional[_Iterable[float]] = ..., file_id: _Optional[str] = ..., file_url: _Optional[str] = ..., app: _Optional[_Union[AppFrame, _Mapping]] = ..., locked: bool = ..., meta: _Optional[str] = ..., created_by: _Optional[str] = ..., rev: _Optional[int] = ...) -> None: ...
+    derived: Derivation
+    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[ObjectKind, str]] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., style: _Optional[_Union[Style, _Mapping]] = ..., text: _Optional[str] = ..., rotation: _Optional[float] = ..., z: _Optional[int] = ..., parent_id: _Optional[str] = ..., from_id: _Optional[str] = ..., to_id: _Optional[str] = ..., points: _Optional[_Iterable[float]] = ..., file_id: _Optional[str] = ..., file_url: _Optional[str] = ..., app: _Optional[_Union[AppFrame, _Mapping]] = ..., locked: bool = ..., meta: _Optional[str] = ..., created_by: _Optional[str] = ..., rev: _Optional[int] = ..., derived: _Optional[_Union[Derivation, _Mapping]] = ...) -> None: ...
 
 class Board(_message.Message):
     __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "objects", "version", "created_by", "created_at", "updated_by", "updated_at", "staleness", "staleness_note")
@@ -352,28 +354,84 @@ class RequestChangeResponse(_message.Message):
     def __init__(self, thread_root_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., prompt: _Optional[str] = ...) -> None: ...
 
 class BoardTemplate(_message.Message):
-    __slots__ = ("name", "title", "icon", "about", "group")
+    __slots__ = ("name", "title", "icon", "about", "group", "objects", "viewbox", "thumbnail_svg", "custom", "created_by", "created_at")
     NAME_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     ICON_FIELD_NUMBER: _ClassVar[int]
     ABOUT_FIELD_NUMBER: _ClassVar[int]
     GROUP_FIELD_NUMBER: _ClassVar[int]
+    OBJECTS_FIELD_NUMBER: _ClassVar[int]
+    VIEWBOX_FIELD_NUMBER: _ClassVar[int]
+    THUMBNAIL_SVG_FIELD_NUMBER: _ClassVar[int]
+    CUSTOM_FIELD_NUMBER: _ClassVar[int]
+    CREATED_BY_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     name: str
     title: str
     icon: str
     about: str
     group: str
-    def __init__(self, name: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., about: _Optional[str] = ..., group: _Optional[str] = ...) -> None: ...
+    objects: _containers.RepeatedCompositeFieldContainer[BoardObject]
+    viewbox: Rect
+    thumbnail_svg: str
+    custom: bool
+    created_by: str
+    created_at: _timestamp_pb2.Timestamp
+    def __init__(self, name: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., about: _Optional[str] = ..., group: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., viewbox: _Optional[_Union[Rect, _Mapping]] = ..., thumbnail_svg: _Optional[str] = ..., custom: bool = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class ListTemplatesRequest(_message.Message):
-    __slots__ = ()
-    def __init__(self) -> None: ...
+    __slots__ = ("workspace_id", "thumbnails")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    THUMBNAILS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    thumbnails: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., thumbnails: bool = ...) -> None: ...
 
 class ListTemplatesResponse(_message.Message):
     __slots__ = ("templates",)
     TEMPLATES_FIELD_NUMBER: _ClassVar[int]
     templates: _containers.RepeatedCompositeFieldContainer[BoardTemplate]
     def __init__(self, templates: _Optional[_Iterable[_Union[BoardTemplate, _Mapping]]] = ...) -> None: ...
+
+class SaveBoardTemplateRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "name", "title", "icon", "about", "group", "object_ids", "replace")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    ICON_FIELD_NUMBER: _ClassVar[int]
+    ABOUT_FIELD_NUMBER: _ClassVar[int]
+    GROUP_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_IDS_FIELD_NUMBER: _ClassVar[int]
+    REPLACE_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    name: str
+    title: str
+    icon: str
+    about: str
+    group: str
+    object_ids: _containers.RepeatedScalarFieldContainer[str]
+    replace: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., name: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., about: _Optional[str] = ..., group: _Optional[str] = ..., object_ids: _Optional[_Iterable[str]] = ..., replace: bool = ...) -> None: ...
+
+class SaveBoardTemplateResponse(_message.Message):
+    __slots__ = ("template",)
+    TEMPLATE_FIELD_NUMBER: _ClassVar[int]
+    template: BoardTemplate
+    def __init__(self, template: _Optional[_Union[BoardTemplate, _Mapping]] = ...) -> None: ...
+
+class DeleteBoardTemplateRequest(_message.Message):
+    __slots__ = ("workspace_id", "name")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    name: str
+    def __init__(self, workspace_id: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
+
+class DeleteBoardTemplateResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
 
 class BoardSlice(_message.Message):
     __slots__ = ("name", "at", "object_id")
@@ -566,3 +624,145 @@ class ForgetPreviewResponse(_message.Message):
     FORGOTTEN_FIELD_NUMBER: _ClassVar[int]
     forgotten: int
     def __init__(self, forgotten: _Optional[int] = ...) -> None: ...
+
+class SchemaColumn(_message.Message):
+    __slots__ = ("name", "type", "primary_key", "nullable", "references")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    TYPE_FIELD_NUMBER: _ClassVar[int]
+    PRIMARY_KEY_FIELD_NUMBER: _ClassVar[int]
+    NULLABLE_FIELD_NUMBER: _ClassVar[int]
+    REFERENCES_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    type: str
+    primary_key: bool
+    nullable: bool
+    references: str
+    def __init__(self, name: _Optional[str] = ..., type: _Optional[str] = ..., primary_key: bool = ..., nullable: bool = ..., references: _Optional[str] = ...) -> None: ...
+
+class SchemaTable(_message.Message):
+    __slots__ = ("name", "schema", "columns")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    SCHEMA_FIELD_NUMBER: _ClassVar[int]
+    COLUMNS_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    schema: str
+    columns: _containers.RepeatedCompositeFieldContainer[SchemaColumn]
+    def __init__(self, name: _Optional[str] = ..., schema: _Optional[str] = ..., columns: _Optional[_Iterable[_Union[SchemaColumn, _Mapping]]] = ...) -> None: ...
+
+class InfraFile(_message.Message):
+    __slots__ = ("path", "body")
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    BODY_FIELD_NUMBER: _ClassVar[int]
+    path: str
+    body: str
+    def __init__(self, path: _Optional[str] = ..., body: _Optional[str] = ...) -> None: ...
+
+class ReportBoardSourceRequest(_message.Message):
+    __slots__ = ("workspace_id", "kind", "name", "ref", "sha", "tables", "files", "retain_days")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    TABLES_FIELD_NUMBER: _ClassVar[int]
+    FILES_FIELD_NUMBER: _ClassVar[int]
+    RETAIN_DAYS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    kind: str
+    name: str
+    ref: str
+    sha: str
+    tables: _containers.RepeatedCompositeFieldContainer[SchemaTable]
+    files: _containers.RepeatedCompositeFieldContainer[InfraFile]
+    retain_days: int
+    def __init__(self, workspace_id: _Optional[str] = ..., kind: _Optional[str] = ..., name: _Optional[str] = ..., ref: _Optional[str] = ..., sha: _Optional[str] = ..., tables: _Optional[_Iterable[_Union[SchemaTable, _Mapping]]] = ..., files: _Optional[_Iterable[_Union[InfraFile, _Mapping]]] = ..., retain_days: _Optional[int] = ...) -> None: ...
+
+class BoardSource(_message.Message):
+    __slots__ = ("kind", "name", "ref", "sha", "items", "reported_at", "expires_at")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    ITEMS_FIELD_NUMBER: _ClassVar[int]
+    REPORTED_AT_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    name: str
+    ref: str
+    sha: str
+    items: int
+    reported_at: _timestamp_pb2.Timestamp
+    expires_at: _timestamp_pb2.Timestamp
+    def __init__(self, kind: _Optional[str] = ..., name: _Optional[str] = ..., ref: _Optional[str] = ..., sha: _Optional[str] = ..., items: _Optional[int] = ..., reported_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ReportBoardSourceResponse(_message.Message):
+    __slots__ = ("source",)
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    source: BoardSource
+    def __init__(self, source: _Optional[_Union[BoardSource, _Mapping]] = ...) -> None: ...
+
+class ListBoardSourcesRequest(_message.Message):
+    __slots__ = ("workspace_id", "kind")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    kind: str
+    def __init__(self, workspace_id: _Optional[str] = ..., kind: _Optional[str] = ...) -> None: ...
+
+class ListBoardSourcesResponse(_message.Message):
+    __slots__ = ("sources",)
+    SOURCES_FIELD_NUMBER: _ClassVar[int]
+    sources: _containers.RepeatedCompositeFieldContainer[BoardSource]
+    def __init__(self, sources: _Optional[_Iterable[_Union[BoardSource, _Mapping]]] = ...) -> None: ...
+
+class Derivation(_message.Message):
+    __slots__ = ("kind", "source", "ref", "sha", "derived_at", "moved_on", "moved_note", "moved_to_sha")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    DERIVED_AT_FIELD_NUMBER: _ClassVar[int]
+    MOVED_ON_FIELD_NUMBER: _ClassVar[int]
+    MOVED_NOTE_FIELD_NUMBER: _ClassVar[int]
+    MOVED_TO_SHA_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    source: str
+    ref: str
+    sha: str
+    derived_at: _timestamp_pb2.Timestamp
+    moved_on: bool
+    moved_note: str
+    moved_to_sha: str
+    def __init__(self, kind: _Optional[str] = ..., source: _Optional[str] = ..., ref: _Optional[str] = ..., sha: _Optional[str] = ..., derived_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., moved_on: bool = ..., moved_note: _Optional[str] = ..., moved_to_sha: _Optional[str] = ...) -> None: ...
+
+class DeriveDiagramRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "kind", "source", "ref", "frame_id", "x", "y")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    FRAME_ID_FIELD_NUMBER: _ClassVar[int]
+    X_FIELD_NUMBER: _ClassVar[int]
+    Y_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    kind: str
+    source: str
+    ref: str
+    frame_id: str
+    x: float
+    y: float
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., kind: _Optional[str] = ..., source: _Optional[str] = ..., ref: _Optional[str] = ..., frame_id: _Optional[str] = ..., x: _Optional[float] = ..., y: _Optional[float] = ...) -> None: ...
+
+class DeriveDiagramResponse(_message.Message):
+    __slots__ = ("frame_id", "board", "derivation", "notes")
+    FRAME_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_FIELD_NUMBER: _ClassVar[int]
+    DERIVATION_FIELD_NUMBER: _ClassVar[int]
+    NOTES_FIELD_NUMBER: _ClassVar[int]
+    frame_id: str
+    board: Board
+    derivation: Derivation
+    notes: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, frame_id: _Optional[str] = ..., board: _Optional[_Union[Board, _Mapping]] = ..., derivation: _Optional[_Union[Derivation, _Mapping]] = ..., notes: _Optional[_Iterable[str]] = ...) -> None: ...

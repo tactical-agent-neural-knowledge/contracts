@@ -54,6 +54,12 @@ const (
 	// BoardServiceListTemplatesProcedure is the fully-qualified name of the BoardService's
 	// ListTemplates RPC.
 	BoardServiceListTemplatesProcedure = "/tank.board.v1.BoardService/ListTemplates"
+	// BoardServiceSaveBoardTemplateProcedure is the fully-qualified name of the BoardService's
+	// SaveBoardTemplate RPC.
+	BoardServiceSaveBoardTemplateProcedure = "/tank.board.v1.BoardService/SaveBoardTemplate"
+	// BoardServiceDeleteBoardTemplateProcedure is the fully-qualified name of the BoardService's
+	// DeleteBoardTemplate RPC.
+	BoardServiceDeleteBoardTemplateProcedure = "/tank.board.v1.BoardService/DeleteBoardTemplate"
 	// BoardServiceExportBoardProcedure is the fully-qualified name of the BoardService's ExportBoard
 	// RPC.
 	BoardServiceExportBoardProcedure = "/tank.board.v1.BoardService/ExportBoard"
@@ -74,6 +80,15 @@ const (
 	// BoardServiceForgetPreviewProcedure is the fully-qualified name of the BoardService's
 	// ForgetPreview RPC.
 	BoardServiceForgetPreviewProcedure = "/tank.board.v1.BoardService/ForgetPreview"
+	// BoardServiceReportBoardSourceProcedure is the fully-qualified name of the BoardService's
+	// ReportBoardSource RPC.
+	BoardServiceReportBoardSourceProcedure = "/tank.board.v1.BoardService/ReportBoardSource"
+	// BoardServiceListBoardSourcesProcedure is the fully-qualified name of the BoardService's
+	// ListBoardSources RPC.
+	BoardServiceListBoardSourcesProcedure = "/tank.board.v1.BoardService/ListBoardSources"
+	// BoardServiceDeriveDiagramProcedure is the fully-qualified name of the BoardService's
+	// DeriveDiagram RPC.
+	BoardServiceDeriveDiagramProcedure = "/tank.board.v1.BoardService/DeriveDiagram"
 )
 
 // BoardServiceClient is a client for the tank.board.v1.BoardService service.
@@ -86,6 +101,8 @@ type BoardServiceClient interface {
 	PutObjects(context.Context, *connect.Request[v1.PutObjectsRequest]) (*connect.Response[v1.PutObjectsResponse], error)
 	RequestChange(context.Context, *connect.Request[v1.RequestChangeRequest]) (*connect.Response[v1.RequestChangeResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
+	SaveBoardTemplate(context.Context, *connect.Request[v1.SaveBoardTemplateRequest]) (*connect.Response[v1.SaveBoardTemplateResponse], error)
+	DeleteBoardTemplate(context.Context, *connect.Request[v1.DeleteBoardTemplateRequest]) (*connect.Response[v1.DeleteBoardTemplateResponse], error)
 	ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error)
 	ListBoardSlices(context.Context, *connect.Request[v1.ListBoardSlicesRequest]) (*connect.Response[v1.ListBoardSlicesResponse], error)
 	BoardEmbed(context.Context, *connect.Request[v1.BoardEmbedRequest]) (*connect.Response[v1.BoardEmbedResponse], error)
@@ -93,6 +110,9 @@ type BoardServiceClient interface {
 	ReportPreview(context.Context, *connect.Request[v1.ReportPreviewRequest]) (*connect.Response[v1.ReportPreviewResponse], error)
 	ListPreviews(context.Context, *connect.Request[v1.ListPreviewsRequest]) (*connect.Response[v1.ListPreviewsResponse], error)
 	ForgetPreview(context.Context, *connect.Request[v1.ForgetPreviewRequest]) (*connect.Response[v1.ForgetPreviewResponse], error)
+	ReportBoardSource(context.Context, *connect.Request[v1.ReportBoardSourceRequest]) (*connect.Response[v1.ReportBoardSourceResponse], error)
+	ListBoardSources(context.Context, *connect.Request[v1.ListBoardSourcesRequest]) (*connect.Response[v1.ListBoardSourcesResponse], error)
+	DeriveDiagram(context.Context, *connect.Request[v1.DeriveDiagramRequest]) (*connect.Response[v1.DeriveDiagramResponse], error)
 }
 
 // NewBoardServiceClient constructs a client for the tank.board.v1.BoardService service. By default,
@@ -154,6 +174,18 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(boardServiceMethods.ByName("ListTemplates")),
 			connect.WithClientOptions(opts...),
 		),
+		saveBoardTemplate: connect.NewClient[v1.SaveBoardTemplateRequest, v1.SaveBoardTemplateResponse](
+			httpClient,
+			baseURL+BoardServiceSaveBoardTemplateProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("SaveBoardTemplate")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteBoardTemplate: connect.NewClient[v1.DeleteBoardTemplateRequest, v1.DeleteBoardTemplateResponse](
+			httpClient,
+			baseURL+BoardServiceDeleteBoardTemplateProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("DeleteBoardTemplate")),
+			connect.WithClientOptions(opts...),
+		),
 		exportBoard: connect.NewClient[v1.ExportBoardRequest, v1.ExportBoardResponse](
 			httpClient,
 			baseURL+BoardServiceExportBoardProcedure,
@@ -196,26 +228,49 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(boardServiceMethods.ByName("ForgetPreview")),
 			connect.WithClientOptions(opts...),
 		),
+		reportBoardSource: connect.NewClient[v1.ReportBoardSourceRequest, v1.ReportBoardSourceResponse](
+			httpClient,
+			baseURL+BoardServiceReportBoardSourceProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ReportBoardSource")),
+			connect.WithClientOptions(opts...),
+		),
+		listBoardSources: connect.NewClient[v1.ListBoardSourcesRequest, v1.ListBoardSourcesResponse](
+			httpClient,
+			baseURL+BoardServiceListBoardSourcesProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ListBoardSources")),
+			connect.WithClientOptions(opts...),
+		),
+		deriveDiagram: connect.NewClient[v1.DeriveDiagramRequest, v1.DeriveDiagramResponse](
+			httpClient,
+			baseURL+BoardServiceDeriveDiagramProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("DeriveDiagram")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // boardServiceClient implements BoardServiceClient.
 type boardServiceClient struct {
-	listBoards      *connect.Client[v1.ListBoardsRequest, v1.ListBoardsResponse]
-	getBoard        *connect.Client[v1.GetBoardRequest, v1.GetBoardResponse]
-	createBoard     *connect.Client[v1.CreateBoardRequest, v1.CreateBoardResponse]
-	updateBoard     *connect.Client[v1.UpdateBoardRequest, v1.UpdateBoardResponse]
-	deleteBoard     *connect.Client[v1.DeleteBoardRequest, v1.DeleteBoardResponse]
-	putObjects      *connect.Client[v1.PutObjectsRequest, v1.PutObjectsResponse]
-	requestChange   *connect.Client[v1.RequestChangeRequest, v1.RequestChangeResponse]
-	listTemplates   *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
-	exportBoard     *connect.Client[v1.ExportBoardRequest, v1.ExportBoardResponse]
-	listBoardSlices *connect.Client[v1.ListBoardSlicesRequest, v1.ListBoardSlicesResponse]
-	boardEmbed      *connect.Client[v1.BoardEmbedRequest, v1.BoardEmbedResponse]
-	generateTest    *connect.Client[v1.GenerateTestRequest, v1.GenerateTestResponse]
-	reportPreview   *connect.Client[v1.ReportPreviewRequest, v1.ReportPreviewResponse]
-	listPreviews    *connect.Client[v1.ListPreviewsRequest, v1.ListPreviewsResponse]
-	forgetPreview   *connect.Client[v1.ForgetPreviewRequest, v1.ForgetPreviewResponse]
+	listBoards          *connect.Client[v1.ListBoardsRequest, v1.ListBoardsResponse]
+	getBoard            *connect.Client[v1.GetBoardRequest, v1.GetBoardResponse]
+	createBoard         *connect.Client[v1.CreateBoardRequest, v1.CreateBoardResponse]
+	updateBoard         *connect.Client[v1.UpdateBoardRequest, v1.UpdateBoardResponse]
+	deleteBoard         *connect.Client[v1.DeleteBoardRequest, v1.DeleteBoardResponse]
+	putObjects          *connect.Client[v1.PutObjectsRequest, v1.PutObjectsResponse]
+	requestChange       *connect.Client[v1.RequestChangeRequest, v1.RequestChangeResponse]
+	listTemplates       *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
+	saveBoardTemplate   *connect.Client[v1.SaveBoardTemplateRequest, v1.SaveBoardTemplateResponse]
+	deleteBoardTemplate *connect.Client[v1.DeleteBoardTemplateRequest, v1.DeleteBoardTemplateResponse]
+	exportBoard         *connect.Client[v1.ExportBoardRequest, v1.ExportBoardResponse]
+	listBoardSlices     *connect.Client[v1.ListBoardSlicesRequest, v1.ListBoardSlicesResponse]
+	boardEmbed          *connect.Client[v1.BoardEmbedRequest, v1.BoardEmbedResponse]
+	generateTest        *connect.Client[v1.GenerateTestRequest, v1.GenerateTestResponse]
+	reportPreview       *connect.Client[v1.ReportPreviewRequest, v1.ReportPreviewResponse]
+	listPreviews        *connect.Client[v1.ListPreviewsRequest, v1.ListPreviewsResponse]
+	forgetPreview       *connect.Client[v1.ForgetPreviewRequest, v1.ForgetPreviewResponse]
+	reportBoardSource   *connect.Client[v1.ReportBoardSourceRequest, v1.ReportBoardSourceResponse]
+	listBoardSources    *connect.Client[v1.ListBoardSourcesRequest, v1.ListBoardSourcesResponse]
+	deriveDiagram       *connect.Client[v1.DeriveDiagramRequest, v1.DeriveDiagramResponse]
 }
 
 // ListBoards calls tank.board.v1.BoardService.ListBoards.
@@ -258,6 +313,16 @@ func (c *boardServiceClient) ListTemplates(ctx context.Context, req *connect.Req
 	return c.listTemplates.CallUnary(ctx, req)
 }
 
+// SaveBoardTemplate calls tank.board.v1.BoardService.SaveBoardTemplate.
+func (c *boardServiceClient) SaveBoardTemplate(ctx context.Context, req *connect.Request[v1.SaveBoardTemplateRequest]) (*connect.Response[v1.SaveBoardTemplateResponse], error) {
+	return c.saveBoardTemplate.CallUnary(ctx, req)
+}
+
+// DeleteBoardTemplate calls tank.board.v1.BoardService.DeleteBoardTemplate.
+func (c *boardServiceClient) DeleteBoardTemplate(ctx context.Context, req *connect.Request[v1.DeleteBoardTemplateRequest]) (*connect.Response[v1.DeleteBoardTemplateResponse], error) {
+	return c.deleteBoardTemplate.CallUnary(ctx, req)
+}
+
 // ExportBoard calls tank.board.v1.BoardService.ExportBoard.
 func (c *boardServiceClient) ExportBoard(ctx context.Context, req *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error) {
 	return c.exportBoard.CallUnary(ctx, req)
@@ -293,6 +358,21 @@ func (c *boardServiceClient) ForgetPreview(ctx context.Context, req *connect.Req
 	return c.forgetPreview.CallUnary(ctx, req)
 }
 
+// ReportBoardSource calls tank.board.v1.BoardService.ReportBoardSource.
+func (c *boardServiceClient) ReportBoardSource(ctx context.Context, req *connect.Request[v1.ReportBoardSourceRequest]) (*connect.Response[v1.ReportBoardSourceResponse], error) {
+	return c.reportBoardSource.CallUnary(ctx, req)
+}
+
+// ListBoardSources calls tank.board.v1.BoardService.ListBoardSources.
+func (c *boardServiceClient) ListBoardSources(ctx context.Context, req *connect.Request[v1.ListBoardSourcesRequest]) (*connect.Response[v1.ListBoardSourcesResponse], error) {
+	return c.listBoardSources.CallUnary(ctx, req)
+}
+
+// DeriveDiagram calls tank.board.v1.BoardService.DeriveDiagram.
+func (c *boardServiceClient) DeriveDiagram(ctx context.Context, req *connect.Request[v1.DeriveDiagramRequest]) (*connect.Response[v1.DeriveDiagramResponse], error) {
+	return c.deriveDiagram.CallUnary(ctx, req)
+}
+
 // BoardServiceHandler is an implementation of the tank.board.v1.BoardService service.
 type BoardServiceHandler interface {
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
@@ -303,6 +383,8 @@ type BoardServiceHandler interface {
 	PutObjects(context.Context, *connect.Request[v1.PutObjectsRequest]) (*connect.Response[v1.PutObjectsResponse], error)
 	RequestChange(context.Context, *connect.Request[v1.RequestChangeRequest]) (*connect.Response[v1.RequestChangeResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
+	SaveBoardTemplate(context.Context, *connect.Request[v1.SaveBoardTemplateRequest]) (*connect.Response[v1.SaveBoardTemplateResponse], error)
+	DeleteBoardTemplate(context.Context, *connect.Request[v1.DeleteBoardTemplateRequest]) (*connect.Response[v1.DeleteBoardTemplateResponse], error)
 	ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error)
 	ListBoardSlices(context.Context, *connect.Request[v1.ListBoardSlicesRequest]) (*connect.Response[v1.ListBoardSlicesResponse], error)
 	BoardEmbed(context.Context, *connect.Request[v1.BoardEmbedRequest]) (*connect.Response[v1.BoardEmbedResponse], error)
@@ -310,6 +392,9 @@ type BoardServiceHandler interface {
 	ReportPreview(context.Context, *connect.Request[v1.ReportPreviewRequest]) (*connect.Response[v1.ReportPreviewResponse], error)
 	ListPreviews(context.Context, *connect.Request[v1.ListPreviewsRequest]) (*connect.Response[v1.ListPreviewsResponse], error)
 	ForgetPreview(context.Context, *connect.Request[v1.ForgetPreviewRequest]) (*connect.Response[v1.ForgetPreviewResponse], error)
+	ReportBoardSource(context.Context, *connect.Request[v1.ReportBoardSourceRequest]) (*connect.Response[v1.ReportBoardSourceResponse], error)
+	ListBoardSources(context.Context, *connect.Request[v1.ListBoardSourcesRequest]) (*connect.Response[v1.ListBoardSourcesResponse], error)
+	DeriveDiagram(context.Context, *connect.Request[v1.DeriveDiagramRequest]) (*connect.Response[v1.DeriveDiagramResponse], error)
 }
 
 // NewBoardServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -367,6 +452,18 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(boardServiceMethods.ByName("ListTemplates")),
 		connect.WithHandlerOptions(opts...),
 	)
+	boardServiceSaveBoardTemplateHandler := connect.NewUnaryHandler(
+		BoardServiceSaveBoardTemplateProcedure,
+		svc.SaveBoardTemplate,
+		connect.WithSchema(boardServiceMethods.ByName("SaveBoardTemplate")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceDeleteBoardTemplateHandler := connect.NewUnaryHandler(
+		BoardServiceDeleteBoardTemplateProcedure,
+		svc.DeleteBoardTemplate,
+		connect.WithSchema(boardServiceMethods.ByName("DeleteBoardTemplate")),
+		connect.WithHandlerOptions(opts...),
+	)
 	boardServiceExportBoardHandler := connect.NewUnaryHandler(
 		BoardServiceExportBoardProcedure,
 		svc.ExportBoard,
@@ -409,6 +506,24 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(boardServiceMethods.ByName("ForgetPreview")),
 		connect.WithHandlerOptions(opts...),
 	)
+	boardServiceReportBoardSourceHandler := connect.NewUnaryHandler(
+		BoardServiceReportBoardSourceProcedure,
+		svc.ReportBoardSource,
+		connect.WithSchema(boardServiceMethods.ByName("ReportBoardSource")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceListBoardSourcesHandler := connect.NewUnaryHandler(
+		BoardServiceListBoardSourcesProcedure,
+		svc.ListBoardSources,
+		connect.WithSchema(boardServiceMethods.ByName("ListBoardSources")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceDeriveDiagramHandler := connect.NewUnaryHandler(
+		BoardServiceDeriveDiagramProcedure,
+		svc.DeriveDiagram,
+		connect.WithSchema(boardServiceMethods.ByName("DeriveDiagram")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.board.v1.BoardService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BoardServiceListBoardsProcedure:
@@ -427,6 +542,10 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 			boardServiceRequestChangeHandler.ServeHTTP(w, r)
 		case BoardServiceListTemplatesProcedure:
 			boardServiceListTemplatesHandler.ServeHTTP(w, r)
+		case BoardServiceSaveBoardTemplateProcedure:
+			boardServiceSaveBoardTemplateHandler.ServeHTTP(w, r)
+		case BoardServiceDeleteBoardTemplateProcedure:
+			boardServiceDeleteBoardTemplateHandler.ServeHTTP(w, r)
 		case BoardServiceExportBoardProcedure:
 			boardServiceExportBoardHandler.ServeHTTP(w, r)
 		case BoardServiceListBoardSlicesProcedure:
@@ -441,6 +560,12 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 			boardServiceListPreviewsHandler.ServeHTTP(w, r)
 		case BoardServiceForgetPreviewProcedure:
 			boardServiceForgetPreviewHandler.ServeHTTP(w, r)
+		case BoardServiceReportBoardSourceProcedure:
+			boardServiceReportBoardSourceHandler.ServeHTTP(w, r)
+		case BoardServiceListBoardSourcesProcedure:
+			boardServiceListBoardSourcesHandler.ServeHTTP(w, r)
+		case BoardServiceDeriveDiagramProcedure:
+			boardServiceDeriveDiagramHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -482,6 +607,14 @@ func (UnimplementedBoardServiceHandler) ListTemplates(context.Context, *connect.
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ListTemplates is not implemented"))
 }
 
+func (UnimplementedBoardServiceHandler) SaveBoardTemplate(context.Context, *connect.Request[v1.SaveBoardTemplateRequest]) (*connect.Response[v1.SaveBoardTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.SaveBoardTemplate is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) DeleteBoardTemplate(context.Context, *connect.Request[v1.DeleteBoardTemplateRequest]) (*connect.Response[v1.DeleteBoardTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.DeleteBoardTemplate is not implemented"))
+}
+
 func (UnimplementedBoardServiceHandler) ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ExportBoard is not implemented"))
 }
@@ -508,4 +641,16 @@ func (UnimplementedBoardServiceHandler) ListPreviews(context.Context, *connect.R
 
 func (UnimplementedBoardServiceHandler) ForgetPreview(context.Context, *connect.Request[v1.ForgetPreviewRequest]) (*connect.Response[v1.ForgetPreviewResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ForgetPreview is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ReportBoardSource(context.Context, *connect.Request[v1.ReportBoardSourceRequest]) (*connect.Response[v1.ReportBoardSourceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ReportBoardSource is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ListBoardSources(context.Context, *connect.Request[v1.ListBoardSourcesRequest]) (*connect.Response[v1.ListBoardSourcesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ListBoardSources is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) DeriveDiagram(context.Context, *connect.Request[v1.DeriveDiagramRequest]) (*connect.Response[v1.DeriveDiagramResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.DeriveDiagram is not implemented"))
 }
