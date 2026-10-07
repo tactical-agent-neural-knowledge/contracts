@@ -1,21 +1,18 @@
-# Neurons · .
+# Neurons · root
 
-refreshed 2026-10-03 · c5e2e604e1c6
+refreshed 2026-10-07 · d58208d52ddc
 
-- This repo is input + output: hand-written `.proto` under `proto/`, generated Go, TypeScript and Python committed under `gen/`. `.gitignore` ignores only `node_modules/`, `gen/ts/dist/`, `gen/ts/*.tgz`, `__pycache__/` — generated *sources* are tracked on purpose, so every PR that touches a proto also carries the regenerated files.
-- `Makefile` is the one entry point. `make check` = `lint gen build` plus `git diff --exit-code --stat gen/`, which is the stale-generated-code gate; it prints "ERROR: generated code is stale. Run 'make gen' and commit." and is the same gate CI enforces.
-- `Makefile:1` is `BUF ?= npx --yes @bufbuild/buf`: buf is not vendored, every target shells out to npx and therefore to the network on a cold cache. Override with `make lint BUF=buf` when a real buf binary is on PATH.
-- `buf.yaml` is v2 with a single module at `proto`, `lint.use: [STANDARD]` minus `PACKAGE_VERSION_SUFFIX`, and `breaking.use: [FILE]` — FILE-level, so moving a message between files is breaking even when the wire is unchanged.
-- `buf.gen.yaml` turns managed mode on and sets `go_package_prefix` to `github.com/.../contracts/gen/go`, which is why most protos carry no `option go_package`. Five do anyway (billing, catalog, monitor, platform, topo); a hand-written one must match the managed prefix exactly or `gen/go` lands in the wrong directory.
-- Plugin pins in `buf.gen.yaml` mirror the runtime pins in `go.mod`: protoc-gen-go v1.36.4 ↔ `google.golang.org/protobuf v1.36.4`, connect-go v1.18.1 ↔ `connectrpc.com/connect v1.18.1`. `CLAUDE.md` forbids changing a plugin version without regenerating everything in the same PR; moving one side alone desynchronises them.
-- `make clean` removes `gen/go/tank gen/ts/src/tank gen/python/tank` — the `tank` subtree only, never `gen/ts/src/index.ts`, which is hand-written.
-- `gen/ts/src/index.ts` is a hand-maintained namespaced barrel and covers 14 of the 22 proto packages (admin, billing, catalog, command, huddle, monitor, platform and topo are absent). Its own comment says deep imports (`./tank/message/v1/message_pb.js`) are the primary path; adding a domain does not add it here.
-- `gen/ts` is its own npm package (`@tactical-agent-neural-knowledge/contracts`, `"type": "module"`, tsc NodeNext, `@bufbuild/protobuf` as a peer dep). The es plugin is configured with `import_extension=js`, so every generated import ends in `.js` and must stay that way for NodeNext to resolve.
-- `go test ./...` appears in `.neural/map.yaml` but there is not a single `_test.go` file in the repo: the Go module is generated code only, and `go build ./...` is the real check.
-- `README.md` names the consumers each language serves — Go: api, agent-control; TS: sdk-ts, web, mobile, agent-runner; Python: knowledge — and states the change discipline: "Changes are additive-first: add fields, ship every client, wait for the mobile build to land, then remove."
-- `CLAUDE.md` hard prohibitions, verbatim: "Renumbering or reusing field numbers; removing a field before every client has shipped without it; editing `gen/` by hand; changing plugin versions without regenerating everything in the same PR."
-- No Go toolchain is installed in this agent sandbox, so `make build` / `go build ./...` cannot be run here; CI's `go build ./...` step is the only place it is proven. Do not claim it locally.
+- 26 domains under `proto/tank/<domain>/v1/` now (was 22 at the last refresh): `board`, `books`, `canvas`, `security` are new packages; `agent`, `agentctl`, `events`, `realtime`, `topo`, `workspace` grew in place. `README.md`'s package table only lists 11 — it is stale and should not be trusted for the current domain list.
+- `gen/ts/src/index.ts` is hand-written and is missing **12 of the 26** domains from its barrel: `admin`, `billing`, `board`, `books`, `canvas`, `catalog`, `command`, `huddle`, `monitor`, `notification`'s sibling `platform`, `security`, `topo` have no namespaced export. Consumers of those must deep-import `./tank/<domain>/v1/<domain>_pb.js`; adding a barrel line is a manual step `make gen` does not do.
+- Newer domain files (`billing`, `books`, `canvas`, `catalog`, `monitor`, `platform`, `security`, `topo`) set `option go_package` explicitly; older ones (`agent`, `agentctl`, `board`, plus the original 2026-10-03 set) rely on `buf.gen.yaml`'s `managed.override.file_option: go_package_prefix` alone. Both land at the same import path today — `buf lint`/`buf build` don't flag the inconsistency — but a domain that sets it explicitly stops tracking a future prefix change.
+- `make check` (lint → gen → build, then `git diff --exit-code --stat gen/`) is the one command that proves `gen/` is current; CI runs the same four steps directly with `buf`, not through `make` (see `.neural/neurons/github.md`).
+- `make clean` only removes `gen/{go,ts/src,python}/tank` — it does not touch `gen/ts/package.json`, `gen/ts/tsconfig.json` or `dist/`, so a clean build still needs `npm install` in `gen/ts` afterward.
+- `gen/ts/package.json` pins `@bufbuild/protobuf` as a peer dependency (`^2.2.3`) matching the `protoc-gen-es` plugin version in `buf.gen.yaml`; bumping one without the other is a version the TS build won't catch until a consumer installs it.
+- `go.mod` requires Go 1.26 and pins `connectrpc.com/connect v1.18.1` / `google.golang.org/protobuf v1.36.4` — exactly the plugin versions in `buf.gen.yaml`. `CLAUDE.md`'s prohibition on "changing plugin versions without regenerating everything in the same PR" means these three version strings move together.
+- `BUF ?= npx --yes @bufbuild/buf` in the `Makefile` means every `make` target resolves and runs buf fresh each time (no local binary cached by default); set `BUF=buf` to use one already on `PATH`.
+- No `_test.go` files exist anywhere in this repo; `go test ./...` (listed in `.neural/map.yaml`) passes vacuously. Correctness here is proven by `buf lint`, `buf breaking` and the committed-`gen/`-matches-source check, not by tests.
+- There is no `.github/workflows` step or `Makefile` target that runs `buf format` — formatting is not enforced, only `STANDARD` lint rules (minus `PACKAGE_VERSION_SUFFIX`, per `buf.yaml`).
 
 ## Verified
 
-`npx --yes @bufbuild/buf lint` (= `make lint`), `npx --yes @bufbuild/buf build`, `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` (= `make breaking`) — all passed. `make build` / `go build ./...` not run: no `go` on PATH here.
+`npx --yes @bufbuild/buf lint`, `npx --yes @bufbuild/buf build` (all 26 files compile), `npx --yes @bufbuild/buf breaking --against '.git#branch=main'`, `npm install && npm run build` in `gen/ts` (tsc compiles) — all passed. `go build ./...` was not run: no Go toolchain in this sandbox.
