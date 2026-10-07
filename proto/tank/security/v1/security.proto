@@ -1,0 +1,262 @@
+syntax = "proto3";
+
+package tank.security.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/security/v1;securityv1";
+
+// Neuralsecurity, Phase 0: the shape of what is true about TANK's own security.
+//
+// One rule decides this whole file. **Controls are the primitive; frameworks are
+// views over them.** There is exactly one set of facts about the running system,
+// each fact a Control with an owner, a check and an evidence query. A framework —
+// SOC 2 today, eight of them later — is a FrameworkClause mapping onto those
+// controls and never a second set of facts. If answering SOC 2 required writing
+// down anything that is not already a Control, the model is wrong.
+//
+// The second rule is that the answer is allowed to be bad. A control nobody can
+// evidence is NOT_YET even when everyone is fairly sure it holds, and a check
+// that has not run recently reports UNKNOWN rather than its last answer. A
+// registry that flatters the system is worse than no registry, because every
+// later phase reads from it.
+
+// The four honest states a control can be in, plus the two the machinery itself
+// forces.
+enum ControlState {
+  CONTROL_STATE_UNSPECIFIED = 0;
+  // Met, with evidence. Never set without an Evidence that resolves.
+  CONTROL_STATE_MET = 1;
+  // True in part. The limit is stated in `reason`, which is mandatory here.
+  CONTROL_STATE_PARTLY = 2;
+  // Not yet — including "probably true but we cannot evidence it". This is the
+  // honest home of everything unmeasured.
+  CONTROL_STATE_NOT_YET = 3;
+  // Does not apply to TANK as it is built. `reason` is mandatory: an N/A
+  // without a reason is how a control quietly disappears.
+  CONTROL_STATE_NOT_APPLICABLE = 4;
+  // The check has never run, or ran too long ago to be worth believing. A
+  // stale check reports UNKNOWN, never its last answer: the silent failure
+  // mode of every security scanner is a broken check that stays green.
+  CONTROL_STATE_UNKNOWN = 5;
+}
+
+// The §4 families of the plan, so a posture can be read a section at a time.
+enum ControlCategory {
+  CONTROL_CATEGORY_UNSPECIFIED = 0;
+  CONTROL_CATEGORY_IDENTITY = 1;
+  CONTROL_CATEGORY_DATA = 2;
+  CONTROL_CATEGORY_INFRASTRUCTURE = 3;
+  CONTROL_CATEGORY_OPERATIONS = 4;
+  CONTROL_CATEGORY_APPLICATION = 5;
+  // The agent runtime: the liability nobody else selling into a security
+  // review has, and therefore its own family rather than a footnote.
+  CONTROL_CATEGORY_AGENT = 6;
+}
+
+// How a control is evaluated. The distinction is the honesty of the registry:
+// a check that reads a live config value is worth ten that read a wiki, and
+// where the only true answer is "a human says so" that is modelled as an
+// attestation rather than dressed up as a check.
+enum CheckKind {
+  CHECK_KIND_UNSPECIFIED = 0;
+  // Code reads the real thing: a config value, a policy row, a database
+  // setting, a migration, a committed manifest.
+  CHECK_KIND_AUTOMATED = 1;
+  // A named person asserts it on a date. Carries no more weight than that.
+  CHECK_KIND_ATTESTATION = 2;
+  // No check exists yet. Such a control can only be NOT_YET or UNKNOWN; it can
+  // never be MET, because nothing is watching it.
+  CHECK_KIND_NONE = 3;
+}
+
+// What was observed, where it came from, and how long ago. The age is part of
+// the answer, not metadata about it.
+message Evidence {
+  // One line, in plain language, of what was actually observed.
+  string summary = 1;
+  // Where it came from so a reader can go and look: a file and line, a SQL
+  // query, a config key, an AWS resource address.
+  string source = 2;
+  google.protobuf.Timestamp observed_at = 3;
+  int64 age_seconds = 4;
+  // True when the age exceeds the control's max_age. A stale evidence always
+  // arrives with state UNKNOWN.
+  bool stale = 5;
+  // The raw observation, when it is short enough to carry: the value read, the
+  // rows counted, the lines matched.
+  string detail = 6;
+}
+
+// A human saying so, with a name and a date. Modelled explicitly so it can
+// never be mistaken for a measurement.
+message Attestation {
+  // A person, not a team and not "TANK". Accountability needs a name.
+  string author = 1;
+  string statement = 2;
+  google.protobuf.Timestamp at = 3;
+  // An attestation with no expiry is a claim with no end, so every one has a
+  // review date. Past it the control reports UNKNOWN.
+  google.protobuf.Timestamp expires_at = 4;
+  bool expired = 5;
+}
+
+// One clause of one framework, mapped onto a control. This message is the whole
+// of a crosswalk: adding ISO 27001 adds these rows and nothing else.
+message FrameworkClause {
+  // Framework id, lowercase and stable: "soc2".
+  string framework = 1;
+  // The clause as the framework itself names it: "CC6.1".
+  string clause = 2;
+  // What that clause asks for, in the framework's own words, abbreviated.
+  string title = 3;
+}
+
+// Something known to be wrong, named rather than left out. Findings travel with
+// the control so a remediation phase can read them.
+message Finding {
+  string id = 1;
+  // What is wrong, in one sentence a security lead would recognise.
+  string summary = 2;
+  // Where it is: a repo path, a resource, a table.
+  string locus = 3;
+  // low | medium | high | critical.
+  string severity = 4;
+  // What we would do about it. Phase 0 proposes; it does not fix.
+  string proposal = 5;
+}
+
+// One fact about the running system.
+message Control {
+  // Stable id, dotted and never renumbered: "data.tenant-isolation.rls".
+  string id = 1;
+  // Bumped when the statement or the check changes meaning, so an old answer
+  // is not read as an answer to a new question.
+  int32 version = 2;
+  // What the control asserts, in plain language, as a sentence that can be
+  // true or false. Not a policy title.
+  string statement = 3;
+  // Who answers for it. A person or a role, never "the team".
+  string owner = 4;
+  ControlCategory category = 5;
+  CheckKind check_kind = 6;
+  // How it is evaluated, in words, so a reader can judge the check itself.
+  string check = 7;
+  // The query, file or command that produces the evidence.
+  string evidence_query = 8;
+  // Every framework clause this control satisfies. One control, many frameworks.
+  repeated FrameworkClause clauses = 9;
+  ControlState state = 10;
+  // Mandatory for PARTLY (the limit) and NOT_APPLICABLE (why not).
+  string reason = 11;
+  Evidence evidence = 12;
+  // Set only when check_kind is ATTESTATION.
+  Attestation attestation = 13;
+  google.protobuf.Timestamp evaluated_at = 14;
+  // How long an answer to this control stays worth believing.
+  int64 max_age_seconds = 15;
+  bool stale = 16;
+  repeated Finding findings = 17;
+  repeated string tags = 18;
+}
+
+// How many controls are in one state.
+message StateCount {
+  ControlState state = 1;
+  int32 count = 2;
+}
+
+// The posture: every control, in its current state, with the counts a person
+// reads first.
+message Posture {
+  // Version of the registry that produced this answer.
+  string registry_version = 1;
+  google.protobuf.Timestamp generated_at = 2;
+  int32 total = 3;
+  repeated StateCount counts = 4;
+  repeated Control controls = 5;
+  // Controls whose state is UNKNOWN because nothing has evaluated them
+  // recently. Pulled out because it is the number that says whether the rest
+  // of the posture can be trusted at all.
+  int32 unknown = 6;
+}
+
+// A framework clause, with the controls mapped to it and the state that follows
+// from them. The clause state is derived, never stored: the worst of its
+// controls, so a crosswalk cannot be greener than the facts under it.
+message ClauseCoverage {
+  string clause = 1;
+  string title = 2;
+  repeated string control_ids = 3;
+  ControlState state = 4;
+}
+
+// One framework, as a view over the controls.
+message FrameworkCoverage {
+  string framework = 1;
+  string title = 2;
+  // What the mapping deliberately does not cover, said plainly.
+  string scope_note = 3;
+  int32 clauses = 4;
+  repeated ClauseCoverage clause_coverage = 5;
+  repeated StateCount counts = 6;
+}
+
+message GetPostureRequest {
+  // Filter to one category. Unspecified returns all.
+  ControlCategory category = 1;
+  // Filter to one state. Unspecified returns all.
+  ControlState state = 2;
+  // Return counts only, without the controls.
+  bool summary_only = 3;
+}
+
+message GetPostureResponse {
+  Posture posture = 1;
+}
+
+message GetControlRequest {
+  string control_id = 1;
+}
+
+message GetControlResponse {
+  Control control = 1;
+}
+
+message ListFrameworksRequest {}
+
+message ListFrameworksResponse {
+  repeated FrameworkCoverage frameworks = 1;
+}
+
+message GetFrameworkCoverageRequest {
+  string framework = 1;
+}
+
+message GetFrameworkCoverageResponse {
+  FrameworkCoverage coverage = 1;
+}
+
+message EvaluateRequest {
+  // Evaluate one control. Empty evaluates every control that has a check.
+  string control_id = 1;
+}
+
+message EvaluateResponse {
+  Posture posture = 1;
+  int32 evaluated = 2;
+}
+
+// The posture API. Platform-wide rather than per-workspace: these are facts
+// about TANK, and the people who may read them are the ones who may read the
+// console.
+//
+// Deliberately read-only apart from Evaluate, which only re-runs checks. The
+// registry is code, reviewed like code: nothing here can mark its own homework.
+service SecurityService {
+  rpc GetPosture(GetPostureRequest) returns (GetPostureResponse) {}
+  rpc GetControl(GetControlRequest) returns (GetControlResponse) {}
+  rpc ListFrameworks(ListFrameworksRequest) returns (ListFrameworksResponse) {}
+  rpc GetFrameworkCoverage(GetFrameworkCoverageRequest) returns (GetFrameworkCoverageResponse) {}
+  rpc Evaluate(EvaluateRequest) returns (EvaluateResponse) {}
+}
