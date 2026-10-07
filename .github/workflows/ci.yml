@@ -79,3 +79,8 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ github.token }}
         run: npm publish --access restricted --tag "$TAG"
+  secrets-scan:
+    uses: tactical-agent-neural-knowledge/workflows/.github/workflows/secret-scan.yml@main
+
+  deps-scan:
+    uses: tactical-agent-neural-knowledge/workflows/.github/workflows/deps-scan.yml@main
