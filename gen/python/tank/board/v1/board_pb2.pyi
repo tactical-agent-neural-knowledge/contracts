@@ -375,29 +375,93 @@ class ListTemplatesResponse(_message.Message):
     templates: _containers.RepeatedCompositeFieldContainer[BoardTemplate]
     def __init__(self, templates: _Optional[_Iterable[_Union[BoardTemplate, _Mapping]]] = ...) -> None: ...
 
+class BoardSlice(_message.Message):
+    __slots__ = ("name", "at", "object_id")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    at: Rect
+    object_id: str
+    def __init__(self, name: _Optional[str] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., object_id: _Optional[str] = ...) -> None: ...
+
 class ExportBoardRequest(_message.Message):
-    __slots__ = ("workspace_id", "id", "format", "object_ids", "transparent")
+    __slots__ = ("workspace_id", "id", "format", "object_ids", "transparent", "scale", "slice", "quality")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     ID_FIELD_NUMBER: _ClassVar[int]
     FORMAT_FIELD_NUMBER: _ClassVar[int]
     OBJECT_IDS_FIELD_NUMBER: _ClassVar[int]
     TRANSPARENT_FIELD_NUMBER: _ClassVar[int]
+    SCALE_FIELD_NUMBER: _ClassVar[int]
+    SLICE_FIELD_NUMBER: _ClassVar[int]
+    QUALITY_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     id: str
     format: str
     object_ids: _containers.RepeatedScalarFieldContainer[str]
     transparent: bool
-    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ..., format: _Optional[str] = ..., object_ids: _Optional[_Iterable[str]] = ..., transparent: bool = ...) -> None: ...
+    scale: int
+    slice: str
+    quality: int
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ..., format: _Optional[str] = ..., object_ids: _Optional[_Iterable[str]] = ..., transparent: bool = ..., scale: _Optional[int] = ..., slice: _Optional[str] = ..., quality: _Optional[int] = ...) -> None: ...
 
 class ExportBoardResponse(_message.Message):
-    __slots__ = ("filename", "content_type", "body")
+    __slots__ = ("filename", "content_type", "body", "width", "height", "notes")
     FILENAME_FIELD_NUMBER: _ClassVar[int]
     CONTENT_TYPE_FIELD_NUMBER: _ClassVar[int]
     BODY_FIELD_NUMBER: _ClassVar[int]
+    WIDTH_FIELD_NUMBER: _ClassVar[int]
+    HEIGHT_FIELD_NUMBER: _ClassVar[int]
+    NOTES_FIELD_NUMBER: _ClassVar[int]
     filename: str
     content_type: str
     body: bytes
-    def __init__(self, filename: _Optional[str] = ..., content_type: _Optional[str] = ..., body: _Optional[bytes] = ...) -> None: ...
+    width: int
+    height: int
+    notes: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, filename: _Optional[str] = ..., content_type: _Optional[str] = ..., body: _Optional[bytes] = ..., width: _Optional[int] = ..., height: _Optional[int] = ..., notes: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ListBoardSlicesRequest(_message.Message):
+    __slots__ = ("workspace_id", "id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ...) -> None: ...
+
+class ListBoardSlicesResponse(_message.Message):
+    __slots__ = ("slices",)
+    SLICES_FIELD_NUMBER: _ClassVar[int]
+    slices: _containers.RepeatedCompositeFieldContainer[BoardSlice]
+    def __init__(self, slices: _Optional[_Iterable[_Union[BoardSlice, _Mapping]]] = ...) -> None: ...
+
+class BoardEmbedRequest(_message.Message):
+    __slots__ = ("workspace_id", "id", "slice", "rotate", "revoke")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
+    SLICE_FIELD_NUMBER: _ClassVar[int]
+    ROTATE_FIELD_NUMBER: _ClassVar[int]
+    REVOKE_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    id: str
+    slice: str
+    rotate: bool
+    revoke: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ..., slice: _Optional[str] = ..., rotate: bool = ..., revoke: bool = ...) -> None: ...
+
+class BoardEmbedResponse(_message.Message):
+    __slots__ = ("page_url", "image_url", "embedded", "created_at", "created_by")
+    PAGE_URL_FIELD_NUMBER: _ClassVar[int]
+    IMAGE_URL_FIELD_NUMBER: _ClassVar[int]
+    EMBEDDED_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    CREATED_BY_FIELD_NUMBER: _ClassVar[int]
+    page_url: str
+    image_url: str
+    embedded: bool
+    created_at: _timestamp_pb2.Timestamp
+    created_by: str
+    def __init__(self, page_url: _Optional[str] = ..., image_url: _Optional[str] = ..., embedded: bool = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_by: _Optional[str] = ...) -> None: ...
 
 class FlowStep(_message.Message):
     __slots__ = ("element", "action", "value", "note")

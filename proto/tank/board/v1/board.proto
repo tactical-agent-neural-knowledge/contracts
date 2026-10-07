@@ -238,19 +238,71 @@ message BoardTemplate {
 message ListTemplatesRequest {}
 message ListTemplatesResponse { repeated BoardTemplate templates = 1; }
 
+// A named region of a board that exports on its own: the "slice" every design tool
+// has. A slice is an ordinary object carrying a record saying it is one, for the same
+// reason a flowchart's decision is a rectangle that says it is drawn as a diamond —
+// moving, resizing, snapping and layout all keep working on the box they already know.
+message BoardSlice {
+  string name = 1;
+  Rect at = 2;
+  string object_id = 3;
+}
+
 // Export a board, or part of one, as a file somebody can send to a person who does
 // not have a TANK account.
 message ExportBoardRequest {
   string workspace_id = 1;
   string id = 2;
-  string format = 3;            // "svg"
+  // "svg" | "png" | "jpg" | "pdf". Empty is svg.
+  string format = 3;
   repeated string object_ids = 4;  // empty exports everything
   bool transparent = 5;
+  // 1, 2 or 3 — the @1x/@2x/@3x a handoff asks for. Raster only: a vector file is
+  // already every scale. 0 means 1.
+  int32 scale = 6;
+  // Export one named region instead of the whole board or a selection. A slice wins
+  // over object_ids, because naming a region is the more specific ask.
+  string slice = 7;
+  // jpg only: 1..100. 0 means 82.
+  int32 quality = 8;
 }
 message ExportBoardResponse {
   string filename = 1;
   string content_type = 2;
   bytes body = 3;
+  // The pixels in the file. Zero for a vector format, which has none.
+  int32 width = 4;
+  int32 height = 5;
+  // What this file could not carry, in sentences somebody can act on: an effect the
+  // format has no way to draw, or a count of the prototyping hotspots left out of it.
+  // Empty means the file carries everything the board has.
+  repeated string notes = 6;
+}
+
+message ListBoardSlicesRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message ListBoardSlicesResponse { repeated BoardSlice slices = 1; }
+
+// An embed link: the board, or one slice of it, as a URL somebody with no TANK
+// account can put in a page.
+//
+// The link is the credential, the way an invoice's share link is, so it is readable
+// back to anyone who may read the board and rotating it is how it is taken away.
+message BoardEmbedRequest {
+  string workspace_id = 1;
+  string id = 2;
+  string slice = 3;
+  bool rotate = 4;   // mint a new link, which stops the old one working
+  bool revoke = 5;   // stop the board being embeddable at all
+}
+message BoardEmbedResponse {
+  string page_url = 1;   // a page to put in an iframe
+  string image_url = 2;  // the picture on its own, for a README or an <img>
+  bool embedded = 3;     // false once revoked
+  google.protobuf.Timestamp created_at = 4;
+  string created_by = 5;
 }
 
 // One thing somebody did while clicking through a running frame.
@@ -331,6 +383,8 @@ service BoardService {
   rpc RequestChange(RequestChangeRequest) returns (RequestChangeResponse);
   rpc ListTemplates(ListTemplatesRequest) returns (ListTemplatesResponse);
   rpc ExportBoard(ExportBoardRequest) returns (ExportBoardResponse);
+  rpc ListBoardSlices(ListBoardSlicesRequest) returns (ListBoardSlicesResponse);
+  rpc BoardEmbed(BoardEmbedRequest) returns (BoardEmbedResponse);
   rpc GenerateTest(GenerateTestRequest) returns (GenerateTestResponse);
   rpc ReportPreview(ReportPreviewRequest) returns (ReportPreviewResponse);
   rpc ListPreviews(ListPreviewsRequest) returns (ListPreviewsResponse);

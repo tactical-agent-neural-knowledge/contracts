@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tank/board/v1/board.proto.
  */
 export const file_tank_board_v1_board: GenFile = /*@__PURE__*/
-  fileDesc("Chl0YW5rL2JvYXJkL3YxL2JvYXJkLnByb3RvEg10YW5rLmJvYXJkLnYxIjIKBFJlY3QSCQoBeBgBIAEoARIJCgF5GAIgASgBEgkKAXcYAyABKAESCQoBaBgEIAEoASLGAQoFU3R5bGUSDAoEZmlsbBgBIAEoCRIOCgZzdHJva2UYAiABKAkSFAoMc3Ryb2tlX3dpZHRoGAMgASgBEg8KB29wYWNpdHkYBCABKAESFQoNY29ybmVyX3JhZGl1cxgFIAEoARIMCgRkYXNoGAYgASgJEhEKCWZvbnRfc2l6ZRgHIAEoBRITCgtmb250X3dlaWdodBgIIAEoCRINCgVhbGlnbhgJIAEoCRIOCgZzaGFkb3cYCiABKAkSDAoEYmx1chgLIAEoASKVAgoIQXBwRnJhbWUSDAoEcmVwbxgBIAEoCRILCgNyZWYYAiABKAkSDAoEcGF0aBgDIAEoCRIQCghwbGF0Zm9ybRgEIAEoCRIWCg52aWV3cG9ydF93aWR0aBgFIAEoBRIXCg92aWV3cG9ydF9oZWlnaHQYBiABKAUSEwoLcHJldmlld191cmwYByABKAkSDgoGc3RhdHVzGAggASgJEgwKBG5vdGUYCSABKAkSFgoOZHJhd25fZnJvbV9zaGEYCiABKAkSLAoIZHJhd25fYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhAKCG1vdmVkX29uGAwgASgIEhIKCm1vdmVkX25vdGUYDSABKAki/gIKC0JvYXJkT2JqZWN0EgoKAmlkGAEgASgJEicKBGtpbmQYAiABKA4yGS50YW5rLmJvYXJkLnYxLk9iamVjdEtpbmQSHwoCYXQYAyABKAsyEy50YW5rLmJvYXJkLnYxLlJlY3QSIwoFc3R5bGUYBCABKAsyFC50YW5rLmJvYXJkLnYxLlN0eWxlEgwKBHRleHQYBSABKAkSEAoIcm90YXRpb24YBiABKAESCQoBehgHIAEoBRIRCglwYXJlbnRfaWQYCCABKAkSDwoHZnJvbV9pZBgJIAEoCRINCgV0b19pZBgKIAEoCRIOCgZwb2ludHMYCyADKAESDwoHZmlsZV9pZBgMIAEoCRIQCghmaWxlX3VybBgNIAEoCRIkCgNhcHAYDiABKAsyFy50YW5rLmJvYXJkLnYxLkFwcEZyYW1lEg4KBmxvY2tlZBgPIAEoCBIMCgRtZXRhGBIgASgJEhIKCmNyZWF0ZWRfYnkYECABKAkSCwoDcmV2GBEgASgFIssCCgVCb2FyZBIKCgJpZBgBIAEoCRIUCgx3b3Jrc3BhY2VfaWQYAiABKAkSEgoKY2hhbm5lbF9pZBgDIAEoCRINCgV0aXRsZRgEIAEoCRIMCgRpY29uGAUgASgJEisKB29iamVjdHMYBiADKAsyGi50YW5rLmJvYXJkLnYxLkJvYXJkT2JqZWN0Eg8KB3ZlcnNpb24YByABKAUSEgoKY3JlYXRlZF9ieRgIIAEoCRIuCgpjcmVhdGVkX2F0GAkgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBISCgp1cGRhdGVkX2J5GAogASgJEi4KCnVwZGF0ZWRfYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhEKCXN0YWxlbmVzcxgMIAEoBRIWCg5zdGFsZW5lc3Nfbm90ZRgNIAEoCSLLAQoMQm9hcmRTdW1tYXJ5EgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEgwKBGljb24YAyABKAkSDwoHb2JqZWN0cxgEIAEoBRISCgphcHBfZnJhbWVzGAUgASgFEi4KCnVwZGF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhIKCmNoYW5uZWxfaWQYByABKAkSEQoJc3RhbGVuZXNzGAggASgFEhYKDnN0YWxlbmVzc19ub3RlGAkgASgJImAKEUxpc3RCb2FyZHNSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRISCgpjaGFubmVsX2lkGAIgASgJEg0KBWxpbWl0GAMgASgFEhIKCnN0YWxlX29ubHkYBCABKAgiQQoSTGlzdEJvYXJkc1Jlc3BvbnNlEisKBmJvYXJkcxgBIAMoCzIbLnRhbmsuYm9hcmQudjEuQm9hcmRTdW1tYXJ5IjMKD0dldEJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSCgoCaWQYAiABKAkiNwoQR2V0Qm9hcmRSZXNwb25zZRIjCgVib2FyZBgBIAEoCzIULnRhbmsuYm9hcmQudjEuQm9hcmQimgEKEkNyZWF0ZUJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSEgoKY2hhbm5lbF9pZBgCIAEoCRINCgV0aXRsZRgDIAEoCRIMCgRpY29uGAQgASgJEisKB29iamVjdHMYBSADKAsyGi50YW5rLmJvYXJkLnYxLkJvYXJkT2JqZWN0EhAKCHRlbXBsYXRlGAYgASgJIjoKE0NyZWF0ZUJvYXJkUmVzcG9uc2USIwoFYm9hcmQYASABKAsyFC50YW5rLmJvYXJkLnYxLkJvYXJkInwKElVwZGF0ZUJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSCgoCaWQYAiABKAkSDQoFdGl0bGUYAyABKAkSDAoEaWNvbhgEIAEoCRISCgpjaGFubmVsX2lkGAUgASgJEhMKC3NldF9jaGFubmVsGAYgASgIIjoKE1VwZGF0ZUJvYXJkUmVzcG9uc2USIwoFYm9hcmQYASABKAsyFC50YW5rLmJvYXJkLnYxLkJvYXJkIjYKEkRlbGV0ZUJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSCgoCaWQYAiABKAkiFQoTRGVsZXRlQm9hcmRSZXNwb25zZSLwAQoRUHV0T2JqZWN0c1JlcXVlc3QSFAoMd29ya3NwYWNlX2lkGAEgASgJEhAKCGJvYXJkX2lkGAIgASgJEisKB29iamVjdHMYAyADKAsyGi50YW5rLmJvYXJkLnYxLkJvYXJkT2JqZWN0EhIKCmRlbGV0ZV9pZHMYBCADKAkSQQoJYmFzZV9yZXZzGAUgAygLMi4udGFuay5ib2FyZC52MS5QdXRPYmplY3RzUmVxdWVzdC5CYXNlUmV2c0VudHJ5Gi8KDUJhc2VSZXZzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgFOgI4ASJ/ChJQdXRPYmplY3RzUmVzcG9uc2USIwoFYm9hcmQYASABKAsyFC50YW5rLmJvYXJkLnYxLkJvYXJkEi0KCWNvbmZsaWN0cxgCIAMoCzIaLnRhbmsuYm9hcmQudjEuQm9hcmRPYmplY3QSFQoNY29uZmxpY3Rfbm90ZRgDIAEoCSJ3CgdFbGVtZW50Eg4KBnNvdXJjZRgBIAEoCRILCgN0YWcYAiABKAkSDAoEdGV4dBgDIAEoCRIPCgd0ZXN0X2lkGAQgASgJEh8KAmF0GAUgASgLMhMudGFuay5ib2FyZC52MS5SZWN0Eg8KB2NsYXNzZXMYBiADKAkihwEKFFJlcXVlc3RDaGFuZ2VSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRIQCghib2FyZF9pZBgCIAEoCRIRCglvYmplY3RfaWQYAyABKAkSJwoHZWxlbWVudBgEIAEoCzIWLnRhbmsuYm9hcmQudjEuRWxlbWVudBILCgNhc2sYBSABKAkiUwoVUmVxdWVzdENoYW5nZVJlc3BvbnNlEhYKDnRocmVhZF9yb290X2lkGAYgASgJEhIKCmNoYW5uZWxfaWQYByABKAkSDgoGcHJvbXB0GAggASgJIlgKDUJvYXJkVGVtcGxhdGUSDAoEbmFtZRgBIAEoCRINCgV0aXRsZRgCIAEoCRIMCgRpY29uGAMgASgJEg0KBWFib3V0GAQgASgJEg0KBWdyb3VwGAUgASgJIhYKFExpc3RUZW1wbGF0ZXNSZXF1ZXN0IkgKFUxpc3RUZW1wbGF0ZXNSZXNwb25zZRIvCgl0ZW1wbGF0ZXMYASADKAsyHC50YW5rLmJvYXJkLnYxLkJvYXJkVGVtcGxhdGUibwoSRXhwb3J0Qm9hcmRSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRIKCgJpZBgCIAEoCRIOCgZmb3JtYXQYAyABKAkSEgoKb2JqZWN0X2lkcxgEIAMoCRITCgt0cmFuc3BhcmVudBgFIAEoCCJLChNFeHBvcnRCb2FyZFJlc3BvbnNlEhAKCGZpbGVuYW1lGAEgASgJEhQKDGNvbnRlbnRfdHlwZRgCIAEoCRIMCgRib2R5GAMgASgMImAKCEZsb3dTdGVwEicKB2VsZW1lbnQYASABKAsyFi50YW5rLmJvYXJkLnYxLkVsZW1lbnQSDgoGYWN0aW9uGAIgASgJEg0KBXZhbHVlGAMgASgJEgwKBG5vdGUYBCABKAkihgEKE0dlbmVyYXRlVGVzdFJlcXVlc3QSFAoMd29ya3NwYWNlX2lkGAEgASgJEhAKCGJvYXJkX2lkGAIgASgJEhEKCW9iamVjdF9pZBgDIAEoCRIMCgRuYW1lGAQgASgJEiYKBXN0ZXBzGAUgAygLMhcudGFuay5ib2FyZC52MS5GbG93U3RlcCJ7ChRHZW5lcmF0ZVRlc3RSZXNwb25zZRIXCg9wbGF5d3JpZ2h0X3BhdGgYASABKAkSEgoKcGxheXdyaWdodBgCIAEoCRIUCgxtYWVzdHJvX3BhdGgYAyABKAkSDwoHbWFlc3RybxgEIAEoCRIPCgdza2lwcGVkGAUgAygJInYKFFJlcG9ydFByZXZpZXdSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRIMCgRyZXBvGAIgASgJEgsKA3JlZhgDIAEoCRILCgNzaGEYBCABKAkSCwoDdXJsGAUgASgJEhMKC3JldGFpbl9kYXlzGAYgASgFIqoBChVSZXBvcnRQcmV2aWV3UmVzcG9uc2USDAoEcmVwbxgBIAEoCRILCgNyZWYYAiABKAkSCwoDc2hhGAMgASgJEgsKA3VybBgEIAEoCRIsCghidWlsdF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLgoKZXhwaXJlc19hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiSAoTTGlzdFByZXZpZXdzUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSDAoEcmVwbxgCIAEoCRINCgVsaW1pdBgDIAEoBSJOChRMaXN0UHJldmlld3NSZXNwb25zZRI2CghwcmV2aWV3cxgBIAMoCzIkLnRhbmsuYm9hcmQudjEuUmVwb3J0UHJldmlld1Jlc3BvbnNlIkcKFEZvcmdldFByZXZpZXdSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRIMCgRyZXBvGAIgASgJEgsKA3JlZhgDIAEoCSIqChVGb3JnZXRQcmV2aWV3UmVzcG9uc2USEQoJZm9yZ290dGVuGAEgASgFKpICCgpPYmplY3RLaW5kEhsKF09CSkVDVF9LSU5EX1VOU1BFQ0lGSUVEEAASFQoRT0JKRUNUX0tJTkRfRlJBTUUQARIUChBPQkpFQ1RfS0lORF9SRUNUEAISFwoTT0JKRUNUX0tJTkRfRUxMSVBTRRADEhQKEE9CSkVDVF9LSU5EX0xJTkUQBBIVChFPQkpFQ1RfS0lORF9BUlJPVxAFEhQKEE9CSkVDVF9LSU5EX1RFWFQQBhIWChJPQkpFQ1RfS0lORF9TVElDS1kQBxIVChFPQkpFQ1RfS0lORF9JTUFHRRAIEhkKFU9CSkVDVF9LSU5EX0NPTk5FQ1RPUhAJEhQKEE9CSkVDVF9LSU5EX0RSQVcQCjL7CAoMQm9hcmRTZXJ2aWNlElEKCkxpc3RCb2FyZHMSIC50YW5rLmJvYXJkLnYxLkxpc3RCb2FyZHNSZXF1ZXN0GiEudGFuay5ib2FyZC52MS5MaXN0Qm9hcmRzUmVzcG9uc2USSwoIR2V0Qm9hcmQSHi50YW5rLmJvYXJkLnYxLkdldEJvYXJkUmVxdWVzdBofLnRhbmsuYm9hcmQudjEuR2V0Qm9hcmRSZXNwb25zZRJUCgtDcmVhdGVCb2FyZBIhLnRhbmsuYm9hcmQudjEuQ3JlYXRlQm9hcmRSZXF1ZXN0GiIudGFuay5ib2FyZC52MS5DcmVhdGVCb2FyZFJlc3BvbnNlElQKC1VwZGF0ZUJvYXJkEiEudGFuay5ib2FyZC52MS5VcGRhdGVCb2FyZFJlcXVlc3QaIi50YW5rLmJvYXJkLnYxLlVwZGF0ZUJvYXJkUmVzcG9uc2USVAoLRGVsZXRlQm9hcmQSIS50YW5rLmJvYXJkLnYxLkRlbGV0ZUJvYXJkUmVxdWVzdBoiLnRhbmsuYm9hcmQudjEuRGVsZXRlQm9hcmRSZXNwb25zZRJRCgpQdXRPYmplY3RzEiAudGFuay5ib2FyZC52MS5QdXRPYmplY3RzUmVxdWVzdBohLnRhbmsuYm9hcmQudjEuUHV0T2JqZWN0c1Jlc3BvbnNlEloKDVJlcXVlc3RDaGFuZ2USIy50YW5rLmJvYXJkLnYxLlJlcXVlc3RDaGFuZ2VSZXF1ZXN0GiQudGFuay5ib2FyZC52MS5SZXF1ZXN0Q2hhbmdlUmVzcG9uc2USWgoNTGlzdFRlbXBsYXRlcxIjLnRhbmsuYm9hcmQudjEuTGlzdFRlbXBsYXRlc1JlcXVlc3QaJC50YW5rLmJvYXJkLnYxLkxpc3RUZW1wbGF0ZXNSZXNwb25zZRJUCgtFeHBvcnRCb2FyZBIhLnRhbmsuYm9hcmQudjEuRXhwb3J0Qm9hcmRSZXF1ZXN0GiIudGFuay5ib2FyZC52MS5FeHBvcnRCb2FyZFJlc3BvbnNlElcKDEdlbmVyYXRlVGVzdBIiLnRhbmsuYm9hcmQudjEuR2VuZXJhdGVUZXN0UmVxdWVzdBojLnRhbmsuYm9hcmQudjEuR2VuZXJhdGVUZXN0UmVzcG9uc2USWgoNUmVwb3J0UHJldmlldxIjLnRhbmsuYm9hcmQudjEuUmVwb3J0UHJldmlld1JlcXVlc3QaJC50YW5rLmJvYXJkLnYxLlJlcG9ydFByZXZpZXdSZXNwb25zZRJXCgxMaXN0UHJldmlld3MSIi50YW5rLmJvYXJkLnYxLkxpc3RQcmV2aWV3c1JlcXVlc3QaIy50YW5rLmJvYXJkLnYxLkxpc3RQcmV2aWV3c1Jlc3BvbnNlEloKDUZvcmdldFByZXZpZXcSIy50YW5rLmJvYXJkLnYxLkZvcmdldFByZXZpZXdSZXF1ZXN0GiQudGFuay5ib2FyZC52MS5Gb3JnZXRQcmV2aWV3UmVzcG9uc2VCyAEKEWNvbS50YW5rLmJvYXJkLnYxQgpCb2FyZFByb3RvUAFaUWdpdGh1Yi5jb20vdGFjdGljYWwtYWdlbnQtbmV1cmFsLWtub3dsZWRnZS9jb250cmFjdHMvZ2VuL2dvL3RhbmsvYm9hcmQvdjE7Ym9hcmR2MaICA1RCWKoCDVRhbmsuQm9hcmQuVjHKAg1UYW5rXEJvYXJkXFYx4gIZVGFua1xCb2FyZFxWMVxHUEJNZXRhZGF0YeoCD1Rhbms6OkJvYXJkOjpWMWIGcHJvdG8z", [file_google_protobuf_timestamp]);
+  fileDesc("Chl0YW5rL2JvYXJkL3YxL2JvYXJkLnByb3RvEg10YW5rLmJvYXJkLnYxIjIKBFJlY3QSCQoBeBgBIAEoARIJCgF5GAIgASgBEgkKAXcYAyABKAESCQoBaBgEIAEoASLGAQoFU3R5bGUSDAoEZmlsbBgBIAEoCRIOCgZzdHJva2UYAiABKAkSFAoMc3Ryb2tlX3dpZHRoGAMgASgBEg8KB29wYWNpdHkYBCABKAESFQoNY29ybmVyX3JhZGl1cxgFIAEoARIMCgRkYXNoGAYgASgJEhEKCWZvbnRfc2l6ZRgHIAEoBRITCgtmb250X3dlaWdodBgIIAEoCRINCgVhbGlnbhgJIAEoCRIOCgZzaGFkb3cYCiABKAkSDAoEYmx1chgLIAEoASKVAgoIQXBwRnJhbWUSDAoEcmVwbxgBIAEoCRILCgNyZWYYAiABKAkSDAoEcGF0aBgDIAEoCRIQCghwbGF0Zm9ybRgEIAEoCRIWCg52aWV3cG9ydF93aWR0aBgFIAEoBRIXCg92aWV3cG9ydF9oZWlnaHQYBiABKAUSEwoLcHJldmlld191cmwYByABKAkSDgoGc3RhdHVzGAggASgJEgwKBG5vdGUYCSABKAkSFgoOZHJhd25fZnJvbV9zaGEYCiABKAkSLAoIZHJhd25fYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhAKCG1vdmVkX29uGAwgASgIEhIKCm1vdmVkX25vdGUYDSABKAki/gIKC0JvYXJkT2JqZWN0EgoKAmlkGAEgASgJEicKBGtpbmQYAiABKA4yGS50YW5rLmJvYXJkLnYxLk9iamVjdEtpbmQSHwoCYXQYAyABKAsyEy50YW5rLmJvYXJkLnYxLlJlY3QSIwoFc3R5bGUYBCABKAsyFC50YW5rLmJvYXJkLnYxLlN0eWxlEgwKBHRleHQYBSABKAkSEAoIcm90YXRpb24YBiABKAESCQoBehgHIAEoBRIRCglwYXJlbnRfaWQYCCABKAkSDwoHZnJvbV9pZBgJIAEoCRINCgV0b19pZBgKIAEoCRIOCgZwb2ludHMYCyADKAESDwoHZmlsZV9pZBgMIAEoCRIQCghmaWxlX3VybBgNIAEoCRIkCgNhcHAYDiABKAsyFy50YW5rLmJvYXJkLnYxLkFwcEZyYW1lEg4KBmxvY2tlZBgPIAEoCBIMCgRtZXRhGBIgASgJEhIKCmNyZWF0ZWRfYnkYECABKAkSCwoDcmV2GBEgASgFIssCCgVCb2FyZBIKCgJpZBgBIAEoCRIUCgx3b3Jrc3BhY2VfaWQYAiABKAkSEgoKY2hhbm5lbF9pZBgDIAEoCRINCgV0aXRsZRgEIAEoCRIMCgRpY29uGAUgASgJEisKB29iamVjdHMYBiADKAsyGi50YW5rLmJvYXJkLnYxLkJvYXJkT2JqZWN0Eg8KB3ZlcnNpb24YByABKAUSEgoKY3JlYXRlZF9ieRgIIAEoCRIuCgpjcmVhdGVkX2F0GAkgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBISCgp1cGRhdGVkX2J5GAogASgJEi4KCnVwZGF0ZWRfYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhEKCXN0YWxlbmVzcxgMIAEoBRIWCg5zdGFsZW5lc3Nfbm90ZRgNIAEoCSLLAQoMQm9hcmRTdW1tYXJ5EgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEgwKBGljb24YAyABKAkSDwoHb2JqZWN0cxgEIAEoBRISCgphcHBfZnJhbWVzGAUgASgFEi4KCnVwZGF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhIKCmNoYW5uZWxfaWQYByABKAkSEQoJc3RhbGVuZXNzGAggASgFEhYKDnN0YWxlbmVzc19ub3RlGAkgASgJImAKEUxpc3RCb2FyZHNSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRISCgpjaGFubmVsX2lkGAIgASgJEg0KBWxpbWl0GAMgASgFEhIKCnN0YWxlX29ubHkYBCABKAgiQQoSTGlzdEJvYXJkc1Jlc3BvbnNlEisKBmJvYXJkcxgBIAMoCzIbLnRhbmsuYm9hcmQudjEuQm9hcmRTdW1tYXJ5IjMKD0dldEJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSCgoCaWQYAiABKAkiNwoQR2V0Qm9hcmRSZXNwb25zZRIjCgVib2FyZBgBIAEoCzIULnRhbmsuYm9hcmQudjEuQm9hcmQimgEKEkNyZWF0ZUJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSEgoKY2hhbm5lbF9pZBgCIAEoCRINCgV0aXRsZRgDIAEoCRIMCgRpY29uGAQgASgJEisKB29iamVjdHMYBSADKAsyGi50YW5rLmJvYXJkLnYxLkJvYXJkT2JqZWN0EhAKCHRlbXBsYXRlGAYgASgJIjoKE0NyZWF0ZUJvYXJkUmVzcG9uc2USIwoFYm9hcmQYASABKAsyFC50YW5rLmJvYXJkLnYxLkJvYXJkInwKElVwZGF0ZUJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSCgoCaWQYAiABKAkSDQoFdGl0bGUYAyABKAkSDAoEaWNvbhgEIAEoCRISCgpjaGFubmVsX2lkGAUgASgJEhMKC3NldF9jaGFubmVsGAYgASgIIjoKE1VwZGF0ZUJvYXJkUmVzcG9uc2USIwoFYm9hcmQYASABKAsyFC50YW5rLmJvYXJkLnYxLkJvYXJkIjYKEkRlbGV0ZUJvYXJkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSCgoCaWQYAiABKAkiFQoTRGVsZXRlQm9hcmRSZXNwb25zZSLwAQoRUHV0T2JqZWN0c1JlcXVlc3QSFAoMd29ya3NwYWNlX2lkGAEgASgJEhAKCGJvYXJkX2lkGAIgASgJEisKB29iamVjdHMYAyADKAsyGi50YW5rLmJvYXJkLnYxLkJvYXJkT2JqZWN0EhIKCmRlbGV0ZV9pZHMYBCADKAkSQQoJYmFzZV9yZXZzGAUgAygLMi4udGFuay5ib2FyZC52MS5QdXRPYmplY3RzUmVxdWVzdC5CYXNlUmV2c0VudHJ5Gi8KDUJhc2VSZXZzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgFOgI4ASJ/ChJQdXRPYmplY3RzUmVzcG9uc2USIwoFYm9hcmQYASABKAsyFC50YW5rLmJvYXJkLnYxLkJvYXJkEi0KCWNvbmZsaWN0cxgCIAMoCzIaLnRhbmsuYm9hcmQudjEuQm9hcmRPYmplY3QSFQoNY29uZmxpY3Rfbm90ZRgDIAEoCSJ3CgdFbGVtZW50Eg4KBnNvdXJjZRgBIAEoCRILCgN0YWcYAiABKAkSDAoEdGV4dBgDIAEoCRIPCgd0ZXN0X2lkGAQgASgJEh8KAmF0GAUgASgLMhMudGFuay5ib2FyZC52MS5SZWN0Eg8KB2NsYXNzZXMYBiADKAkihwEKFFJlcXVlc3RDaGFuZ2VSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRIQCghib2FyZF9pZBgCIAEoCRIRCglvYmplY3RfaWQYAyABKAkSJwoHZWxlbWVudBgEIAEoCzIWLnRhbmsuYm9hcmQudjEuRWxlbWVudBILCgNhc2sYBSABKAkiUwoVUmVxdWVzdENoYW5nZVJlc3BvbnNlEhYKDnRocmVhZF9yb290X2lkGAYgASgJEhIKCmNoYW5uZWxfaWQYByABKAkSDgoGcHJvbXB0GAggASgJIlgKDUJvYXJkVGVtcGxhdGUSDAoEbmFtZRgBIAEoCRINCgV0aXRsZRgCIAEoCRIMCgRpY29uGAMgASgJEg0KBWFib3V0GAQgASgJEg0KBWdyb3VwGAUgASgJIhYKFExpc3RUZW1wbGF0ZXNSZXF1ZXN0IkgKFUxpc3RUZW1wbGF0ZXNSZXNwb25zZRIvCgl0ZW1wbGF0ZXMYASADKAsyHC50YW5rLmJvYXJkLnYxLkJvYXJkVGVtcGxhdGUiTgoKQm9hcmRTbGljZRIMCgRuYW1lGAEgASgJEh8KAmF0GAIgASgLMhMudGFuay5ib2FyZC52MS5SZWN0EhEKCW9iamVjdF9pZBgDIAEoCSKeAQoSRXhwb3J0Qm9hcmRSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRIKCgJpZBgCIAEoCRIOCgZmb3JtYXQYAyABKAkSEgoKb2JqZWN0X2lkcxgEIAMoCRITCgt0cmFuc3BhcmVudBgFIAEoCBINCgVzY2FsZRgGIAEoBRINCgVzbGljZRgHIAEoCRIPCgdxdWFsaXR5GAggASgFInkKE0V4cG9ydEJvYXJkUmVzcG9uc2USEAoIZmlsZW5hbWUYASABKAkSFAoMY29udGVudF90eXBlGAIgASgJEgwKBGJvZHkYAyABKAwSDQoFd2lkdGgYBCABKAUSDgoGaGVpZ2h0GAUgASgFEg0KBW5vdGVzGAYgAygJIjoKFkxpc3RCb2FyZFNsaWNlc1JlcXVlc3QSFAoMd29ya3NwYWNlX2lkGAEgASgJEgoKAmlkGAIgASgJIkQKF0xpc3RCb2FyZFNsaWNlc1Jlc3BvbnNlEikKBnNsaWNlcxgBIAMoCzIZLnRhbmsuYm9hcmQudjEuQm9hcmRTbGljZSJkChFCb2FyZEVtYmVkUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSCgoCaWQYAiABKAkSDQoFc2xpY2UYAyABKAkSDgoGcm90YXRlGAQgASgIEg4KBnJldm9rZRgFIAEoCCKPAQoSQm9hcmRFbWJlZFJlc3BvbnNlEhAKCHBhZ2VfdXJsGAEgASgJEhEKCWltYWdlX3VybBgCIAEoCRIQCghlbWJlZGRlZBgDIAEoCBIuCgpjcmVhdGVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBISCgpjcmVhdGVkX2J5GAUgASgJImAKCEZsb3dTdGVwEicKB2VsZW1lbnQYASABKAsyFi50YW5rLmJvYXJkLnYxLkVsZW1lbnQSDgoGYWN0aW9uGAIgASgJEg0KBXZhbHVlGAMgASgJEgwKBG5vdGUYBCABKAkihgEKE0dlbmVyYXRlVGVzdFJlcXVlc3QSFAoMd29ya3NwYWNlX2lkGAEgASgJEhAKCGJvYXJkX2lkGAIgASgJEhEKCW9iamVjdF9pZBgDIAEoCRIMCgRuYW1lGAQgASgJEiYKBXN0ZXBzGAUgAygLMhcudGFuay5ib2FyZC52MS5GbG93U3RlcCJ7ChRHZW5lcmF0ZVRlc3RSZXNwb25zZRIXCg9wbGF5d3JpZ2h0X3BhdGgYASABKAkSEgoKcGxheXdyaWdodBgCIAEoCRIUCgxtYWVzdHJvX3BhdGgYAyABKAkSDwoHbWFlc3RybxgEIAEoCRIPCgdza2lwcGVkGAUgAygJInYKFFJlcG9ydFByZXZpZXdSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRIMCgRyZXBvGAIgASgJEgsKA3JlZhgDIAEoCRILCgNzaGEYBCABKAkSCwoDdXJsGAUgASgJEhMKC3JldGFpbl9kYXlzGAYgASgFIqoBChVSZXBvcnRQcmV2aWV3UmVzcG9uc2USDAoEcmVwbxgBIAEoCRILCgNyZWYYAiABKAkSCwoDc2hhGAMgASgJEgsKA3VybBgEIAEoCRIsCghidWlsdF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLgoKZXhwaXJlc19hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiSAoTTGlzdFByZXZpZXdzUmVxdWVzdBIUCgx3b3Jrc3BhY2VfaWQYASABKAkSDAoEcmVwbxgCIAEoCRINCgVsaW1pdBgDIAEoBSJOChRMaXN0UHJldmlld3NSZXNwb25zZRI2CghwcmV2aWV3cxgBIAMoCzIkLnRhbmsuYm9hcmQudjEuUmVwb3J0UHJldmlld1Jlc3BvbnNlIkcKFEZvcmdldFByZXZpZXdSZXF1ZXN0EhQKDHdvcmtzcGFjZV9pZBgBIAEoCRIMCgRyZXBvGAIgASgJEgsKA3JlZhgDIAEoCSIqChVGb3JnZXRQcmV2aWV3UmVzcG9uc2USEQoJZm9yZ290dGVuGAEgASgFKpICCgpPYmplY3RLaW5kEhsKF09CSkVDVF9LSU5EX1VOU1BFQ0lGSUVEEAASFQoRT0JKRUNUX0tJTkRfRlJBTUUQARIUChBPQkpFQ1RfS0lORF9SRUNUEAISFwoTT0JKRUNUX0tJTkRfRUxMSVBTRRADEhQKEE9CSkVDVF9LSU5EX0xJTkUQBBIVChFPQkpFQ1RfS0lORF9BUlJPVxAFEhQKEE9CSkVDVF9LSU5EX1RFWFQQBhIWChJPQkpFQ1RfS0lORF9TVElDS1kQBxIVChFPQkpFQ1RfS0lORF9JTUFHRRAIEhkKFU9CSkVDVF9LSU5EX0NPTk5FQ1RPUhAJEhQKEE9CSkVDVF9LSU5EX0RSQVcQCjKwCgoMQm9hcmRTZXJ2aWNlElEKCkxpc3RCb2FyZHMSIC50YW5rLmJvYXJkLnYxLkxpc3RCb2FyZHNSZXF1ZXN0GiEudGFuay5ib2FyZC52MS5MaXN0Qm9hcmRzUmVzcG9uc2USSwoIR2V0Qm9hcmQSHi50YW5rLmJvYXJkLnYxLkdldEJvYXJkUmVxdWVzdBofLnRhbmsuYm9hcmQudjEuR2V0Qm9hcmRSZXNwb25zZRJUCgtDcmVhdGVCb2FyZBIhLnRhbmsuYm9hcmQudjEuQ3JlYXRlQm9hcmRSZXF1ZXN0GiIudGFuay5ib2FyZC52MS5DcmVhdGVCb2FyZFJlc3BvbnNlElQKC1VwZGF0ZUJvYXJkEiEudGFuay5ib2FyZC52MS5VcGRhdGVCb2FyZFJlcXVlc3QaIi50YW5rLmJvYXJkLnYxLlVwZGF0ZUJvYXJkUmVzcG9uc2USVAoLRGVsZXRlQm9hcmQSIS50YW5rLmJvYXJkLnYxLkRlbGV0ZUJvYXJkUmVxdWVzdBoiLnRhbmsuYm9hcmQudjEuRGVsZXRlQm9hcmRSZXNwb25zZRJRCgpQdXRPYmplY3RzEiAudGFuay5ib2FyZC52MS5QdXRPYmplY3RzUmVxdWVzdBohLnRhbmsuYm9hcmQudjEuUHV0T2JqZWN0c1Jlc3BvbnNlEloKDVJlcXVlc3RDaGFuZ2USIy50YW5rLmJvYXJkLnYxLlJlcXVlc3RDaGFuZ2VSZXF1ZXN0GiQudGFuay5ib2FyZC52MS5SZXF1ZXN0Q2hhbmdlUmVzcG9uc2USWgoNTGlzdFRlbXBsYXRlcxIjLnRhbmsuYm9hcmQudjEuTGlzdFRlbXBsYXRlc1JlcXVlc3QaJC50YW5rLmJvYXJkLnYxLkxpc3RUZW1wbGF0ZXNSZXNwb25zZRJUCgtFeHBvcnRCb2FyZBIhLnRhbmsuYm9hcmQudjEuRXhwb3J0Qm9hcmRSZXF1ZXN0GiIudGFuay5ib2FyZC52MS5FeHBvcnRCb2FyZFJlc3BvbnNlEmAKD0xpc3RCb2FyZFNsaWNlcxIlLnRhbmsuYm9hcmQudjEuTGlzdEJvYXJkU2xpY2VzUmVxdWVzdBomLnRhbmsuYm9hcmQudjEuTGlzdEJvYXJkU2xpY2VzUmVzcG9uc2USUQoKQm9hcmRFbWJlZBIgLnRhbmsuYm9hcmQudjEuQm9hcmRFbWJlZFJlcXVlc3QaIS50YW5rLmJvYXJkLnYxLkJvYXJkRW1iZWRSZXNwb25zZRJXCgxHZW5lcmF0ZVRlc3QSIi50YW5rLmJvYXJkLnYxLkdlbmVyYXRlVGVzdFJlcXVlc3QaIy50YW5rLmJvYXJkLnYxLkdlbmVyYXRlVGVzdFJlc3BvbnNlEloKDVJlcG9ydFByZXZpZXcSIy50YW5rLmJvYXJkLnYxLlJlcG9ydFByZXZpZXdSZXF1ZXN0GiQudGFuay5ib2FyZC52MS5SZXBvcnRQcmV2aWV3UmVzcG9uc2USVwoMTGlzdFByZXZpZXdzEiIudGFuay5ib2FyZC52MS5MaXN0UHJldmlld3NSZXF1ZXN0GiMudGFuay5ib2FyZC52MS5MaXN0UHJldmlld3NSZXNwb25zZRJaCg1Gb3JnZXRQcmV2aWV3EiMudGFuay5ib2FyZC52MS5Gb3JnZXRQcmV2aWV3UmVxdWVzdBokLnRhbmsuYm9hcmQudjEuRm9yZ2V0UHJldmlld1Jlc3BvbnNlQsgBChFjb20udGFuay5ib2FyZC52MUIKQm9hcmRQcm90b1ABWlFnaXRodWIuY29tL3RhY3RpY2FsLWFnZW50LW5ldXJhbC1rbm93bGVkZ2UvY29udHJhY3RzL2dlbi9nby90YW5rL2JvYXJkL3YxO2JvYXJkdjGiAgNUQliqAg1UYW5rLkJvYXJkLlYxygINVGFua1xCb2FyZFxWMeICGVRhbmtcQm9hcmRcVjFcR1BCTWV0YWRhdGHqAg9UYW5rOjpCb2FyZDo6VjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * Where a thing sits. Boards are infinite, so these are board coordinates, not pixels
@@ -1034,6 +1034,38 @@ export const ListTemplatesResponseSchema: GenMessage<ListTemplatesResponse> = /*
   messageDesc(file_tank_board_v1_board, 23);
 
 /**
+ * A named region of a board that exports on its own: the "slice" every design tool
+ * has. A slice is an ordinary object carrying a record saying it is one, for the same
+ * reason a flowchart's decision is a rectangle that says it is drawn as a diamond —
+ * moving, resizing, snapping and layout all keep working on the box they already know.
+ *
+ * @generated from message tank.board.v1.BoardSlice
+ */
+export type BoardSlice = Message<"tank.board.v1.BoardSlice"> & {
+  /**
+   * @generated from field: string name = 1;
+   */
+  name: string;
+
+  /**
+   * @generated from field: tank.board.v1.Rect at = 2;
+   */
+  at?: Rect;
+
+  /**
+   * @generated from field: string object_id = 3;
+   */
+  objectId: string;
+};
+
+/**
+ * Describes the message tank.board.v1.BoardSlice.
+ * Use `create(BoardSliceSchema)` to create a new message.
+ */
+export const BoardSliceSchema: GenMessage<BoardSlice> = /*@__PURE__*/
+  messageDesc(file_tank_board_v1_board, 24);
+
+/**
  * Export a board, or part of one, as a file somebody can send to a person who does
  * not have a TANK account.
  *
@@ -1051,7 +1083,7 @@ export type ExportBoardRequest = Message<"tank.board.v1.ExportBoardRequest"> & {
   id: string;
 
   /**
-   * "svg"
+   * "svg" | "png" | "jpg" | "pdf". Empty is svg.
    *
    * @generated from field: string format = 3;
    */
@@ -1068,6 +1100,29 @@ export type ExportBoardRequest = Message<"tank.board.v1.ExportBoardRequest"> & {
    * @generated from field: bool transparent = 5;
    */
   transparent: boolean;
+
+  /**
+   * 1, 2 or 3 — the @1x/@2x/@3x a handoff asks for. Raster only: a vector file is
+   * already every scale. 0 means 1.
+   *
+   * @generated from field: int32 scale = 6;
+   */
+  scale: number;
+
+  /**
+   * Export one named region instead of the whole board or a selection. A slice wins
+   * over object_ids, because naming a region is the more specific ask.
+   *
+   * @generated from field: string slice = 7;
+   */
+  slice: string;
+
+  /**
+   * jpg only: 1..100. 0 means 82.
+   *
+   * @generated from field: int32 quality = 8;
+   */
+  quality: number;
 };
 
 /**
@@ -1075,7 +1130,7 @@ export type ExportBoardRequest = Message<"tank.board.v1.ExportBoardRequest"> & {
  * Use `create(ExportBoardRequestSchema)` to create a new message.
  */
 export const ExportBoardRequestSchema: GenMessage<ExportBoardRequest> = /*@__PURE__*/
-  messageDesc(file_tank_board_v1_board, 24);
+  messageDesc(file_tank_board_v1_board, 25);
 
 /**
  * @generated from message tank.board.v1.ExportBoardResponse
@@ -1095,6 +1150,27 @@ export type ExportBoardResponse = Message<"tank.board.v1.ExportBoardResponse"> &
    * @generated from field: bytes body = 3;
    */
   body: Uint8Array;
+
+  /**
+   * The pixels in the file. Zero for a vector format, which has none.
+   *
+   * @generated from field: int32 width = 4;
+   */
+  width: number;
+
+  /**
+   * @generated from field: int32 height = 5;
+   */
+  height: number;
+
+  /**
+   * What this file could not carry, in sentences somebody can act on: an effect the
+   * format has no way to draw, or a count of the prototyping hotspots left out of it.
+   * Empty means the file carries everything the board has.
+   *
+   * @generated from field: repeated string notes = 6;
+   */
+  notes: string[];
 };
 
 /**
@@ -1102,7 +1178,136 @@ export type ExportBoardResponse = Message<"tank.board.v1.ExportBoardResponse"> &
  * Use `create(ExportBoardResponseSchema)` to create a new message.
  */
 export const ExportBoardResponseSchema: GenMessage<ExportBoardResponse> = /*@__PURE__*/
-  messageDesc(file_tank_board_v1_board, 25);
+  messageDesc(file_tank_board_v1_board, 26);
+
+/**
+ * @generated from message tank.board.v1.ListBoardSlicesRequest
+ */
+export type ListBoardSlicesRequest = Message<"tank.board.v1.ListBoardSlicesRequest"> & {
+  /**
+   * @generated from field: string workspace_id = 1;
+   */
+  workspaceId: string;
+
+  /**
+   * @generated from field: string id = 2;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message tank.board.v1.ListBoardSlicesRequest.
+ * Use `create(ListBoardSlicesRequestSchema)` to create a new message.
+ */
+export const ListBoardSlicesRequestSchema: GenMessage<ListBoardSlicesRequest> = /*@__PURE__*/
+  messageDesc(file_tank_board_v1_board, 27);
+
+/**
+ * @generated from message tank.board.v1.ListBoardSlicesResponse
+ */
+export type ListBoardSlicesResponse = Message<"tank.board.v1.ListBoardSlicesResponse"> & {
+  /**
+   * @generated from field: repeated tank.board.v1.BoardSlice slices = 1;
+   */
+  slices: BoardSlice[];
+};
+
+/**
+ * Describes the message tank.board.v1.ListBoardSlicesResponse.
+ * Use `create(ListBoardSlicesResponseSchema)` to create a new message.
+ */
+export const ListBoardSlicesResponseSchema: GenMessage<ListBoardSlicesResponse> = /*@__PURE__*/
+  messageDesc(file_tank_board_v1_board, 28);
+
+/**
+ * An embed link: the board, or one slice of it, as a URL somebody with no TANK
+ * account can put in a page.
+ *
+ * The link is the credential, the way an invoice's share link is, so it is readable
+ * back to anyone who may read the board and rotating it is how it is taken away.
+ *
+ * @generated from message tank.board.v1.BoardEmbedRequest
+ */
+export type BoardEmbedRequest = Message<"tank.board.v1.BoardEmbedRequest"> & {
+  /**
+   * @generated from field: string workspace_id = 1;
+   */
+  workspaceId: string;
+
+  /**
+   * @generated from field: string id = 2;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string slice = 3;
+   */
+  slice: string;
+
+  /**
+   * mint a new link, which stops the old one working
+   *
+   * @generated from field: bool rotate = 4;
+   */
+  rotate: boolean;
+
+  /**
+   * stop the board being embeddable at all
+   *
+   * @generated from field: bool revoke = 5;
+   */
+  revoke: boolean;
+};
+
+/**
+ * Describes the message tank.board.v1.BoardEmbedRequest.
+ * Use `create(BoardEmbedRequestSchema)` to create a new message.
+ */
+export const BoardEmbedRequestSchema: GenMessage<BoardEmbedRequest> = /*@__PURE__*/
+  messageDesc(file_tank_board_v1_board, 29);
+
+/**
+ * @generated from message tank.board.v1.BoardEmbedResponse
+ */
+export type BoardEmbedResponse = Message<"tank.board.v1.BoardEmbedResponse"> & {
+  /**
+   * a page to put in an iframe
+   *
+   * @generated from field: string page_url = 1;
+   */
+  pageUrl: string;
+
+  /**
+   * the picture on its own, for a README or an <img>
+   *
+   * @generated from field: string image_url = 2;
+   */
+  imageUrl: string;
+
+  /**
+   * false once revoked
+   *
+   * @generated from field: bool embedded = 3;
+   */
+  embedded: boolean;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 4;
+   */
+  createdAt?: Timestamp;
+
+  /**
+   * @generated from field: string created_by = 5;
+   */
+  createdBy: string;
+};
+
+/**
+ * Describes the message tank.board.v1.BoardEmbedResponse.
+ * Use `create(BoardEmbedResponseSchema)` to create a new message.
+ */
+export const BoardEmbedResponseSchema: GenMessage<BoardEmbedResponse> = /*@__PURE__*/
+  messageDesc(file_tank_board_v1_board, 30);
 
 /**
  * One thing somebody did while clicking through a running frame.
@@ -1142,7 +1347,7 @@ export type FlowStep = Message<"tank.board.v1.FlowStep"> & {
  * Use `create(FlowStepSchema)` to create a new message.
  */
 export const FlowStepSchema: GenMessage<FlowStep> = /*@__PURE__*/
-  messageDesc(file_tank_board_v1_board, 26);
+  messageDesc(file_tank_board_v1_board, 31);
 
 /**
  * Turn a journey through the running app into a test. Clicking through a flow to
@@ -1187,7 +1392,7 @@ export type GenerateTestRequest = Message<"tank.board.v1.GenerateTestRequest"> &
  * Use `create(GenerateTestRequestSchema)` to create a new message.
  */
 export const GenerateTestRequestSchema: GenMessage<GenerateTestRequest> = /*@__PURE__*/
-  messageDesc(file_tank_board_v1_board, 27);
+  messageDesc(file_tank_board_v1_board, 32);
 
 /**
  * @generated from message tank.board.v1.GenerateTestResponse
@@ -1230,7 +1435,7 @@ export type GenerateTestResponse = Message<"tank.board.v1.GenerateTestResponse">
  * Use `create(GenerateTestResponseSchema)` to create a new message.
  */
 export const GenerateTestResponseSchema: GenMessage<GenerateTestResponse> = /*@__PURE__*/
-  messageDesc(file_tank_board_v1_board, 28);
+  messageDesc(file_tank_board_v1_board, 33);
 
 /**
  * A preview somebody else's CI published.
@@ -1290,7 +1495,7 @@ export type ReportPreviewRequest = Message<"tank.board.v1.ReportPreviewRequest">
  * Use `create(ReportPreviewRequestSchema)` to create a new message.
  */
 export const ReportPreviewRequestSchema: GenMessage<ReportPreviewRequest> = /*@__PURE__*/
-  messageDesc(file_tank_board_v1_board, 29);
+  messageDesc(file_tank_board_v1_board, 34);
 
 /**
  * @generated from message tank.board.v1.ReportPreviewResponse
@@ -1332,7 +1537,7 @@ export type ReportPreviewResponse = Message<"tank.board.v1.ReportPreviewResponse
  * Use `create(ReportPreviewResponseSchema)` to create a new message.
  */
 export const ReportPreviewResponseSchema: GenMessage<ReportPreviewResponse> = /*@__PURE__*/
-  messageDesc(file_tank_board_v1_board, 30);
+  messageDesc(file_tank_board_v1_board, 35);
 
 /**
  * @generated from message tank.board.v1.ListPreviewsRequest
@@ -1361,7 +1566,7 @@ export type ListPreviewsRequest = Message<"tank.board.v1.ListPreviewsRequest"> &
  * Use `create(ListPreviewsRequestSchema)` to create a new message.
  */
 export const ListPreviewsRequestSchema: GenMessage<ListPreviewsRequest> = /*@__PURE__*/
-  messageDesc(file_tank_board_v1_board, 31);
+  messageDesc(file_tank_board_v1_board, 36);
 
 /**
  * @generated from message tank.board.v1.ListPreviewsResponse
@@ -1378,7 +1583,7 @@ export type ListPreviewsResponse = Message<"tank.board.v1.ListPreviewsResponse">
  * Use `create(ListPreviewsResponseSchema)` to create a new message.
  */
 export const ListPreviewsResponseSchema: GenMessage<ListPreviewsResponse> = /*@__PURE__*/
-  messageDesc(file_tank_board_v1_board, 32);
+  messageDesc(file_tank_board_v1_board, 37);
 
 /**
  * Stop trusting one. A build that has been taken down should stop being offered the
@@ -1410,7 +1615,7 @@ export type ForgetPreviewRequest = Message<"tank.board.v1.ForgetPreviewRequest">
  * Use `create(ForgetPreviewRequestSchema)` to create a new message.
  */
 export const ForgetPreviewRequestSchema: GenMessage<ForgetPreviewRequest> = /*@__PURE__*/
-  messageDesc(file_tank_board_v1_board, 33);
+  messageDesc(file_tank_board_v1_board, 38);
 
 /**
  * @generated from message tank.board.v1.ForgetPreviewResponse
@@ -1427,7 +1632,7 @@ export type ForgetPreviewResponse = Message<"tank.board.v1.ForgetPreviewResponse
  * Use `create(ForgetPreviewResponseSchema)` to create a new message.
  */
 export const ForgetPreviewResponseSchema: GenMessage<ForgetPreviewResponse> = /*@__PURE__*/
-  messageDesc(file_tank_board_v1_board, 34);
+  messageDesc(file_tank_board_v1_board, 39);
 
 /**
  * @generated from enum tank.board.v1.ObjectKind
@@ -1578,6 +1783,22 @@ export const BoardService: GenService<{
     methodKind: "unary";
     input: typeof ExportBoardRequestSchema;
     output: typeof ExportBoardResponseSchema;
+  },
+  /**
+   * @generated from rpc tank.board.v1.BoardService.ListBoardSlices
+   */
+  listBoardSlices: {
+    methodKind: "unary";
+    input: typeof ListBoardSlicesRequestSchema;
+    output: typeof ListBoardSlicesResponseSchema;
+  },
+  /**
+   * @generated from rpc tank.board.v1.BoardService.BoardEmbed
+   */
+  boardEmbed: {
+    methodKind: "unary";
+    input: typeof BoardEmbedRequestSchema;
+    output: typeof BoardEmbedResponseSchema;
   },
   /**
    * @generated from rpc tank.board.v1.BoardService.GenerateTest

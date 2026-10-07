@@ -57,6 +57,11 @@ const (
 	// BoardServiceExportBoardProcedure is the fully-qualified name of the BoardService's ExportBoard
 	// RPC.
 	BoardServiceExportBoardProcedure = "/tank.board.v1.BoardService/ExportBoard"
+	// BoardServiceListBoardSlicesProcedure is the fully-qualified name of the BoardService's
+	// ListBoardSlices RPC.
+	BoardServiceListBoardSlicesProcedure = "/tank.board.v1.BoardService/ListBoardSlices"
+	// BoardServiceBoardEmbedProcedure is the fully-qualified name of the BoardService's BoardEmbed RPC.
+	BoardServiceBoardEmbedProcedure = "/tank.board.v1.BoardService/BoardEmbed"
 	// BoardServiceGenerateTestProcedure is the fully-qualified name of the BoardService's GenerateTest
 	// RPC.
 	BoardServiceGenerateTestProcedure = "/tank.board.v1.BoardService/GenerateTest"
@@ -82,6 +87,8 @@ type BoardServiceClient interface {
 	RequestChange(context.Context, *connect.Request[v1.RequestChangeRequest]) (*connect.Response[v1.RequestChangeResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
 	ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error)
+	ListBoardSlices(context.Context, *connect.Request[v1.ListBoardSlicesRequest]) (*connect.Response[v1.ListBoardSlicesResponse], error)
+	BoardEmbed(context.Context, *connect.Request[v1.BoardEmbedRequest]) (*connect.Response[v1.BoardEmbedResponse], error)
 	GenerateTest(context.Context, *connect.Request[v1.GenerateTestRequest]) (*connect.Response[v1.GenerateTestResponse], error)
 	ReportPreview(context.Context, *connect.Request[v1.ReportPreviewRequest]) (*connect.Response[v1.ReportPreviewResponse], error)
 	ListPreviews(context.Context, *connect.Request[v1.ListPreviewsRequest]) (*connect.Response[v1.ListPreviewsResponse], error)
@@ -153,6 +160,18 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(boardServiceMethods.ByName("ExportBoard")),
 			connect.WithClientOptions(opts...),
 		),
+		listBoardSlices: connect.NewClient[v1.ListBoardSlicesRequest, v1.ListBoardSlicesResponse](
+			httpClient,
+			baseURL+BoardServiceListBoardSlicesProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ListBoardSlices")),
+			connect.WithClientOptions(opts...),
+		),
+		boardEmbed: connect.NewClient[v1.BoardEmbedRequest, v1.BoardEmbedResponse](
+			httpClient,
+			baseURL+BoardServiceBoardEmbedProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("BoardEmbed")),
+			connect.WithClientOptions(opts...),
+		),
 		generateTest: connect.NewClient[v1.GenerateTestRequest, v1.GenerateTestResponse](
 			httpClient,
 			baseURL+BoardServiceGenerateTestProcedure,
@@ -182,19 +201,21 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 
 // boardServiceClient implements BoardServiceClient.
 type boardServiceClient struct {
-	listBoards    *connect.Client[v1.ListBoardsRequest, v1.ListBoardsResponse]
-	getBoard      *connect.Client[v1.GetBoardRequest, v1.GetBoardResponse]
-	createBoard   *connect.Client[v1.CreateBoardRequest, v1.CreateBoardResponse]
-	updateBoard   *connect.Client[v1.UpdateBoardRequest, v1.UpdateBoardResponse]
-	deleteBoard   *connect.Client[v1.DeleteBoardRequest, v1.DeleteBoardResponse]
-	putObjects    *connect.Client[v1.PutObjectsRequest, v1.PutObjectsResponse]
-	requestChange *connect.Client[v1.RequestChangeRequest, v1.RequestChangeResponse]
-	listTemplates *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
-	exportBoard   *connect.Client[v1.ExportBoardRequest, v1.ExportBoardResponse]
-	generateTest  *connect.Client[v1.GenerateTestRequest, v1.GenerateTestResponse]
-	reportPreview *connect.Client[v1.ReportPreviewRequest, v1.ReportPreviewResponse]
-	listPreviews  *connect.Client[v1.ListPreviewsRequest, v1.ListPreviewsResponse]
-	forgetPreview *connect.Client[v1.ForgetPreviewRequest, v1.ForgetPreviewResponse]
+	listBoards      *connect.Client[v1.ListBoardsRequest, v1.ListBoardsResponse]
+	getBoard        *connect.Client[v1.GetBoardRequest, v1.GetBoardResponse]
+	createBoard     *connect.Client[v1.CreateBoardRequest, v1.CreateBoardResponse]
+	updateBoard     *connect.Client[v1.UpdateBoardRequest, v1.UpdateBoardResponse]
+	deleteBoard     *connect.Client[v1.DeleteBoardRequest, v1.DeleteBoardResponse]
+	putObjects      *connect.Client[v1.PutObjectsRequest, v1.PutObjectsResponse]
+	requestChange   *connect.Client[v1.RequestChangeRequest, v1.RequestChangeResponse]
+	listTemplates   *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
+	exportBoard     *connect.Client[v1.ExportBoardRequest, v1.ExportBoardResponse]
+	listBoardSlices *connect.Client[v1.ListBoardSlicesRequest, v1.ListBoardSlicesResponse]
+	boardEmbed      *connect.Client[v1.BoardEmbedRequest, v1.BoardEmbedResponse]
+	generateTest    *connect.Client[v1.GenerateTestRequest, v1.GenerateTestResponse]
+	reportPreview   *connect.Client[v1.ReportPreviewRequest, v1.ReportPreviewResponse]
+	listPreviews    *connect.Client[v1.ListPreviewsRequest, v1.ListPreviewsResponse]
+	forgetPreview   *connect.Client[v1.ForgetPreviewRequest, v1.ForgetPreviewResponse]
 }
 
 // ListBoards calls tank.board.v1.BoardService.ListBoards.
@@ -242,6 +263,16 @@ func (c *boardServiceClient) ExportBoard(ctx context.Context, req *connect.Reque
 	return c.exportBoard.CallUnary(ctx, req)
 }
 
+// ListBoardSlices calls tank.board.v1.BoardService.ListBoardSlices.
+func (c *boardServiceClient) ListBoardSlices(ctx context.Context, req *connect.Request[v1.ListBoardSlicesRequest]) (*connect.Response[v1.ListBoardSlicesResponse], error) {
+	return c.listBoardSlices.CallUnary(ctx, req)
+}
+
+// BoardEmbed calls tank.board.v1.BoardService.BoardEmbed.
+func (c *boardServiceClient) BoardEmbed(ctx context.Context, req *connect.Request[v1.BoardEmbedRequest]) (*connect.Response[v1.BoardEmbedResponse], error) {
+	return c.boardEmbed.CallUnary(ctx, req)
+}
+
 // GenerateTest calls tank.board.v1.BoardService.GenerateTest.
 func (c *boardServiceClient) GenerateTest(ctx context.Context, req *connect.Request[v1.GenerateTestRequest]) (*connect.Response[v1.GenerateTestResponse], error) {
 	return c.generateTest.CallUnary(ctx, req)
@@ -273,6 +304,8 @@ type BoardServiceHandler interface {
 	RequestChange(context.Context, *connect.Request[v1.RequestChangeRequest]) (*connect.Response[v1.RequestChangeResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
 	ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error)
+	ListBoardSlices(context.Context, *connect.Request[v1.ListBoardSlicesRequest]) (*connect.Response[v1.ListBoardSlicesResponse], error)
+	BoardEmbed(context.Context, *connect.Request[v1.BoardEmbedRequest]) (*connect.Response[v1.BoardEmbedResponse], error)
 	GenerateTest(context.Context, *connect.Request[v1.GenerateTestRequest]) (*connect.Response[v1.GenerateTestResponse], error)
 	ReportPreview(context.Context, *connect.Request[v1.ReportPreviewRequest]) (*connect.Response[v1.ReportPreviewResponse], error)
 	ListPreviews(context.Context, *connect.Request[v1.ListPreviewsRequest]) (*connect.Response[v1.ListPreviewsResponse], error)
@@ -340,6 +373,18 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(boardServiceMethods.ByName("ExportBoard")),
 		connect.WithHandlerOptions(opts...),
 	)
+	boardServiceListBoardSlicesHandler := connect.NewUnaryHandler(
+		BoardServiceListBoardSlicesProcedure,
+		svc.ListBoardSlices,
+		connect.WithSchema(boardServiceMethods.ByName("ListBoardSlices")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceBoardEmbedHandler := connect.NewUnaryHandler(
+		BoardServiceBoardEmbedProcedure,
+		svc.BoardEmbed,
+		connect.WithSchema(boardServiceMethods.ByName("BoardEmbed")),
+		connect.WithHandlerOptions(opts...),
+	)
 	boardServiceGenerateTestHandler := connect.NewUnaryHandler(
 		BoardServiceGenerateTestProcedure,
 		svc.GenerateTest,
@@ -384,6 +429,10 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 			boardServiceListTemplatesHandler.ServeHTTP(w, r)
 		case BoardServiceExportBoardProcedure:
 			boardServiceExportBoardHandler.ServeHTTP(w, r)
+		case BoardServiceListBoardSlicesProcedure:
+			boardServiceListBoardSlicesHandler.ServeHTTP(w, r)
+		case BoardServiceBoardEmbedProcedure:
+			boardServiceBoardEmbedHandler.ServeHTTP(w, r)
 		case BoardServiceGenerateTestProcedure:
 			boardServiceGenerateTestHandler.ServeHTTP(w, r)
 		case BoardServiceReportPreviewProcedure:
@@ -435,6 +484,14 @@ func (UnimplementedBoardServiceHandler) ListTemplates(context.Context, *connect.
 
 func (UnimplementedBoardServiceHandler) ExportBoard(context.Context, *connect.Request[v1.ExportBoardRequest]) (*connect.Response[v1.ExportBoardResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ExportBoard is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ListBoardSlices(context.Context, *connect.Request[v1.ListBoardSlicesRequest]) (*connect.Response[v1.ListBoardSlicesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ListBoardSlices is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) BoardEmbed(context.Context, *connect.Request[v1.BoardEmbedRequest]) (*connect.Response[v1.BoardEmbedResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.BoardEmbed is not implemented"))
 }
 
 func (UnimplementedBoardServiceHandler) GenerateTest(context.Context, *connect.Request[v1.GenerateTestRequest]) (*connect.Response[v1.GenerateTestResponse], error) {
