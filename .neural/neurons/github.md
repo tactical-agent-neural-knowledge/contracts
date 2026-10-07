@@ -1,20 +1,14 @@
 # Neurons · .github
+refreshed 2026-10-07 · d58208d52ddc
 
-refreshed 2026-10-03 · c5e2e604e1c6
-
-- `.github/workflows/ci.yml` is the only workflow in the repo. Two jobs: `check` (PRs, main, `v*` tags) and `publish-ts` (pushes only, `needs: check`).
-- CI calls `buf` directly from `bufbuild/buf-setup-action@v1`, never `make`. A change to the `Makefile` alone is therefore not exercised by CI — the two must be kept in step by hand.
-- The breaking check is the point of the whole file: `.github/workflows/ci.yml:31` says a wire break here "would be a production incident in web/mobile/agent-runner, so it is caught at the source". It runs only `if: github.event_name == 'pull_request'`.
-- Trap, and the reason the step has three lines instead of one: `actions/checkout` leaves a PR on a detached merge commit with no local `main`, so the step must `git fetch --no-tags origin main:main` before `buf breaking --against ".git#branch=main"` can read it. The same applies locally on a fresh clone.
-- `actions/checkout@v4` is pinned to `fetch-depth: 0` purely so that breaking check has history; shallowing it breaks the comparison, not the build.
-- The staleness gate is `buf generate` followed by `git diff --exit-code --stat gen/`, failing with `::error::gen/ is stale. Run 'make gen' and commit the result.` Regenerating with a different buf or plugin version than the pins in `buf.gen.yaml` will trip it.
-- The Go version is never written in the workflow: `actions/setup-go@v5` takes `go-version-file: go.mod`, so bumping Go means editing `go.mod`.
-- The TypeScript check is `npm install --no-audit --no-fund && npm run build` in `gen/ts` on node 24 — a tsc compile of the generated sources, no tests.
-- `publish-ts` versions without committing (`npm version --no-git-tag-version`): a `v*` tag publishes `${GITHUB_REF_NAME#v}` under dist-tag `latest`, a push to main publishes `0.0.0-canary.${GITHUB_SHA::12}` under `canary`. PRs never publish, because the job is gated on `github.event_name == 'push'`.
-- Publishing goes to GitHub Packages (`registry-url: https://npm.pkg.github.com`, `scope: "@tactical-agent-neural-knowledge"`, `npm publish --access restricted`) authenticated with `NODE_AUTH_TOKEN: ${{ github.token }}` — no external npm credential exists or is needed.
-- Permissions are least-privilege and deliberate: the workflow declares `contents: read` at the top, and only `publish-ts` adds `packages: write`.
-- `concurrency: group: ci-${{ github.ref }}` with `cancel-in-progress: true` — a second push to the same ref kills the first run, including a half-finished publish.
+- Single workflow file `.github/workflows/ci.yml` runs two jobs: `check` (every PR, every push to main, every `v*` tag) and `publish-ts` (push events only, `needs: check`) — there is no separate lint-only or test-only workflow to edit.
+- `check` does `buf lint` → breaking check (PRs only) → `buf generate` + `git diff --exit-code --stat gen/` → `go build ./...` → `npm install && npm run build` in `gen/ts`, in that exact order (ci.yml:30-52); a local `make check` reproduces lint+gen+build but not the TS compile step.
+- The breaking check only runs `if: github.event_name == 'pull_request'` (ci.yml:36) — a direct push to main bypasses `buf breaking` entirely, so wire breaks pushed straight to main are not caught by CI at all, only by review.
+- `actions/checkout` leaves PR runs on a detached merge commit with no local `main` ref, so the workflow does `git fetch --no-tags origin main:main` before `buf breaking --against ".git#branch=main"` (ci.yml:33-39) — reproducing the breaking check locally with a stale/missing local `main` branch will give a false pass or a buf error, not a false failure.
+- `concurrency: group: ci-${{ github.ref }}, cancel-in-progress: true` (ci.yml:12-14) means pushing twice quickly to the same branch cancels the first run's `check` job mid-flight rather than queuing it.
+- `publish-ts` versions `gen/ts` with `npm version --no-git-tag-version` right before publish: canary `0.0.0-canary.<sha:12>` + `--tag canary` on main, semver from the tag name + `--tag latest` on `v*` tags (ci.yml:68-75) — the published version is never the one committed in `gen/ts/package.json`.
+- `publish-ts` needs `packages: write` (ci.yml:58-60) in addition to the default `contents: read` (ci.yml:9-11); if publishing ever starts failing with a permissions error, check this block first, not the npm token.
+- Go setup uses `go-version-file: go.mod` (ci.yml:26-29), so bumping the Go version only requires editing the repo's `go.mod`, not this workflow.
 
 ## Verified
-
-`npx --yes @bufbuild/buf lint` and `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` — the two checks this workflow runs that can be reproduced outside Actions; both passed. The workflow itself was not executed.
+- (no command in map.yaml targets `.github` directly; workflow syntax was read, not executed — nothing to run here beyond what `.` already verifies with `buf lint`)
