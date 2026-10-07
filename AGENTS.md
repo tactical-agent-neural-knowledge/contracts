@@ -1,11 +1,11 @@
-# Neural Knowledge by TANK · refreshed 2026-10-03 · c5e2e604e1c6
+# Neural Knowledge by TANK · refreshed 2026-10-07 · 77435ec229ee
 
-`contracts` is the single source of truth for every wire format in TANK: 22 Protobuf/Connect packages
+`contracts` is the single source of truth for every wire format in TANK: 25 Protobuf/Connect packages
 under `proto/tank/<domain>/v1/`, covering auth, workspaces, channels, messages, files, events, the
-realtime gateway, and the agent control plane. The generated Go, TypeScript and Python clients are
-built with buf and **committed** under `gen/`, so consumers import them instead of regenerating.
-Nothing here runs: it is a schema repository whose job is to change without breaking api, web, mobile,
-sdk-ts, agent-control, agent-runner or knowledge.
+realtime gateway, boards, books, canvas pages and the agent control plane. The generated Go, TypeScript
+and Python clients are built with buf and **committed** under `gen/`, so consumers import them instead
+of regenerating. Nothing here runs: it is a schema repository whose job is to change without breaking
+api, web, mobile, sdk-ts, agent-control, agent-runner or knowledge.
 
 ## Commands
 
@@ -52,6 +52,8 @@ From `buf.yaml`: lint is `STANDARD` with `PACKAGE_VERSION_SUFFIX` excepted; brea
 - Run `make check` before opening a PR; its last step fails if `gen/` is stale, and so does CI.
 - Run `make breaking` for anything that touches an existing field, message or file. On a fresh clone
   do `git fetch --no-tags origin main:main` first, or buf cannot resolve `.git#branch=main`.
+- `proto/tank/agentctl/v1/agentctl.proto` imports `agent`, `blocks`, `board`, `books` and `canvas`, so
+  a FILE-level break in any of those five also fails `make breaking` here.
 - Additive first: add a field, ship every consumer, then remove the old one in a later release.
 - A PR green on `ci.yml` is the bar. A push to `main` publishes a canary npm package; a `v*` tag
   publishes a release — so merging to `main` is already a publish.
