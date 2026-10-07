@@ -1,11 +1,11 @@
-# Neural Knowledge by TANK · refreshed 2026-10-03 · c5e2e604e1c6
+# Neural Knowledge by TANK · refreshed 2026-10-07 · 77435ec229ee
 
-`contracts` is the single source of truth for every wire format in TANK: 22 Protobuf/Connect packages
-under `proto/tank/<domain>/v1/`, covering auth, workspaces, channels, messages, files, events, the
-realtime gateway, and the agent control plane. The generated Go, TypeScript and Python clients are
-built with buf and **committed** under `gen/`, so consumers import them instead of regenerating.
-Nothing here runs: it is a schema repository whose job is to change without breaking api, web, mobile,
-sdk-ts, agent-control, agent-runner or knowledge.
+`contracts` is the single source of truth for every wire format in TANK: 25 Protobuf/Connect files across
+22+ domains under `proto/tank/<domain>/v1/`, covering auth, workspaces, channels, messages, files, events, the
+realtime gateway, Neuralboards, Neuralbooks, Neuralcanvas and the agent control plane. The generated Go,
+TypeScript and Python clients are built with buf and **committed** under `gen/`, so consumers import them
+instead of regenerating. Nothing here runs: it is a schema repository whose job is to change without breaking
+api, web, mobile, sdk-ts, agent-control, agent-runner or knowledge.
 
 ## Commands
 
