@@ -1,22 +1,32 @@
 # Neurons · proto
+refreshed 2026-10-08 · a887d51f4d82
 
-refreshed 2026-10-03 · c5e2e604e1c6
-
-- 22 domains, one package each, always `proto/tank/<domain>/v1/<domain>.proto` with package `tank.<domain>.v1`. `CLAUDE.md`: "One proto package per domain, version suffix `v1`." Generated Go lands at `gen/go/tank/<domain>/v1/` with the Connect client in a `<domain>v1connect/` subpackage.
-- Product vocabulary never reaches the wire. `proto/tank/channel/v1/channel.proto:7`: a Channel "is presented as a 'Tread' in the product… The wire name stays Channel." A Radar is `CHANNEL_TYPE_MONITOR = 5`, implemented in `tank.monitor.v1`.
-- Unread-count trap, and the two comments disagree: `Channel.last_seq` (channel.proto:44) still says "unread = last_seq - last_read_seq", while `ChannelReadState.unread_count` (channel.proto:77-85) documents why that arithmetic is wrong — thread replies and deleted messages also consume a `channel_seq`. Use `unread_count`; it is `optional` so a client can tell "server said zero" from an older server saying nothing.
-- `optional` is used throughout as deliberate presence, not as nullability: unchanged-field semantics in `UpdateChannelRequest` / `SetChannelPreferenceRequest`, "this replaces nothing" in `DecideBenchmarkRequest.supersedes_id` (topo.proto), and the empty-vs-unconfigured distinction in `TopoPreferences.configured` (workspace.proto). Dropping `optional` to tidy a field silently changes meaning.
-- `proto/tank/workspace/v1/workspace.proto` is the biggest file (719 lines) and `GetBootstrap` is its point: one call on app open, everything else lazy. It caps members at 200, which is the entire reason `ListMembersRequest.query` exists.
-- `proto/tank/agentctl/v1/agentctl.proto` is the runner ↔ control-plane contract only: the in-sandbox runner talks to agent-control and never to the messaging core, authenticated by the per-run `RUN_TOKEN`, and all ids are Snowflake decimal strings. `RunPhase` drives the runner's permission mode, and `StartRunRequest.mode = "neural"` (this refresh) skips planning and works in `repo` whatever the Tread is bound to.
-- `proto/tank/events/v1/events.proto` is the NATS JetStream envelope: `Envelope.id` is the `Nats-Msg-Id` idempotency key, the payload is a `google.protobuf.Any`, and subjects are `evt.{ws}.ch.{channel}`, `.thread.{root}`, `.user.{uid}`, `.ws`. `AuditLogged` is internal — the gateway never fans it out to clients.
-- `proto/tank/realtime/v1/realtime.proto` is the WebSocket gateway, binary protobuf by default (`?enc=json` only for debugging). `Event.cursor` is the JetStream stream sequence the client persists and replays with `Resume`; `PresenceSubscribe` caps at 500 ids and *replaces* the set rather than adding to it.
-- `proto/tank/richtext/v1/richtext.proto` holds the `RichText` AST and states the rule plainly: "Markdown is never the storage format." Anything accepting user-authored text should take `RichText`, not a string.
-- `proto/tank/blocks/v1/blocks.proto` is the agent UI vocabulary — `PlanCard`, `DiffPreview`, `CiStatus`, `ApprovalPrompt`, `ToolLog`, `StatusCard`, `FilePreview` — plus `GateKind` (PLAN, SCOPE_CHANGE, MERGE, DEPLOY, DESTRUCTIVE_TOOL, BUDGET_INCREASE). A `BlockAction` travels client → server → owning agent as an event, not as an RPC.
-- `proto/tank/topo/v1/topo.proto` separates derived marks (always `MARK_STATUS_OPEN`, never stored, no `created_by_user_id`) from stored ones with a real lifecycle; only stored marks ever produce a `TopoMarkUpdated` event. `RecordEvent` is for first-party observers only and carries a `dedupe_key` because webhooks get redelivered.
-- Cross-package imports are real and make FILE-level breaking bite across domains: `topo` and `search` import `tank.message.v1`, `admin` imports `tank.workspace.v1` and `tank.channel.v1`. A field removed from `message.proto` fails the breaking check in files that merely reference it.
-- Adding a domain needs only a new `proto/tank/<domain>/v1/<domain>.proto` plus `make gen`: managed mode supplies `go_package`, and lint's `PACKAGE_VERSION_SUFFIX` exemption is already in `buf.yaml`. Remember the TS barrel at `gen/ts/src/index.ts` is hand-written and will not pick it up.
-- Never renumber or reuse a field number, and never remove a field before every client has shipped without it (`CLAUDE.md`). `make breaking` / the PR's breaking check catches the first; nothing but discipline catches the second.
+- 27 files under `proto/tank/<domain>/v1/*.proto`, one proto package per domain. Most domains define exactly one
+  `service`; `tank.agentctl.v1` is the exception (see below).
+- `proto/tank/agentctl/v1/agentctl.proto` is the runner↔control-plane contract and defines **two** services with
+  different trust boundaries in the same file: `RunnerService` (~35 rpcs, called from inside the sandbox,
+  authenticated by a per-run `RUN_TOKEN`) and `ControlService` (operator/product surface — run panel, slash
+  commands — authenticated with a service token, never a `RUN_TOKEN`). Don't assume every rpc in that file is
+  reachable from a sandboxed agent.
+- `RunnerService` is the single surface for everything an agent run does outside its own repo clone: thread I/O,
+  Neuralboards, Neuralbooks, Neuralcanvas, GitHub (`OpenPullRequest`/CI), gates/approval, and the session KV store
+  (`SessionStore*`) — grep this one file before assuming a new tool needs a new proto package.
+- Newer domains (`topo`, `security`, `remediation`, `platform`, `monitor`, `catalog`, `canvas`, `books`, `billing`)
+  declare an explicit `option go_package = ".../gen/go/tank/<domain>/v1;<domain>v1";`; older domains rely solely on
+  `buf.gen.yaml`'s managed `go_package_prefix` override. Both resolve to the identical import path today, so this is
+  a style drift, not a bug — don't "fix" it by stripping the explicit option.
+- No file in `proto/` uses the `reserved` keyword yet, meaning the hard-prohibition path in CLAUDE.md (remove a
+  field only after every client has shipped without it) has never actually been exercised here — there's no
+  existing example in this repo to copy when that day comes.
+- `channel.proto`'s own header comment is the citation for the neutral-wire-name rule: "A Channel is presented as a
+  'Tread' in the product... The wire name stays Channel."
+- `events.proto` is the widest blast-radius file: it imports `admin`, `agent`, `blocks`, `board`, `canvas`,
+  `channel`, `files`, `huddle`, `message` (and more) to build one bus-event envelope — a breaking change anywhere
+  those packages touch is likely to also break `events.proto`'s build.
+- `agentctl.proto`'s `PolicySummary.tools_gate_destructive` (field 9) was added 2026-10-07 per its own comment: the
+  destructive-tool deny patterns existed in policy and were evaluated server-side for months with no way for the
+  sandboxed runner to see them, so the gate they implied never actually fired — a reminder that a policy field
+  silently does nothing until the runner-facing message actually carries it.
 
 ## Verified
-
-`npx --yes @bufbuild/buf lint` (STANDARD minus PACKAGE_VERSION_SUFFIX), `npx --yes @bufbuild/buf build` (all 22 files compile), `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` — all passed.
+- `npx --yes @bufbuild/buf lint` (passed, no findings)
