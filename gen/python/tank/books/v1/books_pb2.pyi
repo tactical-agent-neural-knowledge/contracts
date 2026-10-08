@@ -265,12 +265,14 @@ class ListInvoicesResponse(_message.Message):
     def __init__(self, invoices: _Optional[_Iterable[_Union[Invoice, _Mapping]]] = ...) -> None: ...
 
 class GetInvoiceRequest(_message.Message):
-    __slots__ = ("workspace_id", "id")
+    __slots__ = ("workspace_id", "id", "rotate")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     ID_FIELD_NUMBER: _ClassVar[int]
+    ROTATE_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     id: str
-    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ...) -> None: ...
+    rotate: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ..., rotate: bool = ...) -> None: ...
 
 class GetInvoiceResponse(_message.Message):
     __slots__ = ("invoice", "payments")
