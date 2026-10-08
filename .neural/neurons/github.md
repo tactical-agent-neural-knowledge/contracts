@@ -1,20 +1,16 @@
 # Neurons · .github
 
-refreshed 2026-10-03 · c5e2e604e1c6
+refreshed 2026-10-08 · a887d51f4d82
 
-- `.github/workflows/ci.yml` is the only workflow in the repo. Two jobs: `check` (PRs, main, `v*` tags) and `publish-ts` (pushes only, `needs: check`).
-- CI calls `buf` directly from `bufbuild/buf-setup-action@v1`, never `make`. A change to the `Makefile` alone is therefore not exercised by CI — the two must be kept in step by hand.
-- The breaking check is the point of the whole file: `.github/workflows/ci.yml:31` says a wire break here "would be a production incident in web/mobile/agent-runner, so it is caught at the source". It runs only `if: github.event_name == 'pull_request'`.
-- Trap, and the reason the step has three lines instead of one: `actions/checkout` leaves a PR on a detached merge commit with no local `main`, so the step must `git fetch --no-tags origin main:main` before `buf breaking --against ".git#branch=main"` can read it. The same applies locally on a fresh clone.
-- `actions/checkout@v4` is pinned to `fetch-depth: 0` purely so that breaking check has history; shallowing it breaks the comparison, not the build.
-- The staleness gate is `buf generate` followed by `git diff --exit-code --stat gen/`, failing with `::error::gen/ is stale. Run 'make gen' and commit the result.` Regenerating with a different buf or plugin version than the pins in `buf.gen.yaml` will trip it.
-- The Go version is never written in the workflow: `actions/setup-go@v5` takes `go-version-file: go.mod`, so bumping Go means editing `go.mod`.
-- The TypeScript check is `npm install --no-audit --no-fund && npm run build` in `gen/ts` on node 24 — a tsc compile of the generated sources, no tests.
-- `publish-ts` versions without committing (`npm version --no-git-tag-version`): a `v*` tag publishes `${GITHUB_REF_NAME#v}` under dist-tag `latest`, a push to main publishes `0.0.0-canary.${GITHUB_SHA::12}` under `canary`. PRs never publish, because the job is gated on `github.event_name == 'push'`.
-- Publishing goes to GitHub Packages (`registry-url: https://npm.pkg.github.com`, `scope: "@tactical-agent-neural-knowledge"`, `npm publish --access restricted`) authenticated with `NODE_AUTH_TOKEN: ${{ github.token }}` — no external npm credential exists or is needed.
-- Permissions are least-privilege and deliberate: the workflow declares `contents: read` at the top, and only `publish-ts` adds `packages: write`.
-- `concurrency: group: ci-${{ github.ref }}` with `cancel-in-progress: true` — a second push to the same ref kills the first run, including a half-finished publish.
+- Two workflows now: `ci.yml` (check + publish-ts, unchanged this refresh) and the new `security.yml` (secret scanning). Both are gated the same way: `permissions: contents: read` at top, a per-ref `concurrency` group with `cancel-in-progress: true`.
+- `ci.yml`'s `check` job (PRs, main, `v*` tags) runs `buf lint`, `buf breaking` (PRs only, after `git fetch --no-tags origin main:main` since checkout leaves a detached merge commit), `buf generate` + `git diff --exit-code --stat gen/` (the staleness gate), `go build ./...`, then a `gen/ts` tsc compile on node 24. `publish-ts` (`needs: check`, push only) versions with `npm version --no-git-tag-version` and publishes to GitHub Packages: `0.0.0-canary.${GITHUB_SHA::12}` under `canary` on main, `${GITHUB_REF_NAME#v}` under `latest` on a `v*` tag.
+- `security.yml`'s header comment is load-bearing, read it before touching the file: this repo is **public**, a sibling `workflows` repo is **private**, and GitHub refuses a reusable workflow call from private to public *before any job is scheduled* — the failure is a nought-second run with no job and no log. So `security.yml` duplicates `workflows/.github/workflows/secret-scan.yml`'s rules by hand rather than calling it; the duplication is deliberate and is the cost of being public. Keep both in step by hand if either changes.
+- `security.yml` runs gitleaks (pinned version in `env.VERSION`, fetched as a release tarball, never the Action — the Action asks orgs for a licence key) on three triggers: PR and push-to-main do a tree scan (`gitleaks dir .`, `fetch-depth: 1`), the Monday 06:17 UTC cron does a full history scan (`gitleaks git .`, `fetch-depth: 0`) because a committed-then-reverted credential in a public repo already leaked to everybody.
+- The scan step always exits 0 (`--exit-code 0`); the separate `report` step (`if: always()`) is what decides pass/fail by counting `.runs[].results[]` in the SARIF — a crash in the scan step must not read as a clean scan, and no SARIF file at all is treated as a failure (`::error::gitleaks produced no report`), never a silent pass.
+- Findings are always `--redact`ed, in both the SARIF and the step summary: this repo is public and a run log is readable by anyone. A false positive is silenced with a dated `.gitleaksignore` entry, never by removing or weakening this check.
+- `publish-ts` publishes `@tactical-agent-neural-knowledge/contracts` authenticated with `NODE_AUTH_TOKEN: ${{ github.token }}` — no external npm credential exists or is needed; `security.yml` needs no credential either, since gitleaks is a release binary, not an Action requiring a licence key.
+- `actions/checkout@v4` with `fetch-depth: 0` is required in two unrelated places for two different reasons: `ci.yml`'s breaking check needs `main` reachable, `security.yml`'s scheduled scan needs full history to walk.
 
 ## Verified
 
-`npx --yes @bufbuild/buf lint` and `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` — the two checks this workflow runs that can be reproduced outside Actions; both passed. The workflow itself was not executed.
+`npx --yes @bufbuild/buf lint` and `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` — the two checks from `ci.yml` reproducible outside Actions; both passed. Neither workflow file itself was executed (no gitleaks binary fetch, no Actions runner here).
