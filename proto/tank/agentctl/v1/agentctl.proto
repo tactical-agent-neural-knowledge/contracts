@@ -845,6 +845,17 @@ service ControlService {
   // workspace decides. Idempotent per repository, and one repository's refusal never
   // stops the others.
   rpc SetUpPreviewWorkflow(SetUpPreviewWorkflowRequest) returns (SetUpPreviewWorkflowResponse);
+
+  // Writes into schema `agent`, which belongs to the control plane. The
+  // messaging core may read that schema and may not write it, so each of these
+  // is a thing it needs done rather than a statement it issues. See the block
+  // of messages below for why this is a call and not a wider grant.
+  rpc BindChannelRepo(BindChannelRepoRequest) returns (BindChannelRepoResponse);
+  rpc UnbindChannelRepo(UnbindChannelRepoRequest) returns (UnbindChannelRepoResponse);
+  rpc SetChannelRepoAccess(SetChannelRepoAccessRequest) returns (SetChannelRepoAccessResponse);
+  rpc CreateGitHubConnectState(CreateGitHubConnectStateRequest) returns (CreateGitHubConnectStateResponse);
+  rpc SetChannelAgentSettings(SetChannelAgentSettingsRequest) returns (SetChannelAgentSettingsResponse);
+  rpc SetWorkspaceAgentPolicy(SetWorkspaceAgentPolicyRequest) returns (SetWorkspaceAgentPolicyResponse);
 }
 
 // The control plane composes the workflow file itself: only it can see the repository,
@@ -919,4 +930,116 @@ message CommitProductFilesRequest {
 }
 message CommitProductFilesResponse {
   int32 committed = 1;
+}
+
+// ------------------------------------------- the agent schema's own writes
+//
+// Schema `agent` belongs to the control plane. The application role is granted
+// USAGE on the schema and SELECT on its tables and nothing else, which is the
+// separation the grant states in words. The messaging core nonetheless issued
+// twenty INSERT and DELETE statements against agent.repo_bindings,
+// agent.repo_access, agent.github_connect_states and agent.policies — writes
+// that cannot succeed from an api pod and were only ever green in CI, where the
+// test fixture grants itself DML on the schema.
+//
+// The fix is a call, not a wider grant. Widening the grant to match the code
+// would make the control-plane separation imaginary, which is the one thing the
+// grant exists to assert. So these RPCs are the boundary, and they are
+// deliberately narrow: each one is a thing the messaging core needs done rather
+// than a general way to write to the schema. There is no RPC that takes a
+// table and a statement, and there will not be one.
+//
+// Every one of them is authenticated with the control-plane service token, like
+// the rest of ControlService, and every one validates against what the control
+// plane alone can see — which installation reaches which repository, whether a
+// policy document narrows its parent or widens it.
+
+message BindChannelRepoRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string repo = 3;        // owner/name
+  string base_branch = 4; // empty = main
+  string toolchain = 5;   // node | go | python | expo; empty = node
+  // Set when the repository is one TANK generated for this workspace's hosting.
+  // Such a repository lives under TANK's own installation rather than the
+  // workspace's, so the reachability check is a different one.
+  bool hosted = 6;
+  string requested_by = 7; // user id, for the record
+}
+message BindChannelRepoResponse {
+  string repo = 1;
+  string base_branch = 2;
+  string toolchain = 3;
+  // What was bound before, so the caller can offer a catch-up only when the
+  // binding actually changed.
+  string previous_repo = 4;
+}
+
+message UnbindChannelRepoRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string requested_by = 3;
+}
+message UnbindChannelRepoResponse {
+  bool removed = 1;
+}
+
+message RepoAccessEntry {
+  string repo = 1;   // owner/name, or "*" for every repository the installation covers
+  string access = 2; // read | write
+}
+
+// Replaces a Tread's whole access list in one call. Replacing rather than
+// patching is deliberate: a diff applied by two callers at once leaves a set
+// nobody asked for, and the set is small enough to send whole.
+message SetChannelRepoAccessRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  repeated RepoAccessEntry entries = 3;
+  string requested_by = 4;
+}
+message SetChannelRepoAccessResponse {
+  repeated RepoAccessEntry entries = 1;
+  // Repositories that were not in the list before, so the caller can offer a
+  // catch-up for exactly those.
+  repeated string added = 2;
+}
+
+// The one-time state GitHub carries through an installation, which is what ties
+// the installation it reports back to the workspace that asked.
+message CreateGitHubConnectStateRequest {
+  string workspace_id = 1;
+  string created_by = 2;
+  int32 ttl_seconds = 3; // empty = the control plane's own default
+}
+message CreateGitHubConnectStateResponse {
+  string state_token = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+// A Tread's agent settings, as the switchboard screen sets them. Typed rather
+// than a policy document on purpose: the messaging core does not author policy,
+// it asks for five things to be true, and the control plane decides whether its
+// own document can say that.
+message SetChannelAgentSettingsRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  tank.agent.v1.TreadSettings settings = 3;
+  string requested_by = 4;
+}
+message SetChannelAgentSettingsResponse {
+  tank.agent.v1.TreadSettings settings = 1;
+}
+
+// A whole policy.v1 document at workspace scope, for the one caller that has
+// one: the board, which narrows every product it stands up to the same figures.
+// The control plane parses it and refuses a document that widens the default
+// rather than narrowing it, so this is not a back door to the typed call above.
+message SetWorkspaceAgentPolicyRequest {
+  string workspace_id = 1;
+  bytes policy = 2; // policy.v1 JSON
+  string requested_by = 3;
+}
+message SetWorkspaceAgentPolicyResponse {
+  bytes policy = 1; // what was stored, after narrowing
 }

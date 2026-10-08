@@ -1357,3 +1357,129 @@ class CommitProductFilesResponse(_message.Message):
     COMMITTED_FIELD_NUMBER: _ClassVar[int]
     committed: int
     def __init__(self, committed: _Optional[int] = ...) -> None: ...
+
+class BindChannelRepoRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "repo", "base_branch", "toolchain", "hosted", "requested_by")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    BASE_BRANCH_FIELD_NUMBER: _ClassVar[int]
+    TOOLCHAIN_FIELD_NUMBER: _ClassVar[int]
+    HOSTED_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    repo: str
+    base_branch: str
+    toolchain: str
+    hosted: bool
+    requested_by: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., hosted: bool = ..., requested_by: _Optional[str] = ...) -> None: ...
+
+class BindChannelRepoResponse(_message.Message):
+    __slots__ = ("repo", "base_branch", "toolchain", "previous_repo")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    BASE_BRANCH_FIELD_NUMBER: _ClassVar[int]
+    TOOLCHAIN_FIELD_NUMBER: _ClassVar[int]
+    PREVIOUS_REPO_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    base_branch: str
+    toolchain: str
+    previous_repo: str
+    def __init__(self, repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., previous_repo: _Optional[str] = ...) -> None: ...
+
+class UnbindChannelRepoRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "requested_by")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    requested_by: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., requested_by: _Optional[str] = ...) -> None: ...
+
+class UnbindChannelRepoResponse(_message.Message):
+    __slots__ = ("removed",)
+    REMOVED_FIELD_NUMBER: _ClassVar[int]
+    removed: bool
+    def __init__(self, removed: bool = ...) -> None: ...
+
+class RepoAccessEntry(_message.Message):
+    __slots__ = ("repo", "access")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    ACCESS_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    access: str
+    def __init__(self, repo: _Optional[str] = ..., access: _Optional[str] = ...) -> None: ...
+
+class SetChannelRepoAccessRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "entries", "requested_by")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    ENTRIES_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    entries: _containers.RepeatedCompositeFieldContainer[RepoAccessEntry]
+    requested_by: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., entries: _Optional[_Iterable[_Union[RepoAccessEntry, _Mapping]]] = ..., requested_by: _Optional[str] = ...) -> None: ...
+
+class SetChannelRepoAccessResponse(_message.Message):
+    __slots__ = ("entries", "added")
+    ENTRIES_FIELD_NUMBER: _ClassVar[int]
+    ADDED_FIELD_NUMBER: _ClassVar[int]
+    entries: _containers.RepeatedCompositeFieldContainer[RepoAccessEntry]
+    added: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, entries: _Optional[_Iterable[_Union[RepoAccessEntry, _Mapping]]] = ..., added: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class CreateGitHubConnectStateRequest(_message.Message):
+    __slots__ = ("workspace_id", "created_by", "ttl_seconds")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CREATED_BY_FIELD_NUMBER: _ClassVar[int]
+    TTL_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    created_by: str
+    ttl_seconds: int
+    def __init__(self, workspace_id: _Optional[str] = ..., created_by: _Optional[str] = ..., ttl_seconds: _Optional[int] = ...) -> None: ...
+
+class CreateGitHubConnectStateResponse(_message.Message):
+    __slots__ = ("state_token", "expires_at")
+    STATE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    state_token: str
+    expires_at: _timestamp_pb2.Timestamp
+    def __init__(self, state_token: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class SetChannelAgentSettingsRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "settings", "requested_by")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    settings: _agent_pb2.TreadSettings
+    requested_by: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., settings: _Optional[_Union[_agent_pb2.TreadSettings, _Mapping]] = ..., requested_by: _Optional[str] = ...) -> None: ...
+
+class SetChannelAgentSettingsResponse(_message.Message):
+    __slots__ = ("settings",)
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    settings: _agent_pb2.TreadSettings
+    def __init__(self, settings: _Optional[_Union[_agent_pb2.TreadSettings, _Mapping]] = ...) -> None: ...
+
+class SetWorkspaceAgentPolicyRequest(_message.Message):
+    __slots__ = ("workspace_id", "policy", "requested_by")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    POLICY_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    policy: bytes
+    requested_by: str
+    def __init__(self, workspace_id: _Optional[str] = ..., policy: _Optional[bytes] = ..., requested_by: _Optional[str] = ...) -> None: ...
+
+class SetWorkspaceAgentPolicyResponse(_message.Message):
+    __slots__ = ("policy",)
+    POLICY_FIELD_NUMBER: _ClassVar[int]
+    policy: bytes
+    def __init__(self, policy: _Optional[bytes] = ...) -> None: ...

@@ -190,6 +190,24 @@ const (
 	// ControlServiceSetUpPreviewWorkflowProcedure is the fully-qualified name of the ControlService's
 	// SetUpPreviewWorkflow RPC.
 	ControlServiceSetUpPreviewWorkflowProcedure = "/tank.agentctl.v1.ControlService/SetUpPreviewWorkflow"
+	// ControlServiceBindChannelRepoProcedure is the fully-qualified name of the ControlService's
+	// BindChannelRepo RPC.
+	ControlServiceBindChannelRepoProcedure = "/tank.agentctl.v1.ControlService/BindChannelRepo"
+	// ControlServiceUnbindChannelRepoProcedure is the fully-qualified name of the ControlService's
+	// UnbindChannelRepo RPC.
+	ControlServiceUnbindChannelRepoProcedure = "/tank.agentctl.v1.ControlService/UnbindChannelRepo"
+	// ControlServiceSetChannelRepoAccessProcedure is the fully-qualified name of the ControlService's
+	// SetChannelRepoAccess RPC.
+	ControlServiceSetChannelRepoAccessProcedure = "/tank.agentctl.v1.ControlService/SetChannelRepoAccess"
+	// ControlServiceCreateGitHubConnectStateProcedure is the fully-qualified name of the
+	// ControlService's CreateGitHubConnectState RPC.
+	ControlServiceCreateGitHubConnectStateProcedure = "/tank.agentctl.v1.ControlService/CreateGitHubConnectState"
+	// ControlServiceSetChannelAgentSettingsProcedure is the fully-qualified name of the
+	// ControlService's SetChannelAgentSettings RPC.
+	ControlServiceSetChannelAgentSettingsProcedure = "/tank.agentctl.v1.ControlService/SetChannelAgentSettings"
+	// ControlServiceSetWorkspaceAgentPolicyProcedure is the fully-qualified name of the
+	// ControlService's SetWorkspaceAgentPolicy RPC.
+	ControlServiceSetWorkspaceAgentPolicyProcedure = "/tank.agentctl.v1.ControlService/SetWorkspaceAgentPolicy"
 )
 
 // RunnerServiceClient is a client for the tank.agentctl.v1.RunnerService service.
@@ -1313,6 +1331,16 @@ type ControlServiceClient interface {
 	// workspace decides. Idempotent per repository, and one repository's refusal never
 	// stops the others.
 	SetUpPreviewWorkflow(context.Context, *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error)
+	// Writes into schema `agent`, which belongs to the control plane. The
+	// messaging core may read that schema and may not write it, so each of these
+	// is a thing it needs done rather than a statement it issues. See the block
+	// of messages below for why this is a call and not a wider grant.
+	BindChannelRepo(context.Context, *connect.Request[v1.BindChannelRepoRequest]) (*connect.Response[v1.BindChannelRepoResponse], error)
+	UnbindChannelRepo(context.Context, *connect.Request[v1.UnbindChannelRepoRequest]) (*connect.Response[v1.UnbindChannelRepoResponse], error)
+	SetChannelRepoAccess(context.Context, *connect.Request[v1.SetChannelRepoAccessRequest]) (*connect.Response[v1.SetChannelRepoAccessResponse], error)
+	CreateGitHubConnectState(context.Context, *connect.Request[v1.CreateGitHubConnectStateRequest]) (*connect.Response[v1.CreateGitHubConnectStateResponse], error)
+	SetChannelAgentSettings(context.Context, *connect.Request[v1.SetChannelAgentSettingsRequest]) (*connect.Response[v1.SetChannelAgentSettingsResponse], error)
+	SetWorkspaceAgentPolicy(context.Context, *connect.Request[v1.SetWorkspaceAgentPolicyRequest]) (*connect.Response[v1.SetWorkspaceAgentPolicyResponse], error)
 }
 
 // NewControlServiceClient constructs a client for the tank.agentctl.v1.ControlService service. By
@@ -1416,26 +1444,68 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("SetUpPreviewWorkflow")),
 			connect.WithClientOptions(opts...),
 		),
+		bindChannelRepo: connect.NewClient[v1.BindChannelRepoRequest, v1.BindChannelRepoResponse](
+			httpClient,
+			baseURL+ControlServiceBindChannelRepoProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("BindChannelRepo")),
+			connect.WithClientOptions(opts...),
+		),
+		unbindChannelRepo: connect.NewClient[v1.UnbindChannelRepoRequest, v1.UnbindChannelRepoResponse](
+			httpClient,
+			baseURL+ControlServiceUnbindChannelRepoProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("UnbindChannelRepo")),
+			connect.WithClientOptions(opts...),
+		),
+		setChannelRepoAccess: connect.NewClient[v1.SetChannelRepoAccessRequest, v1.SetChannelRepoAccessResponse](
+			httpClient,
+			baseURL+ControlServiceSetChannelRepoAccessProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("SetChannelRepoAccess")),
+			connect.WithClientOptions(opts...),
+		),
+		createGitHubConnectState: connect.NewClient[v1.CreateGitHubConnectStateRequest, v1.CreateGitHubConnectStateResponse](
+			httpClient,
+			baseURL+ControlServiceCreateGitHubConnectStateProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("CreateGitHubConnectState")),
+			connect.WithClientOptions(opts...),
+		),
+		setChannelAgentSettings: connect.NewClient[v1.SetChannelAgentSettingsRequest, v1.SetChannelAgentSettingsResponse](
+			httpClient,
+			baseURL+ControlServiceSetChannelAgentSettingsProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("SetChannelAgentSettings")),
+			connect.WithClientOptions(opts...),
+		),
+		setWorkspaceAgentPolicy: connect.NewClient[v1.SetWorkspaceAgentPolicyRequest, v1.SetWorkspaceAgentPolicyResponse](
+			httpClient,
+			baseURL+ControlServiceSetWorkspaceAgentPolicyProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("SetWorkspaceAgentPolicy")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // controlServiceClient implements ControlServiceClient.
 type controlServiceClient struct {
-	startRun               *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
-	openThread             *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
-	refreshNeuralKnowledge *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
-	getRun                 *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
-	listRuns               *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
-	decideGate             *connect.Client[v1.DecideGateRequest, v1.DecideGateResponse]
-	steerRun               *connect.Client[v1.SteerRunRequest, v1.SteerRunResponse]
-	cancelRun              *connect.Client[v1.CancelRunRequest, v1.CancelRunResponse]
-	listRunEvents          *connect.Client[v1.ListRunEventsRequest, v1.ListRunEventsResponse]
-	createProductRepo      *connect.Client[v1.CreateProductRepoRequest, v1.CreateProductRepoResponse]
-	commitProductFiles     *connect.Client[v1.CommitProductFilesRequest, v1.CommitProductFilesResponse]
-	setProductReplicas     *connect.Client[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse]
-	registerDeployment     *connect.Client[v1.RegisterDeploymentRequest, v1.RegisterDeploymentResponse]
-	getDeployment          *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
-	setUpPreviewWorkflow   *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
+	startRun                 *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	openThread               *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
+	refreshNeuralKnowledge   *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
+	getRun                   *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	listRuns                 *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
+	decideGate               *connect.Client[v1.DecideGateRequest, v1.DecideGateResponse]
+	steerRun                 *connect.Client[v1.SteerRunRequest, v1.SteerRunResponse]
+	cancelRun                *connect.Client[v1.CancelRunRequest, v1.CancelRunResponse]
+	listRunEvents            *connect.Client[v1.ListRunEventsRequest, v1.ListRunEventsResponse]
+	createProductRepo        *connect.Client[v1.CreateProductRepoRequest, v1.CreateProductRepoResponse]
+	commitProductFiles       *connect.Client[v1.CommitProductFilesRequest, v1.CommitProductFilesResponse]
+	setProductReplicas       *connect.Client[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse]
+	registerDeployment       *connect.Client[v1.RegisterDeploymentRequest, v1.RegisterDeploymentResponse]
+	getDeployment            *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
+	setUpPreviewWorkflow     *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
+	bindChannelRepo          *connect.Client[v1.BindChannelRepoRequest, v1.BindChannelRepoResponse]
+	unbindChannelRepo        *connect.Client[v1.UnbindChannelRepoRequest, v1.UnbindChannelRepoResponse]
+	setChannelRepoAccess     *connect.Client[v1.SetChannelRepoAccessRequest, v1.SetChannelRepoAccessResponse]
+	createGitHubConnectState *connect.Client[v1.CreateGitHubConnectStateRequest, v1.CreateGitHubConnectStateResponse]
+	setChannelAgentSettings  *connect.Client[v1.SetChannelAgentSettingsRequest, v1.SetChannelAgentSettingsResponse]
+	setWorkspaceAgentPolicy  *connect.Client[v1.SetWorkspaceAgentPolicyRequest, v1.SetWorkspaceAgentPolicyResponse]
 }
 
 // StartRun calls tank.agentctl.v1.ControlService.StartRun.
@@ -1513,6 +1583,36 @@ func (c *controlServiceClient) SetUpPreviewWorkflow(ctx context.Context, req *co
 	return c.setUpPreviewWorkflow.CallUnary(ctx, req)
 }
 
+// BindChannelRepo calls tank.agentctl.v1.ControlService.BindChannelRepo.
+func (c *controlServiceClient) BindChannelRepo(ctx context.Context, req *connect.Request[v1.BindChannelRepoRequest]) (*connect.Response[v1.BindChannelRepoResponse], error) {
+	return c.bindChannelRepo.CallUnary(ctx, req)
+}
+
+// UnbindChannelRepo calls tank.agentctl.v1.ControlService.UnbindChannelRepo.
+func (c *controlServiceClient) UnbindChannelRepo(ctx context.Context, req *connect.Request[v1.UnbindChannelRepoRequest]) (*connect.Response[v1.UnbindChannelRepoResponse], error) {
+	return c.unbindChannelRepo.CallUnary(ctx, req)
+}
+
+// SetChannelRepoAccess calls tank.agentctl.v1.ControlService.SetChannelRepoAccess.
+func (c *controlServiceClient) SetChannelRepoAccess(ctx context.Context, req *connect.Request[v1.SetChannelRepoAccessRequest]) (*connect.Response[v1.SetChannelRepoAccessResponse], error) {
+	return c.setChannelRepoAccess.CallUnary(ctx, req)
+}
+
+// CreateGitHubConnectState calls tank.agentctl.v1.ControlService.CreateGitHubConnectState.
+func (c *controlServiceClient) CreateGitHubConnectState(ctx context.Context, req *connect.Request[v1.CreateGitHubConnectStateRequest]) (*connect.Response[v1.CreateGitHubConnectStateResponse], error) {
+	return c.createGitHubConnectState.CallUnary(ctx, req)
+}
+
+// SetChannelAgentSettings calls tank.agentctl.v1.ControlService.SetChannelAgentSettings.
+func (c *controlServiceClient) SetChannelAgentSettings(ctx context.Context, req *connect.Request[v1.SetChannelAgentSettingsRequest]) (*connect.Response[v1.SetChannelAgentSettingsResponse], error) {
+	return c.setChannelAgentSettings.CallUnary(ctx, req)
+}
+
+// SetWorkspaceAgentPolicy calls tank.agentctl.v1.ControlService.SetWorkspaceAgentPolicy.
+func (c *controlServiceClient) SetWorkspaceAgentPolicy(ctx context.Context, req *connect.Request[v1.SetWorkspaceAgentPolicyRequest]) (*connect.Response[v1.SetWorkspaceAgentPolicyResponse], error) {
+	return c.setWorkspaceAgentPolicy.CallUnary(ctx, req)
+}
+
 // ControlServiceHandler is an implementation of the tank.agentctl.v1.ControlService service.
 type ControlServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
@@ -1546,6 +1646,16 @@ type ControlServiceHandler interface {
 	// workspace decides. Idempotent per repository, and one repository's refusal never
 	// stops the others.
 	SetUpPreviewWorkflow(context.Context, *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error)
+	// Writes into schema `agent`, which belongs to the control plane. The
+	// messaging core may read that schema and may not write it, so each of these
+	// is a thing it needs done rather than a statement it issues. See the block
+	// of messages below for why this is a call and not a wider grant.
+	BindChannelRepo(context.Context, *connect.Request[v1.BindChannelRepoRequest]) (*connect.Response[v1.BindChannelRepoResponse], error)
+	UnbindChannelRepo(context.Context, *connect.Request[v1.UnbindChannelRepoRequest]) (*connect.Response[v1.UnbindChannelRepoResponse], error)
+	SetChannelRepoAccess(context.Context, *connect.Request[v1.SetChannelRepoAccessRequest]) (*connect.Response[v1.SetChannelRepoAccessResponse], error)
+	CreateGitHubConnectState(context.Context, *connect.Request[v1.CreateGitHubConnectStateRequest]) (*connect.Response[v1.CreateGitHubConnectStateResponse], error)
+	SetChannelAgentSettings(context.Context, *connect.Request[v1.SetChannelAgentSettingsRequest]) (*connect.Response[v1.SetChannelAgentSettingsResponse], error)
+	SetWorkspaceAgentPolicy(context.Context, *connect.Request[v1.SetWorkspaceAgentPolicyRequest]) (*connect.Response[v1.SetWorkspaceAgentPolicyResponse], error)
 }
 
 // NewControlServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -1645,6 +1755,42 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("SetUpPreviewWorkflow")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceBindChannelRepoHandler := connect.NewUnaryHandler(
+		ControlServiceBindChannelRepoProcedure,
+		svc.BindChannelRepo,
+		connect.WithSchema(controlServiceMethods.ByName("BindChannelRepo")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceUnbindChannelRepoHandler := connect.NewUnaryHandler(
+		ControlServiceUnbindChannelRepoProcedure,
+		svc.UnbindChannelRepo,
+		connect.WithSchema(controlServiceMethods.ByName("UnbindChannelRepo")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceSetChannelRepoAccessHandler := connect.NewUnaryHandler(
+		ControlServiceSetChannelRepoAccessProcedure,
+		svc.SetChannelRepoAccess,
+		connect.WithSchema(controlServiceMethods.ByName("SetChannelRepoAccess")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceCreateGitHubConnectStateHandler := connect.NewUnaryHandler(
+		ControlServiceCreateGitHubConnectStateProcedure,
+		svc.CreateGitHubConnectState,
+		connect.WithSchema(controlServiceMethods.ByName("CreateGitHubConnectState")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceSetChannelAgentSettingsHandler := connect.NewUnaryHandler(
+		ControlServiceSetChannelAgentSettingsProcedure,
+		svc.SetChannelAgentSettings,
+		connect.WithSchema(controlServiceMethods.ByName("SetChannelAgentSettings")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceSetWorkspaceAgentPolicyHandler := connect.NewUnaryHandler(
+		ControlServiceSetWorkspaceAgentPolicyProcedure,
+		svc.SetWorkspaceAgentPolicy,
+		connect.WithSchema(controlServiceMethods.ByName("SetWorkspaceAgentPolicy")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agentctl.v1.ControlService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ControlServiceStartRunProcedure:
@@ -1677,6 +1823,18 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceGetDeploymentHandler.ServeHTTP(w, r)
 		case ControlServiceSetUpPreviewWorkflowProcedure:
 			controlServiceSetUpPreviewWorkflowHandler.ServeHTTP(w, r)
+		case ControlServiceBindChannelRepoProcedure:
+			controlServiceBindChannelRepoHandler.ServeHTTP(w, r)
+		case ControlServiceUnbindChannelRepoProcedure:
+			controlServiceUnbindChannelRepoHandler.ServeHTTP(w, r)
+		case ControlServiceSetChannelRepoAccessProcedure:
+			controlServiceSetChannelRepoAccessHandler.ServeHTTP(w, r)
+		case ControlServiceCreateGitHubConnectStateProcedure:
+			controlServiceCreateGitHubConnectStateHandler.ServeHTTP(w, r)
+		case ControlServiceSetChannelAgentSettingsProcedure:
+			controlServiceSetChannelAgentSettingsHandler.ServeHTTP(w, r)
+		case ControlServiceSetWorkspaceAgentPolicyProcedure:
+			controlServiceSetWorkspaceAgentPolicyHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -1744,4 +1902,28 @@ func (UnimplementedControlServiceHandler) GetDeployment(context.Context, *connec
 
 func (UnimplementedControlServiceHandler) SetUpPreviewWorkflow(context.Context, *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.SetUpPreviewWorkflow is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) BindChannelRepo(context.Context, *connect.Request[v1.BindChannelRepoRequest]) (*connect.Response[v1.BindChannelRepoResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.BindChannelRepo is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) UnbindChannelRepo(context.Context, *connect.Request[v1.UnbindChannelRepoRequest]) (*connect.Response[v1.UnbindChannelRepoResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.UnbindChannelRepo is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) SetChannelRepoAccess(context.Context, *connect.Request[v1.SetChannelRepoAccessRequest]) (*connect.Response[v1.SetChannelRepoAccessResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.SetChannelRepoAccess is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) CreateGitHubConnectState(context.Context, *connect.Request[v1.CreateGitHubConnectStateRequest]) (*connect.Response[v1.CreateGitHubConnectStateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.CreateGitHubConnectState is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) SetChannelAgentSettings(context.Context, *connect.Request[v1.SetChannelAgentSettingsRequest]) (*connect.Response[v1.SetChannelAgentSettingsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.SetChannelAgentSettings is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) SetWorkspaceAgentPolicy(context.Context, *connect.Request[v1.SetWorkspaceAgentPolicyRequest]) (*connect.Response[v1.SetWorkspaceAgentPolicyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.SetWorkspaceAgentPolicy is not implemented"))
 }
