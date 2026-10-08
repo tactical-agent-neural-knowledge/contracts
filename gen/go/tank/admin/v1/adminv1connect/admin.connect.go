@@ -48,6 +48,9 @@ const (
 	// AdminServiceRemoveMemberProcedure is the fully-qualified name of the AdminService's RemoveMember
 	// RPC.
 	AdminServiceRemoveMemberProcedure = "/tank.admin.v1.AdminService/RemoveMember"
+	// AdminServiceEndMemberSessionsProcedure is the fully-qualified name of the AdminService's
+	// EndMemberSessions RPC.
+	AdminServiceEndMemberSessionsProcedure = "/tank.admin.v1.AdminService/EndMemberSessions"
 	// AdminServiceListInvitesProcedure is the fully-qualified name of the AdminService's ListInvites
 	// RPC.
 	AdminServiceListInvitesProcedure = "/tank.admin.v1.AdminService/ListInvites"
@@ -110,6 +113,7 @@ type AdminServiceClient interface {
 	DeactivateMember(context.Context, *connect.Request[v1.DeactivateMemberRequest]) (*connect.Response[v1.DeactivateMemberResponse], error)
 	ReactivateMember(context.Context, *connect.Request[v1.ReactivateMemberRequest]) (*connect.Response[v1.ReactivateMemberResponse], error)
 	RemoveMember(context.Context, *connect.Request[v1.RemoveMemberRequest]) (*connect.Response[v1.RemoveMemberResponse], error)
+	EndMemberSessions(context.Context, *connect.Request[v1.EndMemberSessionsRequest]) (*connect.Response[v1.EndMemberSessionsResponse], error)
 	ListInvites(context.Context, *connect.Request[v1.ListInvitesRequest]) (*connect.Response[v1.ListInvitesResponse], error)
 	RevokeInvite(context.Context, *connect.Request[v1.RevokeInviteRequest]) (*connect.Response[v1.RevokeInviteResponse], error)
 	ListChannelsAdmin(context.Context, *connect.Request[v1.ListChannelsAdminRequest]) (*connect.Response[v1.ListChannelsAdminResponse], error)
@@ -169,6 +173,12 @@ func NewAdminServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			httpClient,
 			baseURL+AdminServiceRemoveMemberProcedure,
 			connect.WithSchema(adminServiceMethods.ByName("RemoveMember")),
+			connect.WithClientOptions(opts...),
+		),
+		endMemberSessions: connect.NewClient[v1.EndMemberSessionsRequest, v1.EndMemberSessionsResponse](
+			httpClient,
+			baseURL+AdminServiceEndMemberSessionsProcedure,
+			connect.WithSchema(adminServiceMethods.ByName("EndMemberSessions")),
 			connect.WithClientOptions(opts...),
 		),
 		listInvites: connect.NewClient[v1.ListInvitesRequest, v1.ListInvitesResponse](
@@ -289,6 +299,7 @@ type adminServiceClient struct {
 	deactivateMember        *connect.Client[v1.DeactivateMemberRequest, v1.DeactivateMemberResponse]
 	reactivateMember        *connect.Client[v1.ReactivateMemberRequest, v1.ReactivateMemberResponse]
 	removeMember            *connect.Client[v1.RemoveMemberRequest, v1.RemoveMemberResponse]
+	endMemberSessions       *connect.Client[v1.EndMemberSessionsRequest, v1.EndMemberSessionsResponse]
 	listInvites             *connect.Client[v1.ListInvitesRequest, v1.ListInvitesResponse]
 	revokeInvite            *connect.Client[v1.RevokeInviteRequest, v1.RevokeInviteResponse]
 	listChannelsAdmin       *connect.Client[v1.ListChannelsAdminRequest, v1.ListChannelsAdminResponse]
@@ -332,6 +343,11 @@ func (c *adminServiceClient) ReactivateMember(ctx context.Context, req *connect.
 // RemoveMember calls tank.admin.v1.AdminService.RemoveMember.
 func (c *adminServiceClient) RemoveMember(ctx context.Context, req *connect.Request[v1.RemoveMemberRequest]) (*connect.Response[v1.RemoveMemberResponse], error) {
 	return c.removeMember.CallUnary(ctx, req)
+}
+
+// EndMemberSessions calls tank.admin.v1.AdminService.EndMemberSessions.
+func (c *adminServiceClient) EndMemberSessions(ctx context.Context, req *connect.Request[v1.EndMemberSessionsRequest]) (*connect.Response[v1.EndMemberSessionsResponse], error) {
+	return c.endMemberSessions.CallUnary(ctx, req)
 }
 
 // ListInvites calls tank.admin.v1.AdminService.ListInvites.
@@ -431,6 +447,7 @@ type AdminServiceHandler interface {
 	DeactivateMember(context.Context, *connect.Request[v1.DeactivateMemberRequest]) (*connect.Response[v1.DeactivateMemberResponse], error)
 	ReactivateMember(context.Context, *connect.Request[v1.ReactivateMemberRequest]) (*connect.Response[v1.ReactivateMemberResponse], error)
 	RemoveMember(context.Context, *connect.Request[v1.RemoveMemberRequest]) (*connect.Response[v1.RemoveMemberResponse], error)
+	EndMemberSessions(context.Context, *connect.Request[v1.EndMemberSessionsRequest]) (*connect.Response[v1.EndMemberSessionsResponse], error)
 	ListInvites(context.Context, *connect.Request[v1.ListInvitesRequest]) (*connect.Response[v1.ListInvitesResponse], error)
 	RevokeInvite(context.Context, *connect.Request[v1.RevokeInviteRequest]) (*connect.Response[v1.RevokeInviteResponse], error)
 	ListChannelsAdmin(context.Context, *connect.Request[v1.ListChannelsAdminRequest]) (*connect.Response[v1.ListChannelsAdminResponse], error)
@@ -486,6 +503,12 @@ func NewAdminServiceHandler(svc AdminServiceHandler, opts ...connect.HandlerOpti
 		AdminServiceRemoveMemberProcedure,
 		svc.RemoveMember,
 		connect.WithSchema(adminServiceMethods.ByName("RemoveMember")),
+		connect.WithHandlerOptions(opts...),
+	)
+	adminServiceEndMemberSessionsHandler := connect.NewUnaryHandler(
+		AdminServiceEndMemberSessionsProcedure,
+		svc.EndMemberSessions,
+		connect.WithSchema(adminServiceMethods.ByName("EndMemberSessions")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceListInvitesHandler := connect.NewUnaryHandler(
@@ -608,6 +631,8 @@ func NewAdminServiceHandler(svc AdminServiceHandler, opts ...connect.HandlerOpti
 			adminServiceReactivateMemberHandler.ServeHTTP(w, r)
 		case AdminServiceRemoveMemberProcedure:
 			adminServiceRemoveMemberHandler.ServeHTTP(w, r)
+		case AdminServiceEndMemberSessionsProcedure:
+			adminServiceEndMemberSessionsHandler.ServeHTTP(w, r)
 		case AdminServiceListInvitesProcedure:
 			adminServiceListInvitesHandler.ServeHTTP(w, r)
 		case AdminServiceRevokeInviteProcedure:
@@ -671,6 +696,10 @@ func (UnimplementedAdminServiceHandler) ReactivateMember(context.Context, *conne
 
 func (UnimplementedAdminServiceHandler) RemoveMember(context.Context, *connect.Request[v1.RemoveMemberRequest]) (*connect.Response[v1.RemoveMemberResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.admin.v1.AdminService.RemoveMember is not implemented"))
+}
+
+func (UnimplementedAdminServiceHandler) EndMemberSessions(context.Context, *connect.Request[v1.EndMemberSessionsRequest]) (*connect.Response[v1.EndMemberSessionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.admin.v1.AdminService.EndMemberSessions is not implemented"))
 }
 
 func (UnimplementedAdminServiceHandler) ListInvites(context.Context, *connect.Request[v1.ListInvitesRequest]) (*connect.Response[v1.ListInvitesResponse], error) {

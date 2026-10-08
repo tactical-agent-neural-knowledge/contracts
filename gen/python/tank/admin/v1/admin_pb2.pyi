@@ -120,6 +120,20 @@ class RemoveMemberResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class EndMemberSessionsRequest(_message.Message):
+    __slots__ = ("workspace_id", "user_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    user_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
+
+class EndMemberSessionsResponse(_message.Message):
+    __slots__ = ("sessions_ended",)
+    SESSIONS_ENDED_FIELD_NUMBER: _ClassVar[int]
+    sessions_ended: int
+    def __init__(self, sessions_ended: _Optional[int] = ...) -> None: ...
+
 class Invite(_message.Message):
     __slots__ = ("id", "workspace_id", "email", "role", "invited_by", "created_at", "expires_at", "consumed_at", "revoked_at")
     ID_FIELD_NUMBER: _ClassVar[int]

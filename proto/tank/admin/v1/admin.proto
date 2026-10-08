@@ -66,6 +66,23 @@ message RemoveMemberRequest {
 }
 message RemoveMemberResponse {}
 
+// End every session a member holds, leaving their membership alone.
+//
+// The action an admin wants when a laptop goes missing, as opposed to when a person
+// leaves: removal ends sessions only once it takes the person's last membership, and
+// before this the only way to sign somebody out was to remove them and add them back.
+// It ends sessions and nothing else — not the member's API or bot tokens, because a
+// bot token belonging to a person is not the device that was lost.
+message EndMemberSessionsRequest {
+  string workspace_id = 1;
+  string user_id = 2;
+}
+message EndMemberSessionsResponse {
+  // How many sessions were ended, so the admin can tell "it worked" from "there
+  // were none" — the second is the common case and reads as failure otherwise.
+  int32 sessions_ended = 1;
+}
+
 // ---- Invites ---------------------------------------------------------------
 
 message Invite {
@@ -409,6 +426,7 @@ service AdminService {
   rpc DeactivateMember(DeactivateMemberRequest) returns (DeactivateMemberResponse);
   rpc ReactivateMember(ReactivateMemberRequest) returns (ReactivateMemberResponse);
   rpc RemoveMember(RemoveMemberRequest) returns (RemoveMemberResponse);
+  rpc EndMemberSessions(EndMemberSessionsRequest) returns (EndMemberSessionsResponse);
   rpc ListInvites(ListInvitesRequest) returns (ListInvitesResponse);
   rpc RevokeInvite(RevokeInviteRequest) returns (RevokeInviteResponse);
   rpc ListChannelsAdmin(ListChannelsAdminRequest) returns (ListChannelsAdminResponse);
