@@ -58,6 +58,15 @@ message PolicySummary {
   int32 max_turns = 6;
   double max_budget_usd = 7;
   repeated string rules = 8; // advisory rules surfaced to the model
+  // policy's tools.gate.destructive_tool: the patterns that must open a
+  // destructive_tool gate instead of running.
+  //
+  // This field was absent until 2026-10-07, and its absence was not a weak
+  // control but no control at all. The patterns were in every workspace's
+  // policy, the control plane evaluated them, and nothing inside a sandbox was
+  // ever told about them — so the gate the policy promised could not open and
+  // the command simply ran. A deny list the runner cannot see denies nothing.
+  repeated string tools_gate_destructive = 9;
 }
 
 message ApprovedPlan {
