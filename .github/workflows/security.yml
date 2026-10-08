@@ -1,8 +1,30 @@
 name: security
+
+# The secret scan, inlined rather than called.
+#
+# This repository is **public** and `workflows` is **private**, and GitHub refuses a
+# reusable workflow from a private repository to a public caller — before any job is
+# scheduled, which is why the run was a nought-second failure with no job in it and no
+# log to read. It had failed on every push since the gate was adopted, which is the worst
+# shape a security gate can take: red forever, scanning nothing, and indistinguishable
+# from a gate that is working until somebody opens it.
+#
+# So the rules of workflows/.github/workflows/secret-scan.yml are reproduced here rather
+# than referenced, and the duplication is the price of this repository being public. The
+# rules that matter and must not drift: gitleaks is pinned and fetched as a release binary
+# (the Action asks organisations for a licence key); findings are redacted, because a run
+# log is readable by anyone who can read the repo and this repo is readable by everyone;
+# the scanner always exits 0 and the report step decides, so a crash cannot pass as a
+# clean scan; and no report at all is a failure, never a pass.
 on:
   pull_request:
   push:
     branches: [main]
+  schedule:
+    # Monday 06:17 UTC: the weekly run walks the whole git history, because a credential
+    # committed and reverted is still a credential that leaked — and in a public
+    # repository it leaked to everybody.
+    - cron: "17 6 * * 1"
   workflow_dispatch:
 
 permissions:
@@ -10,4 +32,64 @@ permissions:
 
 jobs:
   secrets:
-    uses: tactical-agent-neural-knowledge/workflows/.github/workflows/secret-scan.yml@main
+    runs-on: ubuntu-latest
+    env:
+      VERSION: "8.30.1"
+      HISTORY: ${{ github.event_name == 'schedule' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # A history scan needs every commit; a tree scan needs none of them.
+          fetch-depth: ${{ github.event_name == 'schedule' && 0 || 1 }}
+
+      - name: install gitleaks
+        run: |
+          set -euo pipefail
+          curl -fsSL -o gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz"
+          tar -xzf gitleaks.tar.gz gitleaks
+          ./gitleaks version
+
+      - name: scan
+        run: |
+          set -uo pipefail
+          args=(--redact --no-banner --report-format sarif --report-path gitleaks.sarif --exit-code 0)
+          if [ "$HISTORY" = "true" ]; then
+            ./gitleaks git . "${args[@]}"
+          else
+            ./gitleaks dir . "${args[@]}"
+          fi
+
+      - name: report
+        if: always()
+        run: |
+          set -uo pipefail
+          if [ ! -f gitleaks.sarif ]; then
+            echo "::error::gitleaks produced no report — an unknown result is a failure, never a pass"
+            exit 1
+          fi
+          n=$(jq '[.runs[].results[]] | length' gitleaks.sarif)
+          {
+            echo "### secret-scan"
+            if [ "$n" = "0" ]; then
+              echo "No secrets found (gitleaks ${VERSION}, $([ "$HISTORY" = true ] && echo 'full history' || echo 'working tree'))."
+            else
+              echo "**$n finding(s).** Values are redacted here and in the log on purpose."
+              echo
+              echo "This repository is public, so a real secret is already leaked to everybody:"
+              echo "rotate first, remove from the history second. A false positive is silenced"
+              echo "with a dated entry in \`.gitleaksignore\`, never by dropping this check."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$n" != "0" ]; then
+            echo "::error::gitleaks found $n secret(s)"
+            exit 1
+          fi
+
+      - name: upload sarif
+        if: always() && hashFiles('gitleaks.sarif') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-sarif
+          path: gitleaks.sarif
+          retention-days: 30
