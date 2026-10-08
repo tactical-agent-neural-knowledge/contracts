@@ -1,0 +1,298 @@
+syntax = "proto3";
+
+package tank.remediation.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/remediation/v1;remediationv1";
+
+// Neuralsecurity §2.3: a finding is a pull request, not a ticket.
+//
+// This file is the seam between the half that judges and the half that fixes,
+// and the seam exists because those two halves must not be the same program.
+// The control registry lives in the messaging core: it decides what is true
+// about the system and what is wrong with it. The remediation engine lives in
+// the agent control plane: it holds the GitHub App, the sandboxes, the gate
+// engine and the flight recorder, and it is the only thing that can write code.
+// The registry submits a finding across this boundary; it cannot run anything,
+// and the engine cannot change a control, a probe or a framework mapping. A
+// system that can mark its own homework is not a security system.
+//
+// Four rules decide every message in here.
+//
+// **Propose-only by default.** A remediation produces a pull request a human
+// merges. AUTO_APPLY exists, and is narrow enough that the list of classes
+// eligible for it is short, declared, and readable by anybody who asks.
+//
+// **A fix without a regression test is a fix with a half-life.** Every
+// remediation carries the test it must add, as a requirement the run is held to
+// and the pull request is checked against, not as a suggestion in a brief.
+//
+// **Fix the class, not the instance.** A finding arrives about one repository
+// and fans out to every repository and workspace the same check applies to. The
+// fan-out is in the record, so "we fixed it" means "here is the list and here is
+// what happened to each".
+//
+// **Everything it does is recorded.** The thing with the most power in the
+// system is the thing most thoroughly logged: every remediation names the run it
+// drove, and a run's events are the flight recorder already.
+
+// What was observed, where it came from, and when — the registry's own evidence
+// shape, carried across so the pull request can cite what found it rather than
+// asserting that something did.
+message Evidence {
+  string summary = 1;
+  // Where a reader can go and look: a SQL query, a file and line, a config key.
+  string source = 2;
+  google.protobuf.Timestamp observed_at = 3;
+  // The raw observation when it is short enough to carry: the value read, the
+  // rows counted, the lines matched.
+  string detail = 4;
+}
+
+// A finding, as the registry states it. The engine does not re-derive any of
+// this: it is the judge's output and the engine's input, and the engine is not
+// allowed an opinion about whether the finding is real.
+message Finding {
+  // The registry's own finding id, e.g. "F-AGENT-SCHEMA-WRITES". Stable, and
+  // the key the engine deduplicates on together with control_version.
+  string finding_id = 1;
+  // The control the finding is attached to, e.g. "data.control-plane-read-only".
+  string control_id = 2;
+  // The control's version. A finding against version 2 of a control is not the
+  // same finding as one against version 3, because the question changed.
+  int32 control_version = 3;
+  // One sentence a security lead would recognise.
+  string summary = 4;
+  // Where it is: repository paths, a resource, a table. As the registry writes
+  // it, which is a comma-separated list of loci.
+  string locus = 5;
+  // low | medium | high | critical.
+  string severity = 6;
+  // What the registry says should be done. Advice to the run, never an
+  // instruction to the engine: the engine decides what it is allowed to do.
+  string proposal = 7;
+  Evidence evidence = 8;
+  // The probe from §2.2 that will keep checking once this is fixed. Empty is
+  // allowed and is recorded as a gap rather than ignored — a fix with nothing
+  // watching it is the state this whole phase exists to leave behind.
+  string probe_id = 9;
+  // registry | probe | operator. Who said so, because an operator-submitted
+  // finding is a human judgement and is labelled as one.
+  string source = 10;
+  // The state the control was in when the finding was stated. The engine
+  // re-reads it before acting: a finding whose control has since changed state
+  // is stale, and stale findings are reviewed rather than executed.
+  string control_state = 11;
+}
+
+// How strong an intervention a remediation is allowed to be. The default — the
+// zero value's neighbour and the answer for everything that is not on a short
+// declared list — is PROPOSE.
+enum Disposition {
+  DISPOSITION_UNSPECIFIED = 0;
+  // A pull request a human merges. The posture for every code change, always.
+  DISPOSITION_PROPOSE = 1;
+  // Applied by the platform, behind a policy gate, announced in the thread,
+  // with a one-click undo. Only for a declared, reversible, narrow class, and
+  // never for anything that can lock an operator out.
+  DISPOSITION_AUTO_APPLY = 2;
+  // The engine will not act on this finding, and says why. A refusal is a
+  // first-class outcome: "we could fix this and chose not to" and "we cannot
+  // fix this" are different sentences and both belong in the record.
+  DISPOSITION_REFUSED = 3;
+}
+
+// Where a remediation, or one of its targets, has got to.
+enum RemediationState {
+  REMEDIATION_STATE_UNSPECIFIED = 0;
+  // Accepted and recorded; nothing has run.
+  REMEDIATION_STATE_RECEIVED = 1;
+  // The class is known and the targets are resolved.
+  REMEDIATION_STATE_PLANNED = 2;
+  // At least one run is working.
+  REMEDIATION_STATE_RUNNING = 3;
+  // A pull request is open and waiting for a human. The ordinary terminal
+  // state, and the one the product is about.
+  REMEDIATION_STATE_PROPOSED = 4;
+  // Merged, or applied for an auto-apply class.
+  REMEDIATION_STATE_APPLIED = 5;
+  // Tried and could not. Carries the reason.
+  REMEDIATION_STATE_FAILED = 6;
+  // Not attempted, with a reason. The honest answer for a finding whose fix is
+  // a human decision, and for anything the separation of powers forbids.
+  REMEDIATION_STATE_REFUSED = 7;
+  // A newer remediation for the same finding replaced this one.
+  REMEDIATION_STATE_SUPERSEDED = 8;
+}
+
+// A declared class of fix. The class is what makes auto-apply safe to have at
+// all: an auto-apply class has to be written down, with its reverse, before
+// anything is eligible for it, and the list is short enough to read.
+message Class {
+  // Stable id, e.g. "control-plane-boundary" or "stale-token".
+  string id = 1;
+  string title = 2;
+  // What this class of fix changes, in one sentence.
+  string description = 3;
+  // The strongest disposition this class is allowed. A class that may only ever
+  // propose says PROPOSE here, and nothing can raise it at submission time.
+  Disposition max_disposition = 4;
+  // What the regression test must assert. Mandatory: a class with no test
+  // requirement cannot be registered, because the test is the part that makes
+  // the fix stick.
+  string test_requirement = 5;
+  // True when the change can be undone by a single counter-action, and
+  // `undo` says what that action is. Mandatory for AUTO_APPLY.
+  bool reversible = 6;
+  string undo = 7;
+  // True when a mistake in this class could lock an operator out of the system.
+  // Such a class can never be AUTO_APPLY, whatever else it declares: the one
+  // failure mode a security fix must not have is becoming the outage.
+  bool lockout_risk = 8;
+  // The gate a human answers before an auto-apply class acts. Empty for
+  // PROPOSE classes, mandatory for AUTO_APPLY.
+  string gate_kind = 9;
+}
+
+// One repository the same fix applies to. The list is the whole point of
+// "fix the class, not the instance": a finding in one repository is a finding
+// about a pattern, and the pattern is wherever the pattern is.
+message Target {
+  string repo = 1; // owner/name
+  string workspace_id = 2;
+  string channel_id = 3;
+  // The thread the work is announced in and the run reports to.
+  string thread_root_id = 4;
+  // The run that did the work, so the flight recorder can be read for it.
+  string run_id = 5;
+  string branch = 6;
+  string pull_request_url = 7;
+  RemediationState state = 8;
+  // Why this target is in the state it is. Mandatory for FAILED and REFUSED.
+  string detail = 9;
+  google.protobuf.Timestamp started_at = 10;
+  google.protobuf.Timestamp ended_at = 11;
+  // Why the engine thinks the finding applies here: the same grant, the same
+  // query shape, the same dependency. Recorded so a workspace can read why it
+  // was handed a pull request it did not ask for.
+  string why = 12;
+}
+
+// One finding, as the engine is handling it.
+message Remediation {
+  string id = 1;
+  Finding finding = 2;
+  string class_id = 3;
+  Disposition disposition = 4;
+  RemediationState state = 5;
+  // Mandatory when disposition is REFUSED or state is REFUSED.
+  string refusal_reason = 6;
+  repeated Target targets = 7;
+  // What every run for this remediation is told, verbatim. In the record
+  // because a brief is an instruction to an agent with write access, and an
+  // instruction nobody can read afterwards is not accountable.
+  string brief = 8;
+  // Paths no run under this remediation may touch, because they are the
+  // controls, probes and framework mappings that judge it. The separation of
+  // powers, as a list rather than as a promise.
+  repeated string forbidden_paths = 9;
+  // The principal that judged, and the principal that fixes. The engine refuses
+  // a remediation where they are the same.
+  string judge_principal = 10;
+  string fix_principal = 11;
+  google.protobuf.Timestamp received_at = 12;
+  google.protobuf.Timestamp planned_at = 13;
+  google.protobuf.Timestamp ended_at = 14;
+  // The probe the pull request cites as what will keep checking. Empty when the
+  // finding named none, which is itself reported.
+  string probe_id = 15;
+  // True when the finding named no probe. Surfaced rather than inferred: a fix
+  // with nothing watching it should be visible as that.
+  bool unwatched = 16;
+}
+
+// SubmitFinding hands one finding across the boundary.
+//
+// Idempotent on (finding_id, control_version): submitting the same finding
+// again returns the remediation already in flight rather than opening a second
+// set of pull requests, which is the behaviour an hourly evaluation requires.
+message SubmitFindingRequest {
+  Finding finding = 1;
+  // Plan and record, run nothing. What an operator uses to see the blast radius
+  // — the class, the targets, the brief, the forbidden paths — before any agent
+  // is started. The §2.4 "blast radius before you grant it" screen, for a fix.
+  bool dry_run = 2;
+  // Submit again even though one is in flight, because the finding's evidence
+  // changed. The previous remediation is marked SUPERSEDED.
+  bool resubmit = 3;
+  // The principal the registry is submitting as. Recorded as judge_principal,
+  // and refused if it is the same as the engine's own fix principal.
+  string judge_principal = 4;
+}
+message SubmitFindingResponse {
+  Remediation remediation = 1;
+  // Targets the engine declined to act on, each with its reason, so a caller
+  // sees the refusals rather than only the count that succeeded.
+  repeated Target declined = 2;
+}
+
+message GetRemediationRequest {
+  string id = 1;
+}
+message GetRemediationResponse {
+  Remediation remediation = 1;
+}
+
+// How a proposed fix reports back. The registry polls this: the engine does not
+// write to the registry, because a program that can change the control that
+// judges it is the thing this design exists to prevent. The engine's answer is
+// a list of remediations and their pull requests; what the registry does with
+// that — whether a finding is still open, whether a control's state changes —
+// stays the registry's own decision.
+message ListRemediationsRequest {
+  // Filter to one finding. Empty returns the whole queue.
+  string finding_id = 1;
+  string control_id = 2;
+  RemediationState state = 3;
+  int32 limit = 4;
+  // Only remediations that changed after this, so a poller can ask repeatedly
+  // without reading the world each time.
+  google.protobuf.Timestamp since = 5;
+}
+message ListRemediationsResponse {
+  repeated Remediation remediations = 1;
+}
+
+// The declared classes, and which of them may act without a pull request. This
+// is the list a buyer's security team should be shown: not "the agent only does
+// safe things" but "here are the four things it may do by itself, each with its
+// reverse written next to it".
+message ListClassesRequest {}
+message ListClassesResponse {
+  repeated Class classes = 1;
+}
+
+message CancelRemediationRequest {
+  string id = 1;
+  string reason = 2;
+  string user_id = 3;
+}
+message CancelRemediationResponse {
+  Remediation remediation = 1;
+}
+
+// The remediation engine. Implemented by the agent control plane, called by the
+// messaging core's control registry, authenticated with the control-plane
+// service token.
+//
+// There is deliberately no RPC here that changes a control, retires a probe,
+// edits a framework mapping or marks a finding resolved. The engine fixes and
+// the registry judges, and neither has a method for the other's job.
+service RemediationService {
+  rpc SubmitFinding(SubmitFindingRequest) returns (SubmitFindingResponse);
+  rpc GetRemediation(GetRemediationRequest) returns (GetRemediationResponse);
+  rpc ListRemediations(ListRemediationsRequest) returns (ListRemediationsResponse);
+  rpc ListClasses(ListClassesRequest) returns (ListClassesResponse);
+  rpc CancelRemediation(CancelRemediationRequest) returns (CancelRemediationResponse);
+}
