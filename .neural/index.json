@@ -1,19 +1,20 @@
 {
   "generated_by": "TANK Neural Knowledge",
-  "commit": "c5e2e604e1c6bc2b0d29eef4b6688c52e3380cbf",
-  "refreshed_at": "2026-10-03T12:19:40.782Z",
+  "commit": "a887d51f4d826600d165099f03b773e842b45155",
+  "refreshed_at": "2026-10-08T13:50:00.529Z",
   "areas": {
     ".": {
       "neurons": ".neural/neurons/root.md",
       "hot": [
+        "AGENTS.md",
         "CLAUDE.md",
         "Makefile",
         "README.md",
         "buf.gen.yaml",
-        "buf.yaml",
-        "go.mod"
+        "buf.yaml"
       ],
       "files": [
+        "AGENTS.md",
         "CLAUDE.md",
         "Makefile",
         "README.md",
@@ -26,21 +27,23 @@
     ".github": {
       "neurons": ".neural/neurons/github.md",
       "hot": [
-        ".github/workflows/ci.yml"
+        ".github/workflows/ci.yml",
+        ".github/workflows/security.yml"
       ],
       "files": [
-        ".github/workflows/ci.yml"
+        ".github/workflows/ci.yml",
+        ".github/workflows/security.yml"
       ]
     },
     "proto": {
       "neurons": ".neural/neurons/proto.md",
       "hot": [
-        "proto/tank/workspace/v1/workspace.proto",
         "proto/tank/agentctl/v1/agentctl.proto",
-        "proto/tank/catalog/v1/catalog.proto",
-        "proto/tank/channel/v1/channel.proto",
+        "proto/tank/board/v1/board.proto",
         "proto/tank/agent/v1/agent.proto",
-        "proto/tank/events/v1/events.proto"
+        "proto/tank/books/v1/books.proto",
+        "proto/tank/events/v1/events.proto",
+        "proto/tank/channel/v1/channel.proto"
       ],
       "files": [
         "proto/tank/admin/v1/admin.proto",
@@ -49,6 +52,9 @@
         "proto/tank/auth/v1/auth.proto",
         "proto/tank/billing/v1/billing.proto",
         "proto/tank/blocks/v1/blocks.proto",
+        "proto/tank/board/v1/board.proto",
+        "proto/tank/books/v1/books.proto",
+        "proto/tank/canvas/v1/canvas.proto",
         "proto/tank/catalog/v1/catalog.proto",
         "proto/tank/channel/v1/channel.proto",
         "proto/tank/command/v1/command.proto",
@@ -61,8 +67,10 @@
         "proto/tank/platform/v1/platform.proto",
         "proto/tank/presence/v1/presence.proto",
         "proto/tank/realtime/v1/realtime.proto",
+        "proto/tank/remediation/v1/remediation.proto",
         "proto/tank/richtext/v1/richtext.proto",
         "proto/tank/search/v1/search.proto",
+        "proto/tank/security/v1/security.proto",
         "proto/tank/topo/v1/topo.proto",
         "proto/tank/workspace/v1/workspace.proto"
       ]
