@@ -23,3 +23,4 @@ refreshed 2026-10-09 · e52a377a71d9
 
 ## Learned in runs
 - `make` is not installed in the agent sandbox (no /usr/bin/make), so every documented command in this repo — all of them Makefile targets — fails with `spawn make ENOENT`; run `npx --yes @bufbuild/buf lint|build|generate|breaking --against '.git#branch=main'` instead, which is what the Makefile shells out to. (learned 2026-10-09, run 367043241828362500)
+- The pull-request runner's pre-open verification takes its lint command from `.neural/map.yaml`'s `commands:` block, not from the Makefile — while that said `lint: make lint` every open_pull_request here died with `spawn make ENOENT` before pushing anything. (learned 2026-10-09, run 367043241828362500)
