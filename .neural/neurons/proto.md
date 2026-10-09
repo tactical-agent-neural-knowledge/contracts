@@ -1,22 +1,43 @@
 # Neurons · proto
 
-refreshed 2026-10-03 · c5e2e604e1c6
+refreshed 2026-10-09 · e52a377a71d9
 
-- 22 domains, one package each, always `proto/tank/<domain>/v1/<domain>.proto` with package `tank.<domain>.v1`. `CLAUDE.md`: "One proto package per domain, version suffix `v1`." Generated Go lands at `gen/go/tank/<domain>/v1/` with the Connect client in a `<domain>v1connect/` subpackage.
-- Product vocabulary never reaches the wire. `proto/tank/channel/v1/channel.proto:7`: a Channel "is presented as a 'Tread' in the product… The wire name stays Channel." A Radar is `CHANNEL_TYPE_MONITOR = 5`, implemented in `tank.monitor.v1`.
-- Unread-count trap, and the two comments disagree: `Channel.last_seq` (channel.proto:44) still says "unread = last_seq - last_read_seq", while `ChannelReadState.unread_count` (channel.proto:77-85) documents why that arithmetic is wrong — thread replies and deleted messages also consume a `channel_seq`. Use `unread_count`; it is `optional` so a client can tell "server said zero" from an older server saying nothing.
-- `optional` is used throughout as deliberate presence, not as nullability: unchanged-field semantics in `UpdateChannelRequest` / `SetChannelPreferenceRequest`, "this replaces nothing" in `DecideBenchmarkRequest.supersedes_id` (topo.proto), and the empty-vs-unconfigured distinction in `TopoPreferences.configured` (workspace.proto). Dropping `optional` to tidy a field silently changes meaning.
-- `proto/tank/workspace/v1/workspace.proto` is the biggest file (719 lines) and `GetBootstrap` is its point: one call on app open, everything else lazy. It caps members at 200, which is the entire reason `ListMembersRequest.query` exists.
-- `proto/tank/agentctl/v1/agentctl.proto` is the runner ↔ control-plane contract only: the in-sandbox runner talks to agent-control and never to the messaging core, authenticated by the per-run `RUN_TOKEN`, and all ids are Snowflake decimal strings. `RunPhase` drives the runner's permission mode, and `StartRunRequest.mode = "neural"` (this refresh) skips planning and works in `repo` whatever the Tread is bound to.
-- `proto/tank/events/v1/events.proto` is the NATS JetStream envelope: `Envelope.id` is the `Nats-Msg-Id` idempotency key, the payload is a `google.protobuf.Any`, and subjects are `evt.{ws}.ch.{channel}`, `.thread.{root}`, `.user.{uid}`, `.ws`. `AuditLogged` is internal — the gateway never fans it out to clients.
-- `proto/tank/realtime/v1/realtime.proto` is the WebSocket gateway, binary protobuf by default (`?enc=json` only for debugging). `Event.cursor` is the JetStream stream sequence the client persists and replays with `Resume`; `PresenceSubscribe` caps at 500 ids and *replaces* the set rather than adding to it.
-- `proto/tank/richtext/v1/richtext.proto` holds the `RichText` AST and states the rule plainly: "Markdown is never the storage format." Anything accepting user-authored text should take `RichText`, not a string.
-- `proto/tank/blocks/v1/blocks.proto` is the agent UI vocabulary — `PlanCard`, `DiffPreview`, `CiStatus`, `ApprovalPrompt`, `ToolLog`, `StatusCard`, `FilePreview` — plus `GateKind` (PLAN, SCOPE_CHANGE, MERGE, DEPLOY, DESTRUCTIVE_TOOL, BUDGET_INCREASE). A `BlockAction` travels client → server → owning agent as an event, not as an RPC.
-- `proto/tank/topo/v1/topo.proto` separates derived marks (always `MARK_STATUS_OPEN`, never stored, no `created_by_user_id`) from stored ones with a real lifecycle; only stored marks ever produce a `TopoMarkUpdated` event. `RecordEvent` is for first-party observers only and carries a `dedupe_key` because webhooks get redelivered.
-- Cross-package imports are real and make FILE-level breaking bite across domains: `topo` and `search` import `tank.message.v1`, `admin` imports `tank.workspace.v1` and `tank.channel.v1`. A field removed from `message.proto` fails the breaking check in files that merely reference it.
-- Adding a domain needs only a new `proto/tank/<domain>/v1/<domain>.proto` plus `make gen`: managed mode supplies `go_package`, and lint's `PACKAGE_VERSION_SUFFIX` exemption is already in `buf.yaml`. Remember the TS barrel at `gen/ts/src/index.ts` is hand-written and will not pick it up.
-- Never renumber or reuse a field number, and never remove a field before every client has shipped without it (`CLAUDE.md`). `make breaking` / the PR's breaking check catches the first; nothing but discipline catches the second.
+- 27 packages now, one per domain under `proto/tank/<domain>/v1/`: five domains landed since the last
+  refresh — `board` (Neuralboards), `books` (Neuralbooks), `canvas` (Neuralcanvas), `remediation` and
+  `security` (Neuralsecurity) — plus large additions to `agentctl`, `agent`, `admin`, `events`, `realtime`
+  and `topo`.
+- `security/v1/security.proto` and `remediation/v1/remediation.proto` are a deliberate seam: the registry
+  (`Control`, `Posture`, `Finding`) only states facts and cannot run anything; the engine
+  (`Remediation`, `Class`, `Target`) only fixes and cannot grade itself. `SubmitFinding` is the one RPC
+  that crosses the boundary and is idempotent on `(finding_id, control_version)` — re-submitting an
+  hourly-evaluated finding returns the remediation already in flight instead of opening a second PR.
+- `remediation.proto`'s `Disposition` defaults to `PROPOSE`; `AUTO_APPLY` is only valid for a `Class`
+  declared with its reverse up front, so grep `Class` before assuming any fix class can self-merge.
+- `security.proto`'s `ControlState` has no "green by default": `NOT_YET` applies even when a control is
+  believed to hold but nobody can evidence it, and a stale check reports `UNKNOWN` rather than its last
+  answer. `ClauseCoverage` state is always derived (worst of its mapped controls), never stored directly.
+- `canvas.proto`'s `Live` blocks are filled in by the server at read time, not at write time — a page can
+  never go stale about its own numbers, unlike `Source` citations which can (and say so).
+- `board.proto`'s `AppFrame` holds the *running application* at a commit, not a screenshot; `BoardSlice`
+  is an ordinary `BoardObject` that carries a record saying it is a named exportable region, so
+  move/resize/snap logic never needs a special case for it.
+- `books.proto`: all money is integer cents in the workspace's currency, ids are string Snowflake ids like
+  everywhere else; `CashSummary` and `Report` are read-only views over the double-entry journal, never a
+  second ledger.
+- `agentctl.proto` (1045 lines, the largest file) is the agent-control-plane-facing mirror of `board`,
+  `books` and `canvas`: `BooksSummary`/`BooksCreateInvoice`/`BooksRecordExpense`/`BooksRecordPayment`/
+  `BooksReport`, `WriteUpThread`/`ReadCanvas`/`AskCanvas`, `ListBoards`/`ReadBoard`/`DrawOnBoard`/
+  `ArrangeBoard` all exist only so a run can act "as the workspace's agent, the same service a person
+  uses from the page, with the same checks" — do not add a parallel path that skips those checks.
+- `agentctl.proto`'s `RunContext.tools_gate_destructive` (field 9) was added 2026-10-07 after the gate it
+  describes silently did nothing: the control plane evaluated `tools.gate.destructive_tool` patterns but
+  never told the sandbox about them, so the command the policy meant to block just ran. A deny list the
+  runner cannot see denies nothing — any new policy gate needs its pattern threaded onto `RunContext`.
+- `agent.proto`'s `TreadDeployment` (`SetUpRepoPreviewsRequest`/`CreateTreadRepo`/`SetTreadDeployment`)
+  always opens a pull request against the workspace's own repository, never pushes directly — "a
+  workflow file in somebody else's repository is their decision" per the file's own comment.
+- `buf.yaml` breaking is `FILE` level and lint excepts only `PACKAGE_VERSION_SUFFIX`; both still hold,
+  confirmed by a clean `buf lint` run on this refresh.
 
 ## Verified
-
-`npx --yes @bufbuild/buf lint` (STANDARD minus PACKAGE_VERSION_SUFFIX), `npx --yes @bufbuild/buf build` (all 22 files compile), `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` — all passed.
+- `npx --yes @bufbuild/buf lint` (clean, no findings)
