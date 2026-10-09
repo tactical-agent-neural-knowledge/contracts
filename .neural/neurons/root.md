@@ -1,21 +1,17 @@
 # Neurons · .
 
-refreshed 2026-10-03 · c5e2e604e1c6
+refreshed 2026-10-09 · e52a377a71d9
 
-- This repo is input + output: hand-written `.proto` under `proto/`, generated Go, TypeScript and Python committed under `gen/`. `.gitignore` ignores only `node_modules/`, `gen/ts/dist/`, `gen/ts/*.tgz`, `__pycache__/` — generated *sources* are tracked on purpose, so every PR that touches a proto also carries the regenerated files.
-- `Makefile` is the one entry point. `make check` = `lint gen build` plus `git diff --exit-code --stat gen/`, which is the stale-generated-code gate; it prints "ERROR: generated code is stale. Run 'make gen' and commit." and is the same gate CI enforces.
-- `Makefile:1` is `BUF ?= npx --yes @bufbuild/buf`: buf is not vendored, every target shells out to npx and therefore to the network on a cold cache. Override with `make lint BUF=buf` when a real buf binary is on PATH.
-- `buf.yaml` is v2 with a single module at `proto`, `lint.use: [STANDARD]` minus `PACKAGE_VERSION_SUFFIX`, and `breaking.use: [FILE]` — FILE-level, so moving a message between files is breaking even when the wire is unchanged.
-- `buf.gen.yaml` turns managed mode on and sets `go_package_prefix` to `github.com/.../contracts/gen/go`, which is why most protos carry no `option go_package`. Five do anyway (billing, catalog, monitor, platform, topo); a hand-written one must match the managed prefix exactly or `gen/go` lands in the wrong directory.
-- Plugin pins in `buf.gen.yaml` mirror the runtime pins in `go.mod`: protoc-gen-go v1.36.4 ↔ `google.golang.org/protobuf v1.36.4`, connect-go v1.18.1 ↔ `connectrpc.com/connect v1.18.1`. `CLAUDE.md` forbids changing a plugin version without regenerating everything in the same PR; moving one side alone desynchronises them.
-- `make clean` removes `gen/go/tank gen/ts/src/tank gen/python/tank` — the `tank` subtree only, never `gen/ts/src/index.ts`, which is hand-written.
-- `gen/ts/src/index.ts` is a hand-maintained namespaced barrel and covers 14 of the 22 proto packages (admin, billing, catalog, command, huddle, monitor, platform and topo are absent). Its own comment says deep imports (`./tank/message/v1/message_pb.js`) are the primary path; adding a domain does not add it here.
-- `gen/ts` is its own npm package (`@tactical-agent-neural-knowledge/contracts`, `"type": "module"`, tsc NodeNext, `@bufbuild/protobuf` as a peer dep). The es plugin is configured with `import_extension=js`, so every generated import ends in `.js` and must stay that way for NodeNext to resolve.
-- `go test ./...` appears in `.neural/map.yaml` but there is not a single `_test.go` file in the repo: the Go module is generated code only, and `go build ./...` is the real check.
-- `README.md` names the consumers each language serves — Go: api, agent-control; TS: sdk-ts, web, mobile, agent-runner; Python: knowledge — and states the change discipline: "Changes are additive-first: add fields, ship every client, wait for the mobile build to land, then remove."
-- `CLAUDE.md` hard prohibitions, verbatim: "Renumbering or reusing field numbers; removing a field before every client has shipped without it; editing `gen/` by hand; changing plugin versions without regenerating everything in the same PR."
-- No Go toolchain is installed in this agent sandbox, so `make build` / `go build ./...` cannot be run here; CI's `go build ./...` step is the only place it is proven. Do not claim it locally.
+- `make check` is the whole CI contract in one target: `lint`, `gen`, `build`, then `git diff --exit-code --stat gen/` — if `gen/` is dirty after a clean regenerate, it fails with a message telling you to run `make gen` and commit. This is the thing to run before opening a PR, not `buf lint` alone.
+- `BUF ?= npx --yes @bufbuild/buf` — every `make` target shells out to this; pass `BUF=buf` if a real binary is on `PATH`. No Go toolchain is available in this sandbox, so `make build`/`go build ./...` cannot be verified here; CI runs it.
+- `buf.gen.yaml` pins exact plugin versions (protoc-gen-go 1.36.4, connect-go 1.18.1, protoc-gen-es 2.2.3, python 29.3) and `CLAUDE.md` forbids changing any of them without regenerating everything in the same PR.
+- `buf.yaml` lints with `STANDARD` minus `PACKAGE_VERSION_SUFFIX` (the repo's own `v1` suffix would otherwise fail that rule) and checks breaking at `FILE` granularity — moving a message to a different `.proto` file is a break even when the wire bytes are unchanged.
+- `make breaking` needs a local `main` ref to diff against (`'.git#branch=main'`); on a fresh clone or a shallow CI checkout run `git fetch --no-tags origin main:main` first or buf cannot resolve it.
+- `gen/` is committed on purpose (`README.md`, `CLAUDE.md`) — consumers (api, web, mobile, sdk-ts, agent-control, agent-runner, knowledge) import the generated Go/TypeScript/Python directly rather than regenerating. Editing anything under `gen/` by hand is a hard prohibition.
+- A push to `main` runs `publish-ts` and ships a canary npm package to GitHub Packages; a `v*` tag ships a real release. Merging to `main` is already a publish — there is no staging step after green CI.
+- Additive-first is the house rule for every change (`README.md`, `CLAUDE.md`): add a field, ship every client, wait for mobile to land, only then remove the old one. `buf breaking` only enforces the wire half; the "every client has shipped" half is discipline, not tooling.
+- `go.mod` pins `go 1.26`; the Go module only exists to let `gen/go` build and is otherwise untouched by this repo's own code (there are no `_test.go` files anywhere, so `go test ./...` in the map is a no-op).
 
 ## Verified
 
-`npx --yes @bufbuild/buf lint` (= `make lint`), `npx --yes @bufbuild/buf build`, `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` (= `make breaking`) — all passed. `make build` / `go build ./...` not run: no `go` on PATH here.
+`npx --yes @bufbuild/buf lint` and `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` (after `git fetch --no-tags origin main:main`) both passed. `make build`/`go test ./...` not run here (no Go toolchain in this sandbox).
