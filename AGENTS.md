@@ -1,11 +1,12 @@
-# Neural Knowledge by TANK · refreshed 2026-10-03 · c5e2e604e1c6
+# Neural Knowledge by TANK · refreshed 2026-10-10 · e52a377a71d9
 
-`contracts` is the single source of truth for every wire format in TANK: 22 Protobuf/Connect packages
+`contracts` is the single source of truth for every wire format in TANK: 27 Protobuf/Connect packages
 under `proto/tank/<domain>/v1/`, covering auth, workspaces, channels, messages, files, events, the
-realtime gateway, and the agent control plane. The generated Go, TypeScript and Python clients are
-built with buf and **committed** under `gen/`, so consumers import them instead of regenerating.
-Nothing here runs: it is a schema repository whose job is to change without breaking api, web, mobile,
-sdk-ts, agent-control, agent-runner or knowledge.
+realtime gateway, the agent control plane, and the Neuralboards/Neuralbooks/Neuralcanvas/security/
+remediation product surfaces. The generated Go, TypeScript and Python clients are built with buf and
+**committed** under `gen/`, so consumers import them instead of regenerating. Nothing here runs: it is
+a schema repository whose job is to change without breaking api, web, mobile, sdk-ts, agent-control,
+agent-runner or knowledge.
 
 ## Commands
 
@@ -17,13 +18,16 @@ sdk-ts, agent-control, agent-runner or knowledge.
 - `make clean` — drop the generated `tank` subtree in all three languages
 - `npm install && npm run build` in `gen/ts` — the tsc compile CI performs
 - `go test ./...` is listed in the map but there are no `_test.go` files in this repo
+- **`make` itself is not installed in the agent sandbox.** Every target above is one line; run the buf
+  invocation directly, e.g. `npx --yes @bufbuild/buf lint` instead of `make lint` (verified working here).
 
 Every `make` target shells out to `npx --yes @bufbuild/buf`; pass `BUF=buf` if a real binary is on PATH.
 
 ## Areas
 
 - `.` — build surface: `Makefile`, `buf.yaml`, `buf.gen.yaml`, `go.mod`, the committed `gen/` tree → `.neural/neurons/root.md`
-- `.github` — the single `ci.yml` workflow: checks on PRs, npm publishing on pushes → `.neural/neurons/github.md`
+- `.github` — `ci.yml` (lint/breaking/gen-staleness/build, npm publishing on push) and `security.yml`
+  (gitleaks secret scan, inlined because this repo is public) → `.neural/neurons/github.md`
 - `proto` — the schemas themselves, one package per domain → `.neural/neurons/proto.md`
 
 ## Rules
@@ -46,15 +50,21 @@ From `README.md`:
 From `buf.yaml`: lint is `STANDARD` with `PACKAGE_VERSION_SUFFIX` excepted; breaking is checked at
 `FILE` level, so moving a message between files is a break even when the wire is unchanged.
 
+From `proto/tank/remediation/v1/remediation.proto`'s header: the security registry and the
+remediation engine "must not be the same program" — a finding crosses that boundary one way only.
+
 ## Before changing anything
 
-- Edit `proto/`, never `gen/`. Run `make gen` and commit the regenerated files in the same change.
+- Edit `proto/`, never `gen/`. Run `make gen` (or the direct `buf generate`) and commit the
+  regenerated files in the same change.
 - Run `make check` before opening a PR; its last step fails if `gen/` is stale, and so does CI.
 - Run `make breaking` for anything that touches an existing field, message or file. On a fresh clone
   do `git fetch --no-tags origin main:main` first, or buf cannot resolve `.git#branch=main`.
 - Additive first: add a field, ship every consumer, then remove the old one in a later release.
 - A PR green on `ci.yml` is the bar. A push to `main` publishes a canary npm package; a `v*` tag
   publishes a release — so merging to `main` is already a publish.
+- `gen/ts/src/index.ts` is hand-maintained and lags the proto tree (14 of 27 domains); adding a domain
+  does not add it to the barrel automatically.
 
 ## Neural Knowledge
 
