@@ -1,11 +1,12 @@
-# Neural Knowledge by TANK · refreshed 2026-10-03 · c5e2e604e1c6
+# Neural Knowledge by TANK · refreshed 2026-10-10 · e52a377a71d9
 
-`contracts` is the single source of truth for every wire format in TANK: 22 Protobuf/Connect packages
+`contracts` is the single source of truth for every wire format in TANK: 27 Protobuf/Connect packages
 under `proto/tank/<domain>/v1/`, covering auth, workspaces, channels, messages, files, events, the
-realtime gateway, and the agent control plane. The generated Go, TypeScript and Python clients are
-built with buf and **committed** under `gen/`, so consumers import them instead of regenerating.
-Nothing here runs: it is a schema repository whose job is to change without breaking api, web, mobile,
-sdk-ts, agent-control, agent-runner or knowledge.
+realtime gateway, the agent control plane, Neuralboards, Neuralbooks, Neuralcanvas and the security
+registry/remediation split. The generated Go, TypeScript and Python clients are built with buf and
+**committed** under `gen/`, so consumers import them instead of regenerating. Nothing here runs: it is
+a schema repository whose job is to change without breaking api, web, mobile, sdk-ts, agent-control,
+agent-runner or knowledge.
 
 ## Commands
 
@@ -18,12 +19,16 @@ sdk-ts, agent-control, agent-runner or knowledge.
 - `npm install && npm run build` in `gen/ts` — the tsc compile CI performs
 - `go test ./...` is listed in the map but there are no `_test.go` files in this repo
 
-Every `make` target shells out to `npx --yes @bufbuild/buf`; pass `BUF=buf` if a real binary is on PATH.
+Neither `make` nor `go` is installed in the agent sandbox — every `make` target fails with
+`spawn make ENOENT` before running anything. Use the underlying buf commands directly:
+`npx --yes @bufbuild/buf lint|build|generate` and
+`npx --yes @bufbuild/buf breaking --against '.git#branch=main'`. Pass `BUF=buf` to `make` targets
+only where a real buf binary is actually on PATH.
 
 ## Areas
 
 - `.` — build surface: `Makefile`, `buf.yaml`, `buf.gen.yaml`, `go.mod`, the committed `gen/` tree → `.neural/neurons/root.md`
-- `.github` — the single `ci.yml` workflow: checks on PRs, npm publishing on pushes → `.neural/neurons/github.md`
+- `.github` — `ci.yml` (checks on PRs, npm publishing on pushes) and `security.yml` (gitleaks secret scan, inlined because this repo is public) → `.neural/neurons/github.md`
 - `proto` — the schemas themselves, one package per domain → `.neural/neurons/proto.md`
 
 ## Rules
@@ -46,10 +51,16 @@ From `README.md`:
 From `buf.yaml`: lint is `STANDARD` with `PACKAGE_VERSION_SUFFIX` excepted; breaking is checked at
 `FILE` level, so moving a message between files is a break even when the wire is unchanged.
 
+From `remediation.proto`'s header, a design rule as hard as any lint check: the security registry
+(what's true, what's wrong) and the remediation engine (what can run code) "must not be the same
+program" — a finding crosses that boundary, nothing wider does.
+
 ## Before changing anything
 
-- Edit `proto/`, never `gen/`. Run `make gen` and commit the regenerated files in the same change.
-- Run `make check` before opening a PR; its last step fails if `gen/` is stale, and so does CI.
+- Edit `proto/`, never `gen/`. Run `make gen` (or the `npx` buf command above) and commit the
+  regenerated files in the same change.
+- Run `make check`, or `lint`+`build`+`breaking` by hand, before opening a PR; `gen/` going stale
+  fails both locally and in CI.
 - Run `make breaking` for anything that touches an existing field, message or file. On a fresh clone
   do `git fetch --no-tags origin main:main` first, or buf cannot resolve `.git#branch=main`.
 - Additive first: add a field, ship every consumer, then remove the old one in a later release.
