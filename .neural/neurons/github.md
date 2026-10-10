@@ -1,20 +1,20 @@
 # Neurons · .github
 
-refreshed 2026-10-03 · c5e2e604e1c6
+refreshed 2026-10-10 · e52a377a71d9
 
-- `.github/workflows/ci.yml` is the only workflow in the repo. Two jobs: `check` (PRs, main, `v*` tags) and `publish-ts` (pushes only, `needs: check`).
-- CI calls `buf` directly from `bufbuild/buf-setup-action@v1`, never `make`. A change to the `Makefile` alone is therefore not exercised by CI — the two must be kept in step by hand.
-- The breaking check is the point of the whole file: `.github/workflows/ci.yml:31` says a wire break here "would be a production incident in web/mobile/agent-runner, so it is caught at the source". It runs only `if: github.event_name == 'pull_request'`.
-- Trap, and the reason the step has three lines instead of one: `actions/checkout` leaves a PR on a detached merge commit with no local `main`, so the step must `git fetch --no-tags origin main:main` before `buf breaking --against ".git#branch=main"` can read it. The same applies locally on a fresh clone.
-- `actions/checkout@v4` is pinned to `fetch-depth: 0` purely so that breaking check has history; shallowing it breaks the comparison, not the build.
-- The staleness gate is `buf generate` followed by `git diff --exit-code --stat gen/`, failing with `::error::gen/ is stale. Run 'make gen' and commit the result.` Regenerating with a different buf or plugin version than the pins in `buf.gen.yaml` will trip it.
-- The Go version is never written in the workflow: `actions/setup-go@v5` takes `go-version-file: go.mod`, so bumping Go means editing `go.mod`.
-- The TypeScript check is `npm install --no-audit --no-fund && npm run build` in `gen/ts` on node 24 — a tsc compile of the generated sources, no tests.
-- `publish-ts` versions without committing (`npm version --no-git-tag-version`): a `v*` tag publishes `${GITHUB_REF_NAME#v}` under dist-tag `latest`, a push to main publishes `0.0.0-canary.${GITHUB_SHA::12}` under `canary`. PRs never publish, because the job is gated on `github.event_name == 'push'`.
-- Publishing goes to GitHub Packages (`registry-url: https://npm.pkg.github.com`, `scope: "@tactical-agent-neural-knowledge"`, `npm publish --access restricted`) authenticated with `NODE_AUTH_TOKEN: ${{ github.token }}` — no external npm credential exists or is needed.
-- Permissions are least-privilege and deliberate: the workflow declares `contents: read` at the top, and only `publish-ts` adds `packages: write`.
-- `concurrency: group: ci-${{ github.ref }}` with `cancel-in-progress: true` — a second push to the same ref kills the first run, including a half-finished publish.
+- Two workflows now: `ci.yml` (lint/breaking/gen-current/build/tsc, unchanged in shape since the last refresh) and `security.yml`, added since — the secret scan, inlined rather than called as a reusable workflow.
+- `security.yml`'s own header comment explains why it is a full copy and not a `uses:` reference: this repo is **public**, the org's shared `workflows` repo is **private**, and GitHub refuses a reusable workflow from a private repo to a public caller before any job is even scheduled — that failure mode is a nought-second run with no job and no log, "red forever, scanning nothing, and indistinguishable from a gate that is working". Keep its rules in step with `workflows/.github/workflows/secret-scan.yml` by hand; nothing automated checks they still match.
+- `security.yml` runs gitleaks fetched as a pinned release binary (`VERSION: 8.30.1`), never the Action, because the Action asks orgs for a licence key. It always passes `--exit-code 0` and lets the `report` step decide pass/fail from `gitleaks.sarif`, specifically so a scanner crash can't be mistaken for "no secrets found" — and a *missing* sarif file is treated as a hard failure for the same reason.
+- `security.yml` triggers: PR (tree scan, `fetch-depth: 1`), push to main (tree scan), `workflow_dispatch`, and a weekly cron `17 6 * * 1` that does a **full history** scan (`fetch-depth: 0`, `gitleaks git .`) — a credential committed and reverted is still leaked in a public repo, so the tree-only scan on every push isn't enough on its own.
+- A real finding is never silenced by disabling the check — only by a dated entry in `.gitleaksignore` for a confirmed false positive; findings are redacted in the log/summary because the run log of a public repo is public too.
+- `ci.yml` calls `buf` and `npm`/`go` directly via setup actions, never `make` — a `Makefile`-only change is not exercised by CI; the two must be kept in step by hand.
+- The breaking check (`ci.yml`, PR-only) is the whole point of the `check` job: `git fetch --no-tags origin main:main` first, because `actions/checkout` leaves a PR on a detached merge commit with no local `main` ref for `buf breaking --against ".git#branch=main"` to read.
+- `actions/checkout@v4` uses `fetch-depth: 0` purely so the breaking check has history to diff against; shallowing it breaks the comparison, not the build.
+- `go-version-file: go.mod` means the Go version is never written in the workflow — bumping Go means editing `go.mod`, nothing in `.github/`.
+- `publish-ts` never commits a version bump (`npm version --no-git-tag-version`): a `v*` tag publishes `${GITHUB_REF_NAME#v}` as `latest`, a push to main publishes `0.0.0-canary.${GITHUB_SHA::12}` as `canary`; PRs never publish (`if: github.event_name == 'push'`). Auth is `NODE_AUTH_TOKEN: ${{ github.token }}` against GitHub Packages — no external npm credential involved.
+- Both workflows are least-privilege: `contents: read` at the top level; `packages: write` only on `publish-ts`, `security.yml` adds nothing beyond `contents: read`.
+- `concurrency: group: ci-${{ github.ref }}` with `cancel-in-progress: true` on `ci.yml` — a second push to the same ref kills the first run, including a half-finished publish. `security.yml` has no concurrency group of its own.
 
 ## Verified
 
-`npx --yes @bufbuild/buf lint` and `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` — the two checks this workflow runs that can be reproduced outside Actions; both passed. The workflow itself was not executed.
+`npx --yes @bufbuild/buf lint` and `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` — the two `ci.yml` checks reproducible outside Actions; both passed. Neither workflow, nor the gitleaks steps in `security.yml`, was executed here.
