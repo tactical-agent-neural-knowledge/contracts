@@ -1,30 +1,30 @@
-# Neural Knowledge by TANK · refreshed 2026-10-03 · c5e2e604e1c6
+# Neural Knowledge by TANK · refreshed 2026-10-10 · e52a377a71d9
 
-`contracts` is the single source of truth for every wire format in TANK: 22 Protobuf/Connect packages
+`contracts` is the single source of truth for every wire format in TANK: 27 Protobuf/Connect packages
 under `proto/tank/<domain>/v1/`, covering auth, workspaces, channels, messages, files, events, the
-realtime gateway, and the agent control plane. The generated Go, TypeScript and Python clients are
-built with buf and **committed** under `gen/`, so consumers import them instead of regenerating.
-Nothing here runs: it is a schema repository whose job is to change without breaking api, web, mobile,
-sdk-ts, agent-control, agent-runner or knowledge.
+realtime gateway, the agent control plane, and (added this refresh) Neuralboards, Neuralbooks,
+Neuralcanvas and the Neuralsecurity control/remediation pair. The generated Go, TypeScript and Python
+clients are built with buf and **committed** under `gen/`, so consumers import them instead of
+regenerating. Nothing here runs: it is a schema repository whose job is to change without breaking
+api, web, mobile, sdk-ts, agent-control, agent-runner or knowledge.
 
 ## Commands
 
-- `make gen` — regenerate `gen/go`, `gen/ts/src`, `gen/python` (`npx --yes @bufbuild/buf generate`)
-- `make lint` — `buf lint` (STANDARD rules, verified passing)
-- `make breaking` — `buf breaking --against '.git#branch=main'` (verified passing)
-- `make build` — `go build ./...` (no Go toolchain in the agent sandbox; CI runs it)
+- `npx --yes @bufbuild/buf lint` (= `make lint`) — STANDARD rules, verified passing
+- `npx --yes @bufbuild/buf build` — all 27 files compile, verified passing
+- `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` (= `make breaking`) — verified passing
+- `npx --yes @bufbuild/buf generate` (= `make gen`) — regenerate `gen/go`, `gen/ts/src`, `gen/python`
 - `make check` — everything CI runs: lint, gen, build, then fail if `gen/` is dirty
-- `make clean` — drop the generated `tank` subtree in all three languages
+- `make build` / `go build ./...` — no Go toolchain in the agent sandbox; CI runs it
+- `make` itself is not installed in this agent sandbox — run the `npx --yes @bufbuild/buf ...` commands above directly, not the `make` targets
 - `npm install && npm run build` in `gen/ts` — the tsc compile CI performs
 - `go test ./...` is listed in the map but there are no `_test.go` files in this repo
-
-Every `make` target shells out to `npx --yes @bufbuild/buf`; pass `BUF=buf` if a real binary is on PATH.
 
 ## Areas
 
 - `.` — build surface: `Makefile`, `buf.yaml`, `buf.gen.yaml`, `go.mod`, the committed `gen/` tree → `.neural/neurons/root.md`
-- `.github` — the single `ci.yml` workflow: checks on PRs, npm publishing on pushes → `.neural/neurons/github.md`
-- `proto` — the schemas themselves, one package per domain → `.neural/neurons/proto.md`
+- `.github` — `ci.yml` (lint/breaking/gen-staleness/build/tsc, then publish) and `security.yml` (inlined gitleaks secret scan) → `.neural/neurons/github.md`
+- `proto` — the 27 schemas, one package per domain → `.neural/neurons/proto.md`
 
 ## Rules
 
@@ -48,10 +48,9 @@ From `buf.yaml`: lint is `STANDARD` with `PACKAGE_VERSION_SUFFIX` excepted; brea
 
 ## Before changing anything
 
-- Edit `proto/`, never `gen/`. Run `make gen` and commit the regenerated files in the same change.
-- Run `make check` before opening a PR; its last step fails if `gen/` is stale, and so does CI.
-- Run `make breaking` for anything that touches an existing field, message or file. On a fresh clone
-  do `git fetch --no-tags origin main:main` first, or buf cannot resolve `.git#branch=main`.
+- Edit `proto/`, never `gen/`. Run `buf generate` (`make gen`) and commit the regenerated files in the same change.
+- Run the lint/build/breaking commands above before opening a PR; CI's gen-staleness step fails the same way if `gen/` is stale.
+- Run `buf breaking --against '.git#branch=main'` for anything that touches an existing field, message or file. On a fresh clone do `git fetch --no-tags origin main:main` first, or buf cannot resolve `.git#branch=main`.
 - Additive first: add a field, ship every consumer, then remove the old one in a later release.
 - A PR green on `ci.yml` is the bar. A push to `main` publishes a canary npm package; a `v*` tag
   publishes a release — so merging to `main` is already a publish.
