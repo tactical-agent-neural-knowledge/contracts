@@ -346,6 +346,64 @@ message SetTreadDeploymentRequest {
 }
 message SetTreadDeploymentResponse { TreadDeployment deployment = 1; }
 
+// Crew: a workspace's standing swarm of specialized agents, configured once per
+// workspace rather than per Tread the way TreadSettings is. Whoever can manage a
+// workspace's Switchboard can also shape its crew: which roles are on it and how
+// its resources split across the business right now.
+message CrewMember {
+  string id = 1;
+  string workspace_id = 2;
+  string role = 3;  // bookkeeping | boards | scheduling | code | comms | ... ; an open set
+  string label = 4; // a human name for this member, e.g. "Books"
+  bool enabled = 5;
+  google.protobuf.Timestamp added_at = 6;
+}
+
+// One business area's share of the crew's resources. Areas are open strings, not
+// an enum, because they are whatever the workspace calls its own parts of the
+// business; weights across all areas sum to 100.
+message CrewAllocation {
+  string area = 1;
+  int32 weight = 2; // 0..100
+}
+
+message CrewSettings {
+  repeated CrewAllocation allocation = 1; // how resources split across the business right now
+  int32 concurrent_runs = 2;              // crew-wide concurrency cap; 0 keeps the workspace default
+  double daily_usd = 3;                   // crew-wide daily ceiling; 0 keeps the workspace default
+  bool auto_accept_plans = 4;
+}
+
+message GetWorkspaceCrewRequest { string workspace_id = 1; }
+message GetWorkspaceCrewResponse {
+  repeated CrewMember members = 1;
+  CrewSettings settings = 2;
+  TreadMetrics metrics = 3; // same shape as the Switchboard's: spend and runs, workspace-wide
+  bool can_manage = 4;
+}
+
+// AddCrewMember brings one more specialized agent onto the workspace's crew.
+message AddCrewMemberRequest {
+  string workspace_id = 1;
+  string role = 2;
+  string label = 3;
+}
+message AddCrewMemberResponse { CrewMember member = 1; }
+
+// RemoveCrewMember takes one off. The run machinery underneath is unaffected:
+// this only changes who is standing by to be summoned.
+message RemoveCrewMemberRequest {
+  string workspace_id = 1;
+  string member_id = 2;
+}
+message RemoveCrewMemberResponse {}
+
+message SetCrewSettingsRequest {
+  string workspace_id = 1;
+  CrewSettings settings = 2;
+}
+message SetCrewSettingsResponse { CrewSettings settings = 1; }
+
 service AgentService {
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
   rpc StopRun(StopRunRequest) returns (StopRunResponse);
@@ -377,4 +435,12 @@ service AgentService {
   // The Tread's switchboard: metrics for members, settings for admins.
   rpc GetTreadSwitchboard(GetTreadSwitchboardRequest) returns (GetTreadSwitchboardResponse);
   rpc SetTreadSettings(SetTreadSettingsRequest) returns (SetTreadSettingsResponse);
+
+  // The workspace's crew: one swarm per workspace, reachable from any Tread with
+  // @crew. Unlike the switchboard above, membership and resource allocation are
+  // workspace-wide, not per-Tread.
+  rpc GetWorkspaceCrew(GetWorkspaceCrewRequest) returns (GetWorkspaceCrewResponse);
+  rpc AddCrewMember(AddCrewMemberRequest) returns (AddCrewMemberResponse);
+  rpc RemoveCrewMember(RemoveCrewMemberRequest) returns (RemoveCrewMemberResponse);
+  rpc SetCrewSettings(SetCrewSettingsRequest) returns (SetCrewSettingsResponse);
 }

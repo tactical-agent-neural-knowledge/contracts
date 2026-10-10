@@ -567,3 +567,99 @@ class SetTreadDeploymentResponse(_message.Message):
     DEPLOYMENT_FIELD_NUMBER: _ClassVar[int]
     deployment: TreadDeployment
     def __init__(self, deployment: _Optional[_Union[TreadDeployment, _Mapping]] = ...) -> None: ...
+
+class CrewMember(_message.Message):
+    __slots__ = ("id", "workspace_id", "role", "label", "enabled", "added_at")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    LABEL_FIELD_NUMBER: _ClassVar[int]
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    ADDED_AT_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    workspace_id: str
+    role: str
+    label: str
+    enabled: bool
+    added_at: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., role: _Optional[str] = ..., label: _Optional[str] = ..., enabled: bool = ..., added_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class CrewAllocation(_message.Message):
+    __slots__ = ("area", "weight")
+    AREA_FIELD_NUMBER: _ClassVar[int]
+    WEIGHT_FIELD_NUMBER: _ClassVar[int]
+    area: str
+    weight: int
+    def __init__(self, area: _Optional[str] = ..., weight: _Optional[int] = ...) -> None: ...
+
+class CrewSettings(_message.Message):
+    __slots__ = ("allocation", "concurrent_runs", "daily_usd", "auto_accept_plans")
+    ALLOCATION_FIELD_NUMBER: _ClassVar[int]
+    CONCURRENT_RUNS_FIELD_NUMBER: _ClassVar[int]
+    DAILY_USD_FIELD_NUMBER: _ClassVar[int]
+    AUTO_ACCEPT_PLANS_FIELD_NUMBER: _ClassVar[int]
+    allocation: _containers.RepeatedCompositeFieldContainer[CrewAllocation]
+    concurrent_runs: int
+    daily_usd: float
+    auto_accept_plans: bool
+    def __init__(self, allocation: _Optional[_Iterable[_Union[CrewAllocation, _Mapping]]] = ..., concurrent_runs: _Optional[int] = ..., daily_usd: _Optional[float] = ..., auto_accept_plans: bool = ...) -> None: ...
+
+class GetWorkspaceCrewRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class GetWorkspaceCrewResponse(_message.Message):
+    __slots__ = ("members", "settings", "metrics", "can_manage")
+    MEMBERS_FIELD_NUMBER: _ClassVar[int]
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    METRICS_FIELD_NUMBER: _ClassVar[int]
+    CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
+    members: _containers.RepeatedCompositeFieldContainer[CrewMember]
+    settings: CrewSettings
+    metrics: TreadMetrics
+    can_manage: bool
+    def __init__(self, members: _Optional[_Iterable[_Union[CrewMember, _Mapping]]] = ..., settings: _Optional[_Union[CrewSettings, _Mapping]] = ..., metrics: _Optional[_Union[TreadMetrics, _Mapping]] = ..., can_manage: bool = ...) -> None: ...
+
+class AddCrewMemberRequest(_message.Message):
+    __slots__ = ("workspace_id", "role", "label")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    LABEL_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    role: str
+    label: str
+    def __init__(self, workspace_id: _Optional[str] = ..., role: _Optional[str] = ..., label: _Optional[str] = ...) -> None: ...
+
+class AddCrewMemberResponse(_message.Message):
+    __slots__ = ("member",)
+    MEMBER_FIELD_NUMBER: _ClassVar[int]
+    member: CrewMember
+    def __init__(self, member: _Optional[_Union[CrewMember, _Mapping]] = ...) -> None: ...
+
+class RemoveCrewMemberRequest(_message.Message):
+    __slots__ = ("workspace_id", "member_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    MEMBER_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    member_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., member_id: _Optional[str] = ...) -> None: ...
+
+class RemoveCrewMemberResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class SetCrewSettingsRequest(_message.Message):
+    __slots__ = ("workspace_id", "settings")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    settings: CrewSettings
+    def __init__(self, workspace_id: _Optional[str] = ..., settings: _Optional[_Union[CrewSettings, _Mapping]] = ...) -> None: ...
+
+class SetCrewSettingsResponse(_message.Message):
+    __slots__ = ("settings",)
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    settings: CrewSettings
+    def __init__(self, settings: _Optional[_Union[CrewSettings, _Mapping]] = ...) -> None: ...

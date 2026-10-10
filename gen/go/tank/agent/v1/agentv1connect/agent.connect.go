@@ -87,6 +87,18 @@ const (
 	// AgentServiceSetTreadSettingsProcedure is the fully-qualified name of the AgentService's
 	// SetTreadSettings RPC.
 	AgentServiceSetTreadSettingsProcedure = "/tank.agent.v1.AgentService/SetTreadSettings"
+	// AgentServiceGetWorkspaceCrewProcedure is the fully-qualified name of the AgentService's
+	// GetWorkspaceCrew RPC.
+	AgentServiceGetWorkspaceCrewProcedure = "/tank.agent.v1.AgentService/GetWorkspaceCrew"
+	// AgentServiceAddCrewMemberProcedure is the fully-qualified name of the AgentService's
+	// AddCrewMember RPC.
+	AgentServiceAddCrewMemberProcedure = "/tank.agent.v1.AgentService/AddCrewMember"
+	// AgentServiceRemoveCrewMemberProcedure is the fully-qualified name of the AgentService's
+	// RemoveCrewMember RPC.
+	AgentServiceRemoveCrewMemberProcedure = "/tank.agent.v1.AgentService/RemoveCrewMember"
+	// AgentServiceSetCrewSettingsProcedure is the fully-qualified name of the AgentService's
+	// SetCrewSettings RPC.
+	AgentServiceSetCrewSettingsProcedure = "/tank.agent.v1.AgentService/SetCrewSettings"
 )
 
 // AgentServiceClient is a client for the tank.agent.v1.AgentService service.
@@ -120,6 +132,13 @@ type AgentServiceClient interface {
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
+	// The workspace's crew: one swarm per workspace, reachable from any Tread with
+	// @crew. Unlike the switchboard above, membership and resource allocation are
+	// workspace-wide, not per-Tread.
+	GetWorkspaceCrew(context.Context, *connect.Request[v1.GetWorkspaceCrewRequest]) (*connect.Response[v1.GetWorkspaceCrewResponse], error)
+	AddCrewMember(context.Context, *connect.Request[v1.AddCrewMemberRequest]) (*connect.Response[v1.AddCrewMemberResponse], error)
+	RemoveCrewMember(context.Context, *connect.Request[v1.RemoveCrewMemberRequest]) (*connect.Response[v1.RemoveCrewMemberResponse], error)
+	SetCrewSettings(context.Context, *connect.Request[v1.SetCrewSettingsRequest]) (*connect.Response[v1.SetCrewSettingsResponse], error)
 }
 
 // NewAgentServiceClient constructs a client for the tank.agent.v1.AgentService service. By default,
@@ -259,6 +278,30 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("SetTreadSettings")),
 			connect.WithClientOptions(opts...),
 		),
+		getWorkspaceCrew: connect.NewClient[v1.GetWorkspaceCrewRequest, v1.GetWorkspaceCrewResponse](
+			httpClient,
+			baseURL+AgentServiceGetWorkspaceCrewProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("GetWorkspaceCrew")),
+			connect.WithClientOptions(opts...),
+		),
+		addCrewMember: connect.NewClient[v1.AddCrewMemberRequest, v1.AddCrewMemberResponse](
+			httpClient,
+			baseURL+AgentServiceAddCrewMemberProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("AddCrewMember")),
+			connect.WithClientOptions(opts...),
+		),
+		removeCrewMember: connect.NewClient[v1.RemoveCrewMemberRequest, v1.RemoveCrewMemberResponse](
+			httpClient,
+			baseURL+AgentServiceRemoveCrewMemberProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("RemoveCrewMember")),
+			connect.WithClientOptions(opts...),
+		),
+		setCrewSettings: connect.NewClient[v1.SetCrewSettingsRequest, v1.SetCrewSettingsResponse](
+			httpClient,
+			baseURL+AgentServiceSetCrewSettingsProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("SetCrewSettings")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -285,6 +328,10 @@ type agentServiceClient struct {
 	listRepoPreviewSetups *connect.Client[v1.ListRepoPreviewSetupsRequest, v1.ListRepoPreviewSetupsResponse]
 	getTreadSwitchboard   *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
 	setTreadSettings      *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
+	getWorkspaceCrew      *connect.Client[v1.GetWorkspaceCrewRequest, v1.GetWorkspaceCrewResponse]
+	addCrewMember         *connect.Client[v1.AddCrewMemberRequest, v1.AddCrewMemberResponse]
+	removeCrewMember      *connect.Client[v1.RemoveCrewMemberRequest, v1.RemoveCrewMemberResponse]
+	setCrewSettings       *connect.Client[v1.SetCrewSettingsRequest, v1.SetCrewSettingsResponse]
 }
 
 // StartRun calls tank.agent.v1.AgentService.StartRun.
@@ -392,6 +439,26 @@ func (c *agentServiceClient) SetTreadSettings(ctx context.Context, req *connect.
 	return c.setTreadSettings.CallUnary(ctx, req)
 }
 
+// GetWorkspaceCrew calls tank.agent.v1.AgentService.GetWorkspaceCrew.
+func (c *agentServiceClient) GetWorkspaceCrew(ctx context.Context, req *connect.Request[v1.GetWorkspaceCrewRequest]) (*connect.Response[v1.GetWorkspaceCrewResponse], error) {
+	return c.getWorkspaceCrew.CallUnary(ctx, req)
+}
+
+// AddCrewMember calls tank.agent.v1.AgentService.AddCrewMember.
+func (c *agentServiceClient) AddCrewMember(ctx context.Context, req *connect.Request[v1.AddCrewMemberRequest]) (*connect.Response[v1.AddCrewMemberResponse], error) {
+	return c.addCrewMember.CallUnary(ctx, req)
+}
+
+// RemoveCrewMember calls tank.agent.v1.AgentService.RemoveCrewMember.
+func (c *agentServiceClient) RemoveCrewMember(ctx context.Context, req *connect.Request[v1.RemoveCrewMemberRequest]) (*connect.Response[v1.RemoveCrewMemberResponse], error) {
+	return c.removeCrewMember.CallUnary(ctx, req)
+}
+
+// SetCrewSettings calls tank.agent.v1.AgentService.SetCrewSettings.
+func (c *agentServiceClient) SetCrewSettings(ctx context.Context, req *connect.Request[v1.SetCrewSettingsRequest]) (*connect.Response[v1.SetCrewSettingsResponse], error) {
+	return c.setCrewSettings.CallUnary(ctx, req)
+}
+
 // AgentServiceHandler is an implementation of the tank.agent.v1.AgentService service.
 type AgentServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
@@ -423,6 +490,13 @@ type AgentServiceHandler interface {
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
+	// The workspace's crew: one swarm per workspace, reachable from any Tread with
+	// @crew. Unlike the switchboard above, membership and resource allocation are
+	// workspace-wide, not per-Tread.
+	GetWorkspaceCrew(context.Context, *connect.Request[v1.GetWorkspaceCrewRequest]) (*connect.Response[v1.GetWorkspaceCrewResponse], error)
+	AddCrewMember(context.Context, *connect.Request[v1.AddCrewMemberRequest]) (*connect.Response[v1.AddCrewMemberResponse], error)
+	RemoveCrewMember(context.Context, *connect.Request[v1.RemoveCrewMemberRequest]) (*connect.Response[v1.RemoveCrewMemberResponse], error)
+	SetCrewSettings(context.Context, *connect.Request[v1.SetCrewSettingsRequest]) (*connect.Response[v1.SetCrewSettingsResponse], error)
 }
 
 // NewAgentServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -558,6 +632,30 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("SetTreadSettings")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceGetWorkspaceCrewHandler := connect.NewUnaryHandler(
+		AgentServiceGetWorkspaceCrewProcedure,
+		svc.GetWorkspaceCrew,
+		connect.WithSchema(agentServiceMethods.ByName("GetWorkspaceCrew")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceAddCrewMemberHandler := connect.NewUnaryHandler(
+		AgentServiceAddCrewMemberProcedure,
+		svc.AddCrewMember,
+		connect.WithSchema(agentServiceMethods.ByName("AddCrewMember")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceRemoveCrewMemberHandler := connect.NewUnaryHandler(
+		AgentServiceRemoveCrewMemberProcedure,
+		svc.RemoveCrewMember,
+		connect.WithSchema(agentServiceMethods.ByName("RemoveCrewMember")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceSetCrewSettingsHandler := connect.NewUnaryHandler(
+		AgentServiceSetCrewSettingsProcedure,
+		svc.SetCrewSettings,
+		connect.WithSchema(agentServiceMethods.ByName("SetCrewSettings")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agent.v1.AgentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AgentServiceStartRunProcedure:
@@ -602,6 +700,14 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceGetTreadSwitchboardHandler.ServeHTTP(w, r)
 		case AgentServiceSetTreadSettingsProcedure:
 			agentServiceSetTreadSettingsHandler.ServeHTTP(w, r)
+		case AgentServiceGetWorkspaceCrewProcedure:
+			agentServiceGetWorkspaceCrewHandler.ServeHTTP(w, r)
+		case AgentServiceAddCrewMemberProcedure:
+			agentServiceAddCrewMemberHandler.ServeHTTP(w, r)
+		case AgentServiceRemoveCrewMemberProcedure:
+			agentServiceRemoveCrewMemberHandler.ServeHTTP(w, r)
+		case AgentServiceSetCrewSettingsProcedure:
+			agentServiceSetCrewSettingsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -693,4 +799,20 @@ func (UnimplementedAgentServiceHandler) GetTreadSwitchboard(context.Context, *co
 
 func (UnimplementedAgentServiceHandler) SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetTreadSettings is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) GetWorkspaceCrew(context.Context, *connect.Request[v1.GetWorkspaceCrewRequest]) (*connect.Response[v1.GetWorkspaceCrewResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.GetWorkspaceCrew is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) AddCrewMember(context.Context, *connect.Request[v1.AddCrewMemberRequest]) (*connect.Response[v1.AddCrewMemberResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.AddCrewMember is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) RemoveCrewMember(context.Context, *connect.Request[v1.RemoveCrewMemberRequest]) (*connect.Response[v1.RemoveCrewMemberResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.RemoveCrewMember is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) SetCrewSettings(context.Context, *connect.Request[v1.SetCrewSettingsRequest]) (*connect.Response[v1.SetCrewSettingsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetCrewSettings is not implemented"))
 }
