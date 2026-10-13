@@ -24,3 +24,7 @@ Consumers: Go module `github.com/tactical-agent-neural-knowledge/contracts/gen/g
 
 `make check` runs what CI runs. Changes are additive-first: add fields, ship every client, wait for the mobile build to
 land, then remove. `buf breaking` enforces the wire half.
+
+## Security
+
+Every push to main and every pull request against this repository is scanned by Neuralsecurity from inside a TANK sandbox: secrets and fixable critical or high dependency vulnerabilities. A clean scan is silent; a finding is a comment on the pull request.
