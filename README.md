@@ -28,3 +28,8 @@ land, then remove. `buf breaking` enforces the wire half.
 ## Security
 
 Every push to main and every pull request against this repository is scanned by Neuralsecurity from inside a TANK sandbox: secrets and fixable critical or high dependency vulnerabilities. The verdict is the `neuralsecurity` check on the commit; a finding is also explained where the change is.
+
+Scans run from inside a sandbox whose only way out is the egress proxy.
+x
+y
+z
