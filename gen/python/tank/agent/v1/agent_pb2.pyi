@@ -518,6 +518,38 @@ class UnbindRepoResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class TreadSecurity(_message.Message):
+    __slots__ = ("channel_id", "repo", "state", "secrets", "vulns_critical", "vulns_high", "sha", "scanned_at")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    SECRETS_FIELD_NUMBER: _ClassVar[int]
+    VULNS_CRITICAL_FIELD_NUMBER: _ClassVar[int]
+    VULNS_HIGH_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    SCANNED_AT_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    repo: str
+    state: str
+    secrets: int
+    vulns_critical: int
+    vulns_high: int
+    sha: str
+    scanned_at: _timestamp_pb2.Timestamp
+    def __init__(self, channel_id: _Optional[str] = ..., repo: _Optional[str] = ..., state: _Optional[str] = ..., secrets: _Optional[int] = ..., vulns_critical: _Optional[int] = ..., vulns_high: _Optional[int] = ..., sha: _Optional[str] = ..., scanned_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ListTreadSecurityRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class ListTreadSecurityResponse(_message.Message):
+    __slots__ = ("treads",)
+    TREADS_FIELD_NUMBER: _ClassVar[int]
+    treads: _containers.RepeatedCompositeFieldContainer[TreadSecurity]
+    def __init__(self, treads: _Optional[_Iterable[_Union[TreadSecurity, _Mapping]]] = ...) -> None: ...
+
 class TreadDeployment(_message.Message):
     __slots__ = ("slug", "repo", "url", "awake", "updated_at", "managed", "workflow_present", "image_tag", "workflow_snippet")
     SLUG_FIELD_NUMBER: _ClassVar[int]

@@ -87,6 +87,9 @@ const (
 	// AgentServiceSetTreadSettingsProcedure is the fully-qualified name of the AgentService's
 	// SetTreadSettings RPC.
 	AgentServiceSetTreadSettingsProcedure = "/tank.agent.v1.AgentService/SetTreadSettings"
+	// AgentServiceListTreadSecurityProcedure is the fully-qualified name of the AgentService's
+	// ListTreadSecurity RPC.
+	AgentServiceListTreadSecurityProcedure = "/tank.agent.v1.AgentService/ListTreadSecurity"
 )
 
 // AgentServiceClient is a client for the tank.agent.v1.AgentService service.
@@ -120,6 +123,8 @@ type AgentServiceClient interface {
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
+	// The security state of every Tread in the workspace that is connected to a repository.
+	ListTreadSecurity(context.Context, *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error)
 }
 
 // NewAgentServiceClient constructs a client for the tank.agent.v1.AgentService service. By default,
@@ -259,6 +264,12 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("SetTreadSettings")),
 			connect.WithClientOptions(opts...),
 		),
+		listTreadSecurity: connect.NewClient[v1.ListTreadSecurityRequest, v1.ListTreadSecurityResponse](
+			httpClient,
+			baseURL+AgentServiceListTreadSecurityProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("ListTreadSecurity")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -285,6 +296,7 @@ type agentServiceClient struct {
 	listRepoPreviewSetups *connect.Client[v1.ListRepoPreviewSetupsRequest, v1.ListRepoPreviewSetupsResponse]
 	getTreadSwitchboard   *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
 	setTreadSettings      *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
+	listTreadSecurity     *connect.Client[v1.ListTreadSecurityRequest, v1.ListTreadSecurityResponse]
 }
 
 // StartRun calls tank.agent.v1.AgentService.StartRun.
@@ -392,6 +404,11 @@ func (c *agentServiceClient) SetTreadSettings(ctx context.Context, req *connect.
 	return c.setTreadSettings.CallUnary(ctx, req)
 }
 
+// ListTreadSecurity calls tank.agent.v1.AgentService.ListTreadSecurity.
+func (c *agentServiceClient) ListTreadSecurity(ctx context.Context, req *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error) {
+	return c.listTreadSecurity.CallUnary(ctx, req)
+}
+
 // AgentServiceHandler is an implementation of the tank.agent.v1.AgentService service.
 type AgentServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
@@ -423,6 +440,8 @@ type AgentServiceHandler interface {
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
+	// The security state of every Tread in the workspace that is connected to a repository.
+	ListTreadSecurity(context.Context, *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error)
 }
 
 // NewAgentServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -558,6 +577,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("SetTreadSettings")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceListTreadSecurityHandler := connect.NewUnaryHandler(
+		AgentServiceListTreadSecurityProcedure,
+		svc.ListTreadSecurity,
+		connect.WithSchema(agentServiceMethods.ByName("ListTreadSecurity")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agent.v1.AgentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AgentServiceStartRunProcedure:
@@ -602,6 +627,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceGetTreadSwitchboardHandler.ServeHTTP(w, r)
 		case AgentServiceSetTreadSettingsProcedure:
 			agentServiceSetTreadSettingsHandler.ServeHTTP(w, r)
+		case AgentServiceListTreadSecurityProcedure:
+			agentServiceListTreadSecurityHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -693,4 +720,8 @@ func (UnimplementedAgentServiceHandler) GetTreadSwitchboard(context.Context, *co
 
 func (UnimplementedAgentServiceHandler) SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetTreadSettings is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) ListTreadSecurity(context.Context, *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.ListTreadSecurity is not implemented"))
 }
