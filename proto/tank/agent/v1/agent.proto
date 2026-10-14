@@ -270,6 +270,15 @@ message TreadSettings {
   // Whether runs in this Tread read the repository's Neural Knowledge and record what
   // they learn. On by default; the server always sets it.
   bool read_neural_knowledge = 7;
+  // Whether TANK may approve and merge the pull requests it opens in this Tread's
+  // repositories. Off, a pull request is a proposal and a person merges it; on, the
+  // Tread decides how: pull_requests "merge_when_green" merges once the checks pass,
+  // "review" asks for an approval in the thread and merges on it.
+  bool merge_allowed = 8;
+  // When a pull request waits on a person (merge_allowed off, or pull_requests
+  // "review"): mention pr_reviewer_ids, or the person who asked for the run when the
+  // list is empty, so somebody hears about it. Off, the card is posted and waits.
+  bool notify_reviewers = 9;
 }
 message HourBucket {
   google.protobuf.Timestamp hour = 1;
