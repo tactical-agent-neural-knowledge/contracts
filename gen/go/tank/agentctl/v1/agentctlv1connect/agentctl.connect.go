@@ -96,6 +96,15 @@ const (
 	// RunnerServiceBooksReportProcedure is the fully-qualified name of the RunnerService's BooksReport
 	// RPC.
 	RunnerServiceBooksReportProcedure = "/tank.agentctl.v1.RunnerService/BooksReport"
+	// RunnerServiceSocialAccountsProcedure is the fully-qualified name of the RunnerService's
+	// SocialAccounts RPC.
+	RunnerServiceSocialAccountsProcedure = "/tank.agentctl.v1.RunnerService/SocialAccounts"
+	// RunnerServiceSocialCreatePostProcedure is the fully-qualified name of the RunnerService's
+	// SocialCreatePost RPC.
+	RunnerServiceSocialCreatePostProcedure = "/tank.agentctl.v1.RunnerService/SocialCreatePost"
+	// RunnerServiceSocialPublishPostProcedure is the fully-qualified name of the RunnerService's
+	// SocialPublishPost RPC.
+	RunnerServiceSocialPublishPostProcedure = "/tank.agentctl.v1.RunnerService/SocialPublishPost"
 	// RunnerServiceWriteUpThreadProcedure is the fully-qualified name of the RunnerService's
 	// WriteUpThread RPC.
 	RunnerServiceWriteUpThreadProcedure = "/tank.agentctl.v1.RunnerService/WriteUpThread"
@@ -233,6 +242,9 @@ type RunnerServiceClient interface {
 	BooksRecordExpense(context.Context, *connect.Request[v1.BooksRecordExpenseRequest]) (*connect.Response[v1.BooksRecordExpenseResponse], error)
 	BooksRecordPayment(context.Context, *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error)
 	BooksReport(context.Context, *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error)
+	SocialAccounts(context.Context, *connect.Request[v1.SocialAccountsRequest]) (*connect.Response[v1.SocialAccountsResponse], error)
+	SocialCreatePost(context.Context, *connect.Request[v1.SocialCreatePostRequest]) (*connect.Response[v1.SocialCreatePostResponse], error)
+	SocialPublishPost(context.Context, *connect.Request[v1.SocialPublishPostRequest]) (*connect.Response[v1.SocialPublishPostResponse], error)
 	WriteUpThread(context.Context, *connect.Request[v1.WriteUpThreadRequest]) (*connect.Response[v1.WriteUpThreadResponse], error)
 	ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error)
 	AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error)
@@ -393,6 +405,24 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("BooksReport")),
 			connect.WithClientOptions(opts...),
 		),
+		socialAccounts: connect.NewClient[v1.SocialAccountsRequest, v1.SocialAccountsResponse](
+			httpClient,
+			baseURL+RunnerServiceSocialAccountsProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("SocialAccounts")),
+			connect.WithClientOptions(opts...),
+		),
+		socialCreatePost: connect.NewClient[v1.SocialCreatePostRequest, v1.SocialCreatePostResponse](
+			httpClient,
+			baseURL+RunnerServiceSocialCreatePostProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("SocialCreatePost")),
+			connect.WithClientOptions(opts...),
+		),
+		socialPublishPost: connect.NewClient[v1.SocialPublishPostRequest, v1.SocialPublishPostResponse](
+			httpClient,
+			baseURL+RunnerServiceSocialPublishPostProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("SocialPublishPost")),
+			connect.WithClientOptions(opts...),
+		),
 		writeUpThread: connect.NewClient[v1.WriteUpThreadRequest, v1.WriteUpThreadResponse](
 			httpClient,
 			baseURL+RunnerServiceWriteUpThreadProcedure,
@@ -533,6 +563,9 @@ type runnerServiceClient struct {
 	booksRecordExpense       *connect.Client[v1.BooksRecordExpenseRequest, v1.BooksRecordExpenseResponse]
 	booksRecordPayment       *connect.Client[v1.BooksRecordPaymentRequest, v1.BooksRecordPaymentResponse]
 	booksReport              *connect.Client[v1.BooksReportRequest, v1.BooksReportResponse]
+	socialAccounts           *connect.Client[v1.SocialAccountsRequest, v1.SocialAccountsResponse]
+	socialCreatePost         *connect.Client[v1.SocialCreatePostRequest, v1.SocialCreatePostResponse]
+	socialPublishPost        *connect.Client[v1.SocialPublishPostRequest, v1.SocialPublishPostResponse]
 	writeUpThread            *connect.Client[v1.WriteUpThreadRequest, v1.WriteUpThreadResponse]
 	readCanvas               *connect.Client[v1.ReadCanvasRequest, v1.ReadCanvasResponse]
 	askCanvas                *connect.Client[v1.AskCanvasRequest, v1.AskCanvasResponse]
@@ -659,6 +692,21 @@ func (c *runnerServiceClient) BooksReport(ctx context.Context, req *connect.Requ
 	return c.booksReport.CallUnary(ctx, req)
 }
 
+// SocialAccounts calls tank.agentctl.v1.RunnerService.SocialAccounts.
+func (c *runnerServiceClient) SocialAccounts(ctx context.Context, req *connect.Request[v1.SocialAccountsRequest]) (*connect.Response[v1.SocialAccountsResponse], error) {
+	return c.socialAccounts.CallUnary(ctx, req)
+}
+
+// SocialCreatePost calls tank.agentctl.v1.RunnerService.SocialCreatePost.
+func (c *runnerServiceClient) SocialCreatePost(ctx context.Context, req *connect.Request[v1.SocialCreatePostRequest]) (*connect.Response[v1.SocialCreatePostResponse], error) {
+	return c.socialCreatePost.CallUnary(ctx, req)
+}
+
+// SocialPublishPost calls tank.agentctl.v1.RunnerService.SocialPublishPost.
+func (c *runnerServiceClient) SocialPublishPost(ctx context.Context, req *connect.Request[v1.SocialPublishPostRequest]) (*connect.Response[v1.SocialPublishPostResponse], error) {
+	return c.socialPublishPost.CallUnary(ctx, req)
+}
+
 // WriteUpThread calls tank.agentctl.v1.RunnerService.WriteUpThread.
 func (c *runnerServiceClient) WriteUpThread(ctx context.Context, req *connect.Request[v1.WriteUpThreadRequest]) (*connect.Response[v1.WriteUpThreadResponse], error) {
 	return c.writeUpThread.CallUnary(ctx, req)
@@ -777,6 +825,9 @@ type RunnerServiceHandler interface {
 	BooksRecordExpense(context.Context, *connect.Request[v1.BooksRecordExpenseRequest]) (*connect.Response[v1.BooksRecordExpenseResponse], error)
 	BooksRecordPayment(context.Context, *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error)
 	BooksReport(context.Context, *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error)
+	SocialAccounts(context.Context, *connect.Request[v1.SocialAccountsRequest]) (*connect.Response[v1.SocialAccountsResponse], error)
+	SocialCreatePost(context.Context, *connect.Request[v1.SocialCreatePostRequest]) (*connect.Response[v1.SocialCreatePostResponse], error)
+	SocialPublishPost(context.Context, *connect.Request[v1.SocialPublishPostRequest]) (*connect.Response[v1.SocialPublishPostResponse], error)
 	WriteUpThread(context.Context, *connect.Request[v1.WriteUpThreadRequest]) (*connect.Response[v1.WriteUpThreadResponse], error)
 	ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error)
 	AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error)
@@ -931,6 +982,24 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceBooksReportProcedure,
 		svc.BooksReport,
 		connect.WithSchema(runnerServiceMethods.ByName("BooksReport")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceSocialAccountsHandler := connect.NewUnaryHandler(
+		RunnerServiceSocialAccountsProcedure,
+		svc.SocialAccounts,
+		connect.WithSchema(runnerServiceMethods.ByName("SocialAccounts")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceSocialCreatePostHandler := connect.NewUnaryHandler(
+		RunnerServiceSocialCreatePostProcedure,
+		svc.SocialCreatePost,
+		connect.WithSchema(runnerServiceMethods.ByName("SocialCreatePost")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceSocialPublishPostHandler := connect.NewUnaryHandler(
+		RunnerServiceSocialPublishPostProcedure,
+		svc.SocialPublishPost,
+		connect.WithSchema(runnerServiceMethods.ByName("SocialPublishPost")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServiceWriteUpThreadHandler := connect.NewUnaryHandler(
@@ -1091,6 +1160,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceBooksRecordPaymentHandler.ServeHTTP(w, r)
 		case RunnerServiceBooksReportProcedure:
 			runnerServiceBooksReportHandler.ServeHTTP(w, r)
+		case RunnerServiceSocialAccountsProcedure:
+			runnerServiceSocialAccountsHandler.ServeHTTP(w, r)
+		case RunnerServiceSocialCreatePostProcedure:
+			runnerServiceSocialCreatePostHandler.ServeHTTP(w, r)
+		case RunnerServiceSocialPublishPostProcedure:
+			runnerServiceSocialPublishPostHandler.ServeHTTP(w, r)
 		case RunnerServiceWriteUpThreadProcedure:
 			runnerServiceWriteUpThreadHandler.ServeHTTP(w, r)
 		case RunnerServiceReadCanvasProcedure:
@@ -1220,6 +1295,18 @@ func (UnimplementedRunnerServiceHandler) BooksRecordPayment(context.Context, *co
 
 func (UnimplementedRunnerServiceHandler) BooksReport(context.Context, *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BooksReport is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) SocialAccounts(context.Context, *connect.Request[v1.SocialAccountsRequest]) (*connect.Response[v1.SocialAccountsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.SocialAccounts is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) SocialCreatePost(context.Context, *connect.Request[v1.SocialCreatePostRequest]) (*connect.Response[v1.SocialCreatePostResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.SocialCreatePost is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) SocialPublishPost(context.Context, *connect.Request[v1.SocialPublishPostRequest]) (*connect.Response[v1.SocialPublishPostResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.SocialPublishPost is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) WriteUpThread(context.Context, *connect.Request[v1.WriteUpThreadRequest]) (*connect.Response[v1.WriteUpThreadResponse], error) {

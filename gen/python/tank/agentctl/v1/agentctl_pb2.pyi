@@ -5,6 +5,7 @@ from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
 from tank.board.v1 import board_pb2 as _board_pb2
 from tank.books.v1 import books_pb2 as _books_pb2
 from tank.canvas.v1 import canvas_pb2 as _canvas_pb2
+from tank.social.v1 import social_pb2 as _social_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
@@ -563,6 +564,52 @@ class BooksReportRequest(_message.Message):
     PERIOD_FIELD_NUMBER: _ClassVar[int]
     period: str
     def __init__(self, period: _Optional[str] = ...) -> None: ...
+
+class SocialAccountsRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class SocialAccountsResponse(_message.Message):
+    __slots__ = ("enabled", "review_required", "accounts", "voice")
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    REVIEW_REQUIRED_FIELD_NUMBER: _ClassVar[int]
+    ACCOUNTS_FIELD_NUMBER: _ClassVar[int]
+    VOICE_FIELD_NUMBER: _ClassVar[int]
+    enabled: bool
+    review_required: bool
+    accounts: _containers.RepeatedCompositeFieldContainer[_social_pb2.Account]
+    voice: str
+    def __init__(self, enabled: bool = ..., review_required: bool = ..., accounts: _Optional[_Iterable[_Union[_social_pb2.Account, _Mapping]]] = ..., voice: _Optional[str] = ...) -> None: ...
+
+class SocialCreatePostRequest(_message.Message):
+    __slots__ = ("platform", "text", "file_ids")
+    PLATFORM_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    FILE_IDS_FIELD_NUMBER: _ClassVar[int]
+    platform: _social_pb2.Platform
+    text: str
+    file_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, platform: _Optional[_Union[_social_pb2.Platform, str]] = ..., text: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class SocialCreatePostResponse(_message.Message):
+    __slots__ = ("post", "needs_review")
+    POST_FIELD_NUMBER: _ClassVar[int]
+    NEEDS_REVIEW_FIELD_NUMBER: _ClassVar[int]
+    post: _social_pb2.Post
+    needs_review: bool
+    def __init__(self, post: _Optional[_Union[_social_pb2.Post, _Mapping]] = ..., needs_review: bool = ...) -> None: ...
+
+class SocialPublishPostRequest(_message.Message):
+    __slots__ = ("post_id",)
+    POST_ID_FIELD_NUMBER: _ClassVar[int]
+    post_id: str
+    def __init__(self, post_id: _Optional[str] = ...) -> None: ...
+
+class SocialPublishPostResponse(_message.Message):
+    __slots__ = ("post",)
+    POST_FIELD_NUMBER: _ClassVar[int]
+    post: _social_pb2.Post
+    def __init__(self, post: _Optional[_Union[_social_pb2.Post, _Mapping]] = ...) -> None: ...
 
 class WriteUpThreadRequest(_message.Message):
     __slots__ = ("title",)

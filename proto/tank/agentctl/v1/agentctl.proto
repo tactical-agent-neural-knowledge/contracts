@@ -9,6 +9,7 @@ import "tank/blocks/v1/blocks.proto";
 import "tank/board/v1/board.proto";
 import "tank/books/v1/books.proto";
 import "tank/canvas/v1/canvas.proto";
+import "tank/social/v1/social.proto";
 
 // Runner <-> control-plane contract. The in-sandbox agent runner talks only to
 // agent-control (never to the messaging core directly): every thread post, card
@@ -351,6 +352,26 @@ message BooksRecordPaymentResponse { tank.books.v1.Invoice invoice = 1; }
 message BooksReportRequest {
   string period = 1;               // this_month | last_month | this_quarter | this_year | last_30_days
 }
+// Flare from the thread. The run posts as the workspace: the same service a
+// person uses from the settings page, with the same checks.
+message SocialAccountsRequest {}
+message SocialAccountsResponse {
+  bool enabled = 1;                              // false: say so and stop; nothing else is set
+  bool review_required = 2;                      // true: the post is a draft; ask for a go, then social_publish
+  repeated tank.social.v1.Account accounts = 3;
+  string voice = 4;
+}
+message SocialCreatePostRequest {
+  tank.social.v1.Platform platform = 1;
+  string text = 2;
+  repeated string file_ids = 3;                  // from list_attachments; Instagram needs one
+}
+message SocialCreatePostResponse {
+  tank.social.v1.Post post = 1;
+  bool needs_review = 2;                         // the post is a draft until social_publish
+}
+message SocialPublishPostRequest { string post_id = 1; }
+message SocialPublishPostResponse { tank.social.v1.Post post = 1; }
 // Neuralcanvas from the thread: write the page up, read one, ask the pages.
 message WriteUpThreadRequest {
   string title = 1;                 // empty lets the server name it from the thread
@@ -665,6 +686,9 @@ service RunnerService {
   rpc BooksRecordExpense(BooksRecordExpenseRequest) returns (BooksRecordExpenseResponse);
   rpc BooksRecordPayment(BooksRecordPaymentRequest) returns (BooksRecordPaymentResponse);
   rpc BooksReport(BooksReportRequest) returns (BooksReportResponse);
+  rpc SocialAccounts(SocialAccountsRequest) returns (SocialAccountsResponse);
+  rpc SocialCreatePost(SocialCreatePostRequest) returns (SocialCreatePostResponse);
+  rpc SocialPublishPost(SocialPublishPostRequest) returns (SocialPublishPostResponse);
   rpc WriteUpThread(WriteUpThreadRequest) returns (WriteUpThreadResponse);
   rpc ReadCanvas(ReadCanvasRequest) returns (ReadCanvasResponse);
   rpc AskCanvas(AskCanvasRequest) returns (AskCanvasResponse);

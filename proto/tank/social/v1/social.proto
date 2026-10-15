@@ -1,0 +1,137 @@
+syntax = "proto3";
+
+package tank.social.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/social/v1;socialv1";
+
+// Flare: the workspace's voice on X and Instagram. A workspace connects the
+// accounts it owns, says how the agent may post for it, and from then on a post
+// is one line in a thread ("@tank flare our last feature on X") or a cadence the
+// agent keeps on its own. Account creation stays with the person: the platforms
+// forbid automating it, so the page sends them to sign up and takes the handle
+// back through OAuth. Ids are Snowflake ids as strings, like everything else.
+
+enum Platform {
+  PLATFORM_UNSPECIFIED = 0;
+  PLATFORM_X = 1;
+  PLATFORM_INSTAGRAM = 2;
+}
+
+// A platform TANK can connect: whether its app keys are in place, and where a
+// person goes to make a new account there.
+message Provider {
+  Platform platform = 1;
+  bool configured = 2;      // false: Connect is shown disabled with why
+  string signup_url = 3;
+}
+
+message Account {
+  string id = 1;
+  Platform platform = 2;
+  string handle = 3;        // "@tankchat" on X, the username on Instagram
+  string display_name = 4;
+  string profile_url = 5;
+  string connected_by = 6;  // user id
+  google.protobuf.Timestamp connected_at = 7;
+  // The token was revoked or expired past refresh: posts fail until someone
+  // connects again. Reconnecting replaces the row in place.
+  bool needs_reconnect = 8;
+}
+
+message Settings {
+  // The agent may post for this workspace. Off means the social_post tool says so
+  // and stops, and no cadence runs.
+  bool enabled = 1;
+  // Every post the agent writes waits for a person: it is a draft, and the agent
+  // asks for a go in the thread before it is published.
+  bool review_required = 2;
+  // What the agent posts on its own, about what shipped: off | daily | weekly.
+  string cadence = 3;
+  int32 hour_utc = 4;         // when a cadence post is drafted
+  string channel_id = 5;      // the Tread it is drafted in and drawn from; empty = off
+  repeated Platform platforms = 6; // where a cadence post goes; empty = every connected account
+  // How the accounts sound, in the owner's words ("plain, no hashtags, no emoji").
+  string voice = 7;
+}
+
+enum PostStatus {
+  POST_STATUS_UNSPECIFIED = 0;
+  POST_STATUS_DRAFT = 1;
+  POST_STATUS_POSTED = 2;
+  POST_STATUS_FAILED = 3;
+}
+
+message Post {
+  string id = 1;
+  string account_id = 2;
+  Platform platform = 3;
+  string text = 4;
+  repeated string file_ids = 5;   // images; Instagram needs one
+  PostStatus status = 6;
+  string url = 7;                 // on the platform, once posted
+  string requested_by = 8;        // user id, or "agent"
+  string thread_root_id = 9;      // the thread it was asked for in, when it was
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp posted_at = 11;
+  string error = 12;              // why it failed, in words a person can act on
+}
+
+message ListAccountsRequest { string workspace_id = 1; }
+message ListAccountsResponse {
+  repeated Account accounts = 1;
+  repeated Provider providers = 2;
+  Settings settings = 3;
+  bool can_manage = 4;            // admins connect, disconnect and change settings
+}
+
+// Starts OAuth for one platform. The client opens url; the platform sends the
+// person back through TANK, which stores the account and returns them to
+// return_url with ?connected=<platform> or ?error=<why>.
+message StartConnectRequest {
+  string workspace_id = 1;
+  Platform platform = 2;
+  string return_url = 3;
+}
+message StartConnectResponse { string url = 1; }
+
+message DisconnectRequest { string workspace_id = 1; string account_id = 2; }
+message DisconnectResponse {}
+
+message GetSettingsRequest { string workspace_id = 1; }
+message GetSettingsResponse { Settings settings = 1; }
+message UpdateSettingsRequest { string workspace_id = 1; Settings settings = 2; }
+message UpdateSettingsResponse { Settings settings = 1; }
+
+message ListPostsRequest { string workspace_id = 1; int32 limit = 2; }
+message ListPostsResponse { repeated Post posts = 1; }
+
+// Writes a post. publish=false leaves a draft a person can publish from the page
+// or the agent can publish after a go; publish=true posts it now.
+message CreatePostRequest {
+  string workspace_id = 1;
+  Platform platform = 2;
+  string text = 3;
+  repeated string file_ids = 4;
+  bool publish = 5;
+}
+message CreatePostResponse { Post post = 1; }
+
+message PublishPostRequest { string workspace_id = 1; string post_id = 2; }
+message PublishPostResponse { Post post = 1; }
+
+message DeletePostRequest { string workspace_id = 1; string post_id = 2; } // drafts only
+message DeletePostResponse {}
+
+service SocialService {
+  rpc ListAccounts(ListAccountsRequest) returns (ListAccountsResponse);
+  rpc StartConnect(StartConnectRequest) returns (StartConnectResponse);
+  rpc Disconnect(DisconnectRequest) returns (DisconnectResponse);
+  rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
+  rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
+  rpc ListPosts(ListPostsRequest) returns (ListPostsResponse);
+  rpc CreatePost(CreatePostRequest) returns (CreatePostResponse);
+  rpc PublishPost(PublishPostRequest) returns (PublishPostResponse);
+  rpc DeletePost(DeletePostRequest) returns (DeletePostResponse);
+}
