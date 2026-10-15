@@ -542,6 +542,28 @@ class TreadSecurity(_message.Message):
     scanned_at: _timestamp_pb2.Timestamp
     def __init__(self, channel_id: _Optional[str] = ..., repo: _Optional[str] = ..., state: _Optional[str] = ..., secrets: _Optional[int] = ..., vulns_critical: _Optional[int] = ..., vulns_high: _Optional[int] = ..., sha: _Optional[str] = ..., scanned_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
+class WorkspaceDeployment(_message.Message):
+    __slots__ = ("channel_id", "channel_name", "deployment")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_NAME_FIELD_NUMBER: _ClassVar[int]
+    DEPLOYMENT_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    channel_name: str
+    deployment: TreadDeployment
+    def __init__(self, channel_id: _Optional[str] = ..., channel_name: _Optional[str] = ..., deployment: _Optional[_Union[TreadDeployment, _Mapping]] = ...) -> None: ...
+
+class ListWorkspaceDeploymentsRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class ListWorkspaceDeploymentsResponse(_message.Message):
+    __slots__ = ("deployments",)
+    DEPLOYMENTS_FIELD_NUMBER: _ClassVar[int]
+    deployments: _containers.RepeatedCompositeFieldContainer[WorkspaceDeployment]
+    def __init__(self, deployments: _Optional[_Iterable[_Union[WorkspaceDeployment, _Mapping]]] = ...) -> None: ...
+
 class ListTreadSecurityRequest(_message.Message):
     __slots__ = ("workspace_id",)
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]

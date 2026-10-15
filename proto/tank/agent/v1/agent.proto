@@ -346,6 +346,15 @@ message TreadSecurity {
   string sha = 7;                              // the commit the counts are about
   google.protobuf.Timestamp scanned_at = 8;    // when that scan finished
 }
+// Every app the workspace hosts on TANK, with the Tread it belongs to: the list the
+// workspace settings show, so an address is found without opening each Tread.
+message WorkspaceDeployment {
+  string channel_id = 1;
+  string channel_name = 2;
+  TreadDeployment deployment = 3;
+}
+message ListWorkspaceDeploymentsRequest { string workspace_id = 1; }
+message ListWorkspaceDeploymentsResponse { repeated WorkspaceDeployment deployments = 1; }
 message ListTreadSecurityRequest { string workspace_id = 1; }
 message ListTreadSecurityResponse { repeated TreadSecurity treads = 1; }
 
@@ -409,4 +418,6 @@ service AgentService {
   rpc SetTreadSettings(SetTreadSettingsRequest) returns (SetTreadSettingsResponse);
   // The security state of every Tread in the workspace that is connected to a repository.
   rpc ListTreadSecurity(ListTreadSecurityRequest) returns (ListTreadSecurityResponse);
+  // Every app the workspace hosts on TANK, for the Treads the caller is in.
+  rpc ListWorkspaceDeployments(ListWorkspaceDeploymentsRequest) returns (ListWorkspaceDeploymentsResponse);
 }

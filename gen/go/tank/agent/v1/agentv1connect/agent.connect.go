@@ -90,6 +90,9 @@ const (
 	// AgentServiceListTreadSecurityProcedure is the fully-qualified name of the AgentService's
 	// ListTreadSecurity RPC.
 	AgentServiceListTreadSecurityProcedure = "/tank.agent.v1.AgentService/ListTreadSecurity"
+	// AgentServiceListWorkspaceDeploymentsProcedure is the fully-qualified name of the AgentService's
+	// ListWorkspaceDeployments RPC.
+	AgentServiceListWorkspaceDeploymentsProcedure = "/tank.agent.v1.AgentService/ListWorkspaceDeployments"
 )
 
 // AgentServiceClient is a client for the tank.agent.v1.AgentService service.
@@ -125,6 +128,8 @@ type AgentServiceClient interface {
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
 	// The security state of every Tread in the workspace that is connected to a repository.
 	ListTreadSecurity(context.Context, *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error)
+	// Every app the workspace hosts on TANK, for the Treads the caller is in.
+	ListWorkspaceDeployments(context.Context, *connect.Request[v1.ListWorkspaceDeploymentsRequest]) (*connect.Response[v1.ListWorkspaceDeploymentsResponse], error)
 }
 
 // NewAgentServiceClient constructs a client for the tank.agent.v1.AgentService service. By default,
@@ -270,33 +275,40 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("ListTreadSecurity")),
 			connect.WithClientOptions(opts...),
 		),
+		listWorkspaceDeployments: connect.NewClient[v1.ListWorkspaceDeploymentsRequest, v1.ListWorkspaceDeploymentsResponse](
+			httpClient,
+			baseURL+AgentServiceListWorkspaceDeploymentsProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("ListWorkspaceDeployments")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // agentServiceClient implements AgentServiceClient.
 type agentServiceClient struct {
-	startRun              *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
-	stopRun               *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
-	heartbeat             *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
-	setStatus             *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
-	setProductBrand       *connect.Client[v1.SetProductBrandRequest, v1.SetProductBrandResponse]
-	setProductLanding     *connect.Client[v1.SetProductLandingRequest, v1.SetProductLandingResponse]
-	recordProductFinding  *connect.Client[v1.RecordProductFindingRequest, v1.RecordProductFindingResponse]
-	getRun                *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
-	listRuns              *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
-	listAgents            *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
-	getRepoConnection     *connect.Client[v1.GetRepoConnectionRequest, v1.GetRepoConnectionResponse]
-	startGitHubConnect    *connect.Client[v1.StartGitHubConnectRequest, v1.StartGitHubConnectResponse]
-	bindRepo              *connect.Client[v1.BindRepoRequest, v1.BindRepoResponse]
-	unbindRepo            *connect.Client[v1.UnbindRepoRequest, v1.UnbindRepoResponse]
-	setRepoAccess         *connect.Client[v1.SetRepoAccessRequest, v1.SetRepoAccessResponse]
-	createTreadRepo       *connect.Client[v1.CreateTreadRepoRequest, v1.CreateTreadRepoResponse]
-	setTreadDeployment    *connect.Client[v1.SetTreadDeploymentRequest, v1.SetTreadDeploymentResponse]
-	setUpRepoPreviews     *connect.Client[v1.SetUpRepoPreviewsRequest, v1.SetUpRepoPreviewsResponse]
-	listRepoPreviewSetups *connect.Client[v1.ListRepoPreviewSetupsRequest, v1.ListRepoPreviewSetupsResponse]
-	getTreadSwitchboard   *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
-	setTreadSettings      *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
-	listTreadSecurity     *connect.Client[v1.ListTreadSecurityRequest, v1.ListTreadSecurityResponse]
+	startRun                 *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	stopRun                  *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
+	heartbeat                *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
+	setStatus                *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
+	setProductBrand          *connect.Client[v1.SetProductBrandRequest, v1.SetProductBrandResponse]
+	setProductLanding        *connect.Client[v1.SetProductLandingRequest, v1.SetProductLandingResponse]
+	recordProductFinding     *connect.Client[v1.RecordProductFindingRequest, v1.RecordProductFindingResponse]
+	getRun                   *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	listRuns                 *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
+	listAgents               *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
+	getRepoConnection        *connect.Client[v1.GetRepoConnectionRequest, v1.GetRepoConnectionResponse]
+	startGitHubConnect       *connect.Client[v1.StartGitHubConnectRequest, v1.StartGitHubConnectResponse]
+	bindRepo                 *connect.Client[v1.BindRepoRequest, v1.BindRepoResponse]
+	unbindRepo               *connect.Client[v1.UnbindRepoRequest, v1.UnbindRepoResponse]
+	setRepoAccess            *connect.Client[v1.SetRepoAccessRequest, v1.SetRepoAccessResponse]
+	createTreadRepo          *connect.Client[v1.CreateTreadRepoRequest, v1.CreateTreadRepoResponse]
+	setTreadDeployment       *connect.Client[v1.SetTreadDeploymentRequest, v1.SetTreadDeploymentResponse]
+	setUpRepoPreviews        *connect.Client[v1.SetUpRepoPreviewsRequest, v1.SetUpRepoPreviewsResponse]
+	listRepoPreviewSetups    *connect.Client[v1.ListRepoPreviewSetupsRequest, v1.ListRepoPreviewSetupsResponse]
+	getTreadSwitchboard      *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
+	setTreadSettings         *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
+	listTreadSecurity        *connect.Client[v1.ListTreadSecurityRequest, v1.ListTreadSecurityResponse]
+	listWorkspaceDeployments *connect.Client[v1.ListWorkspaceDeploymentsRequest, v1.ListWorkspaceDeploymentsResponse]
 }
 
 // StartRun calls tank.agent.v1.AgentService.StartRun.
@@ -409,6 +421,11 @@ func (c *agentServiceClient) ListTreadSecurity(ctx context.Context, req *connect
 	return c.listTreadSecurity.CallUnary(ctx, req)
 }
 
+// ListWorkspaceDeployments calls tank.agent.v1.AgentService.ListWorkspaceDeployments.
+func (c *agentServiceClient) ListWorkspaceDeployments(ctx context.Context, req *connect.Request[v1.ListWorkspaceDeploymentsRequest]) (*connect.Response[v1.ListWorkspaceDeploymentsResponse], error) {
+	return c.listWorkspaceDeployments.CallUnary(ctx, req)
+}
+
 // AgentServiceHandler is an implementation of the tank.agent.v1.AgentService service.
 type AgentServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
@@ -442,6 +459,8 @@ type AgentServiceHandler interface {
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
 	// The security state of every Tread in the workspace that is connected to a repository.
 	ListTreadSecurity(context.Context, *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error)
+	// Every app the workspace hosts on TANK, for the Treads the caller is in.
+	ListWorkspaceDeployments(context.Context, *connect.Request[v1.ListWorkspaceDeploymentsRequest]) (*connect.Response[v1.ListWorkspaceDeploymentsResponse], error)
 }
 
 // NewAgentServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -583,6 +602,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("ListTreadSecurity")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceListWorkspaceDeploymentsHandler := connect.NewUnaryHandler(
+		AgentServiceListWorkspaceDeploymentsProcedure,
+		svc.ListWorkspaceDeployments,
+		connect.WithSchema(agentServiceMethods.ByName("ListWorkspaceDeployments")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agent.v1.AgentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AgentServiceStartRunProcedure:
@@ -629,6 +654,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceSetTreadSettingsHandler.ServeHTTP(w, r)
 		case AgentServiceListTreadSecurityProcedure:
 			agentServiceListTreadSecurityHandler.ServeHTTP(w, r)
+		case AgentServiceListWorkspaceDeploymentsProcedure:
+			agentServiceListWorkspaceDeploymentsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -724,4 +751,8 @@ func (UnimplementedAgentServiceHandler) SetTreadSettings(context.Context, *conne
 
 func (UnimplementedAgentServiceHandler) ListTreadSecurity(context.Context, *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.ListTreadSecurity is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) ListWorkspaceDeployments(context.Context, *connect.Request[v1.ListWorkspaceDeploymentsRequest]) (*connect.Response[v1.ListWorkspaceDeploymentsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.ListWorkspaceDeployments is not implemented"))
 }
