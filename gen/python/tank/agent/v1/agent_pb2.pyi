@@ -49,18 +49,22 @@ RUN_STATE_TIMED_OUT: RunState
 RUN_STATE_APPROVAL_EXPIRED: RunState
 
 class Agent(_message.Message):
-    __slots__ = ("id", "workspace_id", "principal_id", "name", "scopes")
+    __slots__ = ("id", "workspace_id", "principal_id", "name", "scopes", "title", "skill")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     PRINCIPAL_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     SCOPES_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    SKILL_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     principal_id: str
     name: str
     scopes: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., principal_id: _Optional[str] = ..., name: _Optional[str] = ..., scopes: _Optional[_Iterable[str]] = ...) -> None: ...
+    title: str
+    skill: str
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., principal_id: _Optional[str] = ..., name: _Optional[str] = ..., scopes: _Optional[_Iterable[str]] = ..., title: _Optional[str] = ..., skill: _Optional[str] = ...) -> None: ...
 
 class Run(_message.Message):
     __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "state", "branch", "pr_url", "cost_usd", "status_message_id", "started_at", "ended_at", "plan_hash", "pending_gate_id")

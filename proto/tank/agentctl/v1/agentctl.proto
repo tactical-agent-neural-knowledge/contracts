@@ -116,6 +116,10 @@ message RunContext {
   // Tread is for and can offer the first step towards it.
   string channel_purpose = 24;
   string channel_goal = 25;
+  // A Crew member's title and skill: who this agent is and what it does, from the
+  // switchboard; empty for the workspace agent.
+  string agent_title = 28;
+  string agent_skill = 29;
   // True when this run must not read or write the repository's Neural Knowledge:
   // the Tread turned it off, or the run is the control half of a measurement.
   bool skip_neural_knowledge = 26;
@@ -151,6 +155,7 @@ message GetGitCredentialResponse {
 message PostToThreadRequest {
   string text = 1;
   string client_msg_id = 2; // idempotency key
+  bool also_send_to_tread = 3; // the message shows in the Tread too, not only in the thread
 }
 message PostToThreadResponse {
   string message_id = 1;

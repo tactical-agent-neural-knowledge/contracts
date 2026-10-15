@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package tank.crew.v1;
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/crew/v1;crewv1";
+
+// Crew: a workspace's swarm of agents, each with a role, run from one switchboard.
+// A member is a real agent principal with its own @handle, so "@cfo what did we
+// spend" works in any Tread; its skill is a prompt the run carries into its system
+// prompt; the switchboard says where it may work, how active it is on its own, and
+// what it may spend. Ids are Snowflake ids as strings, like everything else.
+
+// Where a member works.
+enum Treads {
+  TREADS_UNSPECIFIED = 0;
+  TREADS_ALL = 1;       // every Tread in the workspace
+  TREADS_SELECTED = 2;  // the channel_ids on the member
+}
+
+// How much a member speaks up without being asked. Mentioned-only means never;
+// the rest set how often it reads a Tread it is in and may add something.
+enum Activity {
+  ACTIVITY_UNSPECIFIED = 0;
+  ACTIVITY_MENTIONED = 1;  // only when @mentioned
+  ACTIVITY_LOW = 2;        // about once a day per Tread
+  ACTIVITY_NORMAL = 3;     // every few hours
+  ACTIVITY_HIGH = 4;       // every half hour
+}
+
+message Member {
+  string id = 1;
+  string agent_id = 2;
+  string principal_id = 3;     // the agent's user row, for @mentions
+  string role = 4;             // ceo | cfo | coo | cto | custom
+  string title = 5;            // "CFO"
+  string handle = 6;           // "cfo": what @ resolves
+  string skill = 7;            // the prompt: who this member is and what it does
+  bool enabled = 8;
+  Treads treads = 9;
+  repeated string channel_ids = 10;
+  Activity activity = 11;
+  double daily_cap_usd = 12;   // 0 = no cap
+  int32 concurrent_cap = 13;   // 0 = the workspace's
+  string model = 14;           // "" = the policy's default
+  // What it did, at the Tread rate.
+  double spend_today_usd = 15;
+  double spend_month_usd = 16;
+  int32 runs_today = 17;
+  int32 running_now = 18;
+}
+
+// A role the switchboard offers ready-made; the skill is a starting point, editable.
+message Preset {
+  string role = 1;
+  string title = 2;
+  string handle = 3;
+  string skill = 4;
+  string summary = 5;  // one line for the picker
+}
+
+message ListCrewRequest { string workspace_id = 1; }
+message ListCrewResponse {
+  repeated Member members = 1;
+  repeated Preset presets = 2;
+  bool can_manage = 3;
+}
+
+// Adds a member: provisions its agent principal under the handle. A preset role
+// brings its title, handle and skill; custom needs all three.
+message AddMemberRequest {
+  string workspace_id = 1;
+  string role = 2;
+  string title = 3;
+  string handle = 4;
+  string skill = 5;
+}
+message AddMemberResponse { Member member = 1; }
+
+message UpdateMemberRequest {
+  string workspace_id = 1;
+  Member member = 2;  // id names it; title, skill, enabled, treads, channel_ids, activity, caps and model are taken
+}
+message UpdateMemberResponse { Member member = 1; }
+
+// Removes a member. Its runs stop being started; what it said stays.
+message RemoveMemberRequest { string workspace_id = 1; string member_id = 2; }
+message RemoveMemberResponse {}
+
+service CrewService {
+  rpc ListCrew(ListCrewRequest) returns (ListCrewResponse);
+  rpc AddMember(AddMemberRequest) returns (AddMemberResponse);
+  rpc UpdateMember(UpdateMemberRequest) returns (UpdateMemberResponse);
+  rpc RemoveMember(RemoveMemberRequest) returns (RemoveMemberResponse);
+}

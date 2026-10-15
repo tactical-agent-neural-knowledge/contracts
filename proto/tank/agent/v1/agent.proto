@@ -32,6 +32,9 @@ message Agent {
   string principal_id = 3; // the agent's user row
   string name = 4;
   repeated string scopes = 5;
+  // A Crew member's title and skill (tank.crew.v1); empty for the workspace agent.
+  string title = 6;
+  string skill = 7;
 }
 
 message Run {
