@@ -409,17 +409,19 @@ class TreadSettings(_message.Message):
     def __init__(self, concurrent_runs: _Optional[int] = ..., auto_accept_plans: bool = ..., max_run_usd: _Optional[float] = ..., daily_usd: _Optional[float] = ..., pull_requests: _Optional[str] = ..., pr_reviewer_ids: _Optional[_Iterable[str]] = ..., read_neural_knowledge: bool = ..., merge_allowed: bool = ..., notify_reviewers: bool = ..., strongest_model: bool = ...) -> None: ...
 
 class HourBucket(_message.Message):
-    __slots__ = ("hour", "runs", "spend_usd")
+    __slots__ = ("hour", "runs", "spend_usd", "neural_saved_usd")
     HOUR_FIELD_NUMBER: _ClassVar[int]
     RUNS_FIELD_NUMBER: _ClassVar[int]
     SPEND_USD_FIELD_NUMBER: _ClassVar[int]
+    NEURAL_SAVED_USD_FIELD_NUMBER: _ClassVar[int]
     hour: _timestamp_pb2.Timestamp
     runs: int
     spend_usd: float
-    def __init__(self, hour: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., runs: _Optional[int] = ..., spend_usd: _Optional[float] = ...) -> None: ...
+    neural_saved_usd: float
+    def __init__(self, hour: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., runs: _Optional[int] = ..., spend_usd: _Optional[float] = ..., neural_saved_usd: _Optional[float] = ...) -> None: ...
 
 class TreadMetrics(_message.Message):
-    __slots__ = ("spend_today_usd", "spend_month_usd", "runs_today", "runs_month", "success_rate_30d", "hours", "workspace_spend_today_usd", "workspace_spend_month_usd", "running_now", "avg_run_minutes_30d")
+    __slots__ = ("spend_today_usd", "spend_month_usd", "runs_today", "runs_month", "success_rate_30d", "hours", "workspace_spend_today_usd", "workspace_spend_month_usd", "running_now", "avg_run_minutes_30d", "neural_saved_month_usd", "neural_measured")
     SPEND_TODAY_USD_FIELD_NUMBER: _ClassVar[int]
     SPEND_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
     RUNS_TODAY_FIELD_NUMBER: _ClassVar[int]
@@ -430,6 +432,8 @@ class TreadMetrics(_message.Message):
     WORKSPACE_SPEND_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
     RUNNING_NOW_FIELD_NUMBER: _ClassVar[int]
     AVG_RUN_MINUTES_30D_FIELD_NUMBER: _ClassVar[int]
+    NEURAL_SAVED_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
+    NEURAL_MEASURED_FIELD_NUMBER: _ClassVar[int]
     spend_today_usd: float
     spend_month_usd: float
     runs_today: int
@@ -440,7 +444,9 @@ class TreadMetrics(_message.Message):
     workspace_spend_month_usd: float
     running_now: int
     avg_run_minutes_30d: float
-    def __init__(self, spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., runs_month: _Optional[int] = ..., success_rate_30d: _Optional[float] = ..., hours: _Optional[_Iterable[_Union[HourBucket, _Mapping]]] = ..., workspace_spend_today_usd: _Optional[float] = ..., workspace_spend_month_usd: _Optional[float] = ..., running_now: _Optional[int] = ..., avg_run_minutes_30d: _Optional[float] = ...) -> None: ...
+    neural_saved_month_usd: float
+    neural_measured: bool
+    def __init__(self, spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., runs_month: _Optional[int] = ..., success_rate_30d: _Optional[float] = ..., hours: _Optional[_Iterable[_Union[HourBucket, _Mapping]]] = ..., workspace_spend_today_usd: _Optional[float] = ..., workspace_spend_month_usd: _Optional[float] = ..., running_now: _Optional[int] = ..., avg_run_minutes_30d: _Optional[float] = ..., neural_saved_month_usd: _Optional[float] = ..., neural_measured: bool = ...) -> None: ...
 
 class GetTreadSwitchboardRequest(_message.Message):
     __slots__ = ("channel_id",)

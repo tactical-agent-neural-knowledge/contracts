@@ -289,6 +289,11 @@ message HourBucket {
   google.protobuf.Timestamp hour = 1;
   int32 runs = 2;
   double spend_usd = 3;
+  // What Neural Knowledge saved on this hour's runs: for each run, the per-run cost of
+  // the same class of work on the same model in the earlier half of the last thirty
+  // days, less what the run cost, when the comparison exists. An estimate against a
+  // baseline, not a measurement with a control; zero while nothing is comparable.
+  double neural_saved_usd = 4;
 }
 message TreadMetrics {
   double spend_today_usd = 1;
@@ -301,6 +306,10 @@ message TreadMetrics {
   double workspace_spend_month_usd = 8;
   int32 running_now = 9;
   double avg_run_minutes_30d = 10;
+  double neural_saved_month_usd = 11; // the same estimate, over this month's runs
+  // Whether any of this month's runs had a baseline to compare against. False reads
+  // "measuring", never zero saved: after a model change nothing is comparable for a while.
+  bool neural_measured = 12;
 }
 message GetTreadSwitchboardRequest { string channel_id = 1; }
 message GetTreadSwitchboardResponse {
