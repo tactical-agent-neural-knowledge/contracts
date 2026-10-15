@@ -279,6 +279,11 @@ message TreadSettings {
   // "review"): mention pr_reviewer_ids, or the person who asked for the run when the
   // list is empty, so somebody hears about it. Off, the card is posted and waits.
   bool notify_reviewers = 9;
+  // Run this Tread's code on the strongest model (Opus) from the start. Off, a run
+  // starts on Sonnet and is moved up only after its checks have failed twice; most
+  // work never needs the move, and the strongest model costs two and a half times as
+  // much on every token.
+  bool strongest_model = 10;
 }
 message HourBucket {
   google.protobuf.Timestamp hour = 1;
