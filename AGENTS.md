@@ -1,65 +1,31 @@
-# Neural Knowledge by TANK · refreshed 2026-10-03 · c5e2e604e1c6
+# Neural Knowledge by TANK · refreshed 2026-10-16 · 96c9e69403fd
 
-`contracts` is the single source of truth for every wire format in TANK: 22 Protobuf/Connect packages
-under `proto/tank/<domain>/v1/`, covering auth, workspaces, channels, messages, files, events, the
-realtime gateway, and the agent control plane. The generated Go, TypeScript and Python clients are
-built with buf and **committed** under `gen/`, so consumers import them instead of regenerating.
-Nothing here runs: it is a schema repository whose job is to change without breaking api, web, mobile,
-sdk-ts, agent-control, agent-runner or knowledge.
+This repo is the wire contract for the whole TANK system: hand-written Protobuf under `proto/`, one package per product domain (29 of them — channel, agent, crew, billing, events, realtime, and more). It is both input and output — generated Go, TypeScript and Python clients under `gen/` are committed on purpose, so a proto change and its regenerated code land in the same PR. CI enforces that the generated code is never stale and that no change breaks the wire for any existing client.
 
 ## Commands
-
-- `make gen` — regenerate `gen/go`, `gen/ts/src`, `gen/python` (`npx --yes @bufbuild/buf generate`)
-- `make lint` — `buf lint` (STANDARD rules, verified passing)
-- `make breaking` — `buf breaking --against '.git#branch=main'` (verified passing)
-- `make build` — `go build ./...` (no Go toolchain in the agent sandbox; CI runs it)
-- `make check` — everything CI runs: lint, gen, build, then fail if `gen/` is dirty
-- `make clean` — drop the generated `tank` subtree in all three languages
-- `npm install && npm run build` in `gen/ts` — the tsc compile CI performs
-- `go test ./...` is listed in the map but there are no `_test.go` files in this repo
-
-Every `make` target shells out to `npx --yes @bufbuild/buf`; pass `BUF=buf` if a real binary is on PATH.
+- Regenerate: `make gen` (wraps `npx --yes @bufbuild/buf generate`)
+- Lint: `make lint` (wraps `npx --yes @bufbuild/buf lint`) — verified
+- Breaking check vs main: `make breaking` (wraps `npx --yes @bufbuild/buf breaking --against '.git#branch=main'`) — verified
+- Build check: `buf build -o /dev/null` — verified; `go build ./...` — verified
+- Everything CI runs: `make check` (= `lint gen build` + `git diff --exit-code --stat gen/` staleness gate)
+- `make` is often **absent in agent sandboxes** — run the `npx @bufbuild/buf ...` / `go build ./...` commands above directly instead of through `make`.
 
 ## Areas
-
-- `.` — build surface: `Makefile`, `buf.yaml`, `buf.gen.yaml`, `go.mod`, the committed `gen/` tree → `.neural/neurons/root.md`
-- `.github` — the single `ci.yml` workflow: checks on PRs, npm publishing on pushes → `.neural/neurons/github.md`
-- `proto` — the schemas themselves, one package per domain → `.neural/neurons/proto.md`
+- `.` — repo root: Makefile, buf config, plugin pins, top-level conventions. Read `.neural/neurons/root.md`.
+- `.github` — CI/CD workflows: lint/breaking/build/publish pipeline and the secret-scan workflow. Read `.neural/neurons/github.md`.
+- `proto` — the 29 domain packages, wire conventions, and TANK product concepts (Tread, Crew, Blocks, etc). Read `.neural/neurons/proto.md`.
 
 ## Rules
-
-From `CLAUDE.md`, hard prohibitions:
-
-> Renumbering or reusing field numbers; removing a field before every client has shipped without it;
-> editing `gen/` by hand; changing plugin versions without regenerating everything in the same PR.
-
-From `CLAUDE.md`, decided — do not re-litigate:
-
-> Wire names stay neutral (`Channel`, not `Tread`); product vocabulary lives in the clients. One proto
-> package per domain, version suffix `v1`. Generated code committed, not fetched at build time.
-
-From `README.md`:
-
-> `make check` runs what CI runs. Changes are additive-first: add fields, ship every client, wait for
-> the mobile build to land, then remove. `buf breaking` enforces the wire half.
-
-From `buf.yaml`: lint is `STANDARD` with `PACKAGE_VERSION_SUFFIX` excepted; breaking is checked at
-`FILE` level, so moving a message between files is a break even when the wire is unchanged.
+From `CLAUDE.md`, hard prohibitions: "Renumbering or reusing field numbers; removing a field before every client has shipped without it; editing `gen/` by hand; changing plugin versions without regenerating everything in the same PR."
+From `CLAUDE.md`, decided — do not re-litigate: "Wire names stay neutral (`Channel`, not `Tread`); product vocabulary lives in the clients. One proto package per domain, version suffix `v1`. Generated code committed, not fetched at build time."
 
 ## Before changing anything
-
-- Edit `proto/`, never `gen/`. Run `make gen` and commit the regenerated files in the same change.
-- Run `make check` before opening a PR; its last step fails if `gen/` is stale, and so does CI.
-- Run `make breaking` for anything that touches an existing field, message or file. On a fresh clone
-  do `git fetch --no-tags origin main:main` first, or buf cannot resolve `.git#branch=main`.
-- Additive first: add a field, ship every consumer, then remove the old one in a later release.
-- A PR green on `ci.yml` is the bar. A push to `main` publishes a canary npm package; a `v*` tag
-  publishes a release — so merging to `main` is already a publish.
+- `buf lint` must pass (STANDARD rules minus `PACKAGE_VERSION_SUFFIX`).
+- On a PR, `buf breaking --against ".git#branch=main"` must pass — this is the production-safety gate for every downstream client.
+- `buf generate` must leave `gen/` clean (`git diff --exit-code --stat gen/`) — regenerate and commit if it doesn't.
+- `go build ./...` and the `gen/ts` `npm run build` (tsc) must both succeed.
+- Every push and PR is also scanned for secrets by `security.yml` (gitleaks); findings fail the job.
+- Only a push to `main` (or a `v*` tag) publishes `gen/ts` to GitHub Packages — PRs never publish.
 
 ## Neural Knowledge
-
-This layer is generated by TANK. It lives in `.neural/` (the deterministic map in `.neural/map.yaml`
-and `.neural/index.json`, plus one neuron file per area under `.neural/neurons/`) and is summarised in
-this file. It is refreshed automatically on every push to the default branch, which rewrites both the
-neuron files and `AGENTS.md` wholesale — any edit made here by hand is overwritten on the next
-refresh, so correct the code or the documents the layer is read from instead.
+This file and `.neural/neurons/*.md` are generated by TANK from reading the repository, refreshed automatically on every push to the default branch. They live under `.neural/` and at the repo root as `AGENTS.md`. Hand edits are overwritten on the next refresh — fix the source (code, config, or the map in `.neural/map.yaml`) instead.
