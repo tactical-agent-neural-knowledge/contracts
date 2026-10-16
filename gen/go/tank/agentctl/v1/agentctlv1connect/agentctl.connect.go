@@ -124,6 +124,12 @@ const (
 	// RunnerServiceArrangeBoardProcedure is the fully-qualified name of the RunnerService's
 	// ArrangeBoard RPC.
 	RunnerServiceArrangeBoardProcedure = "/tank.agentctl.v1.RunnerService/ArrangeBoard"
+	// RunnerServiceWorkbenchStepsProcedure is the fully-qualified name of the RunnerService's
+	// WorkbenchSteps RPC.
+	RunnerServiceWorkbenchStepsProcedure = "/tank.agentctl.v1.RunnerService/WorkbenchSteps"
+	// RunnerServiceWorkbenchShowProcedure is the fully-qualified name of the RunnerService's
+	// WorkbenchShow RPC.
+	RunnerServiceWorkbenchShowProcedure = "/tank.agentctl.v1.RunnerService/WorkbenchShow"
 	// RunnerServicePollInboxProcedure is the fully-qualified name of the RunnerService's PollInbox RPC.
 	RunnerServicePollInboxProcedure = "/tank.agentctl.v1.RunnerService/PollInbox"
 	// RunnerServiceOpenPullRequestProcedure is the fully-qualified name of the RunnerService's
@@ -252,6 +258,8 @@ type RunnerServiceClient interface {
 	ReadBoard(context.Context, *connect.Request[v1.ReadBoardRequest]) (*connect.Response[v1.ReadBoardResponse], error)
 	DrawOnBoard(context.Context, *connect.Request[v1.DrawOnBoardRequest]) (*connect.Response[v1.DrawOnBoardResponse], error)
 	ArrangeBoard(context.Context, *connect.Request[v1.ArrangeBoardRequest]) (*connect.Response[v1.ArrangeBoardResponse], error)
+	WorkbenchSteps(context.Context, *connect.Request[v1.WorkbenchStepsRequest]) (*connect.Response[v1.WorkbenchStepsResponse], error)
+	WorkbenchShow(context.Context, *connect.Request[v1.WorkbenchShowRequest]) (*connect.Response[v1.WorkbenchShowResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -465,6 +473,18 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("ArrangeBoard")),
 			connect.WithClientOptions(opts...),
 		),
+		workbenchSteps: connect.NewClient[v1.WorkbenchStepsRequest, v1.WorkbenchStepsResponse](
+			httpClient,
+			baseURL+RunnerServiceWorkbenchStepsProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("WorkbenchSteps")),
+			connect.WithClientOptions(opts...),
+		),
+		workbenchShow: connect.NewClient[v1.WorkbenchShowRequest, v1.WorkbenchShowResponse](
+			httpClient,
+			baseURL+RunnerServiceWorkbenchShowProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("WorkbenchShow")),
+			connect.WithClientOptions(opts...),
+		),
 		pollInbox: connect.NewClient[v1.PollInboxRequest, v1.PollInboxResponse](
 			httpClient,
 			baseURL+RunnerServicePollInboxProcedure,
@@ -573,6 +593,8 @@ type runnerServiceClient struct {
 	readBoard                *connect.Client[v1.ReadBoardRequest, v1.ReadBoardResponse]
 	drawOnBoard              *connect.Client[v1.DrawOnBoardRequest, v1.DrawOnBoardResponse]
 	arrangeBoard             *connect.Client[v1.ArrangeBoardRequest, v1.ArrangeBoardResponse]
+	workbenchSteps           *connect.Client[v1.WorkbenchStepsRequest, v1.WorkbenchStepsResponse]
+	workbenchShow            *connect.Client[v1.WorkbenchShowRequest, v1.WorkbenchShowResponse]
 	pollInbox                *connect.Client[v1.PollInboxRequest, v1.PollInboxResponse]
 	openPullRequest          *connect.Client[v1.OpenPullRequestRequest, v1.OpenPullRequestResponse]
 	requestCiWatch           *connect.Client[v1.RequestCiWatchRequest, v1.RequestCiWatchResponse]
@@ -742,6 +764,16 @@ func (c *runnerServiceClient) ArrangeBoard(ctx context.Context, req *connect.Req
 	return c.arrangeBoard.CallUnary(ctx, req)
 }
 
+// WorkbenchSteps calls tank.agentctl.v1.RunnerService.WorkbenchSteps.
+func (c *runnerServiceClient) WorkbenchSteps(ctx context.Context, req *connect.Request[v1.WorkbenchStepsRequest]) (*connect.Response[v1.WorkbenchStepsResponse], error) {
+	return c.workbenchSteps.CallUnary(ctx, req)
+}
+
+// WorkbenchShow calls tank.agentctl.v1.RunnerService.WorkbenchShow.
+func (c *runnerServiceClient) WorkbenchShow(ctx context.Context, req *connect.Request[v1.WorkbenchShowRequest]) (*connect.Response[v1.WorkbenchShowResponse], error) {
+	return c.workbenchShow.CallUnary(ctx, req)
+}
+
 // PollInbox calls tank.agentctl.v1.RunnerService.PollInbox.
 func (c *runnerServiceClient) PollInbox(ctx context.Context, req *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error) {
 	return c.pollInbox.CallUnary(ctx, req)
@@ -835,6 +867,8 @@ type RunnerServiceHandler interface {
 	ReadBoard(context.Context, *connect.Request[v1.ReadBoardRequest]) (*connect.Response[v1.ReadBoardResponse], error)
 	DrawOnBoard(context.Context, *connect.Request[v1.DrawOnBoardRequest]) (*connect.Response[v1.DrawOnBoardResponse], error)
 	ArrangeBoard(context.Context, *connect.Request[v1.ArrangeBoardRequest]) (*connect.Response[v1.ArrangeBoardResponse], error)
+	WorkbenchSteps(context.Context, *connect.Request[v1.WorkbenchStepsRequest]) (*connect.Response[v1.WorkbenchStepsResponse], error)
+	WorkbenchShow(context.Context, *connect.Request[v1.WorkbenchShowRequest]) (*connect.Response[v1.WorkbenchShowResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
@@ -1044,6 +1078,18 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("ArrangeBoard")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceWorkbenchStepsHandler := connect.NewUnaryHandler(
+		RunnerServiceWorkbenchStepsProcedure,
+		svc.WorkbenchSteps,
+		connect.WithSchema(runnerServiceMethods.ByName("WorkbenchSteps")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceWorkbenchShowHandler := connect.NewUnaryHandler(
+		RunnerServiceWorkbenchShowProcedure,
+		svc.WorkbenchShow,
+		connect.WithSchema(runnerServiceMethods.ByName("WorkbenchShow")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServicePollInboxHandler := connect.NewUnaryHandler(
 		RunnerServicePollInboxProcedure,
 		svc.PollInbox,
@@ -1180,6 +1226,10 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceDrawOnBoardHandler.ServeHTTP(w, r)
 		case RunnerServiceArrangeBoardProcedure:
 			runnerServiceArrangeBoardHandler.ServeHTTP(w, r)
+		case RunnerServiceWorkbenchStepsProcedure:
+			runnerServiceWorkbenchStepsHandler.ServeHTTP(w, r)
+		case RunnerServiceWorkbenchShowProcedure:
+			runnerServiceWorkbenchShowHandler.ServeHTTP(w, r)
 		case RunnerServicePollInboxProcedure:
 			runnerServicePollInboxHandler.ServeHTTP(w, r)
 		case RunnerServiceOpenPullRequestProcedure:
@@ -1335,6 +1385,14 @@ func (UnimplementedRunnerServiceHandler) DrawOnBoard(context.Context, *connect.R
 
 func (UnimplementedRunnerServiceHandler) ArrangeBoard(context.Context, *connect.Request[v1.ArrangeBoardRequest]) (*connect.Response[v1.ArrangeBoardResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ArrangeBoard is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) WorkbenchSteps(context.Context, *connect.Request[v1.WorkbenchStepsRequest]) (*connect.Response[v1.WorkbenchStepsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.WorkbenchSteps is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) WorkbenchShow(context.Context, *connect.Request[v1.WorkbenchShowRequest]) (*connect.Response[v1.WorkbenchShowResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.WorkbenchShow is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error) {

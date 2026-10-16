@@ -120,6 +120,9 @@ message Board {
   int32 staleness = 12;
   // What has moved, in a sentence. Empty when the board still matches the product.
   string staleness_note = 13;
+  // The thread this board is the Workbench of: the agent's live board, pinned in the
+  // thread while it works. Empty for every other board. One per thread.
+  string thread_root_id = 14;
 }
 
 message BoardSummary {
@@ -132,6 +135,7 @@ message BoardSummary {
   string channel_id = 7;
   int32 staleness = 8;
   string staleness_note = 9;
+  string thread_root_id = 10;   // set when the board is a thread's Workbench
 }
 
 message ListBoardsRequest {
@@ -141,6 +145,8 @@ message ListBoardsRequest {
   // Only the boards the product has moved past. The same filter ListCanvases has,
   // for the same reason: finding what needs a look should not mean reading the lot.
   bool stale_only = 4;
+  // Only the Workbench of this thread (at most one board).
+  string thread_root_id = 5;
 }
 message ListBoardsResponse { repeated BoardSummary boards = 1; }
 
@@ -159,6 +165,9 @@ message CreateBoardRequest {
   // A starting shape, from ListTemplates. Nobody opens a blank infinite canvas and
   // feels invited; a flowchart that already has three boxes and two arrows does.
   string template = 6;
+  // Make this board the thread's Workbench. The caller must be a member of the thread's
+  // Tread (channel_id); a thread has at most one, and a second request returns it.
+  string thread_root_id = 7;
 }
 message CreateBoardResponse { Board board = 1; }
 

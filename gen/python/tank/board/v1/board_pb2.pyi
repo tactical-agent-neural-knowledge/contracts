@@ -143,7 +143,7 @@ class BoardObject(_message.Message):
     def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[ObjectKind, str]] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., style: _Optional[_Union[Style, _Mapping]] = ..., text: _Optional[str] = ..., rotation: _Optional[float] = ..., z: _Optional[int] = ..., parent_id: _Optional[str] = ..., from_id: _Optional[str] = ..., to_id: _Optional[str] = ..., points: _Optional[_Iterable[float]] = ..., file_id: _Optional[str] = ..., file_url: _Optional[str] = ..., app: _Optional[_Union[AppFrame, _Mapping]] = ..., locked: bool = ..., meta: _Optional[str] = ..., created_by: _Optional[str] = ..., rev: _Optional[int] = ..., derived: _Optional[_Union[Derivation, _Mapping]] = ...) -> None: ...
 
 class Board(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "objects", "version", "created_by", "created_at", "updated_by", "updated_at", "staleness", "staleness_note")
+    __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "objects", "version", "created_by", "created_at", "updated_by", "updated_at", "staleness", "staleness_note", "thread_root_id")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -157,6 +157,7 @@ class Board(_message.Message):
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
     STALENESS_FIELD_NUMBER: _ClassVar[int]
     STALENESS_NOTE_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -170,10 +171,11 @@ class Board(_message.Message):
     updated_at: _timestamp_pb2.Timestamp
     staleness: int
     staleness_note: str
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., version: _Optional[int] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ...) -> None: ...
+    thread_root_id: str
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., version: _Optional[int] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., thread_root_id: _Optional[str] = ...) -> None: ...
 
 class BoardSummary(_message.Message):
-    __slots__ = ("id", "title", "icon", "objects", "app_frames", "updated_at", "channel_id", "staleness", "staleness_note")
+    __slots__ = ("id", "title", "icon", "objects", "app_frames", "updated_at", "channel_id", "staleness", "staleness_note", "thread_root_id")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     ICON_FIELD_NUMBER: _ClassVar[int]
@@ -183,6 +185,7 @@ class BoardSummary(_message.Message):
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     STALENESS_FIELD_NUMBER: _ClassVar[int]
     STALENESS_NOTE_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     icon: str
@@ -192,19 +195,22 @@ class BoardSummary(_message.Message):
     channel_id: str
     staleness: int
     staleness_note: str
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[int] = ..., app_frames: _Optional[int] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., channel_id: _Optional[str] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ...) -> None: ...
+    thread_root_id: str
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[int] = ..., app_frames: _Optional[int] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., channel_id: _Optional[str] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., thread_root_id: _Optional[str] = ...) -> None: ...
 
 class ListBoardsRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "limit", "stale_only")
+    __slots__ = ("workspace_id", "channel_id", "limit", "stale_only", "thread_root_id")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
     STALE_ONLY_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     limit: int
     stale_only: bool
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., limit: _Optional[int] = ..., stale_only: bool = ...) -> None: ...
+    thread_root_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., limit: _Optional[int] = ..., stale_only: bool = ..., thread_root_id: _Optional[str] = ...) -> None: ...
 
 class ListBoardsResponse(_message.Message):
     __slots__ = ("boards",)
@@ -227,20 +233,22 @@ class GetBoardResponse(_message.Message):
     def __init__(self, board: _Optional[_Union[Board, _Mapping]] = ...) -> None: ...
 
 class CreateBoardRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "title", "icon", "objects", "template")
+    __slots__ = ("workspace_id", "channel_id", "title", "icon", "objects", "template", "thread_root_id")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     ICON_FIELD_NUMBER: _ClassVar[int]
     OBJECTS_FIELD_NUMBER: _ClassVar[int]
     TEMPLATE_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     title: str
     icon: str
     objects: _containers.RepeatedCompositeFieldContainer[BoardObject]
     template: str
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., template: _Optional[str] = ...) -> None: ...
+    thread_root_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., template: _Optional[str] = ..., thread_root_id: _Optional[str] = ...) -> None: ...
 
 class CreateBoardResponse(_message.Message):
     __slots__ = ("board",)

@@ -130,7 +130,7 @@ class ApprovedPlan(_message.Message):
     def __init__(self, plan_hash: _Optional[str] = ..., summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[_blocks_pb2.PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., approved_by: _Optional[str] = ..., approved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback: _Optional[str] = ...) -> None: ...
 
 class RunContext(_message.Message):
-    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class")
+    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -160,6 +160,7 @@ class RunContext(_message.Message):
     AGENT_SKILL_FIELD_NUMBER: _ClassVar[int]
     SKIP_NEURAL_KNOWLEDGE_FIELD_NUMBER: _ClassVar[int]
     TASK_CLASS_FIELD_NUMBER: _ClassVar[int]
+    WORKBENCH_BOARD_ID_FIELD_NUMBER: _ClassVar[int]
     run_id: str
     workspace_id: str
     channel_id: str
@@ -189,7 +190,8 @@ class RunContext(_message.Message):
     agent_skill: str
     skip_neural_knowledge: bool
     task_class: str
-    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ...) -> None: ...
+    workbench_board_id: str
+    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ...) -> None: ...
 
 class GetRunContextRequest(_message.Message):
     __slots__ = ()
@@ -708,7 +710,7 @@ class ReadBoardResponse(_message.Message):
     def __init__(self, board: _Optional[_Union[_board_pb2.Board, _Mapping]] = ...) -> None: ...
 
 class BoardShape(_message.Message):
-    __slots__ = ("id", "kind", "x", "y", "w", "h", "text", "fill", "parent_id", "from_id", "to_id")
+    __slots__ = ("id", "kind", "x", "y", "w", "h", "text", "fill", "parent_id", "from_id", "to_id", "file_id", "status", "app")
     ID_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     X_FIELD_NUMBER: _ClassVar[int]
@@ -720,6 +722,9 @@ class BoardShape(_message.Message):
     PARENT_ID_FIELD_NUMBER: _ClassVar[int]
     FROM_ID_FIELD_NUMBER: _ClassVar[int]
     TO_ID_FIELD_NUMBER: _ClassVar[int]
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    APP_FIELD_NUMBER: _ClassVar[int]
     id: str
     kind: str
     x: float
@@ -731,7 +736,70 @@ class BoardShape(_message.Message):
     parent_id: str
     from_id: str
     to_id: str
-    def __init__(self, id: _Optional[str] = ..., kind: _Optional[str] = ..., x: _Optional[float] = ..., y: _Optional[float] = ..., w: _Optional[float] = ..., h: _Optional[float] = ..., text: _Optional[str] = ..., fill: _Optional[str] = ..., parent_id: _Optional[str] = ..., from_id: _Optional[str] = ..., to_id: _Optional[str] = ...) -> None: ...
+    file_id: str
+    status: str
+    app: AppFrameSpec
+    def __init__(self, id: _Optional[str] = ..., kind: _Optional[str] = ..., x: _Optional[float] = ..., y: _Optional[float] = ..., w: _Optional[float] = ..., h: _Optional[float] = ..., text: _Optional[str] = ..., fill: _Optional[str] = ..., parent_id: _Optional[str] = ..., from_id: _Optional[str] = ..., to_id: _Optional[str] = ..., file_id: _Optional[str] = ..., status: _Optional[str] = ..., app: _Optional[_Union[AppFrameSpec, _Mapping]] = ...) -> None: ...
+
+class AppFrameSpec(_message.Message):
+    __slots__ = ("repo", "ref", "path", "viewport_width", "viewport_height")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    VIEWPORT_WIDTH_FIELD_NUMBER: _ClassVar[int]
+    VIEWPORT_HEIGHT_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    ref: str
+    path: str
+    viewport_width: int
+    viewport_height: int
+    def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ...) -> None: ...
+
+class WorkbenchStep(_message.Message):
+    __slots__ = ("id", "title", "status")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    title: str
+    status: str
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., status: _Optional[str] = ...) -> None: ...
+
+class WorkbenchStepsRequest(_message.Message):
+    __slots__ = ("steps",)
+    STEPS_FIELD_NUMBER: _ClassVar[int]
+    steps: _containers.RepeatedCompositeFieldContainer[WorkbenchStep]
+    def __init__(self, steps: _Optional[_Iterable[_Union[WorkbenchStep, _Mapping]]] = ...) -> None: ...
+
+class WorkbenchStepsResponse(_message.Message):
+    __slots__ = ("board_id",)
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    board_id: str
+    def __init__(self, board_id: _Optional[str] = ...) -> None: ...
+
+class WorkbenchShowRequest(_message.Message):
+    __slots__ = ("kind", "file_ids", "app", "text", "diagram", "title")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    FILE_IDS_FIELD_NUMBER: _ClassVar[int]
+    APP_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    DIAGRAM_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    file_ids: _containers.RepeatedScalarFieldContainer[str]
+    app: AppFrameSpec
+    text: str
+    diagram: str
+    title: str
+    def __init__(self, kind: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ..., app: _Optional[_Union[AppFrameSpec, _Mapping]] = ..., text: _Optional[str] = ..., diagram: _Optional[str] = ..., title: _Optional[str] = ...) -> None: ...
+
+class WorkbenchShowResponse(_message.Message):
+    __slots__ = ("board_id", "object_ids")
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_IDS_FIELD_NUMBER: _ClassVar[int]
+    board_id: str
+    object_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, board_id: _Optional[str] = ..., object_ids: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class DrawOnBoardRequest(_message.Message):
     __slots__ = ("board_id", "shapes", "delete_ids", "base_revs")

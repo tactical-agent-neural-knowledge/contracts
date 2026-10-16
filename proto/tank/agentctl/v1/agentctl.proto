@@ -127,6 +127,9 @@ message RunContext {
   // without a plan stage, on the cheaper model) or "multi_area". Empty on older runs and
   // special modes.
   string task_class = 27;
+  // The thread's Workbench: the board the agent lays its steps and its work on while
+  // people watch in the thread. Empty for runs nobody watches (neural, recon, remediation).
+  string workbench_board_id = 30;
 }
 
 message GetRunContextRequest {}
@@ -441,6 +444,45 @@ message BoardShape {
   string parent_id = 9;     // the frame it sits inside
   string from_id = 10;      // connector: what it comes from
   string to_id = 11;        // connector: what it goes to
+  // kind "image": one of this run's own artifacts (attach_preview returns the id).
+  string file_id = 12;
+  // Step frames on a Workbench: pending | running | done | failed; the fill follows.
+  string status = 13;
+  // kind "frame": the frame shows a running app; the server resolves where it is served.
+  AppFrameSpec app = 14;
+}
+message AppFrameSpec {
+  string repo = 1;               // owner/name
+  string ref = 2;                // branch or sha
+  string path = 3;               // route inside the app
+  int32 viewport_width = 4;      // 0 takes 1280
+  int32 viewport_height = 5;     // 0 takes 800
+}
+
+// The Workbench: the process row across the top of the thread's board, and the stage
+// below it. The control plane does the layout so the model never computes coordinates.
+message WorkbenchStep {
+  string id = 1;            // stable across calls, e.g. "plan", "tests", "deploy"
+  string title = 2;
+  string status = 3;        // pending | running | done | failed
+}
+message WorkbenchStepsRequest {
+  repeated WorkbenchStep steps = 1;   // the whole row, in order; a step left out is removed
+}
+message WorkbenchStepsResponse {
+  string board_id = 1;
+}
+message WorkbenchShowRequest {
+  string kind = 1;          // slides | screen | diagram | note | image
+  repeated string file_ids = 2;   // slides, image, screen (a screenshot): this run's artifacts, in order
+  AppFrameSpec app = 3;     // screen: a running build the platform serves
+  string text = 4;          // note: what the sticky says; also the caption under a stage
+  string diagram = 5;       // diagram: erd | architecture, drawn by the server from the repository
+  string title = 6;         // the stage's heading
+}
+message WorkbenchShowResponse {
+  string board_id = 1;
+  repeated string object_ids = 2;
 }
 message DrawOnBoardRequest {
   string board_id = 1;
@@ -701,6 +743,8 @@ service RunnerService {
   rpc ReadBoard(ReadBoardRequest) returns (ReadBoardResponse);
   rpc DrawOnBoard(DrawOnBoardRequest) returns (DrawOnBoardResponse);
   rpc ArrangeBoard(ArrangeBoardRequest) returns (ArrangeBoardResponse);
+  rpc WorkbenchSteps(WorkbenchStepsRequest) returns (WorkbenchStepsResponse);
+  rpc WorkbenchShow(WorkbenchShowRequest) returns (WorkbenchShowResponse);
   rpc PollInbox(PollInboxRequest) returns (PollInboxResponse);
 
   rpc OpenPullRequest(OpenPullRequestRequest) returns (OpenPullRequestResponse);
