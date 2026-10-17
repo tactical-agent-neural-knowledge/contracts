@@ -84,6 +84,15 @@ const (
 	// WorkspaceServiceUpdatePreferencesProcedure is the fully-qualified name of the WorkspaceService's
 	// UpdatePreferences RPC.
 	WorkspaceServiceUpdatePreferencesProcedure = "/tank.workspace.v1.WorkspaceService/UpdatePreferences"
+	// WorkspaceServiceGetModelNoticeProcedure is the fully-qualified name of the WorkspaceService's
+	// GetModelNotice RPC.
+	WorkspaceServiceGetModelNoticeProcedure = "/tank.workspace.v1.WorkspaceService/GetModelNotice"
+	// WorkspaceServiceDismissModelNoticeProcedure is the fully-qualified name of the WorkspaceService's
+	// DismissModelNotice RPC.
+	WorkspaceServiceDismissModelNoticeProcedure = "/tank.workspace.v1.WorkspaceService/DismissModelNotice"
+	// WorkspaceServiceSetTrainingConsentProcedure is the fully-qualified name of the WorkspaceService's
+	// SetTrainingConsent RPC.
+	WorkspaceServiceSetTrainingConsentProcedure = "/tank.workspace.v1.WorkspaceService/SetTrainingConsent"
 	// WorkspaceServiceGenerateThemeProcedure is the fully-qualified name of the WorkspaceService's
 	// GenerateTheme RPC.
 	WorkspaceServiceGenerateThemeProcedure = "/tank.workspace.v1.WorkspaceService/GenerateTheme"
@@ -181,6 +190,11 @@ type WorkspaceServiceClient interface {
 	UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error)
 	GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error)
 	UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error)
+	// A new model's notice, shown once per person at the top of the workspace until they
+	// dismiss it; owners and admins answer the data question for the workspace in place.
+	GetModelNotice(context.Context, *connect.Request[v1.GetModelNoticeRequest]) (*connect.Response[v1.GetModelNoticeResponse], error)
+	DismissModelNotice(context.Context, *connect.Request[v1.DismissModelNoticeRequest]) (*connect.Response[v1.DismissModelNoticeResponse], error)
+	SetTrainingConsent(context.Context, *connect.Request[v1.SetTrainingConsentRequest]) (*connect.Response[v1.SetTrainingConsentResponse], error)
 	// Turn up to fifteen words into a theme. Nothing is saved; the caller decides.
 	GenerateTheme(context.Context, *connect.Request[v1.GenerateThemeRequest]) (*connect.Response[v1.GenerateThemeResponse], error)
 	// Admins only: the workspace's theme, or a reset when theme is unset.
@@ -323,6 +337,24 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			httpClient,
 			baseURL+WorkspaceServiceUpdatePreferencesProcedure,
 			connect.WithSchema(workspaceServiceMethods.ByName("UpdatePreferences")),
+			connect.WithClientOptions(opts...),
+		),
+		getModelNotice: connect.NewClient[v1.GetModelNoticeRequest, v1.GetModelNoticeResponse](
+			httpClient,
+			baseURL+WorkspaceServiceGetModelNoticeProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("GetModelNotice")),
+			connect.WithClientOptions(opts...),
+		),
+		dismissModelNotice: connect.NewClient[v1.DismissModelNoticeRequest, v1.DismissModelNoticeResponse](
+			httpClient,
+			baseURL+WorkspaceServiceDismissModelNoticeProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("DismissModelNotice")),
+			connect.WithClientOptions(opts...),
+		),
+		setTrainingConsent: connect.NewClient[v1.SetTrainingConsentRequest, v1.SetTrainingConsentResponse](
+			httpClient,
+			baseURL+WorkspaceServiceSetTrainingConsentProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("SetTrainingConsent")),
 			connect.WithClientOptions(opts...),
 		),
 		generateTheme: connect.NewClient[v1.GenerateThemeRequest, v1.GenerateThemeResponse](
@@ -497,6 +529,9 @@ type workspaceServiceClient struct {
 	updateProfile          *connect.Client[v1.UpdateProfileRequest, v1.UpdateProfileResponse]
 	getPreferences         *connect.Client[v1.GetPreferencesRequest, v1.GetPreferencesResponse]
 	updatePreferences      *connect.Client[v1.UpdatePreferencesRequest, v1.UpdatePreferencesResponse]
+	getModelNotice         *connect.Client[v1.GetModelNoticeRequest, v1.GetModelNoticeResponse]
+	dismissModelNotice     *connect.Client[v1.DismissModelNoticeRequest, v1.DismissModelNoticeResponse]
+	setTrainingConsent     *connect.Client[v1.SetTrainingConsentRequest, v1.SetTrainingConsentResponse]
 	generateTheme          *connect.Client[v1.GenerateThemeRequest, v1.GenerateThemeResponse]
 	setWorkspaceTheme      *connect.Client[v1.SetWorkspaceThemeRequest, v1.SetWorkspaceThemeResponse]
 	generateArt            *connect.Client[v1.GenerateArtRequest, v1.GenerateArtResponse]
@@ -607,6 +642,21 @@ func (c *workspaceServiceClient) GetPreferences(ctx context.Context, req *connec
 // UpdatePreferences calls tank.workspace.v1.WorkspaceService.UpdatePreferences.
 func (c *workspaceServiceClient) UpdatePreferences(ctx context.Context, req *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error) {
 	return c.updatePreferences.CallUnary(ctx, req)
+}
+
+// GetModelNotice calls tank.workspace.v1.WorkspaceService.GetModelNotice.
+func (c *workspaceServiceClient) GetModelNotice(ctx context.Context, req *connect.Request[v1.GetModelNoticeRequest]) (*connect.Response[v1.GetModelNoticeResponse], error) {
+	return c.getModelNotice.CallUnary(ctx, req)
+}
+
+// DismissModelNotice calls tank.workspace.v1.WorkspaceService.DismissModelNotice.
+func (c *workspaceServiceClient) DismissModelNotice(ctx context.Context, req *connect.Request[v1.DismissModelNoticeRequest]) (*connect.Response[v1.DismissModelNoticeResponse], error) {
+	return c.dismissModelNotice.CallUnary(ctx, req)
+}
+
+// SetTrainingConsent calls tank.workspace.v1.WorkspaceService.SetTrainingConsent.
+func (c *workspaceServiceClient) SetTrainingConsent(ctx context.Context, req *connect.Request[v1.SetTrainingConsentRequest]) (*connect.Response[v1.SetTrainingConsentResponse], error) {
+	return c.setTrainingConsent.CallUnary(ctx, req)
 }
 
 // GenerateTheme calls tank.workspace.v1.WorkspaceService.GenerateTheme.
@@ -754,6 +804,11 @@ type WorkspaceServiceHandler interface {
 	UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error)
 	GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error)
 	UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error)
+	// A new model's notice, shown once per person at the top of the workspace until they
+	// dismiss it; owners and admins answer the data question for the workspace in place.
+	GetModelNotice(context.Context, *connect.Request[v1.GetModelNoticeRequest]) (*connect.Response[v1.GetModelNoticeResponse], error)
+	DismissModelNotice(context.Context, *connect.Request[v1.DismissModelNoticeRequest]) (*connect.Response[v1.DismissModelNoticeResponse], error)
+	SetTrainingConsent(context.Context, *connect.Request[v1.SetTrainingConsentRequest]) (*connect.Response[v1.SetTrainingConsentResponse], error)
 	// Turn up to fifteen words into a theme. Nothing is saved; the caller decides.
 	GenerateTheme(context.Context, *connect.Request[v1.GenerateThemeRequest]) (*connect.Response[v1.GenerateThemeResponse], error)
 	// Admins only: the workspace's theme, or a reset when theme is unset.
@@ -892,6 +947,24 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 		WorkspaceServiceUpdatePreferencesProcedure,
 		svc.UpdatePreferences,
 		connect.WithSchema(workspaceServiceMethods.ByName("UpdatePreferences")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceGetModelNoticeHandler := connect.NewUnaryHandler(
+		WorkspaceServiceGetModelNoticeProcedure,
+		svc.GetModelNotice,
+		connect.WithSchema(workspaceServiceMethods.ByName("GetModelNotice")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceDismissModelNoticeHandler := connect.NewUnaryHandler(
+		WorkspaceServiceDismissModelNoticeProcedure,
+		svc.DismissModelNotice,
+		connect.WithSchema(workspaceServiceMethods.ByName("DismissModelNotice")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceSetTrainingConsentHandler := connect.NewUnaryHandler(
+		WorkspaceServiceSetTrainingConsentProcedure,
+		svc.SetTrainingConsent,
+		connect.WithSchema(workspaceServiceMethods.ByName("SetTrainingConsent")),
 		connect.WithHandlerOptions(opts...),
 	)
 	workspaceServiceGenerateThemeHandler := connect.NewUnaryHandler(
@@ -1080,6 +1153,12 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 			workspaceServiceGetPreferencesHandler.ServeHTTP(w, r)
 		case WorkspaceServiceUpdatePreferencesProcedure:
 			workspaceServiceUpdatePreferencesHandler.ServeHTTP(w, r)
+		case WorkspaceServiceGetModelNoticeProcedure:
+			workspaceServiceGetModelNoticeHandler.ServeHTTP(w, r)
+		case WorkspaceServiceDismissModelNoticeProcedure:
+			workspaceServiceDismissModelNoticeHandler.ServeHTTP(w, r)
+		case WorkspaceServiceSetTrainingConsentProcedure:
+			workspaceServiceSetTrainingConsentHandler.ServeHTTP(w, r)
 		case WorkspaceServiceGenerateThemeProcedure:
 			workspaceServiceGenerateThemeHandler.ServeHTTP(w, r)
 		case WorkspaceServiceSetWorkspaceThemeProcedure:
@@ -1205,6 +1284,18 @@ func (UnimplementedWorkspaceServiceHandler) GetPreferences(context.Context, *con
 
 func (UnimplementedWorkspaceServiceHandler) UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.UpdatePreferences is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) GetModelNotice(context.Context, *connect.Request[v1.GetModelNoticeRequest]) (*connect.Response[v1.GetModelNoticeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.GetModelNotice is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) DismissModelNotice(context.Context, *connect.Request[v1.DismissModelNoticeRequest]) (*connect.Response[v1.DismissModelNoticeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.DismissModelNotice is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) SetTrainingConsent(context.Context, *connect.Request[v1.SetTrainingConsentRequest]) (*connect.Response[v1.SetTrainingConsentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.SetTrainingConsent is not implemented"))
 }
 
 func (UnimplementedWorkspaceServiceHandler) GenerateTheme(context.Context, *connect.Request[v1.GenerateThemeRequest]) (*connect.Response[v1.GenerateThemeResponse], error) {

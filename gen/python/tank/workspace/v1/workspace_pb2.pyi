@@ -1016,3 +1016,59 @@ class ListSoundPacksResponse(_message.Message):
     PACKS_FIELD_NUMBER: _ClassVar[int]
     packs: _containers.RepeatedCompositeFieldContainer[SoundPack]
     def __init__(self, packs: _Optional[_Iterable[_Union[SoundPack, _Mapping]]] = ...) -> None: ...
+
+class ModelNotice(_message.Message):
+    __slots__ = ("model", "title", "body", "introduced_at")
+    MODEL_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    BODY_FIELD_NUMBER: _ClassVar[int]
+    INTRODUCED_AT_FIELD_NUMBER: _ClassVar[int]
+    model: str
+    title: str
+    body: str
+    introduced_at: _timestamp_pb2.Timestamp
+    def __init__(self, model: _Optional[str] = ..., title: _Optional[str] = ..., body: _Optional[str] = ..., introduced_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class GetModelNoticeRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class GetModelNoticeResponse(_message.Message):
+    __slots__ = ("notice", "can_decide", "training_allowed")
+    NOTICE_FIELD_NUMBER: _ClassVar[int]
+    CAN_DECIDE_FIELD_NUMBER: _ClassVar[int]
+    TRAINING_ALLOWED_FIELD_NUMBER: _ClassVar[int]
+    notice: ModelNotice
+    can_decide: bool
+    training_allowed: bool
+    def __init__(self, notice: _Optional[_Union[ModelNotice, _Mapping]] = ..., can_decide: bool = ..., training_allowed: bool = ...) -> None: ...
+
+class DismissModelNoticeRequest(_message.Message):
+    __slots__ = ("workspace_id", "model")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    MODEL_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    model: str
+    def __init__(self, workspace_id: _Optional[str] = ..., model: _Optional[str] = ...) -> None: ...
+
+class DismissModelNoticeResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class SetTrainingConsentRequest(_message.Message):
+    __slots__ = ("workspace_id", "allow", "model")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ALLOW_FIELD_NUMBER: _ClassVar[int]
+    MODEL_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    allow: bool
+    model: str
+    def __init__(self, workspace_id: _Optional[str] = ..., allow: bool = ..., model: _Optional[str] = ...) -> None: ...
+
+class SetTrainingConsentResponse(_message.Message):
+    __slots__ = ("training_allowed",)
+    TRAINING_ALLOWED_FIELD_NUMBER: _ClassVar[int]
+    training_allowed: bool
+    def __init__(self, training_allowed: bool = ...) -> None: ...

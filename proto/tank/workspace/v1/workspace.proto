@@ -609,6 +609,11 @@ service WorkspaceService {
   rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
   rpc GetPreferences(GetPreferencesRequest) returns (GetPreferencesResponse);
   rpc UpdatePreferences(UpdatePreferencesRequest) returns (UpdatePreferencesResponse);
+  // A new model's notice, shown once per person at the top of the workspace until they
+  // dismiss it; owners and admins answer the data question for the workspace in place.
+  rpc GetModelNotice(GetModelNoticeRequest) returns (GetModelNoticeResponse);
+  rpc DismissModelNotice(DismissModelNoticeRequest) returns (DismissModelNoticeResponse);
+  rpc SetTrainingConsent(SetTrainingConsentRequest) returns (SetTrainingConsentResponse);
   // Turn up to fifteen words into a theme. Nothing is saved; the caller decides.
   rpc GenerateTheme(GenerateThemeRequest) returns (GenerateThemeResponse);
   // Admins only: the workspace's theme, or a reset when theme is unset.
@@ -719,3 +724,28 @@ message ListSoundPacksRequest {}
 message ListSoundPacksResponse {
   repeated SoundPack packs = 1;
 }
+
+// A model TANK has introduced, announced to every workspace once.
+message ModelNotice {
+  string model = 1;         // the gateway's name, e.g. "tank-neural-1"
+  string title = 2;         // "TANK Neural 1.0 is here"
+  string body = 3;          // one or two sentences
+  google.protobuf.Timestamp introduced_at = 4;
+}
+message GetModelNoticeRequest { string workspace_id = 1; }
+message GetModelNoticeResponse {
+  ModelNotice notice = 1;     // unset when nothing is pending for this person
+  bool can_decide = 2;        // owner or admin: may answer the data question
+  bool training_allowed = 3;  // the workspace's standing answer
+}
+message DismissModelNoticeRequest {
+  string workspace_id = 1;
+  string model = 2;
+}
+message DismissModelNoticeResponse {}
+message SetTrainingConsentRequest {
+  string workspace_id = 1;
+  bool allow = 2;
+  string model = 3;           // the notice this answers, for the audit record
+}
+message SetTrainingConsentResponse { bool training_allowed = 1; }
