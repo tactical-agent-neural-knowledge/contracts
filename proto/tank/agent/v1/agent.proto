@@ -287,6 +287,12 @@ message TreadSettings {
   // work never needs the move, and the strongest model costs two and a half times as
   // much on every token.
   bool strongest_model = 10;
+  // The model this Tread's runs use, by name, chosen on the switchboard: "" lets TANK
+  // decide per run (the default), "tank-neural-1" is TANK's own model, and the Claude
+  // names are routed as they are. A name the gateway does not know is refused at save.
+  // Supersedes strongest_model, which stays for older clients: picking claude-opus-5
+  // is what that switch meant.
+  string model = 11;
 }
 message HourBucket {
   google.protobuf.Timestamp hour = 1;

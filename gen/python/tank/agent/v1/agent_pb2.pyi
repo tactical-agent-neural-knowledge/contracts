@@ -389,7 +389,7 @@ class ListRepoPreviewSetupsResponse(_message.Message):
     def __init__(self, setups: _Optional[_Iterable[_Union[RepoPreviewSetup, _Mapping]]] = ..., secret_name: _Optional[str] = ..., token_issued: bool = ...) -> None: ...
 
 class TreadSettings(_message.Message):
-    __slots__ = ("concurrent_runs", "auto_accept_plans", "max_run_usd", "daily_usd", "pull_requests", "pr_reviewer_ids", "read_neural_knowledge", "merge_allowed", "notify_reviewers", "strongest_model")
+    __slots__ = ("concurrent_runs", "auto_accept_plans", "max_run_usd", "daily_usd", "pull_requests", "pr_reviewer_ids", "read_neural_knowledge", "merge_allowed", "notify_reviewers", "strongest_model", "model")
     CONCURRENT_RUNS_FIELD_NUMBER: _ClassVar[int]
     AUTO_ACCEPT_PLANS_FIELD_NUMBER: _ClassVar[int]
     MAX_RUN_USD_FIELD_NUMBER: _ClassVar[int]
@@ -400,6 +400,7 @@ class TreadSettings(_message.Message):
     MERGE_ALLOWED_FIELD_NUMBER: _ClassVar[int]
     NOTIFY_REVIEWERS_FIELD_NUMBER: _ClassVar[int]
     STRONGEST_MODEL_FIELD_NUMBER: _ClassVar[int]
+    MODEL_FIELD_NUMBER: _ClassVar[int]
     concurrent_runs: int
     auto_accept_plans: bool
     max_run_usd: float
@@ -410,7 +411,8 @@ class TreadSettings(_message.Message):
     merge_allowed: bool
     notify_reviewers: bool
     strongest_model: bool
-    def __init__(self, concurrent_runs: _Optional[int] = ..., auto_accept_plans: bool = ..., max_run_usd: _Optional[float] = ..., daily_usd: _Optional[float] = ..., pull_requests: _Optional[str] = ..., pr_reviewer_ids: _Optional[_Iterable[str]] = ..., read_neural_knowledge: bool = ..., merge_allowed: bool = ..., notify_reviewers: bool = ..., strongest_model: bool = ...) -> None: ...
+    model: str
+    def __init__(self, concurrent_runs: _Optional[int] = ..., auto_accept_plans: bool = ..., max_run_usd: _Optional[float] = ..., daily_usd: _Optional[float] = ..., pull_requests: _Optional[str] = ..., pr_reviewer_ids: _Optional[_Iterable[str]] = ..., read_neural_knowledge: bool = ..., merge_allowed: bool = ..., notify_reviewers: bool = ..., strongest_model: bool = ..., model: _Optional[str] = ...) -> None: ...
 
 class HourBucket(_message.Message):
     __slots__ = ("hour", "runs", "spend_usd", "neural_saved_usd")
