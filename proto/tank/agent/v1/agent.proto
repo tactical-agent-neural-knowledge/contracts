@@ -326,6 +326,20 @@ message SetTreadSettingsRequest {
 }
 message SetTreadSettingsResponse { TreadSettings settings = 1; }
 
+// GetTreadMetrics returns cost and usage metrics for a Tread, queryable by
+// time window. Available to all channel members; GetTreadSwitchboard carries
+// the admin settings alongside the same metrics.
+message GetTreadMetricsRequest {
+  string channel_id = 1;
+  // Both absent: the last 24 hours. since alone: from that time to now.
+  // Both present: bounded window (up to 30 days).
+  google.protobuf.Timestamp since = 2;
+  google.protobuf.Timestamp until = 3;
+}
+message GetTreadMetricsResponse {
+  TreadMetrics metrics = 1;
+}
+
 message GetRepoConnectionRequest { string channel_id = 1; }
 message GetRepoConnectionResponse { RepoConnection connection = 1; }
 
@@ -433,6 +447,8 @@ service AgentService {
   // The Tread's switchboard: metrics for members, settings for admins.
   rpc GetTreadSwitchboard(GetTreadSwitchboardRequest) returns (GetTreadSwitchboardResponse);
   rpc SetTreadSettings(SetTreadSettingsRequest) returns (SetTreadSettingsResponse);
+  // Cost and usage metrics only, queryable by time range. Available to all members.
+  rpc GetTreadMetrics(GetTreadMetricsRequest) returns (GetTreadMetricsResponse);
   // The security state of every Tread in the workspace that is connected to a repository.
   rpc ListTreadSecurity(ListTreadSecurityRequest) returns (ListTreadSecurityResponse);
   // Every app the workspace hosts on TANK, for the Treads the caller is in.
