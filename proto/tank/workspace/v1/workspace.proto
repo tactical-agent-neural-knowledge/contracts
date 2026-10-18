@@ -111,6 +111,10 @@ message Entitlements {
   // Scheduling around people and quiet (send when calm, when they are here,
   // nudge unless answered) is premium; plain "send at a time" is free.
   bool conditional_sends = 9;
+  // The add-ons this workspace has on: "shield", "books", "blueprint", "atlas". Each is
+  // bought per workspace on premium; a surface for one that is off is shown grayed with
+  // an upgrade button, and every call behind it is refused by the server regardless.
+  repeated string addons = 10;
 }
 
 message ListMembersRequest {
