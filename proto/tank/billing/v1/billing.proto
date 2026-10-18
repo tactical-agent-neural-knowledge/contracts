@@ -52,16 +52,30 @@ message Subscription {
   int64 agent_fees_cents_this_period = 7;
   google.protobuf.Timestamp period_end = 8;
   bool has_agents = 9;
+  // The add-ons on for the workspace: shield, books, blueprint, atlas.
+  repeated string addons = 10;
+  // Agent usage this calendar month at the metered price, and the cap an owner set.
+  int64 agent_usage_cents_this_month = 11;
+  int64 agent_cap_cents = 12;
+  // Who sold the subscription: "stripe", "apple", "manual", or "" for none. "fake" in
+  // a build with no provider, which the clients read as "write to us instead".
+  string provider = 13;
+  // How many seats premium covers; the first ten are the flat price.
+  int32 seats = 14;
 }
 
 message GetSubscriptionRequest { string workspace_id = 1; }
 message GetSubscriptionResponse { Subscription subscription = 1; }
 
-// StartUpgradeCheckout turns a free venture into one that can have agents.
+// StartUpgradeCheckout starts a subscription on the web: premium (the workspace's seat
+// count is the quantity), an add-on, or the bundle. The phone buys through the App
+// Store instead and reports the purchase with VerifyAppleTransaction.
 message StartUpgradeCheckoutRequest {
   string workspace_id = 1;
   string success_path = 2;
   string cancel_path = 3;
+  // premium | shield | books | blueprint | atlas | bundle. Empty means premium.
+  string product = 4;
 }
 message StartUpgradeCheckoutResponse { string checkout_url = 1; }
 
@@ -72,10 +86,24 @@ message OpenBillingPortalRequest {
 }
 message OpenBillingPortalResponse { string url = 1; }
 
+// VerifyAppleTransaction hands the api a signed StoreKit transaction so the purchase
+// counts here the same way a Stripe checkout does. Apple's own server notifications
+// keep it current afterwards.
+message VerifyAppleTransactionRequest {
+  string workspace_id = 1;
+  // The JWS of the transaction, as StoreKit 2 gives it to the app.
+  string signed_transaction = 2;
+}
+message VerifyAppleTransactionResponse {
+  string product = 1;
+  string status = 2;
+}
+
 service BillingService {
   rpc GetPrice(GetPriceRequest) returns (GetPriceResponse);
   rpc StartClaimCheckout(StartClaimCheckoutRequest) returns (StartClaimCheckoutResponse);
   rpc GetSubscription(GetSubscriptionRequest) returns (GetSubscriptionResponse);
   rpc StartUpgradeCheckout(StartUpgradeCheckoutRequest) returns (StartUpgradeCheckoutResponse);
   rpc OpenBillingPortal(OpenBillingPortalRequest) returns (OpenBillingPortalResponse);
+  rpc VerifyAppleTransaction(VerifyAppleTransactionRequest) returns (VerifyAppleTransactionResponse);
 }

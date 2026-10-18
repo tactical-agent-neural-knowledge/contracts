@@ -115,6 +115,10 @@ message Entitlements {
   // bought per workspace on premium; a surface for one that is off is shown grayed with
   // an upgrade button, and every call behind it is refused by the server regardless.
   repeated string addons = 10;
+  // Agent usage this calendar month at the metered price, and the workspace's cap: a
+  // meter on Home, and the sentence a refused run carries.
+  int64 agent_usage_cents = 11;
+  int64 agent_cap_cents = 12;
 }
 
 message ListMembersRequest {

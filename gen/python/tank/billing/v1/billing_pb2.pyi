@@ -1,7 +1,8 @@
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -52,7 +53,7 @@ class StartClaimCheckoutResponse(_message.Message):
     def __init__(self, checkout_url: _Optional[str] = ..., held_until: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class Subscription(_message.Message):
-    __slots__ = ("workspace_id", "plan", "status", "monthly_cents", "agent_minute_cents", "agent_minutes_this_period", "agent_fees_cents_this_period", "period_end", "has_agents")
+    __slots__ = ("workspace_id", "plan", "status", "monthly_cents", "agent_minute_cents", "agent_minutes_this_period", "agent_fees_cents_this_period", "period_end", "has_agents", "addons", "agent_usage_cents_this_month", "agent_cap_cents", "provider", "seats")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     PLAN_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
@@ -62,6 +63,11 @@ class Subscription(_message.Message):
     AGENT_FEES_CENTS_THIS_PERIOD_FIELD_NUMBER: _ClassVar[int]
     PERIOD_END_FIELD_NUMBER: _ClassVar[int]
     HAS_AGENTS_FIELD_NUMBER: _ClassVar[int]
+    ADDONS_FIELD_NUMBER: _ClassVar[int]
+    AGENT_USAGE_CENTS_THIS_MONTH_FIELD_NUMBER: _ClassVar[int]
+    AGENT_CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
+    PROVIDER_FIELD_NUMBER: _ClassVar[int]
+    SEATS_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     plan: str
     status: str
@@ -71,7 +77,12 @@ class Subscription(_message.Message):
     agent_fees_cents_this_period: int
     period_end: _timestamp_pb2.Timestamp
     has_agents: bool
-    def __init__(self, workspace_id: _Optional[str] = ..., plan: _Optional[str] = ..., status: _Optional[str] = ..., monthly_cents: _Optional[int] = ..., agent_minute_cents: _Optional[int] = ..., agent_minutes_this_period: _Optional[int] = ..., agent_fees_cents_this_period: _Optional[int] = ..., period_end: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., has_agents: bool = ...) -> None: ...
+    addons: _containers.RepeatedScalarFieldContainer[str]
+    agent_usage_cents_this_month: int
+    agent_cap_cents: int
+    provider: str
+    seats: int
+    def __init__(self, workspace_id: _Optional[str] = ..., plan: _Optional[str] = ..., status: _Optional[str] = ..., monthly_cents: _Optional[int] = ..., agent_minute_cents: _Optional[int] = ..., agent_minutes_this_period: _Optional[int] = ..., agent_fees_cents_this_period: _Optional[int] = ..., period_end: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., has_agents: bool = ..., addons: _Optional[_Iterable[str]] = ..., agent_usage_cents_this_month: _Optional[int] = ..., agent_cap_cents: _Optional[int] = ..., provider: _Optional[str] = ..., seats: _Optional[int] = ...) -> None: ...
 
 class GetSubscriptionRequest(_message.Message):
     __slots__ = ("workspace_id",)
@@ -86,14 +97,16 @@ class GetSubscriptionResponse(_message.Message):
     def __init__(self, subscription: _Optional[_Union[Subscription, _Mapping]] = ...) -> None: ...
 
 class StartUpgradeCheckoutRequest(_message.Message):
-    __slots__ = ("workspace_id", "success_path", "cancel_path")
+    __slots__ = ("workspace_id", "success_path", "cancel_path", "product")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     SUCCESS_PATH_FIELD_NUMBER: _ClassVar[int]
     CANCEL_PATH_FIELD_NUMBER: _ClassVar[int]
+    PRODUCT_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     success_path: str
     cancel_path: str
-    def __init__(self, workspace_id: _Optional[str] = ..., success_path: _Optional[str] = ..., cancel_path: _Optional[str] = ...) -> None: ...
+    product: str
+    def __init__(self, workspace_id: _Optional[str] = ..., success_path: _Optional[str] = ..., cancel_path: _Optional[str] = ..., product: _Optional[str] = ...) -> None: ...
 
 class StartUpgradeCheckoutResponse(_message.Message):
     __slots__ = ("checkout_url",)
@@ -114,3 +127,19 @@ class OpenBillingPortalResponse(_message.Message):
     URL_FIELD_NUMBER: _ClassVar[int]
     url: str
     def __init__(self, url: _Optional[str] = ...) -> None: ...
+
+class VerifyAppleTransactionRequest(_message.Message):
+    __slots__ = ("workspace_id", "signed_transaction")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SIGNED_TRANSACTION_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    signed_transaction: str
+    def __init__(self, workspace_id: _Optional[str] = ..., signed_transaction: _Optional[str] = ...) -> None: ...
+
+class VerifyAppleTransactionResponse(_message.Message):
+    __slots__ = ("product", "status")
+    PRODUCT_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    product: str
+    status: str
+    def __init__(self, product: _Optional[str] = ..., status: _Optional[str] = ...) -> None: ...

@@ -47,6 +47,9 @@ const (
 	// BillingServiceOpenBillingPortalProcedure is the fully-qualified name of the BillingService's
 	// OpenBillingPortal RPC.
 	BillingServiceOpenBillingPortalProcedure = "/tank.billing.v1.BillingService/OpenBillingPortal"
+	// BillingServiceVerifyAppleTransactionProcedure is the fully-qualified name of the BillingService's
+	// VerifyAppleTransaction RPC.
+	BillingServiceVerifyAppleTransactionProcedure = "/tank.billing.v1.BillingService/VerifyAppleTransaction"
 )
 
 // BillingServiceClient is a client for the tank.billing.v1.BillingService service.
@@ -56,6 +59,7 @@ type BillingServiceClient interface {
 	GetSubscription(context.Context, *connect.Request[v1.GetSubscriptionRequest]) (*connect.Response[v1.GetSubscriptionResponse], error)
 	StartUpgradeCheckout(context.Context, *connect.Request[v1.StartUpgradeCheckoutRequest]) (*connect.Response[v1.StartUpgradeCheckoutResponse], error)
 	OpenBillingPortal(context.Context, *connect.Request[v1.OpenBillingPortalRequest]) (*connect.Response[v1.OpenBillingPortalResponse], error)
+	VerifyAppleTransaction(context.Context, *connect.Request[v1.VerifyAppleTransactionRequest]) (*connect.Response[v1.VerifyAppleTransactionResponse], error)
 }
 
 // NewBillingServiceClient constructs a client for the tank.billing.v1.BillingService service. By
@@ -99,16 +103,23 @@ func NewBillingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(billingServiceMethods.ByName("OpenBillingPortal")),
 			connect.WithClientOptions(opts...),
 		),
+		verifyAppleTransaction: connect.NewClient[v1.VerifyAppleTransactionRequest, v1.VerifyAppleTransactionResponse](
+			httpClient,
+			baseURL+BillingServiceVerifyAppleTransactionProcedure,
+			connect.WithSchema(billingServiceMethods.ByName("VerifyAppleTransaction")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // billingServiceClient implements BillingServiceClient.
 type billingServiceClient struct {
-	getPrice             *connect.Client[v1.GetPriceRequest, v1.GetPriceResponse]
-	startClaimCheckout   *connect.Client[v1.StartClaimCheckoutRequest, v1.StartClaimCheckoutResponse]
-	getSubscription      *connect.Client[v1.GetSubscriptionRequest, v1.GetSubscriptionResponse]
-	startUpgradeCheckout *connect.Client[v1.StartUpgradeCheckoutRequest, v1.StartUpgradeCheckoutResponse]
-	openBillingPortal    *connect.Client[v1.OpenBillingPortalRequest, v1.OpenBillingPortalResponse]
+	getPrice               *connect.Client[v1.GetPriceRequest, v1.GetPriceResponse]
+	startClaimCheckout     *connect.Client[v1.StartClaimCheckoutRequest, v1.StartClaimCheckoutResponse]
+	getSubscription        *connect.Client[v1.GetSubscriptionRequest, v1.GetSubscriptionResponse]
+	startUpgradeCheckout   *connect.Client[v1.StartUpgradeCheckoutRequest, v1.StartUpgradeCheckoutResponse]
+	openBillingPortal      *connect.Client[v1.OpenBillingPortalRequest, v1.OpenBillingPortalResponse]
+	verifyAppleTransaction *connect.Client[v1.VerifyAppleTransactionRequest, v1.VerifyAppleTransactionResponse]
 }
 
 // GetPrice calls tank.billing.v1.BillingService.GetPrice.
@@ -136,6 +147,11 @@ func (c *billingServiceClient) OpenBillingPortal(ctx context.Context, req *conne
 	return c.openBillingPortal.CallUnary(ctx, req)
 }
 
+// VerifyAppleTransaction calls tank.billing.v1.BillingService.VerifyAppleTransaction.
+func (c *billingServiceClient) VerifyAppleTransaction(ctx context.Context, req *connect.Request[v1.VerifyAppleTransactionRequest]) (*connect.Response[v1.VerifyAppleTransactionResponse], error) {
+	return c.verifyAppleTransaction.CallUnary(ctx, req)
+}
+
 // BillingServiceHandler is an implementation of the tank.billing.v1.BillingService service.
 type BillingServiceHandler interface {
 	GetPrice(context.Context, *connect.Request[v1.GetPriceRequest]) (*connect.Response[v1.GetPriceResponse], error)
@@ -143,6 +159,7 @@ type BillingServiceHandler interface {
 	GetSubscription(context.Context, *connect.Request[v1.GetSubscriptionRequest]) (*connect.Response[v1.GetSubscriptionResponse], error)
 	StartUpgradeCheckout(context.Context, *connect.Request[v1.StartUpgradeCheckoutRequest]) (*connect.Response[v1.StartUpgradeCheckoutResponse], error)
 	OpenBillingPortal(context.Context, *connect.Request[v1.OpenBillingPortalRequest]) (*connect.Response[v1.OpenBillingPortalResponse], error)
+	VerifyAppleTransaction(context.Context, *connect.Request[v1.VerifyAppleTransactionRequest]) (*connect.Response[v1.VerifyAppleTransactionResponse], error)
 }
 
 // NewBillingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -182,6 +199,12 @@ func NewBillingServiceHandler(svc BillingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(billingServiceMethods.ByName("OpenBillingPortal")),
 		connect.WithHandlerOptions(opts...),
 	)
+	billingServiceVerifyAppleTransactionHandler := connect.NewUnaryHandler(
+		BillingServiceVerifyAppleTransactionProcedure,
+		svc.VerifyAppleTransaction,
+		connect.WithSchema(billingServiceMethods.ByName("VerifyAppleTransaction")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.billing.v1.BillingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BillingServiceGetPriceProcedure:
@@ -194,6 +217,8 @@ func NewBillingServiceHandler(svc BillingServiceHandler, opts ...connect.Handler
 			billingServiceStartUpgradeCheckoutHandler.ServeHTTP(w, r)
 		case BillingServiceOpenBillingPortalProcedure:
 			billingServiceOpenBillingPortalHandler.ServeHTTP(w, r)
+		case BillingServiceVerifyAppleTransactionProcedure:
+			billingServiceVerifyAppleTransactionHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -221,4 +246,8 @@ func (UnimplementedBillingServiceHandler) StartUpgradeCheckout(context.Context, 
 
 func (UnimplementedBillingServiceHandler) OpenBillingPortal(context.Context, *connect.Request[v1.OpenBillingPortalRequest]) (*connect.Response[v1.OpenBillingPortalResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.OpenBillingPortal is not implemented"))
+}
+
+func (UnimplementedBillingServiceHandler) VerifyAppleTransaction(context.Context, *connect.Request[v1.VerifyAppleTransactionRequest]) (*connect.Response[v1.VerifyAppleTransactionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.VerifyAppleTransaction is not implemented"))
 }
