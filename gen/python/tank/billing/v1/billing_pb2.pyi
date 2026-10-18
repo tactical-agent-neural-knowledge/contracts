@@ -143,3 +143,17 @@ class VerifyAppleTransactionResponse(_message.Message):
     product: str
     status: str
     def __init__(self, product: _Optional[str] = ..., status: _Optional[str] = ...) -> None: ...
+
+class SetAgentCapRequest(_message.Message):
+    __slots__ = ("workspace_id", "agent_cap_cents")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    AGENT_CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    agent_cap_cents: int
+    def __init__(self, workspace_id: _Optional[str] = ..., agent_cap_cents: _Optional[int] = ...) -> None: ...
+
+class SetAgentCapResponse(_message.Message):
+    __slots__ = ("agent_cap_cents",)
+    AGENT_CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
+    agent_cap_cents: int
+    def __init__(self, agent_cap_cents: _Optional[int] = ...) -> None: ...

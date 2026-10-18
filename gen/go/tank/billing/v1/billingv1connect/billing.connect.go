@@ -50,6 +50,9 @@ const (
 	// BillingServiceVerifyAppleTransactionProcedure is the fully-qualified name of the BillingService's
 	// VerifyAppleTransaction RPC.
 	BillingServiceVerifyAppleTransactionProcedure = "/tank.billing.v1.BillingService/VerifyAppleTransaction"
+	// BillingServiceSetAgentCapProcedure is the fully-qualified name of the BillingService's
+	// SetAgentCap RPC.
+	BillingServiceSetAgentCapProcedure = "/tank.billing.v1.BillingService/SetAgentCap"
 )
 
 // BillingServiceClient is a client for the tank.billing.v1.BillingService service.
@@ -60,6 +63,7 @@ type BillingServiceClient interface {
 	StartUpgradeCheckout(context.Context, *connect.Request[v1.StartUpgradeCheckoutRequest]) (*connect.Response[v1.StartUpgradeCheckoutResponse], error)
 	OpenBillingPortal(context.Context, *connect.Request[v1.OpenBillingPortalRequest]) (*connect.Response[v1.OpenBillingPortalResponse], error)
 	VerifyAppleTransaction(context.Context, *connect.Request[v1.VerifyAppleTransactionRequest]) (*connect.Response[v1.VerifyAppleTransactionResponse], error)
+	SetAgentCap(context.Context, *connect.Request[v1.SetAgentCapRequest]) (*connect.Response[v1.SetAgentCapResponse], error)
 }
 
 // NewBillingServiceClient constructs a client for the tank.billing.v1.BillingService service. By
@@ -109,6 +113,12 @@ func NewBillingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(billingServiceMethods.ByName("VerifyAppleTransaction")),
 			connect.WithClientOptions(opts...),
 		),
+		setAgentCap: connect.NewClient[v1.SetAgentCapRequest, v1.SetAgentCapResponse](
+			httpClient,
+			baseURL+BillingServiceSetAgentCapProcedure,
+			connect.WithSchema(billingServiceMethods.ByName("SetAgentCap")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -120,6 +130,7 @@ type billingServiceClient struct {
 	startUpgradeCheckout   *connect.Client[v1.StartUpgradeCheckoutRequest, v1.StartUpgradeCheckoutResponse]
 	openBillingPortal      *connect.Client[v1.OpenBillingPortalRequest, v1.OpenBillingPortalResponse]
 	verifyAppleTransaction *connect.Client[v1.VerifyAppleTransactionRequest, v1.VerifyAppleTransactionResponse]
+	setAgentCap            *connect.Client[v1.SetAgentCapRequest, v1.SetAgentCapResponse]
 }
 
 // GetPrice calls tank.billing.v1.BillingService.GetPrice.
@@ -152,6 +163,11 @@ func (c *billingServiceClient) VerifyAppleTransaction(ctx context.Context, req *
 	return c.verifyAppleTransaction.CallUnary(ctx, req)
 }
 
+// SetAgentCap calls tank.billing.v1.BillingService.SetAgentCap.
+func (c *billingServiceClient) SetAgentCap(ctx context.Context, req *connect.Request[v1.SetAgentCapRequest]) (*connect.Response[v1.SetAgentCapResponse], error) {
+	return c.setAgentCap.CallUnary(ctx, req)
+}
+
 // BillingServiceHandler is an implementation of the tank.billing.v1.BillingService service.
 type BillingServiceHandler interface {
 	GetPrice(context.Context, *connect.Request[v1.GetPriceRequest]) (*connect.Response[v1.GetPriceResponse], error)
@@ -160,6 +176,7 @@ type BillingServiceHandler interface {
 	StartUpgradeCheckout(context.Context, *connect.Request[v1.StartUpgradeCheckoutRequest]) (*connect.Response[v1.StartUpgradeCheckoutResponse], error)
 	OpenBillingPortal(context.Context, *connect.Request[v1.OpenBillingPortalRequest]) (*connect.Response[v1.OpenBillingPortalResponse], error)
 	VerifyAppleTransaction(context.Context, *connect.Request[v1.VerifyAppleTransactionRequest]) (*connect.Response[v1.VerifyAppleTransactionResponse], error)
+	SetAgentCap(context.Context, *connect.Request[v1.SetAgentCapRequest]) (*connect.Response[v1.SetAgentCapResponse], error)
 }
 
 // NewBillingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -205,6 +222,12 @@ func NewBillingServiceHandler(svc BillingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(billingServiceMethods.ByName("VerifyAppleTransaction")),
 		connect.WithHandlerOptions(opts...),
 	)
+	billingServiceSetAgentCapHandler := connect.NewUnaryHandler(
+		BillingServiceSetAgentCapProcedure,
+		svc.SetAgentCap,
+		connect.WithSchema(billingServiceMethods.ByName("SetAgentCap")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.billing.v1.BillingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BillingServiceGetPriceProcedure:
@@ -219,6 +242,8 @@ func NewBillingServiceHandler(svc BillingServiceHandler, opts ...connect.Handler
 			billingServiceOpenBillingPortalHandler.ServeHTTP(w, r)
 		case BillingServiceVerifyAppleTransactionProcedure:
 			billingServiceVerifyAppleTransactionHandler.ServeHTTP(w, r)
+		case BillingServiceSetAgentCapProcedure:
+			billingServiceSetAgentCapHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -250,4 +275,8 @@ func (UnimplementedBillingServiceHandler) OpenBillingPortal(context.Context, *co
 
 func (UnimplementedBillingServiceHandler) VerifyAppleTransaction(context.Context, *connect.Request[v1.VerifyAppleTransactionRequest]) (*connect.Response[v1.VerifyAppleTransactionResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.VerifyAppleTransaction is not implemented"))
+}
+
+func (UnimplementedBillingServiceHandler) SetAgentCap(context.Context, *connect.Request[v1.SetAgentCapRequest]) (*connect.Response[v1.SetAgentCapResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.SetAgentCap is not implemented"))
 }

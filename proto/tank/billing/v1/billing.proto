@@ -99,6 +99,17 @@ message VerifyAppleTransactionResponse {
   string status = 2;
 }
 
+// SetAgentCap is the owner raising or lowering the month's agent usage cap. A run that
+// would go past it is refused with the sentence saying so; the default is in
+// docs/pricing/CLAIMS.md.
+message SetAgentCapRequest {
+  string workspace_id = 1;
+  int64 agent_cap_cents = 2;
+}
+message SetAgentCapResponse {
+  int64 agent_cap_cents = 1;
+}
+
 service BillingService {
   rpc GetPrice(GetPriceRequest) returns (GetPriceResponse);
   rpc StartClaimCheckout(StartClaimCheckoutRequest) returns (StartClaimCheckoutResponse);
@@ -106,4 +117,5 @@ service BillingService {
   rpc StartUpgradeCheckout(StartUpgradeCheckoutRequest) returns (StartUpgradeCheckoutResponse);
   rpc OpenBillingPortal(OpenBillingPortalRequest) returns (OpenBillingPortalResponse);
   rpc VerifyAppleTransaction(VerifyAppleTransactionRequest) returns (VerifyAppleTransactionResponse);
+  rpc SetAgentCap(SetAgentCapRequest) returns (SetAgentCapResponse);
 }
