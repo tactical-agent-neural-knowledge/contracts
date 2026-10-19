@@ -197,12 +197,16 @@ class GetSettingsResponse(_message.Message):
     def __init__(self, settings: _Optional[_Union[Settings, _Mapping]] = ...) -> None: ...
 
 class Settings(_message.Message):
-    __slots__ = ("instructions", "model_label")
+    __slots__ = ("instructions", "model_label", "available", "launch_at")
     INSTRUCTIONS_FIELD_NUMBER: _ClassVar[int]
     MODEL_LABEL_FIELD_NUMBER: _ClassVar[int]
+    AVAILABLE_FIELD_NUMBER: _ClassVar[int]
+    LAUNCH_AT_FIELD_NUMBER: _ClassVar[int]
     instructions: str
     model_label: str
-    def __init__(self, instructions: _Optional[str] = ..., model_label: _Optional[str] = ...) -> None: ...
+    available: bool
+    launch_at: _timestamp_pb2.Timestamp
+    def __init__(self, instructions: _Optional[str] = ..., model_label: _Optional[str] = ..., available: bool = ..., launch_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class UpdateSettingsRequest(_message.Message):
     __slots__ = ("instructions",)

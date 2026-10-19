@@ -139,6 +139,10 @@ message Settings {
   string instructions = 1;
   // The model offered, for the page's header: "Neural 1.0".
   string model_label = 2;
+  // Whether TANK's own model is serving. False means the page says it is coming and
+  // counts down to launch_at; nothing answers in its place.
+  bool available = 3;
+  google.protobuf.Timestamp launch_at = 4;
 }
 message UpdateSettingsRequest {
   string instructions = 1;
