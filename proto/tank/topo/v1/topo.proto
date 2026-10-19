@@ -370,7 +370,10 @@ service TopoService {
   // event tick claims something occurred, and a human claim belongs in a
   // message where it can be argued with.
   rpc RecordEvent(RecordEventRequest) returns (RecordEventResponse);
-  // The channel's decision ledger.
+  // The channel's decision ledger. Decisions are proposed by Survey (extraction)
+  // and confirmed or dismissed here. Decisions recorded by agent runs arrive via
+  // agentctl.RunnerService.RecordDecision; the control plane stores them as
+  // confirmed benchmarks (no SurveyOrigin) on behalf of the run.
   rpc ListBenchmarks(ListBenchmarksRequest) returns (ListBenchmarksResponse);
   // Confirm, correct or dismiss a proposed decision. Anyone who can post in the
   // channel may decide: a decision belongs to the people who made it, not to
