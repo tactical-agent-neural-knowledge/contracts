@@ -147,6 +147,41 @@ message UpdateSettingsResponse {
   Settings settings = 1;
 }
 
+// GetUsage is what the person's chats have used: per day for the last `days`, in total,
+// and by conversation. Cost is in millionths of a dollar so nothing here is a float.
+message GetUsageRequest {
+  int32 days = 1;
+}
+message UsageDay {
+  string date = 1; // YYYY-MM-DD, in UTC
+  int32 messages = 2;
+  int64 input_tokens = 3;
+  int64 output_tokens = 4;
+  int64 cost_micro_usd = 5;
+}
+message ConversationUsage {
+  string conversation_id = 1;
+  string title = 2;
+  int32 messages = 3;
+  int64 input_tokens = 4;
+  int64 output_tokens = 5;
+  int64 cost_micro_usd = 6;
+}
+message GetUsageResponse {
+  repeated UsageDay days = 1;
+  // Totals over the same window.
+  int32 messages = 2;
+  int64 input_tokens = 3;
+  int64 output_tokens = 4;
+  int64 cost_micro_usd = 5;
+  // Today and this calendar month, whatever the window.
+  int32 today_messages = 6;
+  int64 month_cost_micro_usd = 7;
+  int64 all_time_messages = 8;
+  repeated ConversationUsage conversations = 9;
+  string model_label = 10;
+}
+
 service AiService {
   rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse);
   rpc GetConversation(GetConversationRequest) returns (GetConversationResponse);
@@ -157,4 +192,5 @@ service AiService {
   rpc RateMessage(RateMessageRequest) returns (RateMessageResponse);
   rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
   rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
+  rpc GetUsage(GetUsageRequest) returns (GetUsageResponse);
 }

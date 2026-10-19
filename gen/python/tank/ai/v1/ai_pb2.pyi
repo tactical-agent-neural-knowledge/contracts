@@ -215,3 +215,63 @@ class UpdateSettingsResponse(_message.Message):
     SETTINGS_FIELD_NUMBER: _ClassVar[int]
     settings: Settings
     def __init__(self, settings: _Optional[_Union[Settings, _Mapping]] = ...) -> None: ...
+
+class GetUsageRequest(_message.Message):
+    __slots__ = ("days",)
+    DAYS_FIELD_NUMBER: _ClassVar[int]
+    days: int
+    def __init__(self, days: _Optional[int] = ...) -> None: ...
+
+class UsageDay(_message.Message):
+    __slots__ = ("date", "messages", "input_tokens", "output_tokens", "cost_micro_usd")
+    DATE_FIELD_NUMBER: _ClassVar[int]
+    MESSAGES_FIELD_NUMBER: _ClassVar[int]
+    INPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    OUTPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    COST_MICRO_USD_FIELD_NUMBER: _ClassVar[int]
+    date: str
+    messages: int
+    input_tokens: int
+    output_tokens: int
+    cost_micro_usd: int
+    def __init__(self, date: _Optional[str] = ..., messages: _Optional[int] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., cost_micro_usd: _Optional[int] = ...) -> None: ...
+
+class ConversationUsage(_message.Message):
+    __slots__ = ("conversation_id", "title", "messages", "input_tokens", "output_tokens", "cost_micro_usd")
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    MESSAGES_FIELD_NUMBER: _ClassVar[int]
+    INPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    OUTPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    COST_MICRO_USD_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    title: str
+    messages: int
+    input_tokens: int
+    output_tokens: int
+    cost_micro_usd: int
+    def __init__(self, conversation_id: _Optional[str] = ..., title: _Optional[str] = ..., messages: _Optional[int] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., cost_micro_usd: _Optional[int] = ...) -> None: ...
+
+class GetUsageResponse(_message.Message):
+    __slots__ = ("days", "messages", "input_tokens", "output_tokens", "cost_micro_usd", "today_messages", "month_cost_micro_usd", "all_time_messages", "conversations", "model_label")
+    DAYS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGES_FIELD_NUMBER: _ClassVar[int]
+    INPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    OUTPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    COST_MICRO_USD_FIELD_NUMBER: _ClassVar[int]
+    TODAY_MESSAGES_FIELD_NUMBER: _ClassVar[int]
+    MONTH_COST_MICRO_USD_FIELD_NUMBER: _ClassVar[int]
+    ALL_TIME_MESSAGES_FIELD_NUMBER: _ClassVar[int]
+    CONVERSATIONS_FIELD_NUMBER: _ClassVar[int]
+    MODEL_LABEL_FIELD_NUMBER: _ClassVar[int]
+    days: _containers.RepeatedCompositeFieldContainer[UsageDay]
+    messages: int
+    input_tokens: int
+    output_tokens: int
+    cost_micro_usd: int
+    today_messages: int
+    month_cost_micro_usd: int
+    all_time_messages: int
+    conversations: _containers.RepeatedCompositeFieldContainer[ConversationUsage]
+    model_label: str
+    def __init__(self, days: _Optional[_Iterable[_Union[UsageDay, _Mapping]]] = ..., messages: _Optional[int] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., cost_micro_usd: _Optional[int] = ..., today_messages: _Optional[int] = ..., month_cost_micro_usd: _Optional[int] = ..., all_time_messages: _Optional[int] = ..., conversations: _Optional[_Iterable[_Union[ConversationUsage, _Mapping]]] = ..., model_label: _Optional[str] = ...) -> None: ...
