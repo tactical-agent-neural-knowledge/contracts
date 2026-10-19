@@ -513,6 +513,31 @@ message Derivation {
   string moved_to_sha = 8;
 }
 
+// A lightweight read for ops: the facts about a board an operator needs to correlate
+// it to the run that owns it, without pulling the full object graph. Covers the gap
+// between the write path (PutObjects, ReportBoardSource) and the switchboard.
+message GetBoardSnapshotRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+
+message BoardSnapshot {
+  string id = 1;
+  string title = 2;
+  int32 object_count = 3;
+  int32 app_frame_count = 4;
+  google.protobuf.Timestamp updated_at = 5;
+  // Set when this is a thread's Workbench. Links the board to the thread.
+  string thread_root_id = 6;
+  // The run that currently owns this board as its Workbench. Empty when the board
+  // is not a Workbench, or when no run is active in the thread.
+  string run_id = 7;
+  int32 staleness = 8;
+  string staleness_note = 9;
+}
+
+message GetBoardSnapshotResponse { BoardSnapshot snapshot = 1; }
+
 message DeriveDiagramRequest {
   string workspace_id = 1;
   string board_id = 2;
@@ -555,4 +580,5 @@ service BoardService {
   rpc ReportBoardSource(ReportBoardSourceRequest) returns (ReportBoardSourceResponse);
   rpc ListBoardSources(ListBoardSourcesRequest) returns (ListBoardSourcesResponse);
   rpc DeriveDiagram(DeriveDiagramRequest) returns (DeriveDiagramResponse);
+  rpc GetBoardSnapshot(GetBoardSnapshotRequest) returns (GetBoardSnapshotResponse);
 }

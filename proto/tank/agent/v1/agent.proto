@@ -319,6 +319,9 @@ message TreadMetrics {
   // Whether any of this month's runs had a baseline to compare against. False reads
   // "measuring", never zero saved: after a model change nothing is comparable for a while.
   bool neural_measured = 12;
+  // How many boards this Tread owns. Surfaces board surface area alongside spend so
+  // the switchboard and the cost dashboard can show both in one view.
+  int32 board_count = 13;
 }
 message GetTreadSwitchboardRequest { string channel_id = 1; }
 message GetTreadSwitchboardResponse {
