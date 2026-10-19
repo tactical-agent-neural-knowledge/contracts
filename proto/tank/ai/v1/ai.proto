@@ -1,0 +1,160 @@
+syntax = "proto3";
+
+package tank.ai.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/ai/v1;aiv1";
+
+// Chat with TANK's own model, Neural 1.0, at app.tank.chat/ai. Conversations belong to the
+// signed-in person, not to a workspace: this is the model as a product, apart from the
+// agents in Treads. Only the TANK model is offered; there is no model field on purpose.
+
+message Conversation {
+  string id = 1;
+  string title = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp updated_at = 4;
+  // The first words of the first message, for the list when there is no title yet.
+  string preview = 5;
+  bool pinned = 6;
+}
+
+// An attachment a person sends with a message: an image the model can see or a text file
+// whose contents are given to it. Bytes travel in the request; the stored copy is what the
+// conversation shows afterwards.
+message Attachment {
+  string id = 1;
+  string name = 2;
+  string mime = 3;
+  bytes data = 4;
+  int64 size = 5;
+}
+
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  ROLE_USER = 1;
+  ROLE_ASSISTANT = 2;
+}
+
+message Message {
+  string id = 1;
+  string conversation_id = 2;
+  Role role = 3;
+  string text = 4;
+  repeated Attachment attachments = 5;
+  google.protobuf.Timestamp created_at = 6;
+  // Why an assistant turn ended: "end_turn", "max_tokens", "stopped" (the person pressed
+  // stop), "error".
+  string stop_reason = 7;
+  int32 input_tokens = 8;
+  int32 output_tokens = 9;
+  // -1 thumbs down, 0 none, 1 thumbs up.
+  int32 rating = 10;
+}
+
+message ListConversationsRequest {
+  // Matches the title and the first message; empty lists everything.
+  string query = 1;
+  int32 limit = 2;
+}
+message ListConversationsResponse {
+  repeated Conversation conversations = 1;
+}
+
+message GetConversationRequest {
+  string id = 1;
+}
+message GetConversationResponse {
+  Conversation conversation = 1;
+  repeated Message messages = 2;
+}
+
+message CreateConversationRequest {}
+message CreateConversationResponse {
+  Conversation conversation = 1;
+}
+
+message UpdateConversationRequest {
+  string id = 1;
+  // Empty keeps the title; the server titles a new conversation itself after the first reply.
+  string title = 2;
+  bool set_title = 3;
+  bool pinned = 4;
+  bool set_pinned = 5;
+}
+message UpdateConversationResponse {
+  Conversation conversation = 1;
+}
+
+message DeleteConversationRequest {
+  string id = 1;
+}
+message DeleteConversationResponse {}
+
+// SendMessage adds the person's message and streams the model's reply. Closing the stream
+// stops the reply; what had arrived is kept and marked "stopped".
+message SendMessageRequest {
+  // Empty creates a conversation and the first event names it.
+  string conversation_id = 1;
+  string text = 2;
+  repeated Attachment attachments = 3;
+  // Regenerate: no new text; the assistant message with this id and everything after it
+  // are replaced by a fresh reply.
+  string regenerate_message_id = 4;
+  // Edit and resend: this user message and everything after it are replaced by text.
+  string replace_message_id = 5;
+}
+message SendMessageResponse {
+  oneof event {
+    // First: the conversation (new or existing) and the stored user message.
+    Started started = 1;
+    // A piece of the reply as it arrives.
+    string delta = 2;
+    // Last: the stored assistant message, with tokens and the stop reason.
+    Message done = 3;
+    // The conversation got a title (after the first reply).
+    string title = 4;
+  }
+}
+message Started {
+  Conversation conversation = 1;
+  Message user_message = 2;
+  // The assistant message's id, assigned before the first delta so a stop can name it.
+  string assistant_message_id = 3;
+}
+
+message RateMessageRequest {
+  string message_id = 1;
+  int32 rating = 2;
+}
+message RateMessageResponse {}
+
+// What the person wants the model to know every time: name, how to answer, their work.
+message GetSettingsRequest {}
+message GetSettingsResponse {
+  Settings settings = 1;
+}
+message Settings {
+  string instructions = 1;
+  // The model offered, for the page's header: "Neural 1.0".
+  string model_label = 2;
+}
+message UpdateSettingsRequest {
+  string instructions = 1;
+}
+message UpdateSettingsResponse {
+  Settings settings = 1;
+}
+
+service AiService {
+  rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse);
+  rpc GetConversation(GetConversationRequest) returns (GetConversationResponse);
+  rpc CreateConversation(CreateConversationRequest) returns (CreateConversationResponse);
+  rpc UpdateConversation(UpdateConversationRequest) returns (UpdateConversationResponse);
+  rpc DeleteConversation(DeleteConversationRequest) returns (DeleteConversationResponse);
+  rpc SendMessage(SendMessageRequest) returns (stream SendMessageResponse);
+  rpc RateMessage(RateMessageRequest) returns (RateMessageResponse);
+  rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
+  rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
+}
