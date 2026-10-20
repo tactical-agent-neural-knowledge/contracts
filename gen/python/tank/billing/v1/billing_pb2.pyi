@@ -157,3 +157,73 @@ class SetAgentCapResponse(_message.Message):
     AGENT_CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
     agent_cap_cents: int
     def __init__(self, agent_cap_cents: _Optional[int] = ...) -> None: ...
+
+class ServiceSubscription(_message.Message):
+    __slots__ = ("product_workspace_id", "product_slug", "product_name", "status", "current_period_end", "price_cents", "has_api_key", "api_key_hint")
+    PRODUCT_WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    PRODUCT_SLUG_FIELD_NUMBER: _ClassVar[int]
+    PRODUCT_NAME_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    CURRENT_PERIOD_END_FIELD_NUMBER: _ClassVar[int]
+    PRICE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    HAS_API_KEY_FIELD_NUMBER: _ClassVar[int]
+    API_KEY_HINT_FIELD_NUMBER: _ClassVar[int]
+    product_workspace_id: str
+    product_slug: str
+    product_name: str
+    status: str
+    current_period_end: _timestamp_pb2.Timestamp
+    price_cents: int
+    has_api_key: bool
+    api_key_hint: str
+    def __init__(self, product_workspace_id: _Optional[str] = ..., product_slug: _Optional[str] = ..., product_name: _Optional[str] = ..., status: _Optional[str] = ..., current_period_end: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., price_cents: _Optional[int] = ..., has_api_key: bool = ..., api_key_hint: _Optional[str] = ...) -> None: ...
+
+class StartServiceCheckoutRequest(_message.Message):
+    __slots__ = ("product_slug", "return_path")
+    PRODUCT_SLUG_FIELD_NUMBER: _ClassVar[int]
+    RETURN_PATH_FIELD_NUMBER: _ClassVar[int]
+    product_slug: str
+    return_path: str
+    def __init__(self, product_slug: _Optional[str] = ..., return_path: _Optional[str] = ...) -> None: ...
+
+class StartServiceCheckoutResponse(_message.Message):
+    __slots__ = ("checkout_url",)
+    CHECKOUT_URL_FIELD_NUMBER: _ClassVar[int]
+    checkout_url: str
+    def __init__(self, checkout_url: _Optional[str] = ...) -> None: ...
+
+class ListServiceSubscriptionsRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListServiceSubscriptionsResponse(_message.Message):
+    __slots__ = ("subscriptions", "price_cents")
+    SUBSCRIPTIONS_FIELD_NUMBER: _ClassVar[int]
+    PRICE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    subscriptions: _containers.RepeatedCompositeFieldContainer[ServiceSubscription]
+    price_cents: int
+    def __init__(self, subscriptions: _Optional[_Iterable[_Union[ServiceSubscription, _Mapping]]] = ..., price_cents: _Optional[int] = ...) -> None: ...
+
+class OpenServicePortalRequest(_message.Message):
+    __slots__ = ("return_path",)
+    RETURN_PATH_FIELD_NUMBER: _ClassVar[int]
+    return_path: str
+    def __init__(self, return_path: _Optional[str] = ...) -> None: ...
+
+class OpenServicePortalResponse(_message.Message):
+    __slots__ = ("portal_url",)
+    PORTAL_URL_FIELD_NUMBER: _ClassVar[int]
+    portal_url: str
+    def __init__(self, portal_url: _Optional[str] = ...) -> None: ...
+
+class CreateServiceApiKeyRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class CreateServiceApiKeyResponse(_message.Message):
+    __slots__ = ("key", "hint")
+    KEY_FIELD_NUMBER: _ClassVar[int]
+    HINT_FIELD_NUMBER: _ClassVar[int]
+    key: str
+    hint: str
+    def __init__(self, key: _Optional[str] = ..., hint: _Optional[str] = ...) -> None: ...

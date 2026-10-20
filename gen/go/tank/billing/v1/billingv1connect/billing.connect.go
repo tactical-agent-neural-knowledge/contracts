@@ -53,6 +53,18 @@ const (
 	// BillingServiceSetAgentCapProcedure is the fully-qualified name of the BillingService's
 	// SetAgentCap RPC.
 	BillingServiceSetAgentCapProcedure = "/tank.billing.v1.BillingService/SetAgentCap"
+	// BillingServiceStartServiceCheckoutProcedure is the fully-qualified name of the BillingService's
+	// StartServiceCheckout RPC.
+	BillingServiceStartServiceCheckoutProcedure = "/tank.billing.v1.BillingService/StartServiceCheckout"
+	// BillingServiceListServiceSubscriptionsProcedure is the fully-qualified name of the
+	// BillingService's ListServiceSubscriptions RPC.
+	BillingServiceListServiceSubscriptionsProcedure = "/tank.billing.v1.BillingService/ListServiceSubscriptions"
+	// BillingServiceOpenServicePortalProcedure is the fully-qualified name of the BillingService's
+	// OpenServicePortal RPC.
+	BillingServiceOpenServicePortalProcedure = "/tank.billing.v1.BillingService/OpenServicePortal"
+	// BillingServiceCreateServiceApiKeyProcedure is the fully-qualified name of the BillingService's
+	// CreateServiceApiKey RPC.
+	BillingServiceCreateServiceApiKeyProcedure = "/tank.billing.v1.BillingService/CreateServiceApiKey"
 )
 
 // BillingServiceClient is a client for the tank.billing.v1.BillingService service.
@@ -64,6 +76,13 @@ type BillingServiceClient interface {
 	OpenBillingPortal(context.Context, *connect.Request[v1.OpenBillingPortalRequest]) (*connect.Response[v1.OpenBillingPortalResponse], error)
 	VerifyAppleTransaction(context.Context, *connect.Request[v1.VerifyAppleTransactionRequest]) (*connect.Response[v1.VerifyAppleTransactionResponse], error)
 	SetAgentCap(context.Context, *connect.Request[v1.SetAgentCapRequest]) (*connect.Response[v1.SetAgentCapResponse], error)
+	// Services (2026-10-20): a person subscribes to one service product, monthly. It
+	// unlocks that product's upcoming predictions in the apps and through an API key.
+	StartServiceCheckout(context.Context, *connect.Request[v1.StartServiceCheckoutRequest]) (*connect.Response[v1.StartServiceCheckoutResponse], error)
+	ListServiceSubscriptions(context.Context, *connect.Request[v1.ListServiceSubscriptionsRequest]) (*connect.Response[v1.ListServiceSubscriptionsResponse], error)
+	OpenServicePortal(context.Context, *connect.Request[v1.OpenServicePortalRequest]) (*connect.Response[v1.OpenServicePortalResponse], error)
+	// A new key replaces the old one; the key is shown once and stored as a hash.
+	CreateServiceApiKey(context.Context, *connect.Request[v1.CreateServiceApiKeyRequest]) (*connect.Response[v1.CreateServiceApiKeyResponse], error)
 }
 
 // NewBillingServiceClient constructs a client for the tank.billing.v1.BillingService service. By
@@ -119,18 +138,46 @@ func NewBillingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(billingServiceMethods.ByName("SetAgentCap")),
 			connect.WithClientOptions(opts...),
 		),
+		startServiceCheckout: connect.NewClient[v1.StartServiceCheckoutRequest, v1.StartServiceCheckoutResponse](
+			httpClient,
+			baseURL+BillingServiceStartServiceCheckoutProcedure,
+			connect.WithSchema(billingServiceMethods.ByName("StartServiceCheckout")),
+			connect.WithClientOptions(opts...),
+		),
+		listServiceSubscriptions: connect.NewClient[v1.ListServiceSubscriptionsRequest, v1.ListServiceSubscriptionsResponse](
+			httpClient,
+			baseURL+BillingServiceListServiceSubscriptionsProcedure,
+			connect.WithSchema(billingServiceMethods.ByName("ListServiceSubscriptions")),
+			connect.WithClientOptions(opts...),
+		),
+		openServicePortal: connect.NewClient[v1.OpenServicePortalRequest, v1.OpenServicePortalResponse](
+			httpClient,
+			baseURL+BillingServiceOpenServicePortalProcedure,
+			connect.WithSchema(billingServiceMethods.ByName("OpenServicePortal")),
+			connect.WithClientOptions(opts...),
+		),
+		createServiceApiKey: connect.NewClient[v1.CreateServiceApiKeyRequest, v1.CreateServiceApiKeyResponse](
+			httpClient,
+			baseURL+BillingServiceCreateServiceApiKeyProcedure,
+			connect.WithSchema(billingServiceMethods.ByName("CreateServiceApiKey")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // billingServiceClient implements BillingServiceClient.
 type billingServiceClient struct {
-	getPrice               *connect.Client[v1.GetPriceRequest, v1.GetPriceResponse]
-	startClaimCheckout     *connect.Client[v1.StartClaimCheckoutRequest, v1.StartClaimCheckoutResponse]
-	getSubscription        *connect.Client[v1.GetSubscriptionRequest, v1.GetSubscriptionResponse]
-	startUpgradeCheckout   *connect.Client[v1.StartUpgradeCheckoutRequest, v1.StartUpgradeCheckoutResponse]
-	openBillingPortal      *connect.Client[v1.OpenBillingPortalRequest, v1.OpenBillingPortalResponse]
-	verifyAppleTransaction *connect.Client[v1.VerifyAppleTransactionRequest, v1.VerifyAppleTransactionResponse]
-	setAgentCap            *connect.Client[v1.SetAgentCapRequest, v1.SetAgentCapResponse]
+	getPrice                 *connect.Client[v1.GetPriceRequest, v1.GetPriceResponse]
+	startClaimCheckout       *connect.Client[v1.StartClaimCheckoutRequest, v1.StartClaimCheckoutResponse]
+	getSubscription          *connect.Client[v1.GetSubscriptionRequest, v1.GetSubscriptionResponse]
+	startUpgradeCheckout     *connect.Client[v1.StartUpgradeCheckoutRequest, v1.StartUpgradeCheckoutResponse]
+	openBillingPortal        *connect.Client[v1.OpenBillingPortalRequest, v1.OpenBillingPortalResponse]
+	verifyAppleTransaction   *connect.Client[v1.VerifyAppleTransactionRequest, v1.VerifyAppleTransactionResponse]
+	setAgentCap              *connect.Client[v1.SetAgentCapRequest, v1.SetAgentCapResponse]
+	startServiceCheckout     *connect.Client[v1.StartServiceCheckoutRequest, v1.StartServiceCheckoutResponse]
+	listServiceSubscriptions *connect.Client[v1.ListServiceSubscriptionsRequest, v1.ListServiceSubscriptionsResponse]
+	openServicePortal        *connect.Client[v1.OpenServicePortalRequest, v1.OpenServicePortalResponse]
+	createServiceApiKey      *connect.Client[v1.CreateServiceApiKeyRequest, v1.CreateServiceApiKeyResponse]
 }
 
 // GetPrice calls tank.billing.v1.BillingService.GetPrice.
@@ -168,6 +215,26 @@ func (c *billingServiceClient) SetAgentCap(ctx context.Context, req *connect.Req
 	return c.setAgentCap.CallUnary(ctx, req)
 }
 
+// StartServiceCheckout calls tank.billing.v1.BillingService.StartServiceCheckout.
+func (c *billingServiceClient) StartServiceCheckout(ctx context.Context, req *connect.Request[v1.StartServiceCheckoutRequest]) (*connect.Response[v1.StartServiceCheckoutResponse], error) {
+	return c.startServiceCheckout.CallUnary(ctx, req)
+}
+
+// ListServiceSubscriptions calls tank.billing.v1.BillingService.ListServiceSubscriptions.
+func (c *billingServiceClient) ListServiceSubscriptions(ctx context.Context, req *connect.Request[v1.ListServiceSubscriptionsRequest]) (*connect.Response[v1.ListServiceSubscriptionsResponse], error) {
+	return c.listServiceSubscriptions.CallUnary(ctx, req)
+}
+
+// OpenServicePortal calls tank.billing.v1.BillingService.OpenServicePortal.
+func (c *billingServiceClient) OpenServicePortal(ctx context.Context, req *connect.Request[v1.OpenServicePortalRequest]) (*connect.Response[v1.OpenServicePortalResponse], error) {
+	return c.openServicePortal.CallUnary(ctx, req)
+}
+
+// CreateServiceApiKey calls tank.billing.v1.BillingService.CreateServiceApiKey.
+func (c *billingServiceClient) CreateServiceApiKey(ctx context.Context, req *connect.Request[v1.CreateServiceApiKeyRequest]) (*connect.Response[v1.CreateServiceApiKeyResponse], error) {
+	return c.createServiceApiKey.CallUnary(ctx, req)
+}
+
 // BillingServiceHandler is an implementation of the tank.billing.v1.BillingService service.
 type BillingServiceHandler interface {
 	GetPrice(context.Context, *connect.Request[v1.GetPriceRequest]) (*connect.Response[v1.GetPriceResponse], error)
@@ -177,6 +244,13 @@ type BillingServiceHandler interface {
 	OpenBillingPortal(context.Context, *connect.Request[v1.OpenBillingPortalRequest]) (*connect.Response[v1.OpenBillingPortalResponse], error)
 	VerifyAppleTransaction(context.Context, *connect.Request[v1.VerifyAppleTransactionRequest]) (*connect.Response[v1.VerifyAppleTransactionResponse], error)
 	SetAgentCap(context.Context, *connect.Request[v1.SetAgentCapRequest]) (*connect.Response[v1.SetAgentCapResponse], error)
+	// Services (2026-10-20): a person subscribes to one service product, monthly. It
+	// unlocks that product's upcoming predictions in the apps and through an API key.
+	StartServiceCheckout(context.Context, *connect.Request[v1.StartServiceCheckoutRequest]) (*connect.Response[v1.StartServiceCheckoutResponse], error)
+	ListServiceSubscriptions(context.Context, *connect.Request[v1.ListServiceSubscriptionsRequest]) (*connect.Response[v1.ListServiceSubscriptionsResponse], error)
+	OpenServicePortal(context.Context, *connect.Request[v1.OpenServicePortalRequest]) (*connect.Response[v1.OpenServicePortalResponse], error)
+	// A new key replaces the old one; the key is shown once and stored as a hash.
+	CreateServiceApiKey(context.Context, *connect.Request[v1.CreateServiceApiKeyRequest]) (*connect.Response[v1.CreateServiceApiKeyResponse], error)
 }
 
 // NewBillingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -228,6 +302,30 @@ func NewBillingServiceHandler(svc BillingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(billingServiceMethods.ByName("SetAgentCap")),
 		connect.WithHandlerOptions(opts...),
 	)
+	billingServiceStartServiceCheckoutHandler := connect.NewUnaryHandler(
+		BillingServiceStartServiceCheckoutProcedure,
+		svc.StartServiceCheckout,
+		connect.WithSchema(billingServiceMethods.ByName("StartServiceCheckout")),
+		connect.WithHandlerOptions(opts...),
+	)
+	billingServiceListServiceSubscriptionsHandler := connect.NewUnaryHandler(
+		BillingServiceListServiceSubscriptionsProcedure,
+		svc.ListServiceSubscriptions,
+		connect.WithSchema(billingServiceMethods.ByName("ListServiceSubscriptions")),
+		connect.WithHandlerOptions(opts...),
+	)
+	billingServiceOpenServicePortalHandler := connect.NewUnaryHandler(
+		BillingServiceOpenServicePortalProcedure,
+		svc.OpenServicePortal,
+		connect.WithSchema(billingServiceMethods.ByName("OpenServicePortal")),
+		connect.WithHandlerOptions(opts...),
+	)
+	billingServiceCreateServiceApiKeyHandler := connect.NewUnaryHandler(
+		BillingServiceCreateServiceApiKeyProcedure,
+		svc.CreateServiceApiKey,
+		connect.WithSchema(billingServiceMethods.ByName("CreateServiceApiKey")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.billing.v1.BillingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BillingServiceGetPriceProcedure:
@@ -244,6 +342,14 @@ func NewBillingServiceHandler(svc BillingServiceHandler, opts ...connect.Handler
 			billingServiceVerifyAppleTransactionHandler.ServeHTTP(w, r)
 		case BillingServiceSetAgentCapProcedure:
 			billingServiceSetAgentCapHandler.ServeHTTP(w, r)
+		case BillingServiceStartServiceCheckoutProcedure:
+			billingServiceStartServiceCheckoutHandler.ServeHTTP(w, r)
+		case BillingServiceListServiceSubscriptionsProcedure:
+			billingServiceListServiceSubscriptionsHandler.ServeHTTP(w, r)
+		case BillingServiceOpenServicePortalProcedure:
+			billingServiceOpenServicePortalHandler.ServeHTTP(w, r)
+		case BillingServiceCreateServiceApiKeyProcedure:
+			billingServiceCreateServiceApiKeyHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -279,4 +385,20 @@ func (UnimplementedBillingServiceHandler) VerifyAppleTransaction(context.Context
 
 func (UnimplementedBillingServiceHandler) SetAgentCap(context.Context, *connect.Request[v1.SetAgentCapRequest]) (*connect.Response[v1.SetAgentCapResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.SetAgentCap is not implemented"))
+}
+
+func (UnimplementedBillingServiceHandler) StartServiceCheckout(context.Context, *connect.Request[v1.StartServiceCheckoutRequest]) (*connect.Response[v1.StartServiceCheckoutResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.StartServiceCheckout is not implemented"))
+}
+
+func (UnimplementedBillingServiceHandler) ListServiceSubscriptions(context.Context, *connect.Request[v1.ListServiceSubscriptionsRequest]) (*connect.Response[v1.ListServiceSubscriptionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.ListServiceSubscriptions is not implemented"))
+}
+
+func (UnimplementedBillingServiceHandler) OpenServicePortal(context.Context, *connect.Request[v1.OpenServicePortalRequest]) (*connect.Response[v1.OpenServicePortalResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.OpenServicePortal is not implemented"))
+}
+
+func (UnimplementedBillingServiceHandler) CreateServiceApiKey(context.Context, *connect.Request[v1.CreateServiceApiKeyRequest]) (*connect.Response[v1.CreateServiceApiKeyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.CreateServiceApiKey is not implemented"))
 }

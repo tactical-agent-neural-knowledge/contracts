@@ -1604,3 +1604,33 @@ class SetWorkspaceAgentPolicyResponse(_message.Message):
     POLICY_FIELD_NUMBER: _ClassVar[int]
     policy: bytes
     def __init__(self, policy: _Optional[bytes] = ...) -> None: ...
+
+class ArenaTurnRequest(_message.Message):
+    __slots__ = ("environment_id", "round_id", "product_workspace_id", "system", "user", "max_tokens")
+    ENVIRONMENT_ID_FIELD_NUMBER: _ClassVar[int]
+    ROUND_ID_FIELD_NUMBER: _ClassVar[int]
+    PRODUCT_WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SYSTEM_FIELD_NUMBER: _ClassVar[int]
+    USER_FIELD_NUMBER: _ClassVar[int]
+    MAX_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    environment_id: str
+    round_id: str
+    product_workspace_id: str
+    system: str
+    user: str
+    max_tokens: int
+    def __init__(self, environment_id: _Optional[str] = ..., round_id: _Optional[str] = ..., product_workspace_id: _Optional[str] = ..., system: _Optional[str] = ..., user: _Optional[str] = ..., max_tokens: _Optional[int] = ...) -> None: ...
+
+class ArenaTurnResponse(_message.Message):
+    __slots__ = ("text", "model", "prompt_hash", "input_tokens", "output_tokens")
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    MODEL_FIELD_NUMBER: _ClassVar[int]
+    PROMPT_HASH_FIELD_NUMBER: _ClassVar[int]
+    INPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    OUTPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    text: str
+    model: str
+    prompt_hash: str
+    input_tokens: int
+    output_tokens: int
+    def __init__(self, text: _Optional[str] = ..., model: _Optional[str] = ..., prompt_hash: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ...) -> None: ...

@@ -164,6 +164,9 @@ const (
 	// RunnerServiceSessionStoreDeleteProcedure is the fully-qualified name of the RunnerService's
 	// SessionStoreDelete RPC.
 	RunnerServiceSessionStoreDeleteProcedure = "/tank.agentctl.v1.RunnerService/SessionStoreDelete"
+	// ControlServiceArenaTurnProcedure is the fully-qualified name of the ControlService's ArenaTurn
+	// RPC.
+	ControlServiceArenaTurnProcedure = "/tank.agentctl.v1.ControlService/ArenaTurn"
 	// ControlServiceStartRunProcedure is the fully-qualified name of the ControlService's StartRun RPC.
 	ControlServiceStartRunProcedure = "/tank.agentctl.v1.ControlService/StartRun"
 	// ControlServiceOpenThreadProcedure is the fully-qualified name of the ControlService's OpenThread
@@ -1445,6 +1448,10 @@ func (UnimplementedRunnerServiceHandler) SessionStoreDelete(context.Context, *co
 
 // ControlServiceClient is a client for the tank.agentctl.v1.ControlService service.
 type ControlServiceClient interface {
+	// ArenaTurn writes one turn of a service's public conversation on TANK's own model,
+	// text only, with no tools and no sandbox, so it can only be answered by TANK's
+	// weights. Refused when tank-neural is not served by TANK's own model server.
+	ArenaTurn(context.Context, *connect.Request[v1.ArenaTurnRequest]) (*connect.Response[v1.ArenaTurnResponse], error)
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
@@ -1499,6 +1506,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 	baseURL = strings.TrimRight(baseURL, "/")
 	controlServiceMethods := v1.File_tank_agentctl_v1_agentctl_proto.Services().ByName("ControlService").Methods()
 	return &controlServiceClient{
+		arenaTurn: connect.NewClient[v1.ArenaTurnRequest, v1.ArenaTurnResponse](
+			httpClient,
+			baseURL+ControlServiceArenaTurnProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ArenaTurn")),
+			connect.WithClientOptions(opts...),
+		),
 		startRun: connect.NewClient[v1.StartRunRequest, v1.StartRunResponse](
 			httpClient,
 			baseURL+ControlServiceStartRunProcedure,
@@ -1630,6 +1643,7 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 
 // controlServiceClient implements ControlServiceClient.
 type controlServiceClient struct {
+	arenaTurn                *connect.Client[v1.ArenaTurnRequest, v1.ArenaTurnResponse]
 	startRun                 *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
 	openThread               *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
 	refreshNeuralKnowledge   *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
@@ -1651,6 +1665,11 @@ type controlServiceClient struct {
 	createGitHubConnectState *connect.Client[v1.CreateGitHubConnectStateRequest, v1.CreateGitHubConnectStateResponse]
 	setChannelAgentSettings  *connect.Client[v1.SetChannelAgentSettingsRequest, v1.SetChannelAgentSettingsResponse]
 	setWorkspaceAgentPolicy  *connect.Client[v1.SetWorkspaceAgentPolicyRequest, v1.SetWorkspaceAgentPolicyResponse]
+}
+
+// ArenaTurn calls tank.agentctl.v1.ControlService.ArenaTurn.
+func (c *controlServiceClient) ArenaTurn(ctx context.Context, req *connect.Request[v1.ArenaTurnRequest]) (*connect.Response[v1.ArenaTurnResponse], error) {
+	return c.arenaTurn.CallUnary(ctx, req)
 }
 
 // StartRun calls tank.agentctl.v1.ControlService.StartRun.
@@ -1760,6 +1779,10 @@ func (c *controlServiceClient) SetWorkspaceAgentPolicy(ctx context.Context, req 
 
 // ControlServiceHandler is an implementation of the tank.agentctl.v1.ControlService service.
 type ControlServiceHandler interface {
+	// ArenaTurn writes one turn of a service's public conversation on TANK's own model,
+	// text only, with no tools and no sandbox, so it can only be answered by TANK's
+	// weights. Refused when tank-neural is not served by TANK's own model server.
+	ArenaTurn(context.Context, *connect.Request[v1.ArenaTurnRequest]) (*connect.Response[v1.ArenaTurnResponse], error)
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
@@ -1810,6 +1833,12 @@ type ControlServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	controlServiceMethods := v1.File_tank_agentctl_v1_agentctl_proto.Services().ByName("ControlService").Methods()
+	controlServiceArenaTurnHandler := connect.NewUnaryHandler(
+		ControlServiceArenaTurnProcedure,
+		svc.ArenaTurn,
+		connect.WithSchema(controlServiceMethods.ByName("ArenaTurn")),
+		connect.WithHandlerOptions(opts...),
+	)
 	controlServiceStartRunHandler := connect.NewUnaryHandler(
 		ControlServiceStartRunProcedure,
 		svc.StartRun,
@@ -1938,6 +1967,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 	)
 	return "/tank.agentctl.v1.ControlService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case ControlServiceArenaTurnProcedure:
+			controlServiceArenaTurnHandler.ServeHTTP(w, r)
 		case ControlServiceStartRunProcedure:
 			controlServiceStartRunHandler.ServeHTTP(w, r)
 		case ControlServiceOpenThreadProcedure:
@@ -1988,6 +2019,10 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 
 // UnimplementedControlServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedControlServiceHandler struct{}
+
+func (UnimplementedControlServiceHandler) ArenaTurn(context.Context, *connect.Request[v1.ArenaTurnRequest]) (*connect.Response[v1.ArenaTurnResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ArenaTurn is not implemented"))
+}
 
 func (UnimplementedControlServiceHandler) StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.StartRun is not implemented"))

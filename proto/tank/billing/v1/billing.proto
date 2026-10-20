@@ -118,4 +118,44 @@ service BillingService {
   rpc OpenBillingPortal(OpenBillingPortalRequest) returns (OpenBillingPortalResponse);
   rpc VerifyAppleTransaction(VerifyAppleTransactionRequest) returns (VerifyAppleTransactionResponse);
   rpc SetAgentCap(SetAgentCapRequest) returns (SetAgentCapResponse);
+
+  // Services (2026-10-20): a person subscribes to one service product, monthly. It
+  // unlocks that product's upcoming predictions in the apps and through an API key.
+  rpc StartServiceCheckout(StartServiceCheckoutRequest) returns (StartServiceCheckoutResponse);
+  rpc ListServiceSubscriptions(ListServiceSubscriptionsRequest) returns (ListServiceSubscriptionsResponse);
+  rpc OpenServicePortal(OpenServicePortalRequest) returns (OpenServicePortalResponse);
+  // A new key replaces the old one; the key is shown once and stored as a hash.
+  rpc CreateServiceApiKey(CreateServiceApiKeyRequest) returns (CreateServiceApiKeyResponse);
+}
+
+message ServiceSubscription {
+  string product_workspace_id = 1;
+  string product_slug = 2;
+  string product_name = 3;
+  string status = 4;                      // active, past_due, canceled
+  google.protobuf.Timestamp current_period_end = 5;
+  int64 price_cents = 6;
+  bool has_api_key = 7;
+  string api_key_hint = 8;                // the last six characters
+}
+
+message StartServiceCheckoutRequest {
+  string product_slug = 1;
+  string return_path = 2;
+}
+message StartServiceCheckoutResponse { string checkout_url = 1; }
+
+message ListServiceSubscriptionsRequest {}
+message ListServiceSubscriptionsResponse {
+  repeated ServiceSubscription subscriptions = 1;
+  int64 price_cents = 2;                  // what one service costs a month
+}
+
+message OpenServicePortalRequest { string return_path = 1; }
+message OpenServicePortalResponse { string portal_url = 1; }
+
+message CreateServiceApiKeyRequest {}
+message CreateServiceApiKeyResponse {
+  string key = 1;                         // shown once
+  string hint = 2;
 }

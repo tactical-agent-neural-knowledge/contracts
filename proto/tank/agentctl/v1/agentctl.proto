@@ -887,6 +887,10 @@ message OpenThreadResponse {
 }
 
 service ControlService {
+  // ArenaTurn writes one turn of a service's public conversation on TANK's own model,
+  // text only, with no tools and no sandbox, so it can only be answered by TANK's
+  // weights. Refused when tank-neural is not served by TANK's own model server.
+  rpc ArenaTurn(ArenaTurnRequest) returns (ArenaTurnResponse);
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
   rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
   rpc RefreshNeuralKnowledge(RefreshNeuralKnowledgeRequest) returns (RefreshNeuralKnowledgeResponse);
@@ -1115,4 +1119,20 @@ message SetWorkspaceAgentPolicyRequest {
 }
 message SetWorkspaceAgentPolicyResponse {
   bytes policy = 1; // what was stored, after narrowing
+}
+
+message ArenaTurnRequest {
+  string environment_id = 1;
+  string round_id = 2;
+  string product_workspace_id = 3;
+  string system = 4;
+  string user = 5;
+  int32 max_tokens = 6;                   // 0 = the control plane's default
+}
+message ArenaTurnResponse {
+  string text = 1;
+  string model = 2;                       // the model that answered, resolved, never the alias
+  string prompt_hash = 3;                 // sha256 of system + user
+  int32 input_tokens = 4;
+  int32 output_tokens = 5;
 }
