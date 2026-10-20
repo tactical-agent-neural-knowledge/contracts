@@ -585,6 +585,11 @@ message AgentureDetail {
   // to. Markdown. The one-liner above is what a card shows; this is what somebody
   // deciding whether to take it over reads.
   string overview = 11;
+  // A service (graded by the world, subscribed to) rather than a product for take-over.
+  // For a service price_cents is 0 and available is false; environment_slug names the
+  // environment it competes in, which is where its scores and public conversation live.
+  bool service = 12;
+  string environment_slug = 13;
 }
 
 message GetAgentureRequest { string slug = 1; }
