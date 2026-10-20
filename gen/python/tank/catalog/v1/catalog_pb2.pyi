@@ -7,6 +7,12 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
+class ProductTier(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    PRODUCT_TIER_UNSPECIFIED: _ClassVar[ProductTier]
+    PRODUCT_TIER_TAKEOVER: _ClassVar[ProductTier]
+    PRODUCT_TIER_SERVICE: _ClassVar[ProductTier]
+
 class ProductSort(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     PRODUCT_SORT_UNSPECIFIED: _ClassVar[ProductSort]
@@ -15,6 +21,9 @@ class ProductSort(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     PRODUCT_SORT_CHEAPEST: _ClassVar[ProductSort]
     PRODUCT_SORT_MOST_EXPENSIVE: _ClassVar[ProductSort]
     PRODUCT_SORT_MOST_VIEWED: _ClassVar[ProductSort]
+PRODUCT_TIER_UNSPECIFIED: ProductTier
+PRODUCT_TIER_TAKEOVER: ProductTier
+PRODUCT_TIER_SERVICE: ProductTier
 PRODUCT_SORT_UNSPECIFIED: ProductSort
 PRODUCT_SORT_NEWEST: ProductSort
 PRODUCT_SORT_FURTHEST_ALONG: ProductSort
@@ -23,7 +32,7 @@ PRODUCT_SORT_MOST_EXPENSIVE: ProductSort
 PRODUCT_SORT_MOST_VIEWED: ProductSort
 
 class ProductCard(_message.Message):
-    __slots__ = ("workspace_id", "slug", "name", "description", "industry", "buyer", "price_cents", "agent_minutes", "work_delivered", "agent_active", "created_at", "last_worked_at", "available", "watched", "view_count")
+    __slots__ = ("workspace_id", "slug", "name", "description", "industry", "buyer", "price_cents", "agent_minutes", "work_delivered", "agent_active", "created_at", "last_worked_at", "available", "watched", "view_count", "tier", "subscribed", "environment_slug", "score_line")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -39,6 +48,10 @@ class ProductCard(_message.Message):
     AVAILABLE_FIELD_NUMBER: _ClassVar[int]
     WATCHED_FIELD_NUMBER: _ClassVar[int]
     VIEW_COUNT_FIELD_NUMBER: _ClassVar[int]
+    TIER_FIELD_NUMBER: _ClassVar[int]
+    SUBSCRIBED_FIELD_NUMBER: _ClassVar[int]
+    ENVIRONMENT_SLUG_FIELD_NUMBER: _ClassVar[int]
+    SCORE_LINE_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     slug: str
     name: str
@@ -54,10 +67,14 @@ class ProductCard(_message.Message):
     available: bool
     watched: bool
     view_count: int
-    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., industry: _Optional[str] = ..., buyer: _Optional[str] = ..., price_cents: _Optional[int] = ..., agent_minutes: _Optional[int] = ..., work_delivered: _Optional[int] = ..., agent_active: bool = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_worked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., available: bool = ..., watched: bool = ..., view_count: _Optional[int] = ...) -> None: ...
+    tier: ProductTier
+    subscribed: bool
+    environment_slug: str
+    score_line: str
+    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., industry: _Optional[str] = ..., buyer: _Optional[str] = ..., price_cents: _Optional[int] = ..., agent_minutes: _Optional[int] = ..., work_delivered: _Optional[int] = ..., agent_active: bool = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_worked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., available: bool = ..., watched: bool = ..., view_count: _Optional[int] = ..., tier: _Optional[_Union[ProductTier, str]] = ..., subscribed: bool = ..., environment_slug: _Optional[str] = ..., score_line: _Optional[str] = ...) -> None: ...
 
 class ListProductsRequest(_message.Message):
-    __slots__ = ("sort", "industry", "query", "watched_only", "portfolio_id", "cursor", "limit")
+    __slots__ = ("sort", "industry", "query", "watched_only", "portfolio_id", "cursor", "limit", "tier")
     SORT_FIELD_NUMBER: _ClassVar[int]
     INDUSTRY_FIELD_NUMBER: _ClassVar[int]
     QUERY_FIELD_NUMBER: _ClassVar[int]
@@ -65,6 +82,7 @@ class ListProductsRequest(_message.Message):
     PORTFOLIO_ID_FIELD_NUMBER: _ClassVar[int]
     CURSOR_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
+    TIER_FIELD_NUMBER: _ClassVar[int]
     sort: ProductSort
     industry: str
     query: str
@@ -72,7 +90,8 @@ class ListProductsRequest(_message.Message):
     portfolio_id: str
     cursor: str
     limit: int
-    def __init__(self, sort: _Optional[_Union[ProductSort, str]] = ..., industry: _Optional[str] = ..., query: _Optional[str] = ..., watched_only: bool = ..., portfolio_id: _Optional[str] = ..., cursor: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+    tier: ProductTier
+    def __init__(self, sort: _Optional[_Union[ProductSort, str]] = ..., industry: _Optional[str] = ..., query: _Optional[str] = ..., watched_only: bool = ..., portfolio_id: _Optional[str] = ..., cursor: _Optional[str] = ..., limit: _Optional[int] = ..., tier: _Optional[_Union[ProductTier, str]] = ...) -> None: ...
 
 class ListProductsResponse(_message.Message):
     __slots__ = ("products", "next_cursor", "total", "industries")

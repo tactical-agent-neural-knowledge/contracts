@@ -36,6 +36,20 @@ message ProductCard {
   // Total visits to this product's page, all time. Every view counts, including
   // repeat visits and crawlers — it is a hit counter, not a headcount.
   int64 view_count = 15;
+  // What kind of thing this is. A service is subscribed to, never taken over, and is
+  // listed above everything else; price_cents is 0 and available is false for one.
+  ProductTier tier = 16;
+  bool subscribed = 17;                         // the caller subscribes to this service
+  string environment_slug = 18;                 // the environment a service competes in
+  // One line about how it is doing against the truth, e.g. "18% better than NOAA's
+  // prediction this week". Empty until a window is scored.
+  string score_line = 19;
+}
+
+enum ProductTier {
+  PRODUCT_TIER_UNSPECIFIED = 0;
+  PRODUCT_TIER_TAKEOVER = 1;                    // built on the board, sold to one buyer
+  PRODUCT_TIER_SERVICE = 2;                     // graded by the world, subscribed to
 }
 
 // The orders a person actually asks for, named after what they mean rather than the
@@ -59,6 +73,7 @@ message ListProductsRequest {
   string portfolio_id = 5;                      // signed in: one portfolio's products
   string cursor = 6;
   int32 limit = 7;
+  ProductTier tier = 8;                         // unspecified for every tier
 }
 message ListProductsResponse {
   repeated ProductCard products = 1;
