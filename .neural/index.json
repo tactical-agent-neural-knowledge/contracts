@@ -1,13 +1,13 @@
 {
   "generated_by": "TANK Neural Knowledge",
-  "commit": "dc04457b73f958ccb26d163cdccf653fb755242d",
-  "refreshed_at": "2026-10-19T19:49:46.987Z",
+  "commit": "c57381e3040f15892e457f0ee6a2597e64ed9cb7",
+  "refreshed_at": "2026-10-20T15:25:01.920Z",
   "areas": {
     ".": {
       "neurons": ".neural/neurons/root.md",
       "hot": [
-        "README.md",
         "AGENTS.md",
+        "README.md",
         "CLAUDE.md",
         "Makefile",
         "buf.gen.yaml",
@@ -39,11 +39,11 @@
       "neurons": ".neural/neurons/proto.md",
       "hot": [
         "proto/tank/board/v1/board.proto",
-        "proto/tank/agentctl/v1/agentctl.proto",
         "proto/tank/agent/v1/agent.proto",
+        "proto/tank/agentctl/v1/agentctl.proto",
         "proto/tank/workspace/v1/workspace.proto",
-        "proto/tank/billing/v1/billing.proto",
-        "proto/tank/books/v1/books.proto"
+        "proto/tank/ai/v1/ai.proto",
+        "proto/tank/billing/v1/billing.proto"
       ],
       "files": [
         "proto/tank/admin/v1/admin.proto",
@@ -60,6 +60,7 @@
         "proto/tank/channel/v1/channel.proto",
         "proto/tank/command/v1/command.proto",
         "proto/tank/crew/v1/crew.proto",
+        "proto/tank/environment/v1/environment.proto",
         "proto/tank/events/v1/events.proto",
         "proto/tank/files/v1/files.proto",
         "proto/tank/huddle/v1/huddle.proto",
