@@ -927,6 +927,11 @@ service ControlService {
   // asks only after its own grant check; this refuses a repository the installation
   // does not reach, so a workspace can never read through TANK's own installation.
   rpc ReadRepo(ReadRepoRequest) returns (ReadRepoResponse);
+  // Builds a branch of a repository the workspace's own installation reaches into a
+  // static site served at https://<build_id>.preview.<domain>, for board frames. Queues
+  // once per commit; answers with the newest build's state for that commit. Refused for
+  // a repository outside the installation and past the workspace's daily build cap.
+  rpc BuildPreview(BuildPreviewRequest) returns (BuildPreviewResponse);
 
   // Writes into schema `agent`, which belongs to the control plane. The
   // messaging core may read that schema and may not write it, so each of these
@@ -1157,4 +1162,17 @@ message ReadRepoResponse {
   string status = 4;            // "ok" | "missing" | "denied" | "too_large"
   string reason = 5;
   bool truncated = 6;
+}
+
+message BuildPreviewRequest {
+  string workspace_id = 1;
+  string repo = 2;              // owner/name
+  string ref = 3;               // branch; empty = the default branch
+}
+message BuildPreviewResponse {
+  string state = 1;             // "queued" | "building" | "done" | "failed" | "refused"
+  string url = 2;               // when done
+  string sha = 3;               // the commit being or been built
+  string reason = 4;            // when failed or refused, in a sentence
+  string framework = 5;
 }

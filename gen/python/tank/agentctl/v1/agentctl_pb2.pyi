@@ -1666,3 +1666,27 @@ class ReadRepoResponse(_message.Message):
     reason: str
     truncated: bool
     def __init__(self, sha: _Optional[str] = ..., content: _Optional[bytes] = ..., paths: _Optional[_Iterable[str]] = ..., status: _Optional[str] = ..., reason: _Optional[str] = ..., truncated: bool = ...) -> None: ...
+
+class BuildPreviewRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo", "ref")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    ref: str
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., ref: _Optional[str] = ...) -> None: ...
+
+class BuildPreviewResponse(_message.Message):
+    __slots__ = ("state", "url", "sha", "reason", "framework")
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    FRAMEWORK_FIELD_NUMBER: _ClassVar[int]
+    state: str
+    url: str
+    sha: str
+    reason: str
+    framework: str
+    def __init__(self, state: _Optional[str] = ..., url: _Optional[str] = ..., sha: _Optional[str] = ..., reason: _Optional[str] = ..., framework: _Optional[str] = ...) -> None: ...

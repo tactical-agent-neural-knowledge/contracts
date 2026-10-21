@@ -210,6 +210,9 @@ const (
 	ControlServiceSetUpPreviewWorkflowProcedure = "/tank.agentctl.v1.ControlService/SetUpPreviewWorkflow"
 	// ControlServiceReadRepoProcedure is the fully-qualified name of the ControlService's ReadRepo RPC.
 	ControlServiceReadRepoProcedure = "/tank.agentctl.v1.ControlService/ReadRepo"
+	// ControlServiceBuildPreviewProcedure is the fully-qualified name of the ControlService's
+	// BuildPreview RPC.
+	ControlServiceBuildPreviewProcedure = "/tank.agentctl.v1.ControlService/BuildPreview"
 	// ControlServiceBindChannelRepoProcedure is the fully-qualified name of the ControlService's
 	// BindChannelRepo RPC.
 	ControlServiceBindChannelRepoProcedure = "/tank.agentctl.v1.ControlService/BindChannelRepo"
@@ -1490,6 +1493,11 @@ type ControlServiceClient interface {
 	// asks only after its own grant check; this refuses a repository the installation
 	// does not reach, so a workspace can never read through TANK's own installation.
 	ReadRepo(context.Context, *connect.Request[v1.ReadRepoRequest]) (*connect.Response[v1.ReadRepoResponse], error)
+	// Builds a branch of a repository the workspace's own installation reaches into a
+	// static site served at https://<build_id>.preview.<domain>, for board frames. Queues
+	// once per commit; answers with the newest build's state for that commit. Refused for
+	// a repository outside the installation and past the workspace's daily build cap.
+	BuildPreview(context.Context, *connect.Request[v1.BuildPreviewRequest]) (*connect.Response[v1.BuildPreviewResponse], error)
 	// Writes into schema `agent`, which belongs to the control plane. The
 	// messaging core may read that schema and may not write it, so each of these
 	// is a thing it needs done rather than a statement it issues. See the block
@@ -1615,6 +1623,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("ReadRepo")),
 			connect.WithClientOptions(opts...),
 		),
+		buildPreview: connect.NewClient[v1.BuildPreviewRequest, v1.BuildPreviewResponse](
+			httpClient,
+			baseURL+ControlServiceBuildPreviewProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("BuildPreview")),
+			connect.WithClientOptions(opts...),
+		),
 		bindChannelRepo: connect.NewClient[v1.BindChannelRepoRequest, v1.BindChannelRepoResponse](
 			httpClient,
 			baseURL+ControlServiceBindChannelRepoProcedure,
@@ -1673,6 +1687,7 @@ type controlServiceClient struct {
 	getDeployment            *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
 	setUpPreviewWorkflow     *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
 	readRepo                 *connect.Client[v1.ReadRepoRequest, v1.ReadRepoResponse]
+	buildPreview             *connect.Client[v1.BuildPreviewRequest, v1.BuildPreviewResponse]
 	bindChannelRepo          *connect.Client[v1.BindChannelRepoRequest, v1.BindChannelRepoResponse]
 	unbindChannelRepo        *connect.Client[v1.UnbindChannelRepoRequest, v1.UnbindChannelRepoResponse]
 	setChannelRepoAccess     *connect.Client[v1.SetChannelRepoAccessRequest, v1.SetChannelRepoAccessResponse]
@@ -1766,6 +1781,11 @@ func (c *controlServiceClient) ReadRepo(ctx context.Context, req *connect.Reques
 	return c.readRepo.CallUnary(ctx, req)
 }
 
+// BuildPreview calls tank.agentctl.v1.ControlService.BuildPreview.
+func (c *controlServiceClient) BuildPreview(ctx context.Context, req *connect.Request[v1.BuildPreviewRequest]) (*connect.Response[v1.BuildPreviewResponse], error) {
+	return c.buildPreview.CallUnary(ctx, req)
+}
+
 // BindChannelRepo calls tank.agentctl.v1.ControlService.BindChannelRepo.
 func (c *controlServiceClient) BindChannelRepo(ctx context.Context, req *connect.Request[v1.BindChannelRepoRequest]) (*connect.Response[v1.BindChannelRepoResponse], error) {
 	return c.bindChannelRepo.CallUnary(ctx, req)
@@ -1838,6 +1858,11 @@ type ControlServiceHandler interface {
 	// asks only after its own grant check; this refuses a repository the installation
 	// does not reach, so a workspace can never read through TANK's own installation.
 	ReadRepo(context.Context, *connect.Request[v1.ReadRepoRequest]) (*connect.Response[v1.ReadRepoResponse], error)
+	// Builds a branch of a repository the workspace's own installation reaches into a
+	// static site served at https://<build_id>.preview.<domain>, for board frames. Queues
+	// once per commit; answers with the newest build's state for that commit. Refused for
+	// a repository outside the installation and past the workspace's daily build cap.
+	BuildPreview(context.Context, *connect.Request[v1.BuildPreviewRequest]) (*connect.Response[v1.BuildPreviewResponse], error)
 	// Writes into schema `agent`, which belongs to the control plane. The
 	// messaging core may read that schema and may not write it, so each of these
 	// is a thing it needs done rather than a statement it issues. See the block
@@ -1959,6 +1984,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("ReadRepo")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceBuildPreviewHandler := connect.NewUnaryHandler(
+		ControlServiceBuildPreviewProcedure,
+		svc.BuildPreview,
+		connect.WithSchema(controlServiceMethods.ByName("BuildPreview")),
+		connect.WithHandlerOptions(opts...),
+	)
 	controlServiceBindChannelRepoHandler := connect.NewUnaryHandler(
 		ControlServiceBindChannelRepoProcedure,
 		svc.BindChannelRepo,
@@ -2031,6 +2062,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceSetUpPreviewWorkflowHandler.ServeHTTP(w, r)
 		case ControlServiceReadRepoProcedure:
 			controlServiceReadRepoHandler.ServeHTTP(w, r)
+		case ControlServiceBuildPreviewProcedure:
+			controlServiceBuildPreviewHandler.ServeHTTP(w, r)
 		case ControlServiceBindChannelRepoProcedure:
 			controlServiceBindChannelRepoHandler.ServeHTTP(w, r)
 		case ControlServiceUnbindChannelRepoProcedure:
@@ -2118,6 +2151,10 @@ func (UnimplementedControlServiceHandler) SetUpPreviewWorkflow(context.Context, 
 
 func (UnimplementedControlServiceHandler) ReadRepo(context.Context, *connect.Request[v1.ReadRepoRequest]) (*connect.Response[v1.ReadRepoResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ReadRepo is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) BuildPreview(context.Context, *connect.Request[v1.BuildPreviewRequest]) (*connect.Response[v1.BuildPreviewResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.BuildPreview is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) BindChannelRepo(context.Context, *connect.Request[v1.BindChannelRepoRequest]) (*connect.Response[v1.BindChannelRepoResponse], error) {
