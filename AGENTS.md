@@ -1,4 +1,4 @@
-# Neural Knowledge by TANK · refreshed 2026-10-20 · c57381e3040f
+# Neural Knowledge by TANK · refreshed 2026-10-21 · 0a0a5a6ae8e3
 
 This repo is the protobuf contract layer for the TANK platform: hand-written `.proto` files under `proto/`, with generated Go, TypeScript, and Python committed under `gen/` on purpose. Every domain is one file at `proto/tank/<domain>/v1/<domain>.proto`; currently 31 domains. A PR that changes a proto must also include the regenerated output from `make gen`.
 
