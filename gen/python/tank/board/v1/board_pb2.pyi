@@ -924,3 +924,75 @@ class ListRepoRoutesResponse(_message.Message):
     framework: str
     note: str
     def __init__(self, routes: _Optional[_Iterable[_Union[RepoRoute, _Mapping]]] = ..., framework: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
+
+class RemoteView(_message.Message):
+    __slots__ = ("id", "board_id", "object_id", "repo", "ref", "url", "created_at", "expires_at", "created_by", "stopped")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    CREATED_BY_FIELD_NUMBER: _ClassVar[int]
+    STOPPED_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    board_id: str
+    object_id: str
+    repo: str
+    ref: str
+    url: str
+    created_at: _timestamp_pb2.Timestamp
+    expires_at: _timestamp_pb2.Timestamp
+    created_by: str
+    stopped: bool
+    def __init__(self, id: _Optional[str] = ..., board_id: _Optional[str] = ..., object_id: _Optional[str] = ..., repo: _Optional[str] = ..., ref: _Optional[str] = ..., url: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_by: _Optional[str] = ..., stopped: bool = ...) -> None: ...
+
+class CreateRemoteViewRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "object_id", "hours")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    HOURS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    object_id: str
+    hours: int
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., object_id: _Optional[str] = ..., hours: _Optional[int] = ...) -> None: ...
+
+class CreateRemoteViewResponse(_message.Message):
+    __slots__ = ("view",)
+    VIEW_FIELD_NUMBER: _ClassVar[int]
+    view: RemoteView
+    def __init__(self, view: _Optional[_Union[RemoteView, _Mapping]] = ...) -> None: ...
+
+class ListRemoteViewsRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ...) -> None: ...
+
+class ListRemoteViewsResponse(_message.Message):
+    __slots__ = ("views",)
+    VIEWS_FIELD_NUMBER: _ClassVar[int]
+    views: _containers.RepeatedCompositeFieldContainer[RemoteView]
+    def __init__(self, views: _Optional[_Iterable[_Union[RemoteView, _Mapping]]] = ...) -> None: ...
+
+class StopRemoteViewsRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "object_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    object_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., object_id: _Optional[str] = ...) -> None: ...
+
+class StopRemoteViewsResponse(_message.Message):
+    __slots__ = ("stopped",)
+    STOPPED_FIELD_NUMBER: _ClassVar[int]
+    stopped: int
+    def __init__(self, stopped: _Optional[int] = ...) -> None: ...

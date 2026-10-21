@@ -104,6 +104,15 @@ const (
 	// BoardServiceListRepoRoutesProcedure is the fully-qualified name of the BoardService's
 	// ListRepoRoutes RPC.
 	BoardServiceListRepoRoutesProcedure = "/tank.board.v1.BoardService/ListRepoRoutes"
+	// BoardServiceCreateRemoteViewProcedure is the fully-qualified name of the BoardService's
+	// CreateRemoteView RPC.
+	BoardServiceCreateRemoteViewProcedure = "/tank.board.v1.BoardService/CreateRemoteView"
+	// BoardServiceListRemoteViewsProcedure is the fully-qualified name of the BoardService's
+	// ListRemoteViews RPC.
+	BoardServiceListRemoteViewsProcedure = "/tank.board.v1.BoardService/ListRemoteViews"
+	// BoardServiceStopRemoteViewsProcedure is the fully-qualified name of the BoardService's
+	// StopRemoteViews RPC.
+	BoardServiceStopRemoteViewsProcedure = "/tank.board.v1.BoardService/StopRemoteViews"
 )
 
 // BoardServiceClient is a client for the tank.board.v1.BoardService service.
@@ -133,6 +142,9 @@ type BoardServiceClient interface {
 	VerifyRepoEnvironment(context.Context, *connect.Request[v1.VerifyRepoEnvironmentRequest]) (*connect.Response[v1.VerifyRepoEnvironmentResponse], error)
 	DeleteRepoEnvironment(context.Context, *connect.Request[v1.DeleteRepoEnvironmentRequest]) (*connect.Response[v1.DeleteRepoEnvironmentResponse], error)
 	ListRepoRoutes(context.Context, *connect.Request[v1.ListRepoRoutesRequest]) (*connect.Response[v1.ListRepoRoutesResponse], error)
+	CreateRemoteView(context.Context, *connect.Request[v1.CreateRemoteViewRequest]) (*connect.Response[v1.CreateRemoteViewResponse], error)
+	ListRemoteViews(context.Context, *connect.Request[v1.ListRemoteViewsRequest]) (*connect.Response[v1.ListRemoteViewsResponse], error)
+	StopRemoteViews(context.Context, *connect.Request[v1.StopRemoteViewsRequest]) (*connect.Response[v1.StopRemoteViewsResponse], error)
 }
 
 // NewBoardServiceClient constructs a client for the tank.board.v1.BoardService service. By default,
@@ -296,6 +308,24 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(boardServiceMethods.ByName("ListRepoRoutes")),
 			connect.WithClientOptions(opts...),
 		),
+		createRemoteView: connect.NewClient[v1.CreateRemoteViewRequest, v1.CreateRemoteViewResponse](
+			httpClient,
+			baseURL+BoardServiceCreateRemoteViewProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("CreateRemoteView")),
+			connect.WithClientOptions(opts...),
+		),
+		listRemoteViews: connect.NewClient[v1.ListRemoteViewsRequest, v1.ListRemoteViewsResponse](
+			httpClient,
+			baseURL+BoardServiceListRemoteViewsProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ListRemoteViews")),
+			connect.WithClientOptions(opts...),
+		),
+		stopRemoteViews: connect.NewClient[v1.StopRemoteViewsRequest, v1.StopRemoteViewsResponse](
+			httpClient,
+			baseURL+BoardServiceStopRemoteViewsProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("StopRemoteViews")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -326,6 +356,9 @@ type boardServiceClient struct {
 	verifyRepoEnvironment *connect.Client[v1.VerifyRepoEnvironmentRequest, v1.VerifyRepoEnvironmentResponse]
 	deleteRepoEnvironment *connect.Client[v1.DeleteRepoEnvironmentRequest, v1.DeleteRepoEnvironmentResponse]
 	listRepoRoutes        *connect.Client[v1.ListRepoRoutesRequest, v1.ListRepoRoutesResponse]
+	createRemoteView      *connect.Client[v1.CreateRemoteViewRequest, v1.CreateRemoteViewResponse]
+	listRemoteViews       *connect.Client[v1.ListRemoteViewsRequest, v1.ListRemoteViewsResponse]
+	stopRemoteViews       *connect.Client[v1.StopRemoteViewsRequest, v1.StopRemoteViewsResponse]
 }
 
 // ListBoards calls tank.board.v1.BoardService.ListBoards.
@@ -453,6 +486,21 @@ func (c *boardServiceClient) ListRepoRoutes(ctx context.Context, req *connect.Re
 	return c.listRepoRoutes.CallUnary(ctx, req)
 }
 
+// CreateRemoteView calls tank.board.v1.BoardService.CreateRemoteView.
+func (c *boardServiceClient) CreateRemoteView(ctx context.Context, req *connect.Request[v1.CreateRemoteViewRequest]) (*connect.Response[v1.CreateRemoteViewResponse], error) {
+	return c.createRemoteView.CallUnary(ctx, req)
+}
+
+// ListRemoteViews calls tank.board.v1.BoardService.ListRemoteViews.
+func (c *boardServiceClient) ListRemoteViews(ctx context.Context, req *connect.Request[v1.ListRemoteViewsRequest]) (*connect.Response[v1.ListRemoteViewsResponse], error) {
+	return c.listRemoteViews.CallUnary(ctx, req)
+}
+
+// StopRemoteViews calls tank.board.v1.BoardService.StopRemoteViews.
+func (c *boardServiceClient) StopRemoteViews(ctx context.Context, req *connect.Request[v1.StopRemoteViewsRequest]) (*connect.Response[v1.StopRemoteViewsResponse], error) {
+	return c.stopRemoteViews.CallUnary(ctx, req)
+}
+
 // BoardServiceHandler is an implementation of the tank.board.v1.BoardService service.
 type BoardServiceHandler interface {
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
@@ -480,6 +528,9 @@ type BoardServiceHandler interface {
 	VerifyRepoEnvironment(context.Context, *connect.Request[v1.VerifyRepoEnvironmentRequest]) (*connect.Response[v1.VerifyRepoEnvironmentResponse], error)
 	DeleteRepoEnvironment(context.Context, *connect.Request[v1.DeleteRepoEnvironmentRequest]) (*connect.Response[v1.DeleteRepoEnvironmentResponse], error)
 	ListRepoRoutes(context.Context, *connect.Request[v1.ListRepoRoutesRequest]) (*connect.Response[v1.ListRepoRoutesResponse], error)
+	CreateRemoteView(context.Context, *connect.Request[v1.CreateRemoteViewRequest]) (*connect.Response[v1.CreateRemoteViewResponse], error)
+	ListRemoteViews(context.Context, *connect.Request[v1.ListRemoteViewsRequest]) (*connect.Response[v1.ListRemoteViewsResponse], error)
+	StopRemoteViews(context.Context, *connect.Request[v1.StopRemoteViewsRequest]) (*connect.Response[v1.StopRemoteViewsResponse], error)
 }
 
 // NewBoardServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -639,6 +690,24 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(boardServiceMethods.ByName("ListRepoRoutes")),
 		connect.WithHandlerOptions(opts...),
 	)
+	boardServiceCreateRemoteViewHandler := connect.NewUnaryHandler(
+		BoardServiceCreateRemoteViewProcedure,
+		svc.CreateRemoteView,
+		connect.WithSchema(boardServiceMethods.ByName("CreateRemoteView")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceListRemoteViewsHandler := connect.NewUnaryHandler(
+		BoardServiceListRemoteViewsProcedure,
+		svc.ListRemoteViews,
+		connect.WithSchema(boardServiceMethods.ByName("ListRemoteViews")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceStopRemoteViewsHandler := connect.NewUnaryHandler(
+		BoardServiceStopRemoteViewsProcedure,
+		svc.StopRemoteViews,
+		connect.WithSchema(boardServiceMethods.ByName("StopRemoteViews")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.board.v1.BoardService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BoardServiceListBoardsProcedure:
@@ -691,6 +760,12 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 			boardServiceDeleteRepoEnvironmentHandler.ServeHTTP(w, r)
 		case BoardServiceListRepoRoutesProcedure:
 			boardServiceListRepoRoutesHandler.ServeHTTP(w, r)
+		case BoardServiceCreateRemoteViewProcedure:
+			boardServiceCreateRemoteViewHandler.ServeHTTP(w, r)
+		case BoardServiceListRemoteViewsProcedure:
+			boardServiceListRemoteViewsHandler.ServeHTTP(w, r)
+		case BoardServiceStopRemoteViewsProcedure:
+			boardServiceStopRemoteViewsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -798,4 +873,16 @@ func (UnimplementedBoardServiceHandler) DeleteRepoEnvironment(context.Context, *
 
 func (UnimplementedBoardServiceHandler) ListRepoRoutes(context.Context, *connect.Request[v1.ListRepoRoutesRequest]) (*connect.Response[v1.ListRepoRoutesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ListRepoRoutes is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) CreateRemoteView(context.Context, *connect.Request[v1.CreateRemoteViewRequest]) (*connect.Response[v1.CreateRemoteViewResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.CreateRemoteView is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ListRemoteViews(context.Context, *connect.Request[v1.ListRemoteViewsRequest]) (*connect.Response[v1.ListRemoteViewsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ListRemoteViews is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) StopRemoteViews(context.Context, *connect.Request[v1.StopRemoteViewsRequest]) (*connect.Response[v1.StopRemoteViewsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.StopRemoteViews is not implemented"))
 }

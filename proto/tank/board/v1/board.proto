@@ -627,6 +627,46 @@ message ListRepoRoutesResponse {
   string note = 3;                       // why the list is empty or partial
 }
 
+// Remote viewing (2026-10-21): a link that opens one TANK-built branch preview for somebody
+// outside the workspace, until it expires or is stopped. A TANK-built preview is otherwise
+// private to the workspace; members open it from a frame. THREATS.md §3.9.
+message RemoteView {
+  string id = 1;
+  string board_id = 2;
+  string object_id = 3;                  // the frame it was made from
+  string repo = 4;
+  string ref = 5;
+  // The link, present only in the response that made it: it is a credential and is
+  // never stored or read back.
+  string url = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp expires_at = 8;
+  string created_by = 9;                 // user id
+  bool stopped = 10;                     // stopped by somebody before it expired
+}
+
+message CreateRemoteViewRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  string object_id = 3;                  // a frame showing a TANK-built preview
+  int32 hours = 4;                       // 1 to 720 (30 days); 0 = 24
+}
+message CreateRemoteViewResponse { RemoteView view = 1; }
+
+message ListRemoteViewsRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+}
+message ListRemoteViewsResponse { repeated RemoteView views = 1; }
+
+// Stops every Remote viewing link to the build the frame shows. Members' frames keep working.
+message StopRemoteViewsRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  string object_id = 3;
+}
+message StopRemoteViewsResponse { int32 stopped = 1; }
+
 service BoardService {
   rpc ListBoards(ListBoardsRequest) returns (ListBoardsResponse);
   rpc GetBoard(GetBoardRequest) returns (GetBoardResponse);
@@ -653,4 +693,7 @@ service BoardService {
   rpc VerifyRepoEnvironment(VerifyRepoEnvironmentRequest) returns (VerifyRepoEnvironmentResponse);
   rpc DeleteRepoEnvironment(DeleteRepoEnvironmentRequest) returns (DeleteRepoEnvironmentResponse);
   rpc ListRepoRoutes(ListRepoRoutesRequest) returns (ListRepoRoutesResponse);
+  rpc CreateRemoteView(CreateRemoteViewRequest) returns (CreateRemoteViewResponse);
+  rpc ListRemoteViews(ListRemoteViewsRequest) returns (ListRemoteViewsResponse);
+  rpc StopRemoteViews(StopRemoteViewsRequest) returns (StopRemoteViewsResponse);
 }
