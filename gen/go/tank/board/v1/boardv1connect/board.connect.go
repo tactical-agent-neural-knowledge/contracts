@@ -89,6 +89,21 @@ const (
 	// BoardServiceDeriveDiagramProcedure is the fully-qualified name of the BoardService's
 	// DeriveDiagram RPC.
 	BoardServiceDeriveDiagramProcedure = "/tank.board.v1.BoardService/DeriveDiagram"
+	// BoardServiceListRepoEnvironmentsProcedure is the fully-qualified name of the BoardService's
+	// ListRepoEnvironments RPC.
+	BoardServiceListRepoEnvironmentsProcedure = "/tank.board.v1.BoardService/ListRepoEnvironments"
+	// BoardServiceSetRepoEnvironmentProcedure is the fully-qualified name of the BoardService's
+	// SetRepoEnvironment RPC.
+	BoardServiceSetRepoEnvironmentProcedure = "/tank.board.v1.BoardService/SetRepoEnvironment"
+	// BoardServiceVerifyRepoEnvironmentProcedure is the fully-qualified name of the BoardService's
+	// VerifyRepoEnvironment RPC.
+	BoardServiceVerifyRepoEnvironmentProcedure = "/tank.board.v1.BoardService/VerifyRepoEnvironment"
+	// BoardServiceDeleteRepoEnvironmentProcedure is the fully-qualified name of the BoardService's
+	// DeleteRepoEnvironment RPC.
+	BoardServiceDeleteRepoEnvironmentProcedure = "/tank.board.v1.BoardService/DeleteRepoEnvironment"
+	// BoardServiceListRepoRoutesProcedure is the fully-qualified name of the BoardService's
+	// ListRepoRoutes RPC.
+	BoardServiceListRepoRoutesProcedure = "/tank.board.v1.BoardService/ListRepoRoutes"
 )
 
 // BoardServiceClient is a client for the tank.board.v1.BoardService service.
@@ -113,6 +128,11 @@ type BoardServiceClient interface {
 	ReportBoardSource(context.Context, *connect.Request[v1.ReportBoardSourceRequest]) (*connect.Response[v1.ReportBoardSourceResponse], error)
 	ListBoardSources(context.Context, *connect.Request[v1.ListBoardSourcesRequest]) (*connect.Response[v1.ListBoardSourcesResponse], error)
 	DeriveDiagram(context.Context, *connect.Request[v1.DeriveDiagramRequest]) (*connect.Response[v1.DeriveDiagramResponse], error)
+	ListRepoEnvironments(context.Context, *connect.Request[v1.ListRepoEnvironmentsRequest]) (*connect.Response[v1.ListRepoEnvironmentsResponse], error)
+	SetRepoEnvironment(context.Context, *connect.Request[v1.SetRepoEnvironmentRequest]) (*connect.Response[v1.SetRepoEnvironmentResponse], error)
+	VerifyRepoEnvironment(context.Context, *connect.Request[v1.VerifyRepoEnvironmentRequest]) (*connect.Response[v1.VerifyRepoEnvironmentResponse], error)
+	DeleteRepoEnvironment(context.Context, *connect.Request[v1.DeleteRepoEnvironmentRequest]) (*connect.Response[v1.DeleteRepoEnvironmentResponse], error)
+	ListRepoRoutes(context.Context, *connect.Request[v1.ListRepoRoutesRequest]) (*connect.Response[v1.ListRepoRoutesResponse], error)
 }
 
 // NewBoardServiceClient constructs a client for the tank.board.v1.BoardService service. By default,
@@ -246,31 +266,66 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(boardServiceMethods.ByName("DeriveDiagram")),
 			connect.WithClientOptions(opts...),
 		),
+		listRepoEnvironments: connect.NewClient[v1.ListRepoEnvironmentsRequest, v1.ListRepoEnvironmentsResponse](
+			httpClient,
+			baseURL+BoardServiceListRepoEnvironmentsProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ListRepoEnvironments")),
+			connect.WithClientOptions(opts...),
+		),
+		setRepoEnvironment: connect.NewClient[v1.SetRepoEnvironmentRequest, v1.SetRepoEnvironmentResponse](
+			httpClient,
+			baseURL+BoardServiceSetRepoEnvironmentProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("SetRepoEnvironment")),
+			connect.WithClientOptions(opts...),
+		),
+		verifyRepoEnvironment: connect.NewClient[v1.VerifyRepoEnvironmentRequest, v1.VerifyRepoEnvironmentResponse](
+			httpClient,
+			baseURL+BoardServiceVerifyRepoEnvironmentProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("VerifyRepoEnvironment")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteRepoEnvironment: connect.NewClient[v1.DeleteRepoEnvironmentRequest, v1.DeleteRepoEnvironmentResponse](
+			httpClient,
+			baseURL+BoardServiceDeleteRepoEnvironmentProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("DeleteRepoEnvironment")),
+			connect.WithClientOptions(opts...),
+		),
+		listRepoRoutes: connect.NewClient[v1.ListRepoRoutesRequest, v1.ListRepoRoutesResponse](
+			httpClient,
+			baseURL+BoardServiceListRepoRoutesProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ListRepoRoutes")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // boardServiceClient implements BoardServiceClient.
 type boardServiceClient struct {
-	listBoards          *connect.Client[v1.ListBoardsRequest, v1.ListBoardsResponse]
-	getBoard            *connect.Client[v1.GetBoardRequest, v1.GetBoardResponse]
-	createBoard         *connect.Client[v1.CreateBoardRequest, v1.CreateBoardResponse]
-	updateBoard         *connect.Client[v1.UpdateBoardRequest, v1.UpdateBoardResponse]
-	deleteBoard         *connect.Client[v1.DeleteBoardRequest, v1.DeleteBoardResponse]
-	putObjects          *connect.Client[v1.PutObjectsRequest, v1.PutObjectsResponse]
-	requestChange       *connect.Client[v1.RequestChangeRequest, v1.RequestChangeResponse]
-	listTemplates       *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
-	saveBoardTemplate   *connect.Client[v1.SaveBoardTemplateRequest, v1.SaveBoardTemplateResponse]
-	deleteBoardTemplate *connect.Client[v1.DeleteBoardTemplateRequest, v1.DeleteBoardTemplateResponse]
-	exportBoard         *connect.Client[v1.ExportBoardRequest, v1.ExportBoardResponse]
-	listBoardSlices     *connect.Client[v1.ListBoardSlicesRequest, v1.ListBoardSlicesResponse]
-	boardEmbed          *connect.Client[v1.BoardEmbedRequest, v1.BoardEmbedResponse]
-	generateTest        *connect.Client[v1.GenerateTestRequest, v1.GenerateTestResponse]
-	reportPreview       *connect.Client[v1.ReportPreviewRequest, v1.ReportPreviewResponse]
-	listPreviews        *connect.Client[v1.ListPreviewsRequest, v1.ListPreviewsResponse]
-	forgetPreview       *connect.Client[v1.ForgetPreviewRequest, v1.ForgetPreviewResponse]
-	reportBoardSource   *connect.Client[v1.ReportBoardSourceRequest, v1.ReportBoardSourceResponse]
-	listBoardSources    *connect.Client[v1.ListBoardSourcesRequest, v1.ListBoardSourcesResponse]
-	deriveDiagram       *connect.Client[v1.DeriveDiagramRequest, v1.DeriveDiagramResponse]
+	listBoards            *connect.Client[v1.ListBoardsRequest, v1.ListBoardsResponse]
+	getBoard              *connect.Client[v1.GetBoardRequest, v1.GetBoardResponse]
+	createBoard           *connect.Client[v1.CreateBoardRequest, v1.CreateBoardResponse]
+	updateBoard           *connect.Client[v1.UpdateBoardRequest, v1.UpdateBoardResponse]
+	deleteBoard           *connect.Client[v1.DeleteBoardRequest, v1.DeleteBoardResponse]
+	putObjects            *connect.Client[v1.PutObjectsRequest, v1.PutObjectsResponse]
+	requestChange         *connect.Client[v1.RequestChangeRequest, v1.RequestChangeResponse]
+	listTemplates         *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
+	saveBoardTemplate     *connect.Client[v1.SaveBoardTemplateRequest, v1.SaveBoardTemplateResponse]
+	deleteBoardTemplate   *connect.Client[v1.DeleteBoardTemplateRequest, v1.DeleteBoardTemplateResponse]
+	exportBoard           *connect.Client[v1.ExportBoardRequest, v1.ExportBoardResponse]
+	listBoardSlices       *connect.Client[v1.ListBoardSlicesRequest, v1.ListBoardSlicesResponse]
+	boardEmbed            *connect.Client[v1.BoardEmbedRequest, v1.BoardEmbedResponse]
+	generateTest          *connect.Client[v1.GenerateTestRequest, v1.GenerateTestResponse]
+	reportPreview         *connect.Client[v1.ReportPreviewRequest, v1.ReportPreviewResponse]
+	listPreviews          *connect.Client[v1.ListPreviewsRequest, v1.ListPreviewsResponse]
+	forgetPreview         *connect.Client[v1.ForgetPreviewRequest, v1.ForgetPreviewResponse]
+	reportBoardSource     *connect.Client[v1.ReportBoardSourceRequest, v1.ReportBoardSourceResponse]
+	listBoardSources      *connect.Client[v1.ListBoardSourcesRequest, v1.ListBoardSourcesResponse]
+	deriveDiagram         *connect.Client[v1.DeriveDiagramRequest, v1.DeriveDiagramResponse]
+	listRepoEnvironments  *connect.Client[v1.ListRepoEnvironmentsRequest, v1.ListRepoEnvironmentsResponse]
+	setRepoEnvironment    *connect.Client[v1.SetRepoEnvironmentRequest, v1.SetRepoEnvironmentResponse]
+	verifyRepoEnvironment *connect.Client[v1.VerifyRepoEnvironmentRequest, v1.VerifyRepoEnvironmentResponse]
+	deleteRepoEnvironment *connect.Client[v1.DeleteRepoEnvironmentRequest, v1.DeleteRepoEnvironmentResponse]
+	listRepoRoutes        *connect.Client[v1.ListRepoRoutesRequest, v1.ListRepoRoutesResponse]
 }
 
 // ListBoards calls tank.board.v1.BoardService.ListBoards.
@@ -373,6 +428,31 @@ func (c *boardServiceClient) DeriveDiagram(ctx context.Context, req *connect.Req
 	return c.deriveDiagram.CallUnary(ctx, req)
 }
 
+// ListRepoEnvironments calls tank.board.v1.BoardService.ListRepoEnvironments.
+func (c *boardServiceClient) ListRepoEnvironments(ctx context.Context, req *connect.Request[v1.ListRepoEnvironmentsRequest]) (*connect.Response[v1.ListRepoEnvironmentsResponse], error) {
+	return c.listRepoEnvironments.CallUnary(ctx, req)
+}
+
+// SetRepoEnvironment calls tank.board.v1.BoardService.SetRepoEnvironment.
+func (c *boardServiceClient) SetRepoEnvironment(ctx context.Context, req *connect.Request[v1.SetRepoEnvironmentRequest]) (*connect.Response[v1.SetRepoEnvironmentResponse], error) {
+	return c.setRepoEnvironment.CallUnary(ctx, req)
+}
+
+// VerifyRepoEnvironment calls tank.board.v1.BoardService.VerifyRepoEnvironment.
+func (c *boardServiceClient) VerifyRepoEnvironment(ctx context.Context, req *connect.Request[v1.VerifyRepoEnvironmentRequest]) (*connect.Response[v1.VerifyRepoEnvironmentResponse], error) {
+	return c.verifyRepoEnvironment.CallUnary(ctx, req)
+}
+
+// DeleteRepoEnvironment calls tank.board.v1.BoardService.DeleteRepoEnvironment.
+func (c *boardServiceClient) DeleteRepoEnvironment(ctx context.Context, req *connect.Request[v1.DeleteRepoEnvironmentRequest]) (*connect.Response[v1.DeleteRepoEnvironmentResponse], error) {
+	return c.deleteRepoEnvironment.CallUnary(ctx, req)
+}
+
+// ListRepoRoutes calls tank.board.v1.BoardService.ListRepoRoutes.
+func (c *boardServiceClient) ListRepoRoutes(ctx context.Context, req *connect.Request[v1.ListRepoRoutesRequest]) (*connect.Response[v1.ListRepoRoutesResponse], error) {
+	return c.listRepoRoutes.CallUnary(ctx, req)
+}
+
 // BoardServiceHandler is an implementation of the tank.board.v1.BoardService service.
 type BoardServiceHandler interface {
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
@@ -395,6 +475,11 @@ type BoardServiceHandler interface {
 	ReportBoardSource(context.Context, *connect.Request[v1.ReportBoardSourceRequest]) (*connect.Response[v1.ReportBoardSourceResponse], error)
 	ListBoardSources(context.Context, *connect.Request[v1.ListBoardSourcesRequest]) (*connect.Response[v1.ListBoardSourcesResponse], error)
 	DeriveDiagram(context.Context, *connect.Request[v1.DeriveDiagramRequest]) (*connect.Response[v1.DeriveDiagramResponse], error)
+	ListRepoEnvironments(context.Context, *connect.Request[v1.ListRepoEnvironmentsRequest]) (*connect.Response[v1.ListRepoEnvironmentsResponse], error)
+	SetRepoEnvironment(context.Context, *connect.Request[v1.SetRepoEnvironmentRequest]) (*connect.Response[v1.SetRepoEnvironmentResponse], error)
+	VerifyRepoEnvironment(context.Context, *connect.Request[v1.VerifyRepoEnvironmentRequest]) (*connect.Response[v1.VerifyRepoEnvironmentResponse], error)
+	DeleteRepoEnvironment(context.Context, *connect.Request[v1.DeleteRepoEnvironmentRequest]) (*connect.Response[v1.DeleteRepoEnvironmentResponse], error)
+	ListRepoRoutes(context.Context, *connect.Request[v1.ListRepoRoutesRequest]) (*connect.Response[v1.ListRepoRoutesResponse], error)
 }
 
 // NewBoardServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -524,6 +609,36 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(boardServiceMethods.ByName("DeriveDiagram")),
 		connect.WithHandlerOptions(opts...),
 	)
+	boardServiceListRepoEnvironmentsHandler := connect.NewUnaryHandler(
+		BoardServiceListRepoEnvironmentsProcedure,
+		svc.ListRepoEnvironments,
+		connect.WithSchema(boardServiceMethods.ByName("ListRepoEnvironments")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceSetRepoEnvironmentHandler := connect.NewUnaryHandler(
+		BoardServiceSetRepoEnvironmentProcedure,
+		svc.SetRepoEnvironment,
+		connect.WithSchema(boardServiceMethods.ByName("SetRepoEnvironment")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceVerifyRepoEnvironmentHandler := connect.NewUnaryHandler(
+		BoardServiceVerifyRepoEnvironmentProcedure,
+		svc.VerifyRepoEnvironment,
+		connect.WithSchema(boardServiceMethods.ByName("VerifyRepoEnvironment")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceDeleteRepoEnvironmentHandler := connect.NewUnaryHandler(
+		BoardServiceDeleteRepoEnvironmentProcedure,
+		svc.DeleteRepoEnvironment,
+		connect.WithSchema(boardServiceMethods.ByName("DeleteRepoEnvironment")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceListRepoRoutesHandler := connect.NewUnaryHandler(
+		BoardServiceListRepoRoutesProcedure,
+		svc.ListRepoRoutes,
+		connect.WithSchema(boardServiceMethods.ByName("ListRepoRoutes")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.board.v1.BoardService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BoardServiceListBoardsProcedure:
@@ -566,6 +681,16 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 			boardServiceListBoardSourcesHandler.ServeHTTP(w, r)
 		case BoardServiceDeriveDiagramProcedure:
 			boardServiceDeriveDiagramHandler.ServeHTTP(w, r)
+		case BoardServiceListRepoEnvironmentsProcedure:
+			boardServiceListRepoEnvironmentsHandler.ServeHTTP(w, r)
+		case BoardServiceSetRepoEnvironmentProcedure:
+			boardServiceSetRepoEnvironmentHandler.ServeHTTP(w, r)
+		case BoardServiceVerifyRepoEnvironmentProcedure:
+			boardServiceVerifyRepoEnvironmentHandler.ServeHTTP(w, r)
+		case BoardServiceDeleteRepoEnvironmentProcedure:
+			boardServiceDeleteRepoEnvironmentHandler.ServeHTTP(w, r)
+		case BoardServiceListRepoRoutesProcedure:
+			boardServiceListRepoRoutesHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -653,4 +778,24 @@ func (UnimplementedBoardServiceHandler) ListBoardSources(context.Context, *conne
 
 func (UnimplementedBoardServiceHandler) DeriveDiagram(context.Context, *connect.Request[v1.DeriveDiagramRequest]) (*connect.Response[v1.DeriveDiagramResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.DeriveDiagram is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ListRepoEnvironments(context.Context, *connect.Request[v1.ListRepoEnvironmentsRequest]) (*connect.Response[v1.ListRepoEnvironmentsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ListRepoEnvironments is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) SetRepoEnvironment(context.Context, *connect.Request[v1.SetRepoEnvironmentRequest]) (*connect.Response[v1.SetRepoEnvironmentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.SetRepoEnvironment is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) VerifyRepoEnvironment(context.Context, *connect.Request[v1.VerifyRepoEnvironmentRequest]) (*connect.Response[v1.VerifyRepoEnvironmentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.VerifyRepoEnvironment is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) DeleteRepoEnvironment(context.Context, *connect.Request[v1.DeleteRepoEnvironmentRequest]) (*connect.Response[v1.DeleteRepoEnvironmentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.DeleteRepoEnvironment is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ListRepoRoutes(context.Context, *connect.Request[v1.ListRepoRoutesRequest]) (*connect.Response[v1.ListRepoRoutesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ListRepoRoutes is not implemented"))
 }

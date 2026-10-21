@@ -1634,3 +1634,35 @@ class ArenaTurnResponse(_message.Message):
     input_tokens: int
     output_tokens: int
     def __init__(self, text: _Optional[str] = ..., model: _Optional[str] = ..., prompt_hash: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ...) -> None: ...
+
+class ReadRepoRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo", "ref", "path", "tree", "max_bytes")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    TREE_FIELD_NUMBER: _ClassVar[int]
+    MAX_BYTES_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    ref: str
+    path: str
+    tree: bool
+    max_bytes: int
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., tree: bool = ..., max_bytes: _Optional[int] = ...) -> None: ...
+
+class ReadRepoResponse(_message.Message):
+    __slots__ = ("sha", "content", "paths", "status", "reason", "truncated")
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_FIELD_NUMBER: _ClassVar[int]
+    PATHS_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    TRUNCATED_FIELD_NUMBER: _ClassVar[int]
+    sha: str
+    content: bytes
+    paths: _containers.RepeatedScalarFieldContainer[str]
+    status: str
+    reason: str
+    truncated: bool
+    def __init__(self, sha: _Optional[str] = ..., content: _Optional[bytes] = ..., paths: _Optional[_Iterable[str]] = ..., status: _Optional[str] = ..., reason: _Optional[str] = ..., truncated: bool = ...) -> None: ...

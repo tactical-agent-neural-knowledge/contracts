@@ -71,7 +71,7 @@ class Style(_message.Message):
     def __init__(self, fill: _Optional[str] = ..., stroke: _Optional[str] = ..., stroke_width: _Optional[float] = ..., opacity: _Optional[float] = ..., corner_radius: _Optional[float] = ..., dash: _Optional[str] = ..., font_size: _Optional[int] = ..., font_weight: _Optional[str] = ..., align: _Optional[str] = ..., shadow: _Optional[str] = ..., blur: _Optional[float] = ...) -> None: ...
 
 class AppFrame(_message.Message):
-    __slots__ = ("repo", "ref", "path", "platform", "viewport_width", "viewport_height", "preview_url", "status", "note", "drawn_from_sha", "drawn_at", "moved_on", "moved_note")
+    __slots__ = ("repo", "ref", "path", "platform", "viewport_width", "viewport_height", "preview_url", "status", "note", "drawn_from_sha", "drawn_at", "moved_on", "moved_note", "environment", "screen")
     REPO_FIELD_NUMBER: _ClassVar[int]
     REF_FIELD_NUMBER: _ClassVar[int]
     PATH_FIELD_NUMBER: _ClassVar[int]
@@ -85,6 +85,8 @@ class AppFrame(_message.Message):
     DRAWN_AT_FIELD_NUMBER: _ClassVar[int]
     MOVED_ON_FIELD_NUMBER: _ClassVar[int]
     MOVED_NOTE_FIELD_NUMBER: _ClassVar[int]
+    ENVIRONMENT_FIELD_NUMBER: _ClassVar[int]
+    SCREEN_FIELD_NUMBER: _ClassVar[int]
     repo: str
     ref: str
     path: str
@@ -98,10 +100,12 @@ class AppFrame(_message.Message):
     drawn_at: _timestamp_pb2.Timestamp
     moved_on: bool
     moved_note: str
-    def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., platform: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., preview_url: _Optional[str] = ..., status: _Optional[str] = ..., note: _Optional[str] = ..., drawn_from_sha: _Optional[str] = ..., drawn_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., moved_on: bool = ..., moved_note: _Optional[str] = ...) -> None: ...
+    environment: str
+    screen: str
+    def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., platform: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., preview_url: _Optional[str] = ..., status: _Optional[str] = ..., note: _Optional[str] = ..., drawn_from_sha: _Optional[str] = ..., drawn_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., moved_on: bool = ..., moved_note: _Optional[str] = ..., environment: _Optional[str] = ..., screen: _Optional[str] = ...) -> None: ...
 
 class BoardObject(_message.Message):
-    __slots__ = ("id", "kind", "at", "style", "text", "rotation", "z", "parent_id", "from_id", "to_id", "points", "file_id", "file_url", "app", "locked", "meta", "created_by", "rev", "derived")
+    __slots__ = ("id", "kind", "at", "style", "text", "rotation", "z", "parent_id", "from_id", "to_id", "points", "file_id", "file_url", "app", "locked", "meta", "created_by", "rev", "derived", "code")
     ID_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     AT_FIELD_NUMBER: _ClassVar[int]
@@ -121,6 +125,7 @@ class BoardObject(_message.Message):
     CREATED_BY_FIELD_NUMBER: _ClassVar[int]
     REV_FIELD_NUMBER: _ClassVar[int]
     DERIVED_FIELD_NUMBER: _ClassVar[int]
+    CODE_FIELD_NUMBER: _ClassVar[int]
     id: str
     kind: ObjectKind
     at: Rect
@@ -140,7 +145,32 @@ class BoardObject(_message.Message):
     created_by: str
     rev: int
     derived: Derivation
-    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[ObjectKind, str]] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., style: _Optional[_Union[Style, _Mapping]] = ..., text: _Optional[str] = ..., rotation: _Optional[float] = ..., z: _Optional[int] = ..., parent_id: _Optional[str] = ..., from_id: _Optional[str] = ..., to_id: _Optional[str] = ..., points: _Optional[_Iterable[float]] = ..., file_id: _Optional[str] = ..., file_url: _Optional[str] = ..., app: _Optional[_Union[AppFrame, _Mapping]] = ..., locked: bool = ..., meta: _Optional[str] = ..., created_by: _Optional[str] = ..., rev: _Optional[int] = ..., derived: _Optional[_Union[Derivation, _Mapping]] = ...) -> None: ...
+    code: CodeFrame
+    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[ObjectKind, str]] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., style: _Optional[_Union[Style, _Mapping]] = ..., text: _Optional[str] = ..., rotation: _Optional[float] = ..., z: _Optional[int] = ..., parent_id: _Optional[str] = ..., from_id: _Optional[str] = ..., to_id: _Optional[str] = ..., points: _Optional[_Iterable[float]] = ..., file_id: _Optional[str] = ..., file_url: _Optional[str] = ..., app: _Optional[_Union[AppFrame, _Mapping]] = ..., locked: bool = ..., meta: _Optional[str] = ..., created_by: _Optional[str] = ..., rev: _Optional[int] = ..., derived: _Optional[_Union[Derivation, _Mapping]] = ..., code: _Optional[_Union[CodeFrame, _Mapping]] = ...) -> None: ...
+
+class CodeFrame(_message.Message):
+    __slots__ = ("repo", "ref", "path", "start_line", "end_line", "content", "language", "sha", "status", "note")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    START_LINE_FIELD_NUMBER: _ClassVar[int]
+    END_LINE_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_FIELD_NUMBER: _ClassVar[int]
+    LANGUAGE_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    ref: str
+    path: str
+    start_line: int
+    end_line: int
+    content: str
+    language: str
+    sha: str
+    status: str
+    note: str
+    def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., start_line: _Optional[int] = ..., end_line: _Optional[int] = ..., content: _Optional[str] = ..., language: _Optional[str] = ..., sha: _Optional[str] = ..., status: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
 
 class Board(_message.Message):
     __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "objects", "version", "created_by", "created_at", "updated_by", "updated_at", "staleness", "staleness_note", "thread_root_id")
@@ -774,3 +804,123 @@ class DeriveDiagramResponse(_message.Message):
     derivation: Derivation
     notes: _containers.RepeatedScalarFieldContainer[str]
     def __init__(self, frame_id: _Optional[str] = ..., board: _Optional[_Union[Board, _Mapping]] = ..., derivation: _Optional[_Union[Derivation, _Mapping]] = ..., notes: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class RepoEnvironment(_message.Message):
+    __slots__ = ("id", "workspace_id", "repo", "name", "url", "platform", "verify_token", "verified", "verified_at", "embed", "embed_note", "checked_at")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    PLATFORM_FIELD_NUMBER: _ClassVar[int]
+    VERIFY_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    VERIFIED_FIELD_NUMBER: _ClassVar[int]
+    VERIFIED_AT_FIELD_NUMBER: _ClassVar[int]
+    EMBED_FIELD_NUMBER: _ClassVar[int]
+    EMBED_NOTE_FIELD_NUMBER: _ClassVar[int]
+    CHECKED_AT_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    workspace_id: str
+    repo: str
+    name: str
+    url: str
+    platform: str
+    verify_token: str
+    verified: bool
+    verified_at: _timestamp_pb2.Timestamp
+    embed: str
+    embed_note: str
+    checked_at: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., name: _Optional[str] = ..., url: _Optional[str] = ..., platform: _Optional[str] = ..., verify_token: _Optional[str] = ..., verified: bool = ..., verified_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., embed: _Optional[str] = ..., embed_note: _Optional[str] = ..., checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ListRepoEnvironmentsRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ...) -> None: ...
+
+class ListRepoEnvironmentsResponse(_message.Message):
+    __slots__ = ("environments",)
+    ENVIRONMENTS_FIELD_NUMBER: _ClassVar[int]
+    environments: _containers.RepeatedCompositeFieldContainer[RepoEnvironment]
+    def __init__(self, environments: _Optional[_Iterable[_Union[RepoEnvironment, _Mapping]]] = ...) -> None: ...
+
+class SetRepoEnvironmentRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo", "name", "url", "platform")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    PLATFORM_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    name: str
+    url: str
+    platform: str
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., name: _Optional[str] = ..., url: _Optional[str] = ..., platform: _Optional[str] = ...) -> None: ...
+
+class SetRepoEnvironmentResponse(_message.Message):
+    __slots__ = ("environment",)
+    ENVIRONMENT_FIELD_NUMBER: _ClassVar[int]
+    environment: RepoEnvironment
+    def __init__(self, environment: _Optional[_Union[RepoEnvironment, _Mapping]] = ...) -> None: ...
+
+class VerifyRepoEnvironmentRequest(_message.Message):
+    __slots__ = ("workspace_id", "id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ...) -> None: ...
+
+class VerifyRepoEnvironmentResponse(_message.Message):
+    __slots__ = ("environment",)
+    ENVIRONMENT_FIELD_NUMBER: _ClassVar[int]
+    environment: RepoEnvironment
+    def __init__(self, environment: _Optional[_Union[RepoEnvironment, _Mapping]] = ...) -> None: ...
+
+class DeleteRepoEnvironmentRequest(_message.Message):
+    __slots__ = ("workspace_id", "id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ...) -> None: ...
+
+class DeleteRepoEnvironmentResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListRepoRoutesRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo", "ref")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    REF_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    ref: str
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., ref: _Optional[str] = ...) -> None: ...
+
+class RepoRoute(_message.Message):
+    __slots__ = ("path", "file", "platform", "dynamic")
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    FILE_FIELD_NUMBER: _ClassVar[int]
+    PLATFORM_FIELD_NUMBER: _ClassVar[int]
+    DYNAMIC_FIELD_NUMBER: _ClassVar[int]
+    path: str
+    file: str
+    platform: str
+    dynamic: bool
+    def __init__(self, path: _Optional[str] = ..., file: _Optional[str] = ..., platform: _Optional[str] = ..., dynamic: bool = ...) -> None: ...
+
+class ListRepoRoutesResponse(_message.Message):
+    __slots__ = ("routes", "framework", "note")
+    ROUTES_FIELD_NUMBER: _ClassVar[int]
+    FRAMEWORK_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    routes: _containers.RepeatedCompositeFieldContainer[RepoRoute]
+    framework: str
+    note: str
+    def __init__(self, routes: _Optional[_Iterable[_Union[RepoRoute, _Mapping]]] = ..., framework: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...

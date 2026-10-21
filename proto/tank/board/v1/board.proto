@@ -66,6 +66,14 @@ message AppFrame {
   // Server-filled: the app has moved on since this frame was drawn.
   bool moved_on = 12;
   string moved_note = 13;        // "the app has moved 23 commits since this was drawn"
+  // A named environment of this repository (RepoEnvironment.name), e.g. "production":
+  // the frame shows that address plus `path` instead of a build of `ref`. Empty means a
+  // build of `ref`, as before. Resolved only for a verified environment of a repository
+  // this workspace was granted.
+  string environment = 14;
+  // Mobile: the screen to open, as a deep link path in the app (e.g. "/settings/billing").
+  // `path` stays the web route.
+  string screen = 15;
 }
 
 message BoardObject {
@@ -101,6 +109,24 @@ message BoardObject {
   // Frame only: what this diagram was drawn from, when it was drawn from something
   // rather than by hand. The same idea as AppFrame.drawn_from_sha one level up.
   Derivation derived = 19;
+  // Frame only: a file, or a range of one, from a repository this workspace was granted.
+  CodeFrame code = 20;
+}
+
+// A frame holding source: read by TANK through the workspace's own GitHub connection at
+// a branch or commit, never through a URL the client supplies.
+message CodeFrame {
+  string repo = 1;               // owner/name
+  string ref = 2;                // branch or commit
+  string path = 3;               // file in the repository
+  int32 start_line = 4;          // 0 = the whole file
+  int32 end_line = 5;
+  // Server-filled on read.
+  string content = 6;            // the lines asked for, capped
+  string language = 7;           // for highlighting, from the extension
+  string sha = 8;                // the commit the content was read at
+  string status = 9;             // "ok" | "missing" | "denied" | "too_large"
+  string note = 10;
 }
 
 message Board {
@@ -534,6 +560,73 @@ message DeriveDiagramResponse {
   repeated string notes = 4;
 }
 
+// Where a repository runs, named by the company: production, staging, anything with an
+// address. TANK shows it in a frame once the company has proved the domain is theirs.
+message RepoEnvironment {
+  string id = 1;
+  string workspace_id = 2;
+  string repo = 3;                       // owner/name, granted to the workspace
+  string name = 4;                       // "production", "staging"
+  string url = 5;                        // https origin, e.g. https://app.cache7.com
+  string platform = 6;                   // "web" | "ios" | "android"
+  // Domain proof: a TXT record `_tank-verify.<host>` with this value, or the value served
+  // at https://<host>/.well-known/tank-verify.txt.
+  string verify_token = 7;
+  bool verified = 8;
+  google.protobuf.Timestamp verified_at = 9;
+  // Whether the site lets app.tank.chat embed it: "allowed" | "refused" | "unknown".
+  string embed = 10;
+  string embed_note = 11;                // the header to change when refused
+  google.protobuf.Timestamp checked_at = 12;
+}
+
+message ListRepoEnvironmentsRequest {
+  string workspace_id = 1;
+  string repo = 2;                       // empty for every repository
+}
+message ListRepoEnvironmentsResponse { repeated RepoEnvironment environments = 1; }
+
+// Admins only. Creates or replaces the environment of that name for that repository.
+message SetRepoEnvironmentRequest {
+  string workspace_id = 1;
+  string repo = 2;
+  string name = 3;
+  string url = 4;
+  string platform = 5;
+}
+message SetRepoEnvironmentResponse { RepoEnvironment environment = 1; }
+
+// Admins only. Checks the domain proof and whether the site can be embedded, now.
+message VerifyRepoEnvironmentRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message VerifyRepoEnvironmentResponse { RepoEnvironment environment = 1; }
+
+message DeleteRepoEnvironmentRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message DeleteRepoEnvironmentResponse {}
+
+// The pages or screens of a granted repository, read from its source at a ref.
+message ListRepoRoutesRequest {
+  string workspace_id = 1;
+  string repo = 2;
+  string ref = 3;                        // empty = the default branch
+}
+message RepoRoute {
+  string path = 1;                       // "/settings/billing", "/w/[ws]/c/[channel]"
+  string file = 2;                       // the source file that defines it
+  string platform = 3;                   // "web" | "mobile"
+  bool dynamic = 4;                      // has [params] a person fills in
+}
+message ListRepoRoutesResponse {
+  repeated RepoRoute routes = 1;
+  string framework = 2;                  // "next-app" | "next-pages" | "expo-router" | "react-router" | "astro" | ""
+  string note = 3;                       // why the list is empty or partial
+}
+
 service BoardService {
   rpc ListBoards(ListBoardsRequest) returns (ListBoardsResponse);
   rpc GetBoard(GetBoardRequest) returns (GetBoardResponse);
@@ -555,4 +648,9 @@ service BoardService {
   rpc ReportBoardSource(ReportBoardSourceRequest) returns (ReportBoardSourceResponse);
   rpc ListBoardSources(ListBoardSourcesRequest) returns (ListBoardSourcesResponse);
   rpc DeriveDiagram(DeriveDiagramRequest) returns (DeriveDiagramResponse);
+  rpc ListRepoEnvironments(ListRepoEnvironmentsRequest) returns (ListRepoEnvironmentsResponse);
+  rpc SetRepoEnvironment(SetRepoEnvironmentRequest) returns (SetRepoEnvironmentResponse);
+  rpc VerifyRepoEnvironment(VerifyRepoEnvironmentRequest) returns (VerifyRepoEnvironmentResponse);
+  rpc DeleteRepoEnvironment(DeleteRepoEnvironmentRequest) returns (DeleteRepoEnvironmentResponse);
+  rpc ListRepoRoutes(ListRepoRoutesRequest) returns (ListRepoRoutesResponse);
 }

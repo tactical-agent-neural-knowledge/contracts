@@ -922,6 +922,11 @@ service ControlService {
   // workspace decides. Idempotent per repository, and one repository's refusal never
   // stops the others.
   rpc SetUpPreviewWorkflow(SetUpPreviewWorkflowRequest) returns (SetUpPreviewWorkflowResponse);
+  // Reads a repository the workspace's own installation reaches, at a ref: one file's
+  // content, or the list of file paths. For a board's route list and code frames. api
+  // asks only after its own grant check; this refuses a repository the installation
+  // does not reach, so a workspace can never read through TANK's own installation.
+  rpc ReadRepo(ReadRepoRequest) returns (ReadRepoResponse);
 
   // Writes into schema `agent`, which belongs to the control plane. The
   // messaging core may read that schema and may not write it, so each of these
@@ -1135,4 +1140,21 @@ message ArenaTurnResponse {
   string prompt_hash = 3;                 // sha256 of system + user
   int32 input_tokens = 4;
   int32 output_tokens = 5;
+}
+
+message ReadRepoRequest {
+  string workspace_id = 1;
+  string repo = 2;              // owner/name
+  string ref = 3;               // branch or commit; empty = the default branch
+  string path = 4;              // a file; empty with tree = the whole repository
+  bool tree = 5;                // list file paths under path instead of reading one
+  int32 max_bytes = 6;          // cap on content; 0 = 256 KiB
+}
+message ReadRepoResponse {
+  string sha = 1;               // the commit read
+  bytes content = 2;
+  repeated string paths = 3;    // with tree: file paths, capped
+  string status = 4;            // "ok" | "missing" | "denied" | "too_large"
+  string reason = 5;
+  bool truncated = 6;
 }
