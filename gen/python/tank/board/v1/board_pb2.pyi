@@ -352,20 +352,24 @@ class PutObjectsResponse(_message.Message):
     def __init__(self, board: _Optional[_Union[Board, _Mapping]] = ..., conflicts: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., conflict_note: _Optional[str] = ...) -> None: ...
 
 class Element(_message.Message):
-    __slots__ = ("source", "tag", "text", "test_id", "at", "classes")
+    __slots__ = ("source", "tag", "text", "test_id", "at", "classes", "page", "selector")
     SOURCE_FIELD_NUMBER: _ClassVar[int]
     TAG_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
     TEST_ID_FIELD_NUMBER: _ClassVar[int]
     AT_FIELD_NUMBER: _ClassVar[int]
     CLASSES_FIELD_NUMBER: _ClassVar[int]
+    PAGE_FIELD_NUMBER: _ClassVar[int]
+    SELECTOR_FIELD_NUMBER: _ClassVar[int]
     source: str
     tag: str
     text: str
     test_id: str
     at: Rect
     classes: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, source: _Optional[str] = ..., tag: _Optional[str] = ..., text: _Optional[str] = ..., test_id: _Optional[str] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., classes: _Optional[_Iterable[str]] = ...) -> None: ...
+    page: str
+    selector: str
+    def __init__(self, source: _Optional[str] = ..., tag: _Optional[str] = ..., text: _Optional[str] = ..., test_id: _Optional[str] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., classes: _Optional[_Iterable[str]] = ..., page: _Optional[str] = ..., selector: _Optional[str] = ...) -> None: ...
 
 class RequestChangeRequest(_message.Message):
     __slots__ = ("workspace_id", "board_id", "object_id", "element", "ask")
@@ -996,3 +1000,79 @@ class StopRemoteViewsResponse(_message.Message):
     STOPPED_FIELD_NUMBER: _ClassVar[int]
     stopped: int
     def __init__(self, stopped: _Optional[int] = ...) -> None: ...
+
+class ReadElementRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "object_id", "x", "y")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    X_FIELD_NUMBER: _ClassVar[int]
+    Y_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    object_id: str
+    x: float
+    y: float
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., object_id: _Optional[str] = ..., x: _Optional[float] = ..., y: _Optional[float] = ...) -> None: ...
+
+class ReadElementResponse(_message.Message):
+    __slots__ = ("element", "note")
+    ELEMENT_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    element: Element
+    note: str
+    def __init__(self, element: _Optional[_Union[Element, _Mapping]] = ..., note: _Optional[str] = ...) -> None: ...
+
+class AppSetup(_message.Message):
+    __slots__ = ("repo", "hosting", "framework", "environments", "bridge", "pull_request_url", "pull_request_state", "note")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    HOSTING_FIELD_NUMBER: _ClassVar[int]
+    FRAMEWORK_FIELD_NUMBER: _ClassVar[int]
+    ENVIRONMENTS_FIELD_NUMBER: _ClassVar[int]
+    BRIDGE_FIELD_NUMBER: _ClassVar[int]
+    PULL_REQUEST_URL_FIELD_NUMBER: _ClassVar[int]
+    PULL_REQUEST_STATE_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    hosting: str
+    framework: str
+    environments: _containers.RepeatedCompositeFieldContainer[RepoEnvironment]
+    bridge: str
+    pull_request_url: str
+    pull_request_state: str
+    note: str
+    def __init__(self, repo: _Optional[str] = ..., hosting: _Optional[str] = ..., framework: _Optional[str] = ..., environments: _Optional[_Iterable[_Union[RepoEnvironment, _Mapping]]] = ..., bridge: _Optional[str] = ..., pull_request_url: _Optional[str] = ..., pull_request_state: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
+
+class GetAppSetupRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ...) -> None: ...
+
+class GetAppSetupResponse(_message.Message):
+    __slots__ = ("setup",)
+    SETUP_FIELD_NUMBER: _ClassVar[int]
+    setup: AppSetup
+    def __init__(self, setup: _Optional[_Union[AppSetup, _Mapping]] = ...) -> None: ...
+
+class ConnectAppRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo", "url", "name", "open_pull_request")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    OPEN_PULL_REQUEST_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    url: str
+    name: str
+    open_pull_request: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., url: _Optional[str] = ..., name: _Optional[str] = ..., open_pull_request: bool = ...) -> None: ...
+
+class ConnectAppResponse(_message.Message):
+    __slots__ = ("setup",)
+    SETUP_FIELD_NUMBER: _ClassVar[int]
+    setup: AppSetup
+    def __init__(self, setup: _Optional[_Union[AppSetup, _Mapping]] = ...) -> None: ...

@@ -932,6 +932,11 @@ service ControlService {
   // once per commit; answers with the newest build's state for that commit. Refused for
   // a repository outside the installation and past the workspace's daily build cap.
   rpc BuildPreview(BuildPreviewRequest) returns (BuildPreviewResponse);
+  // Opens (or finds) the one pull request that connects a repository's app to boards: the
+  // domain proof file and TANK's board bridge, placed for the repository's framework.
+  rpc OpenSetupPullRequest(OpenSetupPullRequestRequest) returns (OpenSetupPullRequestResponse);
+  // What a page shows at a point, read by a headless browser on TANK's side.
+  rpc ReadElementAt(ReadElementAtRequest) returns (ReadElementAtResponse);
 
   // Writes into schema `agent`, which belongs to the control plane. The
   // messaging core may read that schema and may not write it, so each of these
@@ -1175,4 +1180,40 @@ message BuildPreviewResponse {
   string sha = 3;               // the commit being or been built
   string reason = 4;            // when failed or refused, in a sentence
   string framework = 5;
+}
+
+message OpenSetupPullRequestRequest {
+  string workspace_id = 1;
+  string repo = 2;              // owner/name, granted to the workspace
+  string verify_token = 3;      // "tank-verify=…", written to .well-known/tank-verify.txt
+  string bridge_tag = 4;        // the exact <script> tag, pinned by its hash
+}
+message OpenSetupPullRequestResponse {
+  string url = 1;
+  string state = 2;             // "open" | "merged" | "closed"
+  string framework = 3;
+  // Files the pull request changes, and what it could not place (then the person adds the
+  // tag by hand; the note says where).
+  repeated string files = 4;
+  string note = 5;
+}
+
+message ReadElementAtRequest {
+  string url = 1;               // https, public; checked again on TANK's side
+  int32 viewport_width = 2;
+  int32 viewport_height = 3;
+  double x = 4;
+  double y = 5;
+}
+message ReadElementAtResponse {
+  string tag = 1;
+  string text = 2;
+  string test_id = 3;
+  repeated string classes = 4;
+  string selector = 5;
+  double x = 6;
+  double y = 7;
+  double w = 8;
+  double h = 9;
+  string note = 10;             // why nothing was read
 }

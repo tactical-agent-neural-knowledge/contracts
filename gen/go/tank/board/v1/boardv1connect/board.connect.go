@@ -113,6 +113,14 @@ const (
 	// BoardServiceStopRemoteViewsProcedure is the fully-qualified name of the BoardService's
 	// StopRemoteViews RPC.
 	BoardServiceStopRemoteViewsProcedure = "/tank.board.v1.BoardService/StopRemoteViews"
+	// BoardServiceReadElementProcedure is the fully-qualified name of the BoardService's ReadElement
+	// RPC.
+	BoardServiceReadElementProcedure = "/tank.board.v1.BoardService/ReadElement"
+	// BoardServiceGetAppSetupProcedure is the fully-qualified name of the BoardService's GetAppSetup
+	// RPC.
+	BoardServiceGetAppSetupProcedure = "/tank.board.v1.BoardService/GetAppSetup"
+	// BoardServiceConnectAppProcedure is the fully-qualified name of the BoardService's ConnectApp RPC.
+	BoardServiceConnectAppProcedure = "/tank.board.v1.BoardService/ConnectApp"
 )
 
 // BoardServiceClient is a client for the tank.board.v1.BoardService service.
@@ -145,6 +153,9 @@ type BoardServiceClient interface {
 	CreateRemoteView(context.Context, *connect.Request[v1.CreateRemoteViewRequest]) (*connect.Response[v1.CreateRemoteViewResponse], error)
 	ListRemoteViews(context.Context, *connect.Request[v1.ListRemoteViewsRequest]) (*connect.Response[v1.ListRemoteViewsResponse], error)
 	StopRemoteViews(context.Context, *connect.Request[v1.StopRemoteViewsRequest]) (*connect.Response[v1.StopRemoteViewsResponse], error)
+	ReadElement(context.Context, *connect.Request[v1.ReadElementRequest]) (*connect.Response[v1.ReadElementResponse], error)
+	GetAppSetup(context.Context, *connect.Request[v1.GetAppSetupRequest]) (*connect.Response[v1.GetAppSetupResponse], error)
+	ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error)
 }
 
 // NewBoardServiceClient constructs a client for the tank.board.v1.BoardService service. By default,
@@ -326,6 +337,24 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(boardServiceMethods.ByName("StopRemoteViews")),
 			connect.WithClientOptions(opts...),
 		),
+		readElement: connect.NewClient[v1.ReadElementRequest, v1.ReadElementResponse](
+			httpClient,
+			baseURL+BoardServiceReadElementProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ReadElement")),
+			connect.WithClientOptions(opts...),
+		),
+		getAppSetup: connect.NewClient[v1.GetAppSetupRequest, v1.GetAppSetupResponse](
+			httpClient,
+			baseURL+BoardServiceGetAppSetupProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("GetAppSetup")),
+			connect.WithClientOptions(opts...),
+		),
+		connectApp: connect.NewClient[v1.ConnectAppRequest, v1.ConnectAppResponse](
+			httpClient,
+			baseURL+BoardServiceConnectAppProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ConnectApp")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -359,6 +388,9 @@ type boardServiceClient struct {
 	createRemoteView      *connect.Client[v1.CreateRemoteViewRequest, v1.CreateRemoteViewResponse]
 	listRemoteViews       *connect.Client[v1.ListRemoteViewsRequest, v1.ListRemoteViewsResponse]
 	stopRemoteViews       *connect.Client[v1.StopRemoteViewsRequest, v1.StopRemoteViewsResponse]
+	readElement           *connect.Client[v1.ReadElementRequest, v1.ReadElementResponse]
+	getAppSetup           *connect.Client[v1.GetAppSetupRequest, v1.GetAppSetupResponse]
+	connectApp            *connect.Client[v1.ConnectAppRequest, v1.ConnectAppResponse]
 }
 
 // ListBoards calls tank.board.v1.BoardService.ListBoards.
@@ -501,6 +533,21 @@ func (c *boardServiceClient) StopRemoteViews(ctx context.Context, req *connect.R
 	return c.stopRemoteViews.CallUnary(ctx, req)
 }
 
+// ReadElement calls tank.board.v1.BoardService.ReadElement.
+func (c *boardServiceClient) ReadElement(ctx context.Context, req *connect.Request[v1.ReadElementRequest]) (*connect.Response[v1.ReadElementResponse], error) {
+	return c.readElement.CallUnary(ctx, req)
+}
+
+// GetAppSetup calls tank.board.v1.BoardService.GetAppSetup.
+func (c *boardServiceClient) GetAppSetup(ctx context.Context, req *connect.Request[v1.GetAppSetupRequest]) (*connect.Response[v1.GetAppSetupResponse], error) {
+	return c.getAppSetup.CallUnary(ctx, req)
+}
+
+// ConnectApp calls tank.board.v1.BoardService.ConnectApp.
+func (c *boardServiceClient) ConnectApp(ctx context.Context, req *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error) {
+	return c.connectApp.CallUnary(ctx, req)
+}
+
 // BoardServiceHandler is an implementation of the tank.board.v1.BoardService service.
 type BoardServiceHandler interface {
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
@@ -531,6 +578,9 @@ type BoardServiceHandler interface {
 	CreateRemoteView(context.Context, *connect.Request[v1.CreateRemoteViewRequest]) (*connect.Response[v1.CreateRemoteViewResponse], error)
 	ListRemoteViews(context.Context, *connect.Request[v1.ListRemoteViewsRequest]) (*connect.Response[v1.ListRemoteViewsResponse], error)
 	StopRemoteViews(context.Context, *connect.Request[v1.StopRemoteViewsRequest]) (*connect.Response[v1.StopRemoteViewsResponse], error)
+	ReadElement(context.Context, *connect.Request[v1.ReadElementRequest]) (*connect.Response[v1.ReadElementResponse], error)
+	GetAppSetup(context.Context, *connect.Request[v1.GetAppSetupRequest]) (*connect.Response[v1.GetAppSetupResponse], error)
+	ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error)
 }
 
 // NewBoardServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -708,6 +758,24 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(boardServiceMethods.ByName("StopRemoteViews")),
 		connect.WithHandlerOptions(opts...),
 	)
+	boardServiceReadElementHandler := connect.NewUnaryHandler(
+		BoardServiceReadElementProcedure,
+		svc.ReadElement,
+		connect.WithSchema(boardServiceMethods.ByName("ReadElement")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceGetAppSetupHandler := connect.NewUnaryHandler(
+		BoardServiceGetAppSetupProcedure,
+		svc.GetAppSetup,
+		connect.WithSchema(boardServiceMethods.ByName("GetAppSetup")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceConnectAppHandler := connect.NewUnaryHandler(
+		BoardServiceConnectAppProcedure,
+		svc.ConnectApp,
+		connect.WithSchema(boardServiceMethods.ByName("ConnectApp")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.board.v1.BoardService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BoardServiceListBoardsProcedure:
@@ -766,6 +834,12 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 			boardServiceListRemoteViewsHandler.ServeHTTP(w, r)
 		case BoardServiceStopRemoteViewsProcedure:
 			boardServiceStopRemoteViewsHandler.ServeHTTP(w, r)
+		case BoardServiceReadElementProcedure:
+			boardServiceReadElementHandler.ServeHTTP(w, r)
+		case BoardServiceGetAppSetupProcedure:
+			boardServiceGetAppSetupHandler.ServeHTTP(w, r)
+		case BoardServiceConnectAppProcedure:
+			boardServiceConnectAppHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -885,4 +959,16 @@ func (UnimplementedBoardServiceHandler) ListRemoteViews(context.Context, *connec
 
 func (UnimplementedBoardServiceHandler) StopRemoteViews(context.Context, *connect.Request[v1.StopRemoteViewsRequest]) (*connect.Response[v1.StopRemoteViewsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.StopRemoteViews is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ReadElement(context.Context, *connect.Request[v1.ReadElementRequest]) (*connect.Response[v1.ReadElementResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ReadElement is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) GetAppSetup(context.Context, *connect.Request[v1.GetAppSetupRequest]) (*connect.Response[v1.GetAppSetupResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.GetAppSetup is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ConnectApp is not implemented"))
 }

@@ -245,6 +245,8 @@ message Element {
   string test_id = 4;
   Rect at = 5;              // where it sits inside the frame
   repeated string classes = 6;
+  string page = 7;          // the page inside the frame when it was clicked: "/pricing?plan=pro"
+  string selector = 8;      // a CSS selector that finds it again, when TANK read it from outside
 }
 
 // Ask for a change to something in a running frame. This is the product's point: the
@@ -667,6 +669,52 @@ message StopRemoteViewsRequest {
 }
 message StopRemoteViewsResponse { int32 stopped = 1; }
 
+// What sits under a click in a frame whose app does not carry TANK's board bridge: TANK
+// opens the same page at the frame's size on its own side and reads the element there.
+message ReadElementRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  string object_id = 3;
+  double x = 4;             // in the frame's own CSS pixels
+  double y = 5;
+}
+message ReadElementResponse {
+  Element element = 1;      // empty when nothing could be read
+  string note = 2;          // why, when empty
+}
+
+// Connecting a repository's running app to boards (2026-10-22): how it runs, where, whether
+// TANK can name what is clicked in it, and the one pull request that sets that up.
+message AppSetup {
+  string repo = 1;
+  // "tank_hosted": TANK runs it; "tank_built": TANK builds its branches; "elsewhere": the
+  // company hosts it and named where; "unknown": nobody has said where it runs yet.
+  string hosting = 2;
+  string framework = 3;                  // "next-app" | "vite" | "astro" | … | ""
+  repeated RepoEnvironment environments = 4;
+  // TANK's board bridge in the running app: "present" | "missing" | "not_needed" | "unknown".
+  string bridge = 5;
+  string pull_request_url = 6;           // the setup pull request, once asked for
+  string pull_request_state = 7;         // "open" | "merged" | "closed" | ""
+  string note = 8;
+}
+message GetAppSetupRequest {
+  string workspace_id = 1;
+  string repo = 2;
+}
+message GetAppSetupResponse { AppSetup setup = 1; }
+
+// Name where the app runs and, with the person's permission, have TANK open one pull request
+// in the repository adding the domain proof and the board bridge.
+message ConnectAppRequest {
+  string workspace_id = 1;
+  string repo = 2;
+  string url = 3;                        // https origin where it runs, e.g. https://cache7.com
+  string name = 4;                       // "production" when empty
+  bool open_pull_request = 5;            // the person said yes to TANK opening it
+}
+message ConnectAppResponse { AppSetup setup = 1; }
+
 service BoardService {
   rpc ListBoards(ListBoardsRequest) returns (ListBoardsResponse);
   rpc GetBoard(GetBoardRequest) returns (GetBoardResponse);
@@ -696,4 +744,7 @@ service BoardService {
   rpc CreateRemoteView(CreateRemoteViewRequest) returns (CreateRemoteViewResponse);
   rpc ListRemoteViews(ListRemoteViewsRequest) returns (ListRemoteViewsResponse);
   rpc StopRemoteViews(StopRemoteViewsRequest) returns (StopRemoteViewsResponse);
+  rpc ReadElement(ReadElementRequest) returns (ReadElementResponse);
+  rpc GetAppSetup(GetAppSetupRequest) returns (GetAppSetupResponse);
+  rpc ConnectApp(ConnectAppRequest) returns (ConnectAppResponse);
 }

@@ -1690,3 +1690,67 @@ class BuildPreviewResponse(_message.Message):
     reason: str
     framework: str
     def __init__(self, state: _Optional[str] = ..., url: _Optional[str] = ..., sha: _Optional[str] = ..., reason: _Optional[str] = ..., framework: _Optional[str] = ...) -> None: ...
+
+class OpenSetupPullRequestRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo", "verify_token", "bridge_tag")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    VERIFY_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    BRIDGE_TAG_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    verify_token: str
+    bridge_tag: str
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., verify_token: _Optional[str] = ..., bridge_tag: _Optional[str] = ...) -> None: ...
+
+class OpenSetupPullRequestResponse(_message.Message):
+    __slots__ = ("url", "state", "framework", "files", "note")
+    URL_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    FRAMEWORK_FIELD_NUMBER: _ClassVar[int]
+    FILES_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    state: str
+    framework: str
+    files: _containers.RepeatedScalarFieldContainer[str]
+    note: str
+    def __init__(self, url: _Optional[str] = ..., state: _Optional[str] = ..., framework: _Optional[str] = ..., files: _Optional[_Iterable[str]] = ..., note: _Optional[str] = ...) -> None: ...
+
+class ReadElementAtRequest(_message.Message):
+    __slots__ = ("url", "viewport_width", "viewport_height", "x", "y")
+    URL_FIELD_NUMBER: _ClassVar[int]
+    VIEWPORT_WIDTH_FIELD_NUMBER: _ClassVar[int]
+    VIEWPORT_HEIGHT_FIELD_NUMBER: _ClassVar[int]
+    X_FIELD_NUMBER: _ClassVar[int]
+    Y_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    viewport_width: int
+    viewport_height: int
+    x: float
+    y: float
+    def __init__(self, url: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., x: _Optional[float] = ..., y: _Optional[float] = ...) -> None: ...
+
+class ReadElementAtResponse(_message.Message):
+    __slots__ = ("tag", "text", "test_id", "classes", "selector", "x", "y", "w", "h", "note")
+    TAG_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    TEST_ID_FIELD_NUMBER: _ClassVar[int]
+    CLASSES_FIELD_NUMBER: _ClassVar[int]
+    SELECTOR_FIELD_NUMBER: _ClassVar[int]
+    X_FIELD_NUMBER: _ClassVar[int]
+    Y_FIELD_NUMBER: _ClassVar[int]
+    W_FIELD_NUMBER: _ClassVar[int]
+    H_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    tag: str
+    text: str
+    test_id: str
+    classes: _containers.RepeatedScalarFieldContainer[str]
+    selector: str
+    x: float
+    y: float
+    w: float
+    h: float
+    note: str
+    def __init__(self, tag: _Optional[str] = ..., text: _Optional[str] = ..., test_id: _Optional[str] = ..., classes: _Optional[_Iterable[str]] = ..., selector: _Optional[str] = ..., x: _Optional[float] = ..., y: _Optional[float] = ..., w: _Optional[float] = ..., h: _Optional[float] = ..., note: _Optional[str] = ...) -> None: ...
