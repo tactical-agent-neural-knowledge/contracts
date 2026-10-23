@@ -1,4 +1,4 @@
-# Neural Knowledge by TANK · refreshed 2026-10-22 · 8fc12cb67c0f
+# Neural Knowledge by TANK · refreshed 2026-10-23 · b8fae6898e58
 
 This repository is the wire contract for TANK: hand-written Protocol Buffer definitions under `proto/`, with generated Go, TypeScript and Python committed under `gen/`. Every PR that changes a `.proto` file must also carry the regenerated outputs — `gen/` is tracked intentionally and never fetched at build time. The repo is the source of truth for all TANK service interfaces: the agent runner, the control plane, boards, books, canvas, billing, and every other domain.
 
