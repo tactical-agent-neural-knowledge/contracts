@@ -257,6 +257,24 @@ message ReportCompletionRequest {
 }
 message ReportCompletionResponse {}
 
+message CheckLiveRequest {
+  string path = 1;              // "/map"; the host is the product TANK runs for this repository
+  int32 viewport_width = 2;     // 0 = 1440
+  int32 viewport_height = 3;    // 0 = 900
+  string expect_sha = 4;        // wait (up to ten minutes) until the live build is this commit
+}
+message CheckLiveResponse {
+  string url = 1;
+  int32 status = 2;             // the page's HTTP status; 0 when it did not load
+  string build_sha = 3;         // what the live product says it is (/healthz X-Build-Sha)
+  bool deployed = 4;            // build_sha matches expect_sha (or none was asked for)
+  string title = 5;
+  int32 text_length = 6;        // characters of visible text; near zero is a blank page
+  repeated string errors = 7;   // console errors and failed loads
+  bytes screenshot_png = 8;
+  string note = 9;              // why nothing could be checked
+}
+
 message ReadThreadRequest {
   int64 after_thread_seq = 1;
   int32 limit = 2;
@@ -732,6 +750,9 @@ service RunnerService {
   // How far the run got against the whole ask (2026-10-23): what is done, what is left,
   // and what needs a person. Items left with nothing blocked start a continuation run.
   rpc ReportCompletion(ReportCompletionRequest) returns (ReportCompletionResponse);
+  // Opens a page of the product TANK hosts for this run's repository, as a visitor would,
+  // once it serves the expected build: status, errors, how much it shows, a screenshot.
+  rpc CheckLive(CheckLiveRequest) returns (CheckLiveResponse);
   rpc ReadThread(ReadThreadRequest) returns (ReadThreadResponse);
   rpc BoardResearch(BoardResearchRequest) returns (BoardResearchResponse);
   rpc CommitFiles(CommitFilesRequest) returns (CommitFilesResponse);

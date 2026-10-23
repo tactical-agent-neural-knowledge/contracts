@@ -383,6 +383,40 @@ class ReportCompletionResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class CheckLiveRequest(_message.Message):
+    __slots__ = ("path", "viewport_width", "viewport_height", "expect_sha")
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    VIEWPORT_WIDTH_FIELD_NUMBER: _ClassVar[int]
+    VIEWPORT_HEIGHT_FIELD_NUMBER: _ClassVar[int]
+    EXPECT_SHA_FIELD_NUMBER: _ClassVar[int]
+    path: str
+    viewport_width: int
+    viewport_height: int
+    expect_sha: str
+    def __init__(self, path: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., expect_sha: _Optional[str] = ...) -> None: ...
+
+class CheckLiveResponse(_message.Message):
+    __slots__ = ("url", "status", "build_sha", "deployed", "title", "text_length", "errors", "screenshot_png", "note")
+    URL_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    BUILD_SHA_FIELD_NUMBER: _ClassVar[int]
+    DEPLOYED_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    TEXT_LENGTH_FIELD_NUMBER: _ClassVar[int]
+    ERRORS_FIELD_NUMBER: _ClassVar[int]
+    SCREENSHOT_PNG_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    status: int
+    build_sha: str
+    deployed: bool
+    title: str
+    text_length: int
+    errors: _containers.RepeatedScalarFieldContainer[str]
+    screenshot_png: bytes
+    note: str
+    def __init__(self, url: _Optional[str] = ..., status: _Optional[int] = ..., build_sha: _Optional[str] = ..., deployed: bool = ..., title: _Optional[str] = ..., text_length: _Optional[int] = ..., errors: _Optional[_Iterable[str]] = ..., screenshot_png: _Optional[bytes] = ..., note: _Optional[str] = ...) -> None: ...
+
 class ReadThreadRequest(_message.Message):
     __slots__ = ("after_thread_seq", "limit")
     AFTER_THREAD_SEQ_FIELD_NUMBER: _ClassVar[int]

@@ -67,6 +67,8 @@ const (
 	// RunnerServiceReportCompletionProcedure is the fully-qualified name of the RunnerService's
 	// ReportCompletion RPC.
 	RunnerServiceReportCompletionProcedure = "/tank.agentctl.v1.RunnerService/ReportCompletion"
+	// RunnerServiceCheckLiveProcedure is the fully-qualified name of the RunnerService's CheckLive RPC.
+	RunnerServiceCheckLiveProcedure = "/tank.agentctl.v1.RunnerService/CheckLive"
 	// RunnerServiceReadThreadProcedure is the fully-qualified name of the RunnerService's ReadThread
 	// RPC.
 	RunnerServiceReadThreadProcedure = "/tank.agentctl.v1.RunnerService/ReadThread"
@@ -260,6 +262,9 @@ type RunnerServiceClient interface {
 	// How far the run got against the whole ask (2026-10-23): what is done, what is left,
 	// and what needs a person. Items left with nothing blocked start a continuation run.
 	ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error)
+	// Opens a page of the product TANK hosts for this run's repository, as a visitor would,
+	// once it serves the expected build: status, errors, how much it shows, a screenshot.
+	CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error)
 	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error)
 	CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error)
@@ -374,6 +379,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServiceReportCompletionProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("ReportCompletion")),
+			connect.WithClientOptions(opts...),
+		),
+		checkLive: connect.NewClient[v1.CheckLiveRequest, v1.CheckLiveResponse](
+			httpClient,
+			baseURL+RunnerServiceCheckLiveProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("CheckLive")),
 			connect.WithClientOptions(opts...),
 		),
 		readThread: connect.NewClient[v1.ReadThreadRequest, v1.ReadThreadResponse](
@@ -602,6 +613,7 @@ type runnerServiceClient struct {
 	askQuestion              *connect.Client[v1.AskQuestionRequest, v1.AskQuestionResponse]
 	reportStatus             *connect.Client[v1.ReportStatusRequest, v1.ReportStatusResponse]
 	reportCompletion         *connect.Client[v1.ReportCompletionRequest, v1.ReportCompletionResponse]
+	checkLive                *connect.Client[v1.CheckLiveRequest, v1.CheckLiveResponse]
 	readThread               *connect.Client[v1.ReadThreadRequest, v1.ReadThreadResponse]
 	boardResearch            *connect.Client[v1.BoardResearchRequest, v1.BoardResearchResponse]
 	commitFiles              *connect.Client[v1.CommitFilesRequest, v1.CommitFilesResponse]
@@ -692,6 +704,11 @@ func (c *runnerServiceClient) ReportStatus(ctx context.Context, req *connect.Req
 // ReportCompletion calls tank.agentctl.v1.RunnerService.ReportCompletion.
 func (c *runnerServiceClient) ReportCompletion(ctx context.Context, req *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error) {
 	return c.reportCompletion.CallUnary(ctx, req)
+}
+
+// CheckLive calls tank.agentctl.v1.RunnerService.CheckLive.
+func (c *runnerServiceClient) CheckLive(ctx context.Context, req *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error) {
+	return c.checkLive.CallUnary(ctx, req)
 }
 
 // ReadThread calls tank.agentctl.v1.RunnerService.ReadThread.
@@ -884,6 +901,9 @@ type RunnerServiceHandler interface {
 	// How far the run got against the whole ask (2026-10-23): what is done, what is left,
 	// and what needs a person. Items left with nothing blocked start a continuation run.
 	ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error)
+	// Opens a page of the product TANK hosts for this run's repository, as a visitor would,
+	// once it serves the expected build: status, errors, how much it shows, a screenshot.
+	CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error)
 	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error)
 	CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error)
@@ -994,6 +1014,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceReportCompletionProcedure,
 		svc.ReportCompletion,
 		connect.WithSchema(runnerServiceMethods.ByName("ReportCompletion")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceCheckLiveHandler := connect.NewUnaryHandler(
+		RunnerServiceCheckLiveProcedure,
+		svc.CheckLive,
+		connect.WithSchema(runnerServiceMethods.ByName("CheckLive")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServiceReadThreadHandler := connect.NewUnaryHandler(
@@ -1230,6 +1256,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceReportStatusHandler.ServeHTTP(w, r)
 		case RunnerServiceReportCompletionProcedure:
 			runnerServiceReportCompletionHandler.ServeHTTP(w, r)
+		case RunnerServiceCheckLiveProcedure:
+			runnerServiceCheckLiveHandler.ServeHTTP(w, r)
 		case RunnerServiceReadThreadProcedure:
 			runnerServiceReadThreadHandler.ServeHTTP(w, r)
 		case RunnerServiceBoardResearchProcedure:
@@ -1351,6 +1379,10 @@ func (UnimplementedRunnerServiceHandler) ReportStatus(context.Context, *connect.
 
 func (UnimplementedRunnerServiceHandler) ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReportCompletion is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.CheckLive is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error) {
