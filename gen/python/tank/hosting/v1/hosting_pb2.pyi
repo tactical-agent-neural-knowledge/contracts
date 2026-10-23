@@ -365,3 +365,17 @@ class SetAllowanceRequest(_message.Message):
 class SetAllowanceResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class ExportProductRequest(_message.Message):
+    __slots__ = ("channel_id",)
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
+
+class ExportProductResponse(_message.Message):
+    __slots__ = ("filename", "content")
+    FILENAME_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_FIELD_NUMBER: _ClassVar[int]
+    filename: str
+    content: str
+    def __init__(self, filename: _Optional[str] = ..., content: _Optional[str] = ...) -> None: ...

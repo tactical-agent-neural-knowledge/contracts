@@ -63,6 +63,9 @@ const (
 	// HostingServiceSetAllowanceProcedure is the fully-qualified name of the HostingService's
 	// SetAllowance RPC.
 	HostingServiceSetAllowanceProcedure = "/tank.hosting.v1.HostingService/SetAllowance"
+	// HostingServiceExportProductProcedure is the fully-qualified name of the HostingService's
+	// ExportProduct RPC.
+	HostingServiceExportProductProcedure = "/tank.hosting.v1.HostingService/ExportProduct"
 )
 
 // HostingServiceClient is a client for the tank.hosting.v1.HostingService service.
@@ -93,6 +96,8 @@ type HostingServiceClient interface {
 	ListHosting(context.Context, *connect.Request[v1.ListHostingRequest]) (*connect.Response[v1.ListHostingResponse], error)
 	// Owners set how much more a month a new build may cost before it waits for them.
 	SetAllowance(context.Context, *connect.Request[v1.SetAllowanceRequest]) (*connect.Response[v1.SetAllowanceResponse], error)
+	// Admins take the product with them: a docker-compose file that runs it without TANK.
+	ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error)
 }
 
 // NewHostingServiceClient constructs a client for the tank.hosting.v1.HostingService service. By
@@ -172,6 +177,12 @@ func NewHostingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(hostingServiceMethods.ByName("SetAllowance")),
 			connect.WithClientOptions(opts...),
 		),
+		exportProduct: connect.NewClient[v1.ExportProductRequest, v1.ExportProductResponse](
+			httpClient,
+			baseURL+HostingServiceExportProductProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("ExportProduct")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -188,6 +199,7 @@ type hostingServiceClient struct {
 	setCap         *connect.Client[v1.SetCapRequest, v1.SetCapResponse]
 	listHosting    *connect.Client[v1.ListHostingRequest, v1.ListHostingResponse]
 	setAllowance   *connect.Client[v1.SetAllowanceRequest, v1.SetAllowanceResponse]
+	exportProduct  *connect.Client[v1.ExportProductRequest, v1.ExportProductResponse]
 }
 
 // GetProduct calls tank.hosting.v1.HostingService.GetProduct.
@@ -245,6 +257,11 @@ func (c *hostingServiceClient) SetAllowance(ctx context.Context, req *connect.Re
 	return c.setAllowance.CallUnary(ctx, req)
 }
 
+// ExportProduct calls tank.hosting.v1.HostingService.ExportProduct.
+func (c *hostingServiceClient) ExportProduct(ctx context.Context, req *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error) {
+	return c.exportProduct.CallUnary(ctx, req)
+}
+
 // HostingServiceHandler is an implementation of the tank.hosting.v1.HostingService service.
 type HostingServiceHandler interface {
 	// The product's running state, recent cluster events and log tail.
@@ -273,6 +290,8 @@ type HostingServiceHandler interface {
 	ListHosting(context.Context, *connect.Request[v1.ListHostingRequest]) (*connect.Response[v1.ListHostingResponse], error)
 	// Owners set how much more a month a new build may cost before it waits for them.
 	SetAllowance(context.Context, *connect.Request[v1.SetAllowanceRequest]) (*connect.Response[v1.SetAllowanceResponse], error)
+	// Admins take the product with them: a docker-compose file that runs it without TANK.
+	ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error)
 }
 
 // NewHostingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -348,6 +367,12 @@ func NewHostingServiceHandler(svc HostingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(hostingServiceMethods.ByName("SetAllowance")),
 		connect.WithHandlerOptions(opts...),
 	)
+	hostingServiceExportProductHandler := connect.NewUnaryHandler(
+		HostingServiceExportProductProcedure,
+		svc.ExportProduct,
+		connect.WithSchema(hostingServiceMethods.ByName("ExportProduct")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.hosting.v1.HostingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case HostingServiceGetProductProcedure:
@@ -372,6 +397,8 @@ func NewHostingServiceHandler(svc HostingServiceHandler, opts ...connect.Handler
 			hostingServiceListHostingHandler.ServeHTTP(w, r)
 		case HostingServiceSetAllowanceProcedure:
 			hostingServiceSetAllowanceHandler.ServeHTTP(w, r)
+		case HostingServiceExportProductProcedure:
+			hostingServiceExportProductHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -423,4 +450,8 @@ func (UnimplementedHostingServiceHandler) ListHosting(context.Context, *connect.
 
 func (UnimplementedHostingServiceHandler) SetAllowance(context.Context, *connect.Request[v1.SetAllowanceRequest]) (*connect.Response[v1.SetAllowanceResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.SetAllowance is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.ExportProduct is not implemented"))
 }

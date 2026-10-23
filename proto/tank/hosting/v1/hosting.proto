@@ -37,6 +37,8 @@ service HostingService {
   rpc ListHosting(ListHostingRequest) returns (ListHostingResponse);
   // Owners set how much more a month a new build may cost before it waits for them.
   rpc SetAllowance(SetAllowanceRequest) returns (SetAllowanceResponse);
+  // Admins take the product with them: a docker-compose file that runs it without TANK.
+  rpc ExportProduct(ExportProductRequest) returns (ExportProductResponse);
 }
 
 message GetProductRequest {
@@ -223,3 +225,9 @@ message SetAllowanceRequest {
   int64 allowance_cents = 2;
 }
 message SetAllowanceResponse {}
+
+message ExportProductRequest { string channel_id = 1; }
+message ExportProductResponse {
+  string filename = 1;          // docker-compose.yml
+  string content = 2;
+}

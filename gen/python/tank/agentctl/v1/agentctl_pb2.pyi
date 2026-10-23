@@ -1703,6 +1703,20 @@ class RollbackProductResponse(_message.Message):
     estimate: ProductCost
     def __init__(self, applied: bool = ..., reason: _Optional[str] = ..., problems: _Optional[_Iterable[str]] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ...) -> None: ...
 
+class ExportProductRequest(_message.Message):
+    __slots__ = ("slug",)
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    def __init__(self, slug: _Optional[str] = ...) -> None: ...
+
+class ExportProductResponse(_message.Message):
+    __slots__ = ("compose_yaml", "image")
+    COMPOSE_YAML_FIELD_NUMBER: _ClassVar[int]
+    IMAGE_FIELD_NUMBER: _ClassVar[int]
+    compose_yaml: str
+    image: str
+    def __init__(self, compose_yaml: _Optional[str] = ..., image: _Optional[str] = ...) -> None: ...
+
 class UpdateProductSpecRequest(_message.Message):
     __slots__ = ("slug", "process", "size", "min", "max", "schedule", "author_name", "author_email")
     SLUG_FIELD_NUMBER: _ClassVar[int]

@@ -983,6 +983,8 @@ service ControlService {
   // Changes one process's size, scale or schedule as a commit to the product's tank.yaml,
   // authored as the person who asked; the build that follows deploys it.
   rpc UpdateProductSpec(UpdateProductSpecRequest) returns (UpdateProductSpecResponse);
+  // The running product as a docker-compose file anybody can run without TANK.
+  rpc ExportProduct(ExportProductRequest) returns (ExportProductResponse);
   // Adds the preview-reporting workflow to repositories the workspace's own
   // installation reaches, each as a pull request: branch, file, pull request. Nothing
   // is merged and nothing is written to a default branch — TANK proposes, the
@@ -1158,6 +1160,11 @@ message RollbackProductResponse {
   string reason = 2;            // spec | cost when it waits instead
   repeated string problems = 3;
   ProductCost estimate = 4;
+}
+message ExportProductRequest { string slug = 1; }
+message ExportProductResponse {
+  string compose_yaml = 1;
+  string image = 2;             // the image it names, for the buyer to pull or rebuild
 }
 message UpdateProductSpecRequest {
   string slug = 1;

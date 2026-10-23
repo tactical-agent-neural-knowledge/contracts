@@ -240,6 +240,9 @@ const (
 	// ControlServiceUpdateProductSpecProcedure is the fully-qualified name of the ControlService's
 	// UpdateProductSpec RPC.
 	ControlServiceUpdateProductSpecProcedure = "/tank.agentctl.v1.ControlService/UpdateProductSpec"
+	// ControlServiceExportProductProcedure is the fully-qualified name of the ControlService's
+	// ExportProduct RPC.
+	ControlServiceExportProductProcedure = "/tank.agentctl.v1.ControlService/ExportProduct"
 	// ControlServiceSetUpPreviewWorkflowProcedure is the fully-qualified name of the ControlService's
 	// SetUpPreviewWorkflow RPC.
 	ControlServiceSetUpPreviewWorkflowProcedure = "/tank.agentctl.v1.ControlService/SetUpPreviewWorkflow"
@@ -1664,6 +1667,8 @@ type ControlServiceClient interface {
 	// Changes one process's size, scale or schedule as a commit to the product's tank.yaml,
 	// authored as the person who asked; the build that follows deploys it.
 	UpdateProductSpec(context.Context, *connect.Request[v1.UpdateProductSpecRequest]) (*connect.Response[v1.UpdateProductSpecResponse], error)
+	// The running product as a docker-compose file anybody can run without TANK.
+	ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error)
 	// Adds the preview-reporting workflow to repositories the workspace's own
 	// installation reaches, each as a pull request: branch, file, pull request. Nothing
 	// is merged and nothing is written to a default branch — TANK proposes, the
@@ -1849,6 +1854,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("UpdateProductSpec")),
 			connect.WithClientOptions(opts...),
 		),
+		exportProduct: connect.NewClient[v1.ExportProductRequest, v1.ExportProductResponse](
+			httpClient,
+			baseURL+ControlServiceExportProductProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ExportProduct")),
+			connect.WithClientOptions(opts...),
+		),
 		setUpPreviewWorkflow: connect.NewClient[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse](
 			httpClient,
 			baseURL+ControlServiceSetUpPreviewWorkflowProcedure,
@@ -1949,6 +1960,7 @@ type controlServiceClient struct {
 	listProductChanges       *connect.Client[v1.ListProductChangesRequest, v1.ListProductChangesResponse]
 	rollbackProduct          *connect.Client[v1.RollbackProductRequest, v1.RollbackProductResponse]
 	updateProductSpec        *connect.Client[v1.UpdateProductSpecRequest, v1.UpdateProductSpecResponse]
+	exportProduct            *connect.Client[v1.ExportProductRequest, v1.ExportProductResponse]
 	setUpPreviewWorkflow     *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
 	readRepo                 *connect.Client[v1.ReadRepoRequest, v1.ReadRepoResponse]
 	buildPreview             *connect.Client[v1.BuildPreviewRequest, v1.BuildPreviewResponse]
@@ -2078,6 +2090,11 @@ func (c *controlServiceClient) UpdateProductSpec(ctx context.Context, req *conne
 	return c.updateProductSpec.CallUnary(ctx, req)
 }
 
+// ExportProduct calls tank.agentctl.v1.ControlService.ExportProduct.
+func (c *controlServiceClient) ExportProduct(ctx context.Context, req *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error) {
+	return c.exportProduct.CallUnary(ctx, req)
+}
+
 // SetUpPreviewWorkflow calls tank.agentctl.v1.ControlService.SetUpPreviewWorkflow.
 func (c *controlServiceClient) SetUpPreviewWorkflow(ctx context.Context, req *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error) {
 	return c.setUpPreviewWorkflow.CallUnary(ctx, req)
@@ -2187,6 +2204,8 @@ type ControlServiceHandler interface {
 	// Changes one process's size, scale or schedule as a commit to the product's tank.yaml,
 	// authored as the person who asked; the build that follows deploys it.
 	UpdateProductSpec(context.Context, *connect.Request[v1.UpdateProductSpecRequest]) (*connect.Response[v1.UpdateProductSpecResponse], error)
+	// The running product as a docker-compose file anybody can run without TANK.
+	ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error)
 	// Adds the preview-reporting workflow to repositories the workspace's own
 	// installation reaches, each as a pull request: branch, file, pull request. Nothing
 	// is merged and nothing is written to a default branch — TANK proposes, the
@@ -2368,6 +2387,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("UpdateProductSpec")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceExportProductHandler := connect.NewUnaryHandler(
+		ControlServiceExportProductProcedure,
+		svc.ExportProduct,
+		connect.WithSchema(controlServiceMethods.ByName("ExportProduct")),
+		connect.WithHandlerOptions(opts...),
+	)
 	controlServiceSetUpPreviewWorkflowHandler := connect.NewUnaryHandler(
 		ControlServiceSetUpPreviewWorkflowProcedure,
 		svc.SetUpPreviewWorkflow,
@@ -2488,6 +2513,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceRollbackProductHandler.ServeHTTP(w, r)
 		case ControlServiceUpdateProductSpecProcedure:
 			controlServiceUpdateProductSpecHandler.ServeHTTP(w, r)
+		case ControlServiceExportProductProcedure:
+			controlServiceExportProductHandler.ServeHTTP(w, r)
 		case ControlServiceSetUpPreviewWorkflowProcedure:
 			controlServiceSetUpPreviewWorkflowHandler.ServeHTTP(w, r)
 		case ControlServiceReadRepoProcedure:
@@ -2611,6 +2638,10 @@ func (UnimplementedControlServiceHandler) RollbackProduct(context.Context, *conn
 
 func (UnimplementedControlServiceHandler) UpdateProductSpec(context.Context, *connect.Request[v1.UpdateProductSpecRequest]) (*connect.Response[v1.UpdateProductSpecResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.UpdateProductSpec is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ExportProduct is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) SetUpPreviewWorkflow(context.Context, *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error) {
