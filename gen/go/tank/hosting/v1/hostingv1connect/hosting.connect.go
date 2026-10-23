@@ -66,6 +66,9 @@ const (
 	// HostingServiceExportProductProcedure is the fully-qualified name of the HostingService's
 	// ExportProduct RPC.
 	HostingServiceExportProductProcedure = "/tank.hosting.v1.HostingService/ExportProduct"
+	// HostingServiceSetSecretProcedure is the fully-qualified name of the HostingService's SetSecret
+	// RPC.
+	HostingServiceSetSecretProcedure = "/tank.hosting.v1.HostingService/SetSecret"
 )
 
 // HostingServiceClient is a client for the tank.hosting.v1.HostingService service.
@@ -98,6 +101,8 @@ type HostingServiceClient interface {
 	SetAllowance(context.Context, *connect.Request[v1.SetAllowanceRequest]) (*connect.Response[v1.SetAllowanceResponse], error)
 	// Admins take the product with them: a docker-compose file that runs it without TANK.
 	ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error)
+	// Admins set a declared secret's value. Never returned; the product restarts with it.
+	SetSecret(context.Context, *connect.Request[v1.SetSecretRequest]) (*connect.Response[v1.SetSecretResponse], error)
 }
 
 // NewHostingServiceClient constructs a client for the tank.hosting.v1.HostingService service. By
@@ -183,6 +188,12 @@ func NewHostingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(hostingServiceMethods.ByName("ExportProduct")),
 			connect.WithClientOptions(opts...),
 		),
+		setSecret: connect.NewClient[v1.SetSecretRequest, v1.SetSecretResponse](
+			httpClient,
+			baseURL+HostingServiceSetSecretProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("SetSecret")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -200,6 +211,7 @@ type hostingServiceClient struct {
 	listHosting    *connect.Client[v1.ListHostingRequest, v1.ListHostingResponse]
 	setAllowance   *connect.Client[v1.SetAllowanceRequest, v1.SetAllowanceResponse]
 	exportProduct  *connect.Client[v1.ExportProductRequest, v1.ExportProductResponse]
+	setSecret      *connect.Client[v1.SetSecretRequest, v1.SetSecretResponse]
 }
 
 // GetProduct calls tank.hosting.v1.HostingService.GetProduct.
@@ -262,6 +274,11 @@ func (c *hostingServiceClient) ExportProduct(ctx context.Context, req *connect.R
 	return c.exportProduct.CallUnary(ctx, req)
 }
 
+// SetSecret calls tank.hosting.v1.HostingService.SetSecret.
+func (c *hostingServiceClient) SetSecret(ctx context.Context, req *connect.Request[v1.SetSecretRequest]) (*connect.Response[v1.SetSecretResponse], error) {
+	return c.setSecret.CallUnary(ctx, req)
+}
+
 // HostingServiceHandler is an implementation of the tank.hosting.v1.HostingService service.
 type HostingServiceHandler interface {
 	// The product's running state, recent cluster events and log tail.
@@ -292,6 +309,8 @@ type HostingServiceHandler interface {
 	SetAllowance(context.Context, *connect.Request[v1.SetAllowanceRequest]) (*connect.Response[v1.SetAllowanceResponse], error)
 	// Admins take the product with them: a docker-compose file that runs it without TANK.
 	ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error)
+	// Admins set a declared secret's value. Never returned; the product restarts with it.
+	SetSecret(context.Context, *connect.Request[v1.SetSecretRequest]) (*connect.Response[v1.SetSecretResponse], error)
 }
 
 // NewHostingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -373,6 +392,12 @@ func NewHostingServiceHandler(svc HostingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(hostingServiceMethods.ByName("ExportProduct")),
 		connect.WithHandlerOptions(opts...),
 	)
+	hostingServiceSetSecretHandler := connect.NewUnaryHandler(
+		HostingServiceSetSecretProcedure,
+		svc.SetSecret,
+		connect.WithSchema(hostingServiceMethods.ByName("SetSecret")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.hosting.v1.HostingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case HostingServiceGetProductProcedure:
@@ -399,6 +424,8 @@ func NewHostingServiceHandler(svc HostingServiceHandler, opts ...connect.Handler
 			hostingServiceSetAllowanceHandler.ServeHTTP(w, r)
 		case HostingServiceExportProductProcedure:
 			hostingServiceExportProductHandler.ServeHTTP(w, r)
+		case HostingServiceSetSecretProcedure:
+			hostingServiceSetSecretHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -454,4 +481,8 @@ func (UnimplementedHostingServiceHandler) SetAllowance(context.Context, *connect
 
 func (UnimplementedHostingServiceHandler) ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.ExportProduct is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) SetSecret(context.Context, *connect.Request[v1.SetSecretRequest]) (*connect.Response[v1.SetSecretResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.SetSecret is not implemented"))
 }

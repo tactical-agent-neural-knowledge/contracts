@@ -985,6 +985,8 @@ service ControlService {
   rpc UpdateProductSpec(UpdateProductSpecRequest) returns (UpdateProductSpecResponse);
   // The running product as a docker-compose file anybody can run without TANK.
   rpc ExportProduct(ExportProductRequest) returns (ExportProductResponse);
+  // Sets one of a product's declared secrets. The value is stored and never returned.
+  rpc SetProductSecret(SetProductSecretRequest) returns (SetProductSecretResponse);
   // Adds the preview-reporting workflow to repositories the workspace's own
   // installation reaches, each as a pull request: branch, file, pull request. Nothing
   // is merged and nothing is written to a default branch — TANK proposes, the
@@ -1125,6 +1127,7 @@ message GetProductSpecResponse {
   repeated string env_keys = 7;
   repeated string secrets = 8;
   repeated ProductPreview previews = 9;   // open pull requests' previews
+  repeated string secrets_set = 10;       // the declared secrets that have a value
 }
 message ProductPreview {
   int32 pull_request = 1;
@@ -1161,6 +1164,12 @@ message RollbackProductResponse {
   repeated string problems = 3;
   ProductCost estimate = 4;
 }
+message SetProductSecretRequest {
+  string slug = 1;
+  string name = 2;              // one of the names its tank.yaml declares
+  string value = 3;             // empty clears it
+}
+message SetProductSecretResponse {}
 message ExportProductRequest { string slug = 1; }
 message ExportProductResponse {
   string compose_yaml = 1;

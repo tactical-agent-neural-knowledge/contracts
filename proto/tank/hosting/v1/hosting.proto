@@ -39,6 +39,8 @@ service HostingService {
   rpc SetAllowance(SetAllowanceRequest) returns (SetAllowanceResponse);
   // Admins take the product with them: a docker-compose file that runs it without TANK.
   rpc ExportProduct(ExportProductRequest) returns (ExportProductResponse);
+  // Admins set a declared secret's value. Never returned; the product restarts with it.
+  rpc SetSecret(SetSecretRequest) returns (SetSecretResponse);
 }
 
 message GetProductRequest {
@@ -143,6 +145,7 @@ message GetResourcesResponse {
   bool capped = 8;              // at the cap now: workers and schedules paused
   bool can_set_cap = 9;         // the caller is an owner
   repeated Preview previews = 10; // open pull requests running the whole product
+  repeated string secrets_set = 11; // the secrets that have a value
 }
 
 message Preview {
@@ -231,3 +234,10 @@ message ExportProductResponse {
   string filename = 1;          // docker-compose.yml
   string content = 2;
 }
+
+message SetSecretRequest {
+  string channel_id = 1;
+  string name = 2;
+  string value = 3;             // empty clears it
+}
+message SetSecretResponse {}

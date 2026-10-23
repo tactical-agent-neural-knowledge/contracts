@@ -1602,7 +1602,7 @@ class GetProductSpecRequest(_message.Message):
     def __init__(self, slug: _Optional[str] = ...) -> None: ...
 
 class GetProductSpecResponse(_message.Message):
-    __slots__ = ("processes", "estimate", "pending", "restarted_at", "paused", "runs", "env_keys", "secrets", "previews")
+    __slots__ = ("processes", "estimate", "pending", "restarted_at", "paused", "runs", "env_keys", "secrets", "previews", "secrets_set")
     PROCESSES_FIELD_NUMBER: _ClassVar[int]
     ESTIMATE_FIELD_NUMBER: _ClassVar[int]
     PENDING_FIELD_NUMBER: _ClassVar[int]
@@ -1612,6 +1612,7 @@ class GetProductSpecResponse(_message.Message):
     ENV_KEYS_FIELD_NUMBER: _ClassVar[int]
     SECRETS_FIELD_NUMBER: _ClassVar[int]
     PREVIEWS_FIELD_NUMBER: _ClassVar[int]
+    SECRETS_SET_FIELD_NUMBER: _ClassVar[int]
     processes: _containers.RepeatedCompositeFieldContainer[ProductProcess]
     estimate: ProductCost
     pending: PendingBuild
@@ -1621,7 +1622,8 @@ class GetProductSpecResponse(_message.Message):
     env_keys: _containers.RepeatedScalarFieldContainer[str]
     secrets: _containers.RepeatedScalarFieldContainer[str]
     previews: _containers.RepeatedCompositeFieldContainer[ProductPreview]
-    def __init__(self, processes: _Optional[_Iterable[_Union[ProductProcess, _Mapping]]] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., restarted_at: _Optional[str] = ..., paused: _Optional[_Iterable[str]] = ..., runs: _Optional[_Iterable[_Union[JobRun, _Mapping]]] = ..., env_keys: _Optional[_Iterable[str]] = ..., secrets: _Optional[_Iterable[str]] = ..., previews: _Optional[_Iterable[_Union[ProductPreview, _Mapping]]] = ...) -> None: ...
+    secrets_set: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, processes: _Optional[_Iterable[_Union[ProductProcess, _Mapping]]] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., restarted_at: _Optional[str] = ..., paused: _Optional[_Iterable[str]] = ..., runs: _Optional[_Iterable[_Union[JobRun, _Mapping]]] = ..., env_keys: _Optional[_Iterable[str]] = ..., secrets: _Optional[_Iterable[str]] = ..., previews: _Optional[_Iterable[_Union[ProductPreview, _Mapping]]] = ..., secrets_set: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class ProductPreview(_message.Message):
     __slots__ = ("pull_request", "url", "image_tag", "expires_at")
@@ -1702,6 +1704,20 @@ class RollbackProductResponse(_message.Message):
     problems: _containers.RepeatedScalarFieldContainer[str]
     estimate: ProductCost
     def __init__(self, applied: bool = ..., reason: _Optional[str] = ..., problems: _Optional[_Iterable[str]] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ...) -> None: ...
+
+class SetProductSecretRequest(_message.Message):
+    __slots__ = ("slug", "name", "value")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    name: str
+    value: str
+    def __init__(self, slug: _Optional[str] = ..., name: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+
+class SetProductSecretResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
 
 class ExportProductRequest(_message.Message):
     __slots__ = ("slug",)

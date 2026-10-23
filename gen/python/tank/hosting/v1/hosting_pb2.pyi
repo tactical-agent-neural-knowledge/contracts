@@ -177,7 +177,7 @@ class GetResourcesRequest(_message.Message):
     def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
 
 class GetResourcesResponse(_message.Message):
-    __slots__ = ("resources", "estimate", "pending", "secrets", "can_manage", "month_cents", "cap_cents", "capped", "can_set_cap", "previews")
+    __slots__ = ("resources", "estimate", "pending", "secrets", "can_manage", "month_cents", "cap_cents", "capped", "can_set_cap", "previews", "secrets_set")
     RESOURCES_FIELD_NUMBER: _ClassVar[int]
     ESTIMATE_FIELD_NUMBER: _ClassVar[int]
     PENDING_FIELD_NUMBER: _ClassVar[int]
@@ -188,6 +188,7 @@ class GetResourcesResponse(_message.Message):
     CAPPED_FIELD_NUMBER: _ClassVar[int]
     CAN_SET_CAP_FIELD_NUMBER: _ClassVar[int]
     PREVIEWS_FIELD_NUMBER: _ClassVar[int]
+    SECRETS_SET_FIELD_NUMBER: _ClassVar[int]
     resources: _containers.RepeatedCompositeFieldContainer[Resource]
     estimate: Cost
     pending: PendingBuild
@@ -198,7 +199,8 @@ class GetResourcesResponse(_message.Message):
     capped: bool
     can_set_cap: bool
     previews: _containers.RepeatedCompositeFieldContainer[Preview]
-    def __init__(self, resources: _Optional[_Iterable[_Union[Resource, _Mapping]]] = ..., estimate: _Optional[_Union[Cost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., secrets: _Optional[_Iterable[str]] = ..., can_manage: bool = ..., month_cents: _Optional[int] = ..., cap_cents: _Optional[int] = ..., capped: bool = ..., can_set_cap: bool = ..., previews: _Optional[_Iterable[_Union[Preview, _Mapping]]] = ...) -> None: ...
+    secrets_set: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, resources: _Optional[_Iterable[_Union[Resource, _Mapping]]] = ..., estimate: _Optional[_Union[Cost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., secrets: _Optional[_Iterable[str]] = ..., can_manage: bool = ..., month_cents: _Optional[int] = ..., cap_cents: _Optional[int] = ..., capped: bool = ..., can_set_cap: bool = ..., previews: _Optional[_Iterable[_Union[Preview, _Mapping]]] = ..., secrets_set: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class Preview(_message.Message):
     __slots__ = ("pull_request", "url", "build", "expires_at")
@@ -379,3 +381,17 @@ class ExportProductResponse(_message.Message):
     filename: str
     content: str
     def __init__(self, filename: _Optional[str] = ..., content: _Optional[str] = ...) -> None: ...
+
+class SetSecretRequest(_message.Message):
+    __slots__ = ("channel_id", "name", "value")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    name: str
+    value: str
+    def __init__(self, channel_id: _Optional[str] = ..., name: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+
+class SetSecretResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
