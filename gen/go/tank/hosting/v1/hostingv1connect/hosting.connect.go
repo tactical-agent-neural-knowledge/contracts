@@ -55,6 +55,14 @@ const (
 	// HostingServiceUpdateResourceProcedure is the fully-qualified name of the HostingService's
 	// UpdateResource RPC.
 	HostingServiceUpdateResourceProcedure = "/tank.hosting.v1.HostingService/UpdateResource"
+	// HostingServiceSetCapProcedure is the fully-qualified name of the HostingService's SetCap RPC.
+	HostingServiceSetCapProcedure = "/tank.hosting.v1.HostingService/SetCap"
+	// HostingServiceListHostingProcedure is the fully-qualified name of the HostingService's
+	// ListHosting RPC.
+	HostingServiceListHostingProcedure = "/tank.hosting.v1.HostingService/ListHosting"
+	// HostingServiceSetAllowanceProcedure is the fully-qualified name of the HostingService's
+	// SetAllowance RPC.
+	HostingServiceSetAllowanceProcedure = "/tank.hosting.v1.HostingService/SetAllowance"
 )
 
 // HostingServiceClient is a client for the tank.hosting.v1.HostingService service.
@@ -76,6 +84,15 @@ type HostingServiceClient interface {
 	Rollback(context.Context, *connect.Request[v1.RollbackRequest]) (*connect.Response[v1.RollbackResponse], error)
 	// Admins change a process's size, scale or schedule: a commit to tank.yaml in their name.
 	UpdateResource(context.Context, *connect.Request[v1.UpdateResourceRequest]) (*connect.Response[v1.UpdateResourceResponse], error)
+	// Owners set a product's monthly hosting cap (0: none). At 80% the owners are told; at
+	// the cap its workers and schedules pause until the 1st or a higher cap, and the site
+	// stays up.
+	SetCap(context.Context, *connect.Request[v1.SetCapRequest]) (*connect.Response[v1.SetCapResponse], error)
+	// Every product the workspace hosts, for Settings, Billing, Hosting: what each cost so
+	// far this month, its cap, and the workspace's allowance. Members of the workspace read.
+	ListHosting(context.Context, *connect.Request[v1.ListHostingRequest]) (*connect.Response[v1.ListHostingResponse], error)
+	// Owners set how much more a month a new build may cost before it waits for them.
+	SetAllowance(context.Context, *connect.Request[v1.SetAllowanceRequest]) (*connect.Response[v1.SetAllowanceResponse], error)
 }
 
 // NewHostingServiceClient constructs a client for the tank.hosting.v1.HostingService service. By
@@ -137,6 +154,24 @@ func NewHostingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(hostingServiceMethods.ByName("UpdateResource")),
 			connect.WithClientOptions(opts...),
 		),
+		setCap: connect.NewClient[v1.SetCapRequest, v1.SetCapResponse](
+			httpClient,
+			baseURL+HostingServiceSetCapProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("SetCap")),
+			connect.WithClientOptions(opts...),
+		),
+		listHosting: connect.NewClient[v1.ListHostingRequest, v1.ListHostingResponse](
+			httpClient,
+			baseURL+HostingServiceListHostingProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("ListHosting")),
+			connect.WithClientOptions(opts...),
+		),
+		setAllowance: connect.NewClient[v1.SetAllowanceRequest, v1.SetAllowanceResponse](
+			httpClient,
+			baseURL+HostingServiceSetAllowanceProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("SetAllowance")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -150,6 +185,9 @@ type hostingServiceClient struct {
 	listChanges    *connect.Client[v1.ListChangesRequest, v1.ListChangesResponse]
 	rollback       *connect.Client[v1.RollbackRequest, v1.RollbackResponse]
 	updateResource *connect.Client[v1.UpdateResourceRequest, v1.UpdateResourceResponse]
+	setCap         *connect.Client[v1.SetCapRequest, v1.SetCapResponse]
+	listHosting    *connect.Client[v1.ListHostingRequest, v1.ListHostingResponse]
+	setAllowance   *connect.Client[v1.SetAllowanceRequest, v1.SetAllowanceResponse]
 }
 
 // GetProduct calls tank.hosting.v1.HostingService.GetProduct.
@@ -192,6 +230,21 @@ func (c *hostingServiceClient) UpdateResource(ctx context.Context, req *connect.
 	return c.updateResource.CallUnary(ctx, req)
 }
 
+// SetCap calls tank.hosting.v1.HostingService.SetCap.
+func (c *hostingServiceClient) SetCap(ctx context.Context, req *connect.Request[v1.SetCapRequest]) (*connect.Response[v1.SetCapResponse], error) {
+	return c.setCap.CallUnary(ctx, req)
+}
+
+// ListHosting calls tank.hosting.v1.HostingService.ListHosting.
+func (c *hostingServiceClient) ListHosting(ctx context.Context, req *connect.Request[v1.ListHostingRequest]) (*connect.Response[v1.ListHostingResponse], error) {
+	return c.listHosting.CallUnary(ctx, req)
+}
+
+// SetAllowance calls tank.hosting.v1.HostingService.SetAllowance.
+func (c *hostingServiceClient) SetAllowance(ctx context.Context, req *connect.Request[v1.SetAllowanceRequest]) (*connect.Response[v1.SetAllowanceResponse], error) {
+	return c.setAllowance.CallUnary(ctx, req)
+}
+
 // HostingServiceHandler is an implementation of the tank.hosting.v1.HostingService service.
 type HostingServiceHandler interface {
 	// The product's running state, recent cluster events and log tail.
@@ -211,6 +264,15 @@ type HostingServiceHandler interface {
 	Rollback(context.Context, *connect.Request[v1.RollbackRequest]) (*connect.Response[v1.RollbackResponse], error)
 	// Admins change a process's size, scale or schedule: a commit to tank.yaml in their name.
 	UpdateResource(context.Context, *connect.Request[v1.UpdateResourceRequest]) (*connect.Response[v1.UpdateResourceResponse], error)
+	// Owners set a product's monthly hosting cap (0: none). At 80% the owners are told; at
+	// the cap its workers and schedules pause until the 1st or a higher cap, and the site
+	// stays up.
+	SetCap(context.Context, *connect.Request[v1.SetCapRequest]) (*connect.Response[v1.SetCapResponse], error)
+	// Every product the workspace hosts, for Settings, Billing, Hosting: what each cost so
+	// far this month, its cap, and the workspace's allowance. Members of the workspace read.
+	ListHosting(context.Context, *connect.Request[v1.ListHostingRequest]) (*connect.Response[v1.ListHostingResponse], error)
+	// Owners set how much more a month a new build may cost before it waits for them.
+	SetAllowance(context.Context, *connect.Request[v1.SetAllowanceRequest]) (*connect.Response[v1.SetAllowanceResponse], error)
 }
 
 // NewHostingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -268,6 +330,24 @@ func NewHostingServiceHandler(svc HostingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(hostingServiceMethods.ByName("UpdateResource")),
 		connect.WithHandlerOptions(opts...),
 	)
+	hostingServiceSetCapHandler := connect.NewUnaryHandler(
+		HostingServiceSetCapProcedure,
+		svc.SetCap,
+		connect.WithSchema(hostingServiceMethods.ByName("SetCap")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostingServiceListHostingHandler := connect.NewUnaryHandler(
+		HostingServiceListHostingProcedure,
+		svc.ListHosting,
+		connect.WithSchema(hostingServiceMethods.ByName("ListHosting")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostingServiceSetAllowanceHandler := connect.NewUnaryHandler(
+		HostingServiceSetAllowanceProcedure,
+		svc.SetAllowance,
+		connect.WithSchema(hostingServiceMethods.ByName("SetAllowance")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.hosting.v1.HostingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case HostingServiceGetProductProcedure:
@@ -286,6 +366,12 @@ func NewHostingServiceHandler(svc HostingServiceHandler, opts ...connect.Handler
 			hostingServiceRollbackHandler.ServeHTTP(w, r)
 		case HostingServiceUpdateResourceProcedure:
 			hostingServiceUpdateResourceHandler.ServeHTTP(w, r)
+		case HostingServiceSetCapProcedure:
+			hostingServiceSetCapHandler.ServeHTTP(w, r)
+		case HostingServiceListHostingProcedure:
+			hostingServiceListHostingHandler.ServeHTTP(w, r)
+		case HostingServiceSetAllowanceProcedure:
+			hostingServiceSetAllowanceHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -325,4 +411,16 @@ func (UnimplementedHostingServiceHandler) Rollback(context.Context, *connect.Req
 
 func (UnimplementedHostingServiceHandler) UpdateResource(context.Context, *connect.Request[v1.UpdateResourceRequest]) (*connect.Response[v1.UpdateResourceResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.UpdateResource is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) SetCap(context.Context, *connect.Request[v1.SetCapRequest]) (*connect.Response[v1.SetCapResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.SetCap is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) ListHosting(context.Context, *connect.Request[v1.ListHostingRequest]) (*connect.Response[v1.ListHostingResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.ListHosting is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) SetAllowance(context.Context, *connect.Request[v1.SetAllowanceRequest]) (*connect.Response[v1.SetAllowanceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.SetAllowance is not implemented"))
 }

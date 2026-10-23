@@ -177,18 +177,26 @@ class GetResourcesRequest(_message.Message):
     def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
 
 class GetResourcesResponse(_message.Message):
-    __slots__ = ("resources", "estimate", "pending", "secrets", "can_manage")
+    __slots__ = ("resources", "estimate", "pending", "secrets", "can_manage", "month_cents", "cap_cents", "capped", "can_set_cap")
     RESOURCES_FIELD_NUMBER: _ClassVar[int]
     ESTIMATE_FIELD_NUMBER: _ClassVar[int]
     PENDING_FIELD_NUMBER: _ClassVar[int]
     SECRETS_FIELD_NUMBER: _ClassVar[int]
     CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
+    MONTH_CENTS_FIELD_NUMBER: _ClassVar[int]
+    CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
+    CAPPED_FIELD_NUMBER: _ClassVar[int]
+    CAN_SET_CAP_FIELD_NUMBER: _ClassVar[int]
     resources: _containers.RepeatedCompositeFieldContainer[Resource]
     estimate: Cost
     pending: PendingBuild
     secrets: _containers.RepeatedScalarFieldContainer[str]
     can_manage: bool
-    def __init__(self, resources: _Optional[_Iterable[_Union[Resource, _Mapping]]] = ..., estimate: _Optional[_Union[Cost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., secrets: _Optional[_Iterable[str]] = ..., can_manage: bool = ...) -> None: ...
+    month_cents: int
+    cap_cents: int
+    capped: bool
+    can_set_cap: bool
+    def __init__(self, resources: _Optional[_Iterable[_Union[Resource, _Mapping]]] = ..., estimate: _Optional[_Union[Cost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., secrets: _Optional[_Iterable[str]] = ..., can_manage: bool = ..., month_cents: _Optional[int] = ..., cap_cents: _Optional[int] = ..., capped: bool = ..., can_set_cap: bool = ...) -> None: ...
 
 class ApproveBuildRequest(_message.Message):
     __slots__ = ("channel_id", "sha")
@@ -281,3 +289,65 @@ class UpdateResourceResponse(_message.Message):
     ESTIMATE_FIELD_NUMBER: _ClassVar[int]
     estimate: Cost
     def __init__(self, estimate: _Optional[_Union[Cost, _Mapping]] = ...) -> None: ...
+
+class SetCapRequest(_message.Message):
+    __slots__ = ("channel_id", "cap_cents")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    cap_cents: int
+    def __init__(self, channel_id: _Optional[str] = ..., cap_cents: _Optional[int] = ...) -> None: ...
+
+class SetCapResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class HostedProduct(_message.Message):
+    __slots__ = ("channel_id", "channel_name", "slug", "url", "awake", "month_cents", "cap_cents", "capped")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_NAME_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    AWAKE_FIELD_NUMBER: _ClassVar[int]
+    MONTH_CENTS_FIELD_NUMBER: _ClassVar[int]
+    CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
+    CAPPED_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    channel_name: str
+    slug: str
+    url: str
+    awake: bool
+    month_cents: int
+    cap_cents: int
+    capped: bool
+    def __init__(self, channel_id: _Optional[str] = ..., channel_name: _Optional[str] = ..., slug: _Optional[str] = ..., url: _Optional[str] = ..., awake: bool = ..., month_cents: _Optional[int] = ..., cap_cents: _Optional[int] = ..., capped: bool = ...) -> None: ...
+
+class ListHostingRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class ListHostingResponse(_message.Message):
+    __slots__ = ("products", "month_cents", "allowance_cents", "can_set")
+    PRODUCTS_FIELD_NUMBER: _ClassVar[int]
+    MONTH_CENTS_FIELD_NUMBER: _ClassVar[int]
+    ALLOWANCE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    CAN_SET_FIELD_NUMBER: _ClassVar[int]
+    products: _containers.RepeatedCompositeFieldContainer[HostedProduct]
+    month_cents: int
+    allowance_cents: int
+    can_set: bool
+    def __init__(self, products: _Optional[_Iterable[_Union[HostedProduct, _Mapping]]] = ..., month_cents: _Optional[int] = ..., allowance_cents: _Optional[int] = ..., can_set: bool = ...) -> None: ...
+
+class SetAllowanceRequest(_message.Message):
+    __slots__ = ("workspace_id", "allowance_cents")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ALLOWANCE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    allowance_cents: int
+    def __init__(self, workspace_id: _Optional[str] = ..., allowance_cents: _Optional[int] = ...) -> None: ...
+
+class SetAllowanceResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
