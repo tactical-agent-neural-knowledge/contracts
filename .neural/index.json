@@ -1,7 +1,7 @@
 {
   "generated_by": "TANK Neural Knowledge",
-  "commit": "b8fae6898e5839c1c8882fcdb47bfbc616db3a5d",
-  "refreshed_at": "2026-10-23T13:16:28.173Z",
+  "commit": "8025748642c82241f8ec574510ffc29d50778676",
+  "refreshed_at": "2026-10-23T21:09:55.365Z",
   "areas": {
     ".": {
       "neurons": ".neural/neurons/root.md",
