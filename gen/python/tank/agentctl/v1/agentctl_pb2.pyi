@@ -369,6 +369,20 @@ class ReportStatusResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class ReportCompletionRequest(_message.Message):
+    __slots__ = ("done", "remaining", "blocked")
+    DONE_FIELD_NUMBER: _ClassVar[int]
+    REMAINING_FIELD_NUMBER: _ClassVar[int]
+    BLOCKED_FIELD_NUMBER: _ClassVar[int]
+    done: _containers.RepeatedScalarFieldContainer[str]
+    remaining: _containers.RepeatedScalarFieldContainer[str]
+    blocked: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, done: _Optional[_Iterable[str]] = ..., remaining: _Optional[_Iterable[str]] = ..., blocked: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ReportCompletionResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class ReadThreadRequest(_message.Message):
     __slots__ = ("after_thread_seq", "limit")
     AFTER_THREAD_SEQ_FIELD_NUMBER: _ClassVar[int]

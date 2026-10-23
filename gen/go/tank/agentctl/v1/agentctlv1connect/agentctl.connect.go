@@ -64,6 +64,9 @@ const (
 	// RunnerServiceReportStatusProcedure is the fully-qualified name of the RunnerService's
 	// ReportStatus RPC.
 	RunnerServiceReportStatusProcedure = "/tank.agentctl.v1.RunnerService/ReportStatus"
+	// RunnerServiceReportCompletionProcedure is the fully-qualified name of the RunnerService's
+	// ReportCompletion RPC.
+	RunnerServiceReportCompletionProcedure = "/tank.agentctl.v1.RunnerService/ReportCompletion"
 	// RunnerServiceReadThreadProcedure is the fully-qualified name of the RunnerService's ReadThread
 	// RPC.
 	RunnerServiceReadThreadProcedure = "/tank.agentctl.v1.RunnerService/ReadThread"
@@ -254,6 +257,9 @@ type RunnerServiceClient interface {
 	AskForApproval(context.Context, *connect.Request[v1.AskForApprovalRequest]) (*connect.Response[v1.AskForApprovalResponse], error)
 	AskQuestion(context.Context, *connect.Request[v1.AskQuestionRequest]) (*connect.Response[v1.AskQuestionResponse], error)
 	ReportStatus(context.Context, *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error)
+	// How far the run got against the whole ask (2026-10-23): what is done, what is left,
+	// and what needs a person. Items left with nothing blocked start a continuation run.
+	ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error)
 	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error)
 	CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error)
@@ -362,6 +368,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServiceReportStatusProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("ReportStatus")),
+			connect.WithClientOptions(opts...),
+		),
+		reportCompletion: connect.NewClient[v1.ReportCompletionRequest, v1.ReportCompletionResponse](
+			httpClient,
+			baseURL+RunnerServiceReportCompletionProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ReportCompletion")),
 			connect.WithClientOptions(opts...),
 		),
 		readThread: connect.NewClient[v1.ReadThreadRequest, v1.ReadThreadResponse](
@@ -589,6 +601,7 @@ type runnerServiceClient struct {
 	askForApproval           *connect.Client[v1.AskForApprovalRequest, v1.AskForApprovalResponse]
 	askQuestion              *connect.Client[v1.AskQuestionRequest, v1.AskQuestionResponse]
 	reportStatus             *connect.Client[v1.ReportStatusRequest, v1.ReportStatusResponse]
+	reportCompletion         *connect.Client[v1.ReportCompletionRequest, v1.ReportCompletionResponse]
 	readThread               *connect.Client[v1.ReadThreadRequest, v1.ReadThreadResponse]
 	boardResearch            *connect.Client[v1.BoardResearchRequest, v1.BoardResearchResponse]
 	commitFiles              *connect.Client[v1.CommitFilesRequest, v1.CommitFilesResponse]
@@ -674,6 +687,11 @@ func (c *runnerServiceClient) AskQuestion(ctx context.Context, req *connect.Requ
 // ReportStatus calls tank.agentctl.v1.RunnerService.ReportStatus.
 func (c *runnerServiceClient) ReportStatus(ctx context.Context, req *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error) {
 	return c.reportStatus.CallUnary(ctx, req)
+}
+
+// ReportCompletion calls tank.agentctl.v1.RunnerService.ReportCompletion.
+func (c *runnerServiceClient) ReportCompletion(ctx context.Context, req *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error) {
+	return c.reportCompletion.CallUnary(ctx, req)
 }
 
 // ReadThread calls tank.agentctl.v1.RunnerService.ReadThread.
@@ -863,6 +881,9 @@ type RunnerServiceHandler interface {
 	AskForApproval(context.Context, *connect.Request[v1.AskForApprovalRequest]) (*connect.Response[v1.AskForApprovalResponse], error)
 	AskQuestion(context.Context, *connect.Request[v1.AskQuestionRequest]) (*connect.Response[v1.AskQuestionResponse], error)
 	ReportStatus(context.Context, *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error)
+	// How far the run got against the whole ask (2026-10-23): what is done, what is left,
+	// and what needs a person. Items left with nothing blocked start a continuation run.
+	ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error)
 	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error)
 	CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error)
@@ -967,6 +988,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceReportStatusProcedure,
 		svc.ReportStatus,
 		connect.WithSchema(runnerServiceMethods.ByName("ReportStatus")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceReportCompletionHandler := connect.NewUnaryHandler(
+		RunnerServiceReportCompletionProcedure,
+		svc.ReportCompletion,
+		connect.WithSchema(runnerServiceMethods.ByName("ReportCompletion")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServiceReadThreadHandler := connect.NewUnaryHandler(
@@ -1201,6 +1228,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceAskQuestionHandler.ServeHTTP(w, r)
 		case RunnerServiceReportStatusProcedure:
 			runnerServiceReportStatusHandler.ServeHTTP(w, r)
+		case RunnerServiceReportCompletionProcedure:
+			runnerServiceReportCompletionHandler.ServeHTTP(w, r)
 		case RunnerServiceReadThreadProcedure:
 			runnerServiceReadThreadHandler.ServeHTTP(w, r)
 		case RunnerServiceBoardResearchProcedure:
@@ -1318,6 +1347,10 @@ func (UnimplementedRunnerServiceHandler) AskQuestion(context.Context, *connect.R
 
 func (UnimplementedRunnerServiceHandler) ReportStatus(context.Context, *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReportStatus is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReportCompletion is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error) {
