@@ -250,6 +250,13 @@ message ReportStatusRequest {
 }
 message ReportStatusResponse {}
 
+message ReportCompletionRequest {
+  repeated string done = 1;       // parts of the ask finished and pushed
+  repeated string remaining = 2;  // parts not started or not finished, in order
+  repeated string blocked = 3;    // parts that need a person: a decision, access, money
+}
+message ReportCompletionResponse {}
+
 message ReadThreadRequest {
   int64 after_thread_seq = 1;
   int32 limit = 2;
@@ -722,6 +729,9 @@ service RunnerService {
   rpc AskForApproval(AskForApprovalRequest) returns (AskForApprovalResponse);
   rpc AskQuestion(AskQuestionRequest) returns (AskQuestionResponse);
   rpc ReportStatus(ReportStatusRequest) returns (ReportStatusResponse);
+  // How far the run got against the whole ask (2026-10-23): what is done, what is left,
+  // and what needs a person. Items left with nothing blocked start a continuation run.
+  rpc ReportCompletion(ReportCompletionRequest) returns (ReportCompletionResponse);
   rpc ReadThread(ReadThreadRequest) returns (ReadThreadResponse);
   rpc BoardResearch(BoardResearchRequest) returns (BoardResearchResponse);
   rpc CommitFiles(CommitFilesRequest) returns (CommitFilesResponse);
