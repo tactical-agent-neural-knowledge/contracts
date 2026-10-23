@@ -74,6 +74,10 @@ message AppFrame {
   // Mobile: the screen to open, as a deep link path in the app (e.g. "/settings/billing").
   // `path` stays the web route.
   string screen = 15;
+  // The change loop (2026-10-22): a frame placed beside the one a change was asked of,
+  // showing the agent's branch for that change. Server-filled ref while it works.
+  string change_id = 16;
+  bool change_approved = 17;
 }
 
 message BoardObject {
@@ -257,6 +261,9 @@ message RequestChangeRequest {
   string object_id = 3;     // the frame it was asked of
   Element element = 4;
   string ask = 5;           // "make this the same blue as the header"
+  // The Tread the work happens in, for a board that is not in one yet: the board moves
+  // into it. Ignored when the board already has a Tread.
+  string channel_id = 6;
 }
 message RequestChangeResponse {
   // Where the work is being discussed and watched: a thread in the Tread the board
@@ -265,6 +272,23 @@ message RequestChangeResponse {
   string channel_id = 7;
   // What was asked, as it was sent to the agent, so the board can show it back.
   string prompt = 8;
+  // The After frame placed beside the frame, showing the agent's branch once pushed.
+  // Empty when the ask was made of an After frame: that continues the same change.
+  string after_object_id = 9;
+}
+
+// Approve a change shown in an After frame: TANK merges the change's pull request at
+// exactly the commit the frame showed, and only that. A change from a board never reaches
+// production without a preview somebody looked at.
+message ApproveChangeRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  string object_id = 3;     // the After frame
+}
+message ApproveChangeResponse {
+  bool merged = 1;
+  string pull_request_url = 2;
+  string note = 3;          // why not, when not
 }
 
 message BoardTemplate {
@@ -747,4 +771,5 @@ service BoardService {
   rpc ReadElement(ReadElementRequest) returns (ReadElementResponse);
   rpc GetAppSetup(GetAppSetupRequest) returns (GetAppSetupResponse);
   rpc ConnectApp(ConnectAppRequest) returns (ConnectAppResponse);
+  rpc ApproveChange(ApproveChangeRequest) returns (ApproveChangeResponse);
 }

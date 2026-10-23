@@ -937,6 +937,9 @@ service ControlService {
   rpc OpenSetupPullRequest(OpenSetupPullRequestRequest) returns (OpenSetupPullRequestResponse);
   // What a page shows at a point, read by a headless browser on TANK's side.
   rpc ReadElementAt(ReadElementAtRequest) returns (ReadElementAtResponse);
+  // Merges the pull request of the newest run in a thread, only when its head is exactly
+  // sha (the commit a person saw previewed). api asks after its own checks.
+  rpc MergeChange(MergeChangeRequest) returns (MergeChangeResponse);
 
   // Writes into schema `agent`, which belongs to the control plane. The
   // messaging core may read that schema and may not write it, so each of these
@@ -1216,4 +1219,15 @@ message ReadElementAtResponse {
   double w = 8;
   double h = 9;
   string note = 10;             // why nothing was read
+}
+
+message MergeChangeRequest {
+  string workspace_id = 1;
+  string thread_root_id = 2;
+  string sha = 3;
+}
+message MergeChangeResponse {
+  bool merged = 1;
+  string pull_request_url = 2;
+  string note = 3;
 }

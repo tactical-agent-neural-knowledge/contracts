@@ -219,6 +219,9 @@ const (
 	// ControlServiceReadElementAtProcedure is the fully-qualified name of the ControlService's
 	// ReadElementAt RPC.
 	ControlServiceReadElementAtProcedure = "/tank.agentctl.v1.ControlService/ReadElementAt"
+	// ControlServiceMergeChangeProcedure is the fully-qualified name of the ControlService's
+	// MergeChange RPC.
+	ControlServiceMergeChangeProcedure = "/tank.agentctl.v1.ControlService/MergeChange"
 	// ControlServiceBindChannelRepoProcedure is the fully-qualified name of the ControlService's
 	// BindChannelRepo RPC.
 	ControlServiceBindChannelRepoProcedure = "/tank.agentctl.v1.ControlService/BindChannelRepo"
@@ -1509,6 +1512,9 @@ type ControlServiceClient interface {
 	OpenSetupPullRequest(context.Context, *connect.Request[v1.OpenSetupPullRequestRequest]) (*connect.Response[v1.OpenSetupPullRequestResponse], error)
 	// What a page shows at a point, read by a headless browser on TANK's side.
 	ReadElementAt(context.Context, *connect.Request[v1.ReadElementAtRequest]) (*connect.Response[v1.ReadElementAtResponse], error)
+	// Merges the pull request of the newest run in a thread, only when its head is exactly
+	// sha (the commit a person saw previewed). api asks after its own checks.
+	MergeChange(context.Context, *connect.Request[v1.MergeChangeRequest]) (*connect.Response[v1.MergeChangeResponse], error)
 	// Writes into schema `agent`, which belongs to the control plane. The
 	// messaging core may read that schema and may not write it, so each of these
 	// is a thing it needs done rather than a statement it issues. See the block
@@ -1652,6 +1658,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("ReadElementAt")),
 			connect.WithClientOptions(opts...),
 		),
+		mergeChange: connect.NewClient[v1.MergeChangeRequest, v1.MergeChangeResponse](
+			httpClient,
+			baseURL+ControlServiceMergeChangeProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("MergeChange")),
+			connect.WithClientOptions(opts...),
+		),
 		bindChannelRepo: connect.NewClient[v1.BindChannelRepoRequest, v1.BindChannelRepoResponse](
 			httpClient,
 			baseURL+ControlServiceBindChannelRepoProcedure,
@@ -1713,6 +1725,7 @@ type controlServiceClient struct {
 	buildPreview             *connect.Client[v1.BuildPreviewRequest, v1.BuildPreviewResponse]
 	openSetupPullRequest     *connect.Client[v1.OpenSetupPullRequestRequest, v1.OpenSetupPullRequestResponse]
 	readElementAt            *connect.Client[v1.ReadElementAtRequest, v1.ReadElementAtResponse]
+	mergeChange              *connect.Client[v1.MergeChangeRequest, v1.MergeChangeResponse]
 	bindChannelRepo          *connect.Client[v1.BindChannelRepoRequest, v1.BindChannelRepoResponse]
 	unbindChannelRepo        *connect.Client[v1.UnbindChannelRepoRequest, v1.UnbindChannelRepoResponse]
 	setChannelRepoAccess     *connect.Client[v1.SetChannelRepoAccessRequest, v1.SetChannelRepoAccessResponse]
@@ -1821,6 +1834,11 @@ func (c *controlServiceClient) ReadElementAt(ctx context.Context, req *connect.R
 	return c.readElementAt.CallUnary(ctx, req)
 }
 
+// MergeChange calls tank.agentctl.v1.ControlService.MergeChange.
+func (c *controlServiceClient) MergeChange(ctx context.Context, req *connect.Request[v1.MergeChangeRequest]) (*connect.Response[v1.MergeChangeResponse], error) {
+	return c.mergeChange.CallUnary(ctx, req)
+}
+
 // BindChannelRepo calls tank.agentctl.v1.ControlService.BindChannelRepo.
 func (c *controlServiceClient) BindChannelRepo(ctx context.Context, req *connect.Request[v1.BindChannelRepoRequest]) (*connect.Response[v1.BindChannelRepoResponse], error) {
 	return c.bindChannelRepo.CallUnary(ctx, req)
@@ -1903,6 +1921,9 @@ type ControlServiceHandler interface {
 	OpenSetupPullRequest(context.Context, *connect.Request[v1.OpenSetupPullRequestRequest]) (*connect.Response[v1.OpenSetupPullRequestResponse], error)
 	// What a page shows at a point, read by a headless browser on TANK's side.
 	ReadElementAt(context.Context, *connect.Request[v1.ReadElementAtRequest]) (*connect.Response[v1.ReadElementAtResponse], error)
+	// Merges the pull request of the newest run in a thread, only when its head is exactly
+	// sha (the commit a person saw previewed). api asks after its own checks.
+	MergeChange(context.Context, *connect.Request[v1.MergeChangeRequest]) (*connect.Response[v1.MergeChangeResponse], error)
 	// Writes into schema `agent`, which belongs to the control plane. The
 	// messaging core may read that schema and may not write it, so each of these
 	// is a thing it needs done rather than a statement it issues. See the block
@@ -2042,6 +2063,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("ReadElementAt")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceMergeChangeHandler := connect.NewUnaryHandler(
+		ControlServiceMergeChangeProcedure,
+		svc.MergeChange,
+		connect.WithSchema(controlServiceMethods.ByName("MergeChange")),
+		connect.WithHandlerOptions(opts...),
+	)
 	controlServiceBindChannelRepoHandler := connect.NewUnaryHandler(
 		ControlServiceBindChannelRepoProcedure,
 		svc.BindChannelRepo,
@@ -2120,6 +2147,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceOpenSetupPullRequestHandler.ServeHTTP(w, r)
 		case ControlServiceReadElementAtProcedure:
 			controlServiceReadElementAtHandler.ServeHTTP(w, r)
+		case ControlServiceMergeChangeProcedure:
+			controlServiceMergeChangeHandler.ServeHTTP(w, r)
 		case ControlServiceBindChannelRepoProcedure:
 			controlServiceBindChannelRepoHandler.ServeHTTP(w, r)
 		case ControlServiceUnbindChannelRepoProcedure:
@@ -2219,6 +2248,10 @@ func (UnimplementedControlServiceHandler) OpenSetupPullRequest(context.Context, 
 
 func (UnimplementedControlServiceHandler) ReadElementAt(context.Context, *connect.Request[v1.ReadElementAtRequest]) (*connect.Response[v1.ReadElementAtResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ReadElementAt is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) MergeChange(context.Context, *connect.Request[v1.MergeChangeRequest]) (*connect.Response[v1.MergeChangeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.MergeChange is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) BindChannelRepo(context.Context, *connect.Request[v1.BindChannelRepoRequest]) (*connect.Response[v1.BindChannelRepoResponse], error) {

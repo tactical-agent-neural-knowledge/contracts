@@ -121,6 +121,9 @@ const (
 	BoardServiceGetAppSetupProcedure = "/tank.board.v1.BoardService/GetAppSetup"
 	// BoardServiceConnectAppProcedure is the fully-qualified name of the BoardService's ConnectApp RPC.
 	BoardServiceConnectAppProcedure = "/tank.board.v1.BoardService/ConnectApp"
+	// BoardServiceApproveChangeProcedure is the fully-qualified name of the BoardService's
+	// ApproveChange RPC.
+	BoardServiceApproveChangeProcedure = "/tank.board.v1.BoardService/ApproveChange"
 )
 
 // BoardServiceClient is a client for the tank.board.v1.BoardService service.
@@ -156,6 +159,7 @@ type BoardServiceClient interface {
 	ReadElement(context.Context, *connect.Request[v1.ReadElementRequest]) (*connect.Response[v1.ReadElementResponse], error)
 	GetAppSetup(context.Context, *connect.Request[v1.GetAppSetupRequest]) (*connect.Response[v1.GetAppSetupResponse], error)
 	ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error)
+	ApproveChange(context.Context, *connect.Request[v1.ApproveChangeRequest]) (*connect.Response[v1.ApproveChangeResponse], error)
 }
 
 // NewBoardServiceClient constructs a client for the tank.board.v1.BoardService service. By default,
@@ -355,6 +359,12 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(boardServiceMethods.ByName("ConnectApp")),
 			connect.WithClientOptions(opts...),
 		),
+		approveChange: connect.NewClient[v1.ApproveChangeRequest, v1.ApproveChangeResponse](
+			httpClient,
+			baseURL+BoardServiceApproveChangeProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ApproveChange")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -391,6 +401,7 @@ type boardServiceClient struct {
 	readElement           *connect.Client[v1.ReadElementRequest, v1.ReadElementResponse]
 	getAppSetup           *connect.Client[v1.GetAppSetupRequest, v1.GetAppSetupResponse]
 	connectApp            *connect.Client[v1.ConnectAppRequest, v1.ConnectAppResponse]
+	approveChange         *connect.Client[v1.ApproveChangeRequest, v1.ApproveChangeResponse]
 }
 
 // ListBoards calls tank.board.v1.BoardService.ListBoards.
@@ -548,6 +559,11 @@ func (c *boardServiceClient) ConnectApp(ctx context.Context, req *connect.Reques
 	return c.connectApp.CallUnary(ctx, req)
 }
 
+// ApproveChange calls tank.board.v1.BoardService.ApproveChange.
+func (c *boardServiceClient) ApproveChange(ctx context.Context, req *connect.Request[v1.ApproveChangeRequest]) (*connect.Response[v1.ApproveChangeResponse], error) {
+	return c.approveChange.CallUnary(ctx, req)
+}
+
 // BoardServiceHandler is an implementation of the tank.board.v1.BoardService service.
 type BoardServiceHandler interface {
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
@@ -581,6 +597,7 @@ type BoardServiceHandler interface {
 	ReadElement(context.Context, *connect.Request[v1.ReadElementRequest]) (*connect.Response[v1.ReadElementResponse], error)
 	GetAppSetup(context.Context, *connect.Request[v1.GetAppSetupRequest]) (*connect.Response[v1.GetAppSetupResponse], error)
 	ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error)
+	ApproveChange(context.Context, *connect.Request[v1.ApproveChangeRequest]) (*connect.Response[v1.ApproveChangeResponse], error)
 }
 
 // NewBoardServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -776,6 +793,12 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(boardServiceMethods.ByName("ConnectApp")),
 		connect.WithHandlerOptions(opts...),
 	)
+	boardServiceApproveChangeHandler := connect.NewUnaryHandler(
+		BoardServiceApproveChangeProcedure,
+		svc.ApproveChange,
+		connect.WithSchema(boardServiceMethods.ByName("ApproveChange")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.board.v1.BoardService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BoardServiceListBoardsProcedure:
@@ -840,6 +863,8 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 			boardServiceGetAppSetupHandler.ServeHTTP(w, r)
 		case BoardServiceConnectAppProcedure:
 			boardServiceConnectAppHandler.ServeHTTP(w, r)
+		case BoardServiceApproveChangeProcedure:
+			boardServiceApproveChangeHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -971,4 +996,8 @@ func (UnimplementedBoardServiceHandler) GetAppSetup(context.Context, *connect.Re
 
 func (UnimplementedBoardServiceHandler) ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ConnectApp is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ApproveChange(context.Context, *connect.Request[v1.ApproveChangeRequest]) (*connect.Response[v1.ApproveChangeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ApproveChange is not implemented"))
 }

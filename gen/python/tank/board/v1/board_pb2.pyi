@@ -71,7 +71,7 @@ class Style(_message.Message):
     def __init__(self, fill: _Optional[str] = ..., stroke: _Optional[str] = ..., stroke_width: _Optional[float] = ..., opacity: _Optional[float] = ..., corner_radius: _Optional[float] = ..., dash: _Optional[str] = ..., font_size: _Optional[int] = ..., font_weight: _Optional[str] = ..., align: _Optional[str] = ..., shadow: _Optional[str] = ..., blur: _Optional[float] = ...) -> None: ...
 
 class AppFrame(_message.Message):
-    __slots__ = ("repo", "ref", "path", "platform", "viewport_width", "viewport_height", "preview_url", "status", "note", "drawn_from_sha", "drawn_at", "moved_on", "moved_note", "environment", "screen")
+    __slots__ = ("repo", "ref", "path", "platform", "viewport_width", "viewport_height", "preview_url", "status", "note", "drawn_from_sha", "drawn_at", "moved_on", "moved_note", "environment", "screen", "change_id", "change_approved")
     REPO_FIELD_NUMBER: _ClassVar[int]
     REF_FIELD_NUMBER: _ClassVar[int]
     PATH_FIELD_NUMBER: _ClassVar[int]
@@ -87,6 +87,8 @@ class AppFrame(_message.Message):
     MOVED_NOTE_FIELD_NUMBER: _ClassVar[int]
     ENVIRONMENT_FIELD_NUMBER: _ClassVar[int]
     SCREEN_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_APPROVED_FIELD_NUMBER: _ClassVar[int]
     repo: str
     ref: str
     path: str
@@ -102,7 +104,9 @@ class AppFrame(_message.Message):
     moved_note: str
     environment: str
     screen: str
-    def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., platform: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., preview_url: _Optional[str] = ..., status: _Optional[str] = ..., note: _Optional[str] = ..., drawn_from_sha: _Optional[str] = ..., drawn_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., moved_on: bool = ..., moved_note: _Optional[str] = ..., environment: _Optional[str] = ..., screen: _Optional[str] = ...) -> None: ...
+    change_id: str
+    change_approved: bool
+    def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., platform: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., preview_url: _Optional[str] = ..., status: _Optional[str] = ..., note: _Optional[str] = ..., drawn_from_sha: _Optional[str] = ..., drawn_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., moved_on: bool = ..., moved_note: _Optional[str] = ..., environment: _Optional[str] = ..., screen: _Optional[str] = ..., change_id: _Optional[str] = ..., change_approved: bool = ...) -> None: ...
 
 class BoardObject(_message.Message):
     __slots__ = ("id", "kind", "at", "style", "text", "rotation", "z", "parent_id", "from_id", "to_id", "points", "file_id", "file_url", "app", "locked", "meta", "created_by", "rev", "derived", "code")
@@ -372,28 +376,52 @@ class Element(_message.Message):
     def __init__(self, source: _Optional[str] = ..., tag: _Optional[str] = ..., text: _Optional[str] = ..., test_id: _Optional[str] = ..., at: _Optional[_Union[Rect, _Mapping]] = ..., classes: _Optional[_Iterable[str]] = ..., page: _Optional[str] = ..., selector: _Optional[str] = ...) -> None: ...
 
 class RequestChangeRequest(_message.Message):
-    __slots__ = ("workspace_id", "board_id", "object_id", "element", "ask")
+    __slots__ = ("workspace_id", "board_id", "object_id", "element", "ask", "channel_id")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     BOARD_ID_FIELD_NUMBER: _ClassVar[int]
     OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     ELEMENT_FIELD_NUMBER: _ClassVar[int]
     ASK_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     board_id: str
     object_id: str
     element: Element
     ask: str
-    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., object_id: _Optional[str] = ..., element: _Optional[_Union[Element, _Mapping]] = ..., ask: _Optional[str] = ...) -> None: ...
+    channel_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., object_id: _Optional[str] = ..., element: _Optional[_Union[Element, _Mapping]] = ..., ask: _Optional[str] = ..., channel_id: _Optional[str] = ...) -> None: ...
 
 class RequestChangeResponse(_message.Message):
-    __slots__ = ("thread_root_id", "channel_id", "prompt")
+    __slots__ = ("thread_root_id", "channel_id", "prompt", "after_object_id")
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     PROMPT_FIELD_NUMBER: _ClassVar[int]
+    AFTER_OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     thread_root_id: str
     channel_id: str
     prompt: str
-    def __init__(self, thread_root_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., prompt: _Optional[str] = ...) -> None: ...
+    after_object_id: str
+    def __init__(self, thread_root_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., prompt: _Optional[str] = ..., after_object_id: _Optional[str] = ...) -> None: ...
+
+class ApproveChangeRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "object_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    OBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    object_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., object_id: _Optional[str] = ...) -> None: ...
+
+class ApproveChangeResponse(_message.Message):
+    __slots__ = ("merged", "pull_request_url", "note")
+    MERGED_FIELD_NUMBER: _ClassVar[int]
+    PULL_REQUEST_URL_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    merged: bool
+    pull_request_url: str
+    note: str
+    def __init__(self, merged: bool = ..., pull_request_url: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
 
 class BoardTemplate(_message.Message):
     __slots__ = ("name", "title", "icon", "about", "group", "objects", "viewbox", "thumbnail_svg", "custom", "created_by", "created_at")

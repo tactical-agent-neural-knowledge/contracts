@@ -1754,3 +1754,23 @@ class ReadElementAtResponse(_message.Message):
     h: float
     note: str
     def __init__(self, tag: _Optional[str] = ..., text: _Optional[str] = ..., test_id: _Optional[str] = ..., classes: _Optional[_Iterable[str]] = ..., selector: _Optional[str] = ..., x: _Optional[float] = ..., y: _Optional[float] = ..., w: _Optional[float] = ..., h: _Optional[float] = ..., note: _Optional[str] = ...) -> None: ...
+
+class MergeChangeRequest(_message.Message):
+    __slots__ = ("workspace_id", "thread_root_id", "sha")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    thread_root_id: str
+    sha: str
+    def __init__(self, workspace_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., sha: _Optional[str] = ...) -> None: ...
+
+class MergeChangeResponse(_message.Message):
+    __slots__ = ("merged", "pull_request_url", "note")
+    MERGED_FIELD_NUMBER: _ClassVar[int]
+    PULL_REQUEST_URL_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    merged: bool
+    pull_request_url: str
+    note: str
+    def __init__(self, merged: bool = ..., pull_request_url: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
