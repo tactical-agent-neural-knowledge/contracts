@@ -216,6 +216,9 @@ const (
 	// ControlServiceGetProductStateProcedure is the fully-qualified name of the ControlService's
 	// GetProductState RPC.
 	ControlServiceGetProductStateProcedure = "/tank.agentctl.v1.ControlService/GetProductState"
+	// ControlServiceCheckProductPageProcedure is the fully-qualified name of the ControlService's
+	// CheckProductPage RPC.
+	ControlServiceCheckProductPageProcedure = "/tank.agentctl.v1.ControlService/CheckProductPage"
 	// ControlServiceSetUpPreviewWorkflowProcedure is the fully-qualified name of the ControlService's
 	// SetUpPreviewWorkflow RPC.
 	ControlServiceSetUpPreviewWorkflowProcedure = "/tank.agentctl.v1.ControlService/SetUpPreviewWorkflow"
@@ -1597,6 +1600,8 @@ type ControlServiceClient interface {
 	// The running state of a slug read from the cluster, with its log tail: what the
 	// Infrastructure page shows. Read only.
 	GetProductState(context.Context, *connect.Request[v1.GetProductStateRequest]) (*connect.Response[v1.GetProductStateResponse], error)
+	// Opens a page of a slug's product through the headless reader, as a visitor would.
+	CheckProductPage(context.Context, *connect.Request[v1.CheckProductPageRequest]) (*connect.Response[v1.CheckProductPageResponse], error)
 	// Adds the preview-reporting workflow to repositories the workspace's own
 	// installation reaches, each as a pull request: branch, file, pull request. Nothing
 	// is merged and nothing is written to a default branch — TANK proposes, the
@@ -1740,6 +1745,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("GetProductState")),
 			connect.WithClientOptions(opts...),
 		),
+		checkProductPage: connect.NewClient[v1.CheckProductPageRequest, v1.CheckProductPageResponse](
+			httpClient,
+			baseURL+ControlServiceCheckProductPageProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("CheckProductPage")),
+			connect.WithClientOptions(opts...),
+		),
 		setUpPreviewWorkflow: connect.NewClient[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse](
 			httpClient,
 			baseURL+ControlServiceSetUpPreviewWorkflowProcedure,
@@ -1833,6 +1844,7 @@ type controlServiceClient struct {
 	registerDeployment       *connect.Client[v1.RegisterDeploymentRequest, v1.RegisterDeploymentResponse]
 	getDeployment            *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
 	getProductState          *connect.Client[v1.GetProductStateRequest, v1.GetProductStateResponse]
+	checkProductPage         *connect.Client[v1.CheckProductPageRequest, v1.CheckProductPageResponse]
 	setUpPreviewWorkflow     *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
 	readRepo                 *connect.Client[v1.ReadRepoRequest, v1.ReadRepoResponse]
 	buildPreview             *connect.Client[v1.BuildPreviewRequest, v1.BuildPreviewResponse]
@@ -1925,6 +1937,11 @@ func (c *controlServiceClient) GetDeployment(ctx context.Context, req *connect.R
 // GetProductState calls tank.agentctl.v1.ControlService.GetProductState.
 func (c *controlServiceClient) GetProductState(ctx context.Context, req *connect.Request[v1.GetProductStateRequest]) (*connect.Response[v1.GetProductStateResponse], error) {
 	return c.getProductState.CallUnary(ctx, req)
+}
+
+// CheckProductPage calls tank.agentctl.v1.ControlService.CheckProductPage.
+func (c *controlServiceClient) CheckProductPage(ctx context.Context, req *connect.Request[v1.CheckProductPageRequest]) (*connect.Response[v1.CheckProductPageResponse], error) {
+	return c.checkProductPage.CallUnary(ctx, req)
 }
 
 // SetUpPreviewWorkflow calls tank.agentctl.v1.ControlService.SetUpPreviewWorkflow.
@@ -2021,6 +2038,8 @@ type ControlServiceHandler interface {
 	// The running state of a slug read from the cluster, with its log tail: what the
 	// Infrastructure page shows. Read only.
 	GetProductState(context.Context, *connect.Request[v1.GetProductStateRequest]) (*connect.Response[v1.GetProductStateResponse], error)
+	// Opens a page of a slug's product through the headless reader, as a visitor would.
+	CheckProductPage(context.Context, *connect.Request[v1.CheckProductPageRequest]) (*connect.Response[v1.CheckProductPageResponse], error)
 	// Adds the preview-reporting workflow to repositories the workspace's own
 	// installation reaches, each as a pull request: branch, file, pull request. Nothing
 	// is merged and nothing is written to a default branch — TANK proposes, the
@@ -2160,6 +2179,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("GetProductState")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceCheckProductPageHandler := connect.NewUnaryHandler(
+		ControlServiceCheckProductPageProcedure,
+		svc.CheckProductPage,
+		connect.WithSchema(controlServiceMethods.ByName("CheckProductPage")),
+		connect.WithHandlerOptions(opts...),
+	)
 	controlServiceSetUpPreviewWorkflowHandler := connect.NewUnaryHandler(
 		ControlServiceSetUpPreviewWorkflowProcedure,
 		svc.SetUpPreviewWorkflow,
@@ -2266,6 +2291,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceGetDeploymentHandler.ServeHTTP(w, r)
 		case ControlServiceGetProductStateProcedure:
 			controlServiceGetProductStateHandler.ServeHTTP(w, r)
+		case ControlServiceCheckProductPageProcedure:
+			controlServiceCheckProductPageHandler.ServeHTTP(w, r)
 		case ControlServiceSetUpPreviewWorkflowProcedure:
 			controlServiceSetUpPreviewWorkflowHandler.ServeHTTP(w, r)
 		case ControlServiceReadRepoProcedure:
@@ -2361,6 +2388,10 @@ func (UnimplementedControlServiceHandler) GetDeployment(context.Context, *connec
 
 func (UnimplementedControlServiceHandler) GetProductState(context.Context, *connect.Request[v1.GetProductStateRequest]) (*connect.Response[v1.GetProductStateResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.GetProductState is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) CheckProductPage(context.Context, *connect.Request[v1.CheckProductPageRequest]) (*connect.Response[v1.CheckProductPageResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.CheckProductPage is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) SetUpPreviewWorkflow(context.Context, *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error) {

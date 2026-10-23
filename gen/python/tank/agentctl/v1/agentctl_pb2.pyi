@@ -1519,6 +1519,20 @@ class ProductEvent(_message.Message):
     message: str
     def __init__(self, at: _Optional[str] = ..., type: _Optional[str] = ..., reason: _Optional[str] = ..., message: _Optional[str] = ...) -> None: ...
 
+class CheckProductPageRequest(_message.Message):
+    __slots__ = ("slug", "path")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    path: str
+    def __init__(self, slug: _Optional[str] = ..., path: _Optional[str] = ...) -> None: ...
+
+class CheckProductPageResponse(_message.Message):
+    __slots__ = ("check",)
+    CHECK_FIELD_NUMBER: _ClassVar[int]
+    check: CheckLiveResponse
+    def __init__(self, check: _Optional[_Union[CheckLiveResponse, _Mapping]] = ...) -> None: ...
+
 class GetProductStateRequest(_message.Message):
     __slots__ = ("slug", "tail_lines")
     SLUG_FIELD_NUMBER: _ClassVar[int]

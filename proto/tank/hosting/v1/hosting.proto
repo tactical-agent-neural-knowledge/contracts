@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package tank.hosting.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/hosting/v1;hostingv1";
+
+// HostingService is the Infrastructure page: what a product TANK runs for a Tread is,
+// how it is doing, what it costs and what people may change about it. Every request
+// names the Tread (channel_id); members of the Tread may read, and what each role may
+// change is decided by the server, never by the client.
+service HostingService {
+  // The product's running state, recent cluster events and log tail.
+  rpc GetProduct(GetProductRequest) returns (GetProductResponse);
+  // Opens a page of the product as a visitor would and returns what it showed.
+  rpc CheckProduct(CheckProductRequest) returns (CheckProductResponse);
+}
+
+message GetProductRequest {
+  string channel_id = 1;
+  int32 tail_lines = 2;   // 0 = 200, at most 2000
+}
+message GetProductResponse {
+  Product product = 1;    // absent when the Tread hosts nothing
+  string logs = 2;        // the app's log; the crashed container's when it is failing
+  repeated ProductEvent events = 3;
+}
+
+message Product {
+  string slug = 1;
+  string repo = 2;                // owner/name
+  string url = 3;                 // https://<slug>.tank.chat
+  bool awake = 4;
+  string status = 5;              // not_deployed | asleep | starting | running | failing | unknown
+  string image_tag = 6;           // the build the cluster runs
+  int32 restarts = 7;
+  string last_exit_reason = 8;    // of the last crash: "Error", "OOMKilled", …
+  google.protobuf.Timestamp started_at = 9;
+  string cpu_limit = 10;          // "1"
+  string memory_limit = 11;       // "2Gi"
+  int64 disk_bytes = 12;
+  bool can_manage = 13;           // the caller may wake, sleep and (later) change it
+  bool managed = 14;              // TANK generated the repository
+  google.protobuf.Timestamp updated_at = 15;
+}
+
+message ProductEvent {
+  google.protobuf.Timestamp at = 1;
+  string type = 2;                // Normal | Warning
+  string reason = 3;
+  string message = 4;
+}
+
+message CheckProductRequest {
+  string channel_id = 1;
+  string path = 2;                // "/" when empty
+}
+message CheckProductResponse { LiveCheck check = 1; }
+
+message LiveCheck {
+  string url = 1;
+  int32 status = 2;               // HTTP status; 0 when the page did not load
+  string build_sha = 3;
+  string title = 4;
+  int32 text_length = 5;          // near zero is a blank page
+  repeated string errors = 6;
+  bytes screenshot_png = 7;
+  google.protobuf.Timestamp checked_at = 8;
+  string note = 9;                // why nothing could be checked
+}

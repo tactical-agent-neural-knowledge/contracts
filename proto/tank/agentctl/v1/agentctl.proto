@@ -964,6 +964,8 @@ service ControlService {
   // The running state of a slug read from the cluster, with its log tail: what the
   // Infrastructure page shows. Read only.
   rpc GetProductState(GetProductStateRequest) returns (GetProductStateResponse);
+  // Opens a page of a slug's product through the headless reader, as a visitor would.
+  rpc CheckProductPage(CheckProductPageRequest) returns (CheckProductPageResponse);
   // Adds the preview-reporting workflow to repositories the workspace's own
   // installation reaches, each as a pull request: branch, file, pull request. Nothing
   // is merged and nothing is written to a default branch — TANK proposes, the
@@ -1058,6 +1060,11 @@ message ProductEvent {
   string reason = 3;
   string message = 4;
 }
+message CheckProductPageRequest {
+  string slug = 1;
+  string path = 2;              // "/" when empty
+}
+message CheckProductPageResponse { CheckLiveResponse check = 1; }
 message GetProductStateRequest {
   string slug = 1;
   int32 tail_lines = 2;         // 0 = 200, at most 2000
