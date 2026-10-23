@@ -72,6 +72,9 @@ const (
 	// RunnerServiceReadProductProcedure is the fully-qualified name of the RunnerService's ReadProduct
 	// RPC.
 	RunnerServiceReadProductProcedure = "/tank.agentctl.v1.RunnerService/ReadProduct"
+	// RunnerServiceValidateSpecProcedure is the fully-qualified name of the RunnerService's
+	// ValidateSpec RPC.
+	RunnerServiceValidateSpecProcedure = "/tank.agentctl.v1.RunnerService/ValidateSpec"
 	// RunnerServiceReadThreadProcedure is the fully-qualified name of the RunnerService's ReadThread
 	// RPC.
 	RunnerServiceReadThreadProcedure = "/tank.agentctl.v1.RunnerService/ReadThread"
@@ -219,6 +222,24 @@ const (
 	// ControlServiceCheckProductPageProcedure is the fully-qualified name of the ControlService's
 	// CheckProductPage RPC.
 	ControlServiceCheckProductPageProcedure = "/tank.agentctl.v1.ControlService/CheckProductPage"
+	// ControlServiceGetProductSpecProcedure is the fully-qualified name of the ControlService's
+	// GetProductSpec RPC.
+	ControlServiceGetProductSpecProcedure = "/tank.agentctl.v1.ControlService/GetProductSpec"
+	// ControlServiceApproveProductBuildProcedure is the fully-qualified name of the ControlService's
+	// ApproveProductBuild RPC.
+	ControlServiceApproveProductBuildProcedure = "/tank.agentctl.v1.ControlService/ApproveProductBuild"
+	// ControlServiceOperateProductProcedure is the fully-qualified name of the ControlService's
+	// OperateProduct RPC.
+	ControlServiceOperateProductProcedure = "/tank.agentctl.v1.ControlService/OperateProduct"
+	// ControlServiceListProductChangesProcedure is the fully-qualified name of the ControlService's
+	// ListProductChanges RPC.
+	ControlServiceListProductChangesProcedure = "/tank.agentctl.v1.ControlService/ListProductChanges"
+	// ControlServiceRollbackProductProcedure is the fully-qualified name of the ControlService's
+	// RollbackProduct RPC.
+	ControlServiceRollbackProductProcedure = "/tank.agentctl.v1.ControlService/RollbackProduct"
+	// ControlServiceUpdateProductSpecProcedure is the fully-qualified name of the ControlService's
+	// UpdateProductSpec RPC.
+	ControlServiceUpdateProductSpecProcedure = "/tank.agentctl.v1.ControlService/UpdateProductSpec"
 	// ControlServiceSetUpPreviewWorkflowProcedure is the fully-qualified name of the ControlService's
 	// SetUpPreviewWorkflow RPC.
 	ControlServiceSetUpPreviewWorkflowProcedure = "/tank.agentctl.v1.ControlService/SetUpPreviewWorkflow"
@@ -278,6 +299,8 @@ type RunnerServiceClient interface {
 	// is up, how often it has restarted and why, recent cluster events and its log. So an
 	// agent can see the product it built fail instead of hearing about it from a person.
 	ReadProduct(context.Context, *connect.Request[v1.ReadProductRequest]) (*connect.Response[v1.ReadProductResponse], error)
+	// Checks a tank.yaml the way a deploy will and prices it, before anything is built.
+	ValidateSpec(context.Context, *connect.Request[v1.ValidateSpecRequest]) (*connect.Response[v1.ValidateSpecResponse], error)
 	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error)
 	CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error)
@@ -404,6 +427,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServiceReadProductProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("ReadProduct")),
+			connect.WithClientOptions(opts...),
+		),
+		validateSpec: connect.NewClient[v1.ValidateSpecRequest, v1.ValidateSpecResponse](
+			httpClient,
+			baseURL+RunnerServiceValidateSpecProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ValidateSpec")),
 			connect.WithClientOptions(opts...),
 		),
 		readThread: connect.NewClient[v1.ReadThreadRequest, v1.ReadThreadResponse](
@@ -634,6 +663,7 @@ type runnerServiceClient struct {
 	reportCompletion         *connect.Client[v1.ReportCompletionRequest, v1.ReportCompletionResponse]
 	checkLive                *connect.Client[v1.CheckLiveRequest, v1.CheckLiveResponse]
 	readProduct              *connect.Client[v1.ReadProductRequest, v1.ReadProductResponse]
+	validateSpec             *connect.Client[v1.ValidateSpecRequest, v1.ValidateSpecResponse]
 	readThread               *connect.Client[v1.ReadThreadRequest, v1.ReadThreadResponse]
 	boardResearch            *connect.Client[v1.BoardResearchRequest, v1.BoardResearchResponse]
 	commitFiles              *connect.Client[v1.CommitFilesRequest, v1.CommitFilesResponse]
@@ -734,6 +764,11 @@ func (c *runnerServiceClient) CheckLive(ctx context.Context, req *connect.Reques
 // ReadProduct calls tank.agentctl.v1.RunnerService.ReadProduct.
 func (c *runnerServiceClient) ReadProduct(ctx context.Context, req *connect.Request[v1.ReadProductRequest]) (*connect.Response[v1.ReadProductResponse], error) {
 	return c.readProduct.CallUnary(ctx, req)
+}
+
+// ValidateSpec calls tank.agentctl.v1.RunnerService.ValidateSpec.
+func (c *runnerServiceClient) ValidateSpec(ctx context.Context, req *connect.Request[v1.ValidateSpecRequest]) (*connect.Response[v1.ValidateSpecResponse], error) {
+	return c.validateSpec.CallUnary(ctx, req)
 }
 
 // ReadThread calls tank.agentctl.v1.RunnerService.ReadThread.
@@ -933,6 +968,8 @@ type RunnerServiceHandler interface {
 	// is up, how often it has restarted and why, recent cluster events and its log. So an
 	// agent can see the product it built fail instead of hearing about it from a person.
 	ReadProduct(context.Context, *connect.Request[v1.ReadProductRequest]) (*connect.Response[v1.ReadProductResponse], error)
+	// Checks a tank.yaml the way a deploy will and prices it, before anything is built.
+	ValidateSpec(context.Context, *connect.Request[v1.ValidateSpecRequest]) (*connect.Response[v1.ValidateSpecResponse], error)
 	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error)
 	CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error)
@@ -1055,6 +1092,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceReadProductProcedure,
 		svc.ReadProduct,
 		connect.WithSchema(runnerServiceMethods.ByName("ReadProduct")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceValidateSpecHandler := connect.NewUnaryHandler(
+		RunnerServiceValidateSpecProcedure,
+		svc.ValidateSpec,
+		connect.WithSchema(runnerServiceMethods.ByName("ValidateSpec")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServiceReadThreadHandler := connect.NewUnaryHandler(
@@ -1295,6 +1338,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceCheckLiveHandler.ServeHTTP(w, r)
 		case RunnerServiceReadProductProcedure:
 			runnerServiceReadProductHandler.ServeHTTP(w, r)
+		case RunnerServiceValidateSpecProcedure:
+			runnerServiceValidateSpecHandler.ServeHTTP(w, r)
 		case RunnerServiceReadThreadProcedure:
 			runnerServiceReadThreadHandler.ServeHTTP(w, r)
 		case RunnerServiceBoardResearchProcedure:
@@ -1424,6 +1469,10 @@ func (UnimplementedRunnerServiceHandler) CheckLive(context.Context, *connect.Req
 
 func (UnimplementedRunnerServiceHandler) ReadProduct(context.Context, *connect.Request[v1.ReadProductRequest]) (*connect.Response[v1.ReadProductResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReadProduct is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ValidateSpec(context.Context, *connect.Request[v1.ValidateSpecRequest]) (*connect.Response[v1.ValidateSpecResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ValidateSpec is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error) {
@@ -1602,6 +1651,19 @@ type ControlServiceClient interface {
 	GetProductState(context.Context, *connect.Request[v1.GetProductStateRequest]) (*connect.Response[v1.GetProductStateResponse], error)
 	// Opens a page of a slug's product through the headless reader, as a visitor would.
 	CheckProductPage(context.Context, *connect.Request[v1.CheckProductPageRequest]) (*connect.Response[v1.CheckProductPageResponse], error)
+	// A product's compiled spec, its cost, a build waiting to land, and the operations taken.
+	GetProductSpec(context.Context, *connect.Request[v1.GetProductSpecRequest]) (*connect.Response[v1.GetProductSpecResponse], error)
+	// Lands a build that waits on a cost approval. The sha must be the waiting build's.
+	ApproveProductBuild(context.Context, *connect.Request[v1.ApproveProductBuildRequest]) (*connect.Response[v1.ApproveProductBuildResponse], error)
+	// Restart, pause or resume a schedule, run a job: recorded in GitOps like everything else.
+	OperateProduct(context.Context, *connect.Request[v1.OperateProductRequest]) (*connect.Response[v1.OperateProductResponse], error)
+	// The product's history: every deploy, hold, approval and operation, newest first.
+	ListProductChanges(context.Context, *connect.Request[v1.ListProductChangesRequest]) (*connect.Response[v1.ListProductChangesResponse], error)
+	// Puts an earlier build back, with the tank.yaml it was built from.
+	RollbackProduct(context.Context, *connect.Request[v1.RollbackProductRequest]) (*connect.Response[v1.RollbackProductResponse], error)
+	// Changes one process's size, scale or schedule as a commit to the product's tank.yaml,
+	// authored as the person who asked; the build that follows deploys it.
+	UpdateProductSpec(context.Context, *connect.Request[v1.UpdateProductSpecRequest]) (*connect.Response[v1.UpdateProductSpecResponse], error)
 	// Adds the preview-reporting workflow to repositories the workspace's own
 	// installation reaches, each as a pull request: branch, file, pull request. Nothing
 	// is merged and nothing is written to a default branch — TANK proposes, the
@@ -1751,6 +1813,42 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("CheckProductPage")),
 			connect.WithClientOptions(opts...),
 		),
+		getProductSpec: connect.NewClient[v1.GetProductSpecRequest, v1.GetProductSpecResponse](
+			httpClient,
+			baseURL+ControlServiceGetProductSpecProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("GetProductSpec")),
+			connect.WithClientOptions(opts...),
+		),
+		approveProductBuild: connect.NewClient[v1.ApproveProductBuildRequest, v1.ApproveProductBuildResponse](
+			httpClient,
+			baseURL+ControlServiceApproveProductBuildProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ApproveProductBuild")),
+			connect.WithClientOptions(opts...),
+		),
+		operateProduct: connect.NewClient[v1.OperateProductRequest, v1.OperateProductResponse](
+			httpClient,
+			baseURL+ControlServiceOperateProductProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("OperateProduct")),
+			connect.WithClientOptions(opts...),
+		),
+		listProductChanges: connect.NewClient[v1.ListProductChangesRequest, v1.ListProductChangesResponse](
+			httpClient,
+			baseURL+ControlServiceListProductChangesProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListProductChanges")),
+			connect.WithClientOptions(opts...),
+		),
+		rollbackProduct: connect.NewClient[v1.RollbackProductRequest, v1.RollbackProductResponse](
+			httpClient,
+			baseURL+ControlServiceRollbackProductProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("RollbackProduct")),
+			connect.WithClientOptions(opts...),
+		),
+		updateProductSpec: connect.NewClient[v1.UpdateProductSpecRequest, v1.UpdateProductSpecResponse](
+			httpClient,
+			baseURL+ControlServiceUpdateProductSpecProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("UpdateProductSpec")),
+			connect.WithClientOptions(opts...),
+		),
 		setUpPreviewWorkflow: connect.NewClient[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse](
 			httpClient,
 			baseURL+ControlServiceSetUpPreviewWorkflowProcedure,
@@ -1845,6 +1943,12 @@ type controlServiceClient struct {
 	getDeployment            *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
 	getProductState          *connect.Client[v1.GetProductStateRequest, v1.GetProductStateResponse]
 	checkProductPage         *connect.Client[v1.CheckProductPageRequest, v1.CheckProductPageResponse]
+	getProductSpec           *connect.Client[v1.GetProductSpecRequest, v1.GetProductSpecResponse]
+	approveProductBuild      *connect.Client[v1.ApproveProductBuildRequest, v1.ApproveProductBuildResponse]
+	operateProduct           *connect.Client[v1.OperateProductRequest, v1.OperateProductResponse]
+	listProductChanges       *connect.Client[v1.ListProductChangesRequest, v1.ListProductChangesResponse]
+	rollbackProduct          *connect.Client[v1.RollbackProductRequest, v1.RollbackProductResponse]
+	updateProductSpec        *connect.Client[v1.UpdateProductSpecRequest, v1.UpdateProductSpecResponse]
 	setUpPreviewWorkflow     *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
 	readRepo                 *connect.Client[v1.ReadRepoRequest, v1.ReadRepoResponse]
 	buildPreview             *connect.Client[v1.BuildPreviewRequest, v1.BuildPreviewResponse]
@@ -1944,6 +2048,36 @@ func (c *controlServiceClient) CheckProductPage(ctx context.Context, req *connec
 	return c.checkProductPage.CallUnary(ctx, req)
 }
 
+// GetProductSpec calls tank.agentctl.v1.ControlService.GetProductSpec.
+func (c *controlServiceClient) GetProductSpec(ctx context.Context, req *connect.Request[v1.GetProductSpecRequest]) (*connect.Response[v1.GetProductSpecResponse], error) {
+	return c.getProductSpec.CallUnary(ctx, req)
+}
+
+// ApproveProductBuild calls tank.agentctl.v1.ControlService.ApproveProductBuild.
+func (c *controlServiceClient) ApproveProductBuild(ctx context.Context, req *connect.Request[v1.ApproveProductBuildRequest]) (*connect.Response[v1.ApproveProductBuildResponse], error) {
+	return c.approveProductBuild.CallUnary(ctx, req)
+}
+
+// OperateProduct calls tank.agentctl.v1.ControlService.OperateProduct.
+func (c *controlServiceClient) OperateProduct(ctx context.Context, req *connect.Request[v1.OperateProductRequest]) (*connect.Response[v1.OperateProductResponse], error) {
+	return c.operateProduct.CallUnary(ctx, req)
+}
+
+// ListProductChanges calls tank.agentctl.v1.ControlService.ListProductChanges.
+func (c *controlServiceClient) ListProductChanges(ctx context.Context, req *connect.Request[v1.ListProductChangesRequest]) (*connect.Response[v1.ListProductChangesResponse], error) {
+	return c.listProductChanges.CallUnary(ctx, req)
+}
+
+// RollbackProduct calls tank.agentctl.v1.ControlService.RollbackProduct.
+func (c *controlServiceClient) RollbackProduct(ctx context.Context, req *connect.Request[v1.RollbackProductRequest]) (*connect.Response[v1.RollbackProductResponse], error) {
+	return c.rollbackProduct.CallUnary(ctx, req)
+}
+
+// UpdateProductSpec calls tank.agentctl.v1.ControlService.UpdateProductSpec.
+func (c *controlServiceClient) UpdateProductSpec(ctx context.Context, req *connect.Request[v1.UpdateProductSpecRequest]) (*connect.Response[v1.UpdateProductSpecResponse], error) {
+	return c.updateProductSpec.CallUnary(ctx, req)
+}
+
 // SetUpPreviewWorkflow calls tank.agentctl.v1.ControlService.SetUpPreviewWorkflow.
 func (c *controlServiceClient) SetUpPreviewWorkflow(ctx context.Context, req *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error) {
 	return c.setUpPreviewWorkflow.CallUnary(ctx, req)
@@ -2040,6 +2174,19 @@ type ControlServiceHandler interface {
 	GetProductState(context.Context, *connect.Request[v1.GetProductStateRequest]) (*connect.Response[v1.GetProductStateResponse], error)
 	// Opens a page of a slug's product through the headless reader, as a visitor would.
 	CheckProductPage(context.Context, *connect.Request[v1.CheckProductPageRequest]) (*connect.Response[v1.CheckProductPageResponse], error)
+	// A product's compiled spec, its cost, a build waiting to land, and the operations taken.
+	GetProductSpec(context.Context, *connect.Request[v1.GetProductSpecRequest]) (*connect.Response[v1.GetProductSpecResponse], error)
+	// Lands a build that waits on a cost approval. The sha must be the waiting build's.
+	ApproveProductBuild(context.Context, *connect.Request[v1.ApproveProductBuildRequest]) (*connect.Response[v1.ApproveProductBuildResponse], error)
+	// Restart, pause or resume a schedule, run a job: recorded in GitOps like everything else.
+	OperateProduct(context.Context, *connect.Request[v1.OperateProductRequest]) (*connect.Response[v1.OperateProductResponse], error)
+	// The product's history: every deploy, hold, approval and operation, newest first.
+	ListProductChanges(context.Context, *connect.Request[v1.ListProductChangesRequest]) (*connect.Response[v1.ListProductChangesResponse], error)
+	// Puts an earlier build back, with the tank.yaml it was built from.
+	RollbackProduct(context.Context, *connect.Request[v1.RollbackProductRequest]) (*connect.Response[v1.RollbackProductResponse], error)
+	// Changes one process's size, scale or schedule as a commit to the product's tank.yaml,
+	// authored as the person who asked; the build that follows deploys it.
+	UpdateProductSpec(context.Context, *connect.Request[v1.UpdateProductSpecRequest]) (*connect.Response[v1.UpdateProductSpecResponse], error)
 	// Adds the preview-reporting workflow to repositories the workspace's own
 	// installation reaches, each as a pull request: branch, file, pull request. Nothing
 	// is merged and nothing is written to a default branch — TANK proposes, the
@@ -2185,6 +2332,42 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("CheckProductPage")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceGetProductSpecHandler := connect.NewUnaryHandler(
+		ControlServiceGetProductSpecProcedure,
+		svc.GetProductSpec,
+		connect.WithSchema(controlServiceMethods.ByName("GetProductSpec")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceApproveProductBuildHandler := connect.NewUnaryHandler(
+		ControlServiceApproveProductBuildProcedure,
+		svc.ApproveProductBuild,
+		connect.WithSchema(controlServiceMethods.ByName("ApproveProductBuild")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceOperateProductHandler := connect.NewUnaryHandler(
+		ControlServiceOperateProductProcedure,
+		svc.OperateProduct,
+		connect.WithSchema(controlServiceMethods.ByName("OperateProduct")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceListProductChangesHandler := connect.NewUnaryHandler(
+		ControlServiceListProductChangesProcedure,
+		svc.ListProductChanges,
+		connect.WithSchema(controlServiceMethods.ByName("ListProductChanges")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceRollbackProductHandler := connect.NewUnaryHandler(
+		ControlServiceRollbackProductProcedure,
+		svc.RollbackProduct,
+		connect.WithSchema(controlServiceMethods.ByName("RollbackProduct")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceUpdateProductSpecHandler := connect.NewUnaryHandler(
+		ControlServiceUpdateProductSpecProcedure,
+		svc.UpdateProductSpec,
+		connect.WithSchema(controlServiceMethods.ByName("UpdateProductSpec")),
+		connect.WithHandlerOptions(opts...),
+	)
 	controlServiceSetUpPreviewWorkflowHandler := connect.NewUnaryHandler(
 		ControlServiceSetUpPreviewWorkflowProcedure,
 		svc.SetUpPreviewWorkflow,
@@ -2293,6 +2476,18 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceGetProductStateHandler.ServeHTTP(w, r)
 		case ControlServiceCheckProductPageProcedure:
 			controlServiceCheckProductPageHandler.ServeHTTP(w, r)
+		case ControlServiceGetProductSpecProcedure:
+			controlServiceGetProductSpecHandler.ServeHTTP(w, r)
+		case ControlServiceApproveProductBuildProcedure:
+			controlServiceApproveProductBuildHandler.ServeHTTP(w, r)
+		case ControlServiceOperateProductProcedure:
+			controlServiceOperateProductHandler.ServeHTTP(w, r)
+		case ControlServiceListProductChangesProcedure:
+			controlServiceListProductChangesHandler.ServeHTTP(w, r)
+		case ControlServiceRollbackProductProcedure:
+			controlServiceRollbackProductHandler.ServeHTTP(w, r)
+		case ControlServiceUpdateProductSpecProcedure:
+			controlServiceUpdateProductSpecHandler.ServeHTTP(w, r)
 		case ControlServiceSetUpPreviewWorkflowProcedure:
 			controlServiceSetUpPreviewWorkflowHandler.ServeHTTP(w, r)
 		case ControlServiceReadRepoProcedure:
@@ -2392,6 +2587,30 @@ func (UnimplementedControlServiceHandler) GetProductState(context.Context, *conn
 
 func (UnimplementedControlServiceHandler) CheckProductPage(context.Context, *connect.Request[v1.CheckProductPageRequest]) (*connect.Response[v1.CheckProductPageResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.CheckProductPage is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) GetProductSpec(context.Context, *connect.Request[v1.GetProductSpecRequest]) (*connect.Response[v1.GetProductSpecResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.GetProductSpec is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ApproveProductBuild(context.Context, *connect.Request[v1.ApproveProductBuildRequest]) (*connect.Response[v1.ApproveProductBuildResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ApproveProductBuild is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) OperateProduct(context.Context, *connect.Request[v1.OperateProductRequest]) (*connect.Response[v1.OperateProductResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.OperateProduct is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListProductChanges(context.Context, *connect.Request[v1.ListProductChangesRequest]) (*connect.Response[v1.ListProductChangesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListProductChanges is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) RollbackProduct(context.Context, *connect.Request[v1.RollbackProductRequest]) (*connect.Response[v1.RollbackProductResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.RollbackProduct is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) UpdateProductSpec(context.Context, *connect.Request[v1.UpdateProductSpecRequest]) (*connect.Response[v1.UpdateProductSpecResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.UpdateProductSpec is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) SetUpPreviewWorkflow(context.Context, *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error) {

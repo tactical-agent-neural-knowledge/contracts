@@ -1479,8 +1479,242 @@ class GetDeploymentRequest(_message.Message):
     slug: str
     def __init__(self, slug: _Optional[str] = ...) -> None: ...
 
+class ProductProcess(_message.Message):
+    __slots__ = ("name", "kind", "size", "cpu", "memory", "port", "public", "min", "max", "schedule", "timeout_seconds", "command", "volume")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    SIZE_FIELD_NUMBER: _ClassVar[int]
+    CPU_FIELD_NUMBER: _ClassVar[int]
+    MEMORY_FIELD_NUMBER: _ClassVar[int]
+    PORT_FIELD_NUMBER: _ClassVar[int]
+    PUBLIC_FIELD_NUMBER: _ClassVar[int]
+    MIN_FIELD_NUMBER: _ClassVar[int]
+    MAX_FIELD_NUMBER: _ClassVar[int]
+    SCHEDULE_FIELD_NUMBER: _ClassVar[int]
+    TIMEOUT_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    COMMAND_FIELD_NUMBER: _ClassVar[int]
+    VOLUME_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    kind: str
+    size: str
+    cpu: str
+    memory: str
+    port: int
+    public: bool
+    min: int
+    max: int
+    schedule: str
+    timeout_seconds: int
+    command: _containers.RepeatedScalarFieldContainer[str]
+    volume: str
+    def __init__(self, name: _Optional[str] = ..., kind: _Optional[str] = ..., size: _Optional[str] = ..., cpu: _Optional[str] = ..., memory: _Optional[str] = ..., port: _Optional[int] = ..., public: bool = ..., min: _Optional[int] = ..., max: _Optional[int] = ..., schedule: _Optional[str] = ..., timeout_seconds: _Optional[int] = ..., command: _Optional[_Iterable[str]] = ..., volume: _Optional[str] = ...) -> None: ...
+
+class ProductCost(_message.Message):
+    __slots__ = ("base_cents", "overage_cents", "lines")
+    BASE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    OVERAGE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    LINES_FIELD_NUMBER: _ClassVar[int]
+    base_cents: int
+    overage_cents: int
+    lines: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, base_cents: _Optional[int] = ..., overage_cents: _Optional[int] = ..., lines: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class PendingBuild(_message.Message):
+    __slots__ = ("sha", "reason", "problems", "estimate", "at", "processes")
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    PROBLEMS_FIELD_NUMBER: _ClassVar[int]
+    ESTIMATE_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    PROCESSES_FIELD_NUMBER: _ClassVar[int]
+    sha: str
+    reason: str
+    problems: _containers.RepeatedScalarFieldContainer[str]
+    estimate: ProductCost
+    at: str
+    processes: _containers.RepeatedCompositeFieldContainer[ProductProcess]
+    def __init__(self, sha: _Optional[str] = ..., reason: _Optional[str] = ..., problems: _Optional[_Iterable[str]] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ..., at: _Optional[str] = ..., processes: _Optional[_Iterable[_Union[ProductProcess, _Mapping]]] = ...) -> None: ...
+
+class ProcessState(_message.Message):
+    __slots__ = ("name", "kind", "desired", "ready", "suspended", "last_run_at", "last_run_result")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    DESIRED_FIELD_NUMBER: _ClassVar[int]
+    READY_FIELD_NUMBER: _ClassVar[int]
+    SUSPENDED_FIELD_NUMBER: _ClassVar[int]
+    LAST_RUN_AT_FIELD_NUMBER: _ClassVar[int]
+    LAST_RUN_RESULT_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    kind: str
+    desired: int
+    ready: int
+    suspended: bool
+    last_run_at: str
+    last_run_result: str
+    def __init__(self, name: _Optional[str] = ..., kind: _Optional[str] = ..., desired: _Optional[int] = ..., ready: _Optional[int] = ..., suspended: bool = ..., last_run_at: _Optional[str] = ..., last_run_result: _Optional[str] = ...) -> None: ...
+
+class JobRun(_message.Message):
+    __slots__ = ("job", "id")
+    JOB_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
+    job: str
+    id: str
+    def __init__(self, job: _Optional[str] = ..., id: _Optional[str] = ...) -> None: ...
+
+class ProductChange(_message.Message):
+    __slots__ = ("sha", "message", "at", "image_tag")
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    IMAGE_TAG_FIELD_NUMBER: _ClassVar[int]
+    sha: str
+    message: str
+    at: str
+    image_tag: str
+    def __init__(self, sha: _Optional[str] = ..., message: _Optional[str] = ..., at: _Optional[str] = ..., image_tag: _Optional[str] = ...) -> None: ...
+
+class ValidateSpecRequest(_message.Message):
+    __slots__ = ("tank_yaml",)
+    TANK_YAML_FIELD_NUMBER: _ClassVar[int]
+    tank_yaml: str
+    def __init__(self, tank_yaml: _Optional[str] = ...) -> None: ...
+
+class ValidateSpecResponse(_message.Message):
+    __slots__ = ("ok", "problems", "estimate", "processes")
+    OK_FIELD_NUMBER: _ClassVar[int]
+    PROBLEMS_FIELD_NUMBER: _ClassVar[int]
+    ESTIMATE_FIELD_NUMBER: _ClassVar[int]
+    PROCESSES_FIELD_NUMBER: _ClassVar[int]
+    ok: bool
+    problems: _containers.RepeatedScalarFieldContainer[str]
+    estimate: ProductCost
+    processes: _containers.RepeatedCompositeFieldContainer[ProductProcess]
+    def __init__(self, ok: bool = ..., problems: _Optional[_Iterable[str]] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ..., processes: _Optional[_Iterable[_Union[ProductProcess, _Mapping]]] = ...) -> None: ...
+
+class GetProductSpecRequest(_message.Message):
+    __slots__ = ("slug",)
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    def __init__(self, slug: _Optional[str] = ...) -> None: ...
+
+class GetProductSpecResponse(_message.Message):
+    __slots__ = ("processes", "estimate", "pending", "restarted_at", "paused", "runs", "env_keys", "secrets")
+    PROCESSES_FIELD_NUMBER: _ClassVar[int]
+    ESTIMATE_FIELD_NUMBER: _ClassVar[int]
+    PENDING_FIELD_NUMBER: _ClassVar[int]
+    RESTARTED_AT_FIELD_NUMBER: _ClassVar[int]
+    PAUSED_FIELD_NUMBER: _ClassVar[int]
+    RUNS_FIELD_NUMBER: _ClassVar[int]
+    ENV_KEYS_FIELD_NUMBER: _ClassVar[int]
+    SECRETS_FIELD_NUMBER: _ClassVar[int]
+    processes: _containers.RepeatedCompositeFieldContainer[ProductProcess]
+    estimate: ProductCost
+    pending: PendingBuild
+    restarted_at: str
+    paused: _containers.RepeatedScalarFieldContainer[str]
+    runs: _containers.RepeatedCompositeFieldContainer[JobRun]
+    env_keys: _containers.RepeatedScalarFieldContainer[str]
+    secrets: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, processes: _Optional[_Iterable[_Union[ProductProcess, _Mapping]]] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., restarted_at: _Optional[str] = ..., paused: _Optional[_Iterable[str]] = ..., runs: _Optional[_Iterable[_Union[JobRun, _Mapping]]] = ..., env_keys: _Optional[_Iterable[str]] = ..., secrets: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ApproveProductBuildRequest(_message.Message):
+    __slots__ = ("slug", "sha", "by")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    BY_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    sha: str
+    by: str
+    def __init__(self, slug: _Optional[str] = ..., sha: _Optional[str] = ..., by: _Optional[str] = ...) -> None: ...
+
+class ApproveProductBuildResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class OperateProductRequest(_message.Message):
+    __slots__ = ("slug", "action", "process", "by")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    ACTION_FIELD_NUMBER: _ClassVar[int]
+    PROCESS_FIELD_NUMBER: _ClassVar[int]
+    BY_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    action: str
+    process: str
+    by: str
+    def __init__(self, slug: _Optional[str] = ..., action: _Optional[str] = ..., process: _Optional[str] = ..., by: _Optional[str] = ...) -> None: ...
+
+class OperateProductResponse(_message.Message):
+    __slots__ = ("run_id",)
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    def __init__(self, run_id: _Optional[str] = ...) -> None: ...
+
+class ListProductChangesRequest(_message.Message):
+    __slots__ = ("slug", "limit")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    limit: int
+    def __init__(self, slug: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListProductChangesResponse(_message.Message):
+    __slots__ = ("changes",)
+    CHANGES_FIELD_NUMBER: _ClassVar[int]
+    changes: _containers.RepeatedCompositeFieldContainer[ProductChange]
+    def __init__(self, changes: _Optional[_Iterable[_Union[ProductChange, _Mapping]]] = ...) -> None: ...
+
+class RollbackProductRequest(_message.Message):
+    __slots__ = ("slug", "sha", "by")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    BY_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    sha: str
+    by: str
+    def __init__(self, slug: _Optional[str] = ..., sha: _Optional[str] = ..., by: _Optional[str] = ...) -> None: ...
+
+class RollbackProductResponse(_message.Message):
+    __slots__ = ("applied", "reason", "problems", "estimate")
+    APPLIED_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    PROBLEMS_FIELD_NUMBER: _ClassVar[int]
+    ESTIMATE_FIELD_NUMBER: _ClassVar[int]
+    applied: bool
+    reason: str
+    problems: _containers.RepeatedScalarFieldContainer[str]
+    estimate: ProductCost
+    def __init__(self, applied: bool = ..., reason: _Optional[str] = ..., problems: _Optional[_Iterable[str]] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ...) -> None: ...
+
+class UpdateProductSpecRequest(_message.Message):
+    __slots__ = ("slug", "process", "size", "min", "max", "schedule", "author_name", "author_email")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    PROCESS_FIELD_NUMBER: _ClassVar[int]
+    SIZE_FIELD_NUMBER: _ClassVar[int]
+    MIN_FIELD_NUMBER: _ClassVar[int]
+    MAX_FIELD_NUMBER: _ClassVar[int]
+    SCHEDULE_FIELD_NUMBER: _ClassVar[int]
+    AUTHOR_NAME_FIELD_NUMBER: _ClassVar[int]
+    AUTHOR_EMAIL_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    process: str
+    size: str
+    min: int
+    max: int
+    schedule: str
+    author_name: str
+    author_email: str
+    def __init__(self, slug: _Optional[str] = ..., process: _Optional[str] = ..., size: _Optional[str] = ..., min: _Optional[int] = ..., max: _Optional[int] = ..., schedule: _Optional[str] = ..., author_name: _Optional[str] = ..., author_email: _Optional[str] = ...) -> None: ...
+
+class UpdateProductSpecResponse(_message.Message):
+    __slots__ = ("commit_sha", "estimate")
+    COMMIT_SHA_FIELD_NUMBER: _ClassVar[int]
+    ESTIMATE_FIELD_NUMBER: _ClassVar[int]
+    commit_sha: str
+    estimate: ProductCost
+    def __init__(self, commit_sha: _Optional[str] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ...) -> None: ...
+
 class ProductState(_message.Message):
-    __slots__ = ("phase", "image_tag", "replicas", "ready", "restarts", "last_exit_reason", "last_exit_code", "started_at", "disk_bytes", "cpu_limit", "memory_limit", "events")
+    __slots__ = ("phase", "image_tag", "replicas", "ready", "restarts", "last_exit_reason", "last_exit_code", "started_at", "disk_bytes", "cpu_limit", "memory_limit", "events", "processes")
     PHASE_FIELD_NUMBER: _ClassVar[int]
     IMAGE_TAG_FIELD_NUMBER: _ClassVar[int]
     REPLICAS_FIELD_NUMBER: _ClassVar[int]
@@ -1493,6 +1727,7 @@ class ProductState(_message.Message):
     CPU_LIMIT_FIELD_NUMBER: _ClassVar[int]
     MEMORY_LIMIT_FIELD_NUMBER: _ClassVar[int]
     EVENTS_FIELD_NUMBER: _ClassVar[int]
+    PROCESSES_FIELD_NUMBER: _ClassVar[int]
     phase: str
     image_tag: str
     replicas: int
@@ -1505,7 +1740,8 @@ class ProductState(_message.Message):
     cpu_limit: str
     memory_limit: str
     events: _containers.RepeatedCompositeFieldContainer[ProductEvent]
-    def __init__(self, phase: _Optional[str] = ..., image_tag: _Optional[str] = ..., replicas: _Optional[int] = ..., ready: _Optional[int] = ..., restarts: _Optional[int] = ..., last_exit_reason: _Optional[str] = ..., last_exit_code: _Optional[int] = ..., started_at: _Optional[str] = ..., disk_bytes: _Optional[int] = ..., cpu_limit: _Optional[str] = ..., memory_limit: _Optional[str] = ..., events: _Optional[_Iterable[_Union[ProductEvent, _Mapping]]] = ...) -> None: ...
+    processes: _containers.RepeatedCompositeFieldContainer[ProcessState]
+    def __init__(self, phase: _Optional[str] = ..., image_tag: _Optional[str] = ..., replicas: _Optional[int] = ..., ready: _Optional[int] = ..., restarts: _Optional[int] = ..., last_exit_reason: _Optional[str] = ..., last_exit_code: _Optional[int] = ..., started_at: _Optional[str] = ..., disk_bytes: _Optional[int] = ..., cpu_limit: _Optional[str] = ..., memory_limit: _Optional[str] = ..., events: _Optional[_Iterable[_Union[ProductEvent, _Mapping]]] = ..., processes: _Optional[_Iterable[_Union[ProcessState, _Mapping]]] = ...) -> None: ...
 
 class ProductEvent(_message.Message):
     __slots__ = ("at", "type", "reason", "message")

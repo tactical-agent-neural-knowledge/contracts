@@ -39,6 +39,22 @@ const (
 	// HostingServiceCheckProductProcedure is the fully-qualified name of the HostingService's
 	// CheckProduct RPC.
 	HostingServiceCheckProductProcedure = "/tank.hosting.v1.HostingService/CheckProduct"
+	// HostingServiceGetResourcesProcedure is the fully-qualified name of the HostingService's
+	// GetResources RPC.
+	HostingServiceGetResourcesProcedure = "/tank.hosting.v1.HostingService/GetResources"
+	// HostingServiceApproveBuildProcedure is the fully-qualified name of the HostingService's
+	// ApproveBuild RPC.
+	HostingServiceApproveBuildProcedure = "/tank.hosting.v1.HostingService/ApproveBuild"
+	// HostingServiceOperateProcedure is the fully-qualified name of the HostingService's Operate RPC.
+	HostingServiceOperateProcedure = "/tank.hosting.v1.HostingService/Operate"
+	// HostingServiceListChangesProcedure is the fully-qualified name of the HostingService's
+	// ListChanges RPC.
+	HostingServiceListChangesProcedure = "/tank.hosting.v1.HostingService/ListChanges"
+	// HostingServiceRollbackProcedure is the fully-qualified name of the HostingService's Rollback RPC.
+	HostingServiceRollbackProcedure = "/tank.hosting.v1.HostingService/Rollback"
+	// HostingServiceUpdateResourceProcedure is the fully-qualified name of the HostingService's
+	// UpdateResource RPC.
+	HostingServiceUpdateResourceProcedure = "/tank.hosting.v1.HostingService/UpdateResource"
 )
 
 // HostingServiceClient is a client for the tank.hosting.v1.HostingService service.
@@ -47,6 +63,19 @@ type HostingServiceClient interface {
 	GetProduct(context.Context, *connect.Request[v1.GetProductRequest]) (*connect.Response[v1.GetProductResponse], error)
 	// Opens a page of the product as a visitor would and returns what it showed.
 	CheckProduct(context.Context, *connect.Request[v1.CheckProductRequest]) (*connect.Response[v1.CheckProductResponse], error)
+	// What the product is made of (from its tank.yaml), what it costs, and a build waiting
+	// to land. Members read it.
+	GetResources(context.Context, *connect.Request[v1.GetResourcesRequest]) (*connect.Response[v1.GetResourcesResponse], error)
+	// Owners and billing admins approve a build that costs more than the product was approved for.
+	ApproveBuild(context.Context, *connect.Request[v1.ApproveBuildRequest]) (*connect.Response[v1.ApproveBuildResponse], error)
+	// Admins: restart, pause or resume a schedule, run a job.
+	Operate(context.Context, *connect.Request[v1.OperateRequest]) (*connect.Response[v1.OperateResponse], error)
+	// Every deploy, hold, approval and operation, newest first. Members read it.
+	ListChanges(context.Context, *connect.Request[v1.ListChangesRequest]) (*connect.Response[v1.ListChangesResponse], error)
+	// Admins put an earlier build back; one that costs more waits for an owner like any build.
+	Rollback(context.Context, *connect.Request[v1.RollbackRequest]) (*connect.Response[v1.RollbackResponse], error)
+	// Admins change a process's size, scale or schedule: a commit to tank.yaml in their name.
+	UpdateResource(context.Context, *connect.Request[v1.UpdateResourceRequest]) (*connect.Response[v1.UpdateResourceResponse], error)
 }
 
 // NewHostingServiceClient constructs a client for the tank.hosting.v1.HostingService service. By
@@ -72,13 +101,55 @@ func NewHostingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(hostingServiceMethods.ByName("CheckProduct")),
 			connect.WithClientOptions(opts...),
 		),
+		getResources: connect.NewClient[v1.GetResourcesRequest, v1.GetResourcesResponse](
+			httpClient,
+			baseURL+HostingServiceGetResourcesProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("GetResources")),
+			connect.WithClientOptions(opts...),
+		),
+		approveBuild: connect.NewClient[v1.ApproveBuildRequest, v1.ApproveBuildResponse](
+			httpClient,
+			baseURL+HostingServiceApproveBuildProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("ApproveBuild")),
+			connect.WithClientOptions(opts...),
+		),
+		operate: connect.NewClient[v1.OperateRequest, v1.OperateResponse](
+			httpClient,
+			baseURL+HostingServiceOperateProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("Operate")),
+			connect.WithClientOptions(opts...),
+		),
+		listChanges: connect.NewClient[v1.ListChangesRequest, v1.ListChangesResponse](
+			httpClient,
+			baseURL+HostingServiceListChangesProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("ListChanges")),
+			connect.WithClientOptions(opts...),
+		),
+		rollback: connect.NewClient[v1.RollbackRequest, v1.RollbackResponse](
+			httpClient,
+			baseURL+HostingServiceRollbackProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("Rollback")),
+			connect.WithClientOptions(opts...),
+		),
+		updateResource: connect.NewClient[v1.UpdateResourceRequest, v1.UpdateResourceResponse](
+			httpClient,
+			baseURL+HostingServiceUpdateResourceProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("UpdateResource")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // hostingServiceClient implements HostingServiceClient.
 type hostingServiceClient struct {
-	getProduct   *connect.Client[v1.GetProductRequest, v1.GetProductResponse]
-	checkProduct *connect.Client[v1.CheckProductRequest, v1.CheckProductResponse]
+	getProduct     *connect.Client[v1.GetProductRequest, v1.GetProductResponse]
+	checkProduct   *connect.Client[v1.CheckProductRequest, v1.CheckProductResponse]
+	getResources   *connect.Client[v1.GetResourcesRequest, v1.GetResourcesResponse]
+	approveBuild   *connect.Client[v1.ApproveBuildRequest, v1.ApproveBuildResponse]
+	operate        *connect.Client[v1.OperateRequest, v1.OperateResponse]
+	listChanges    *connect.Client[v1.ListChangesRequest, v1.ListChangesResponse]
+	rollback       *connect.Client[v1.RollbackRequest, v1.RollbackResponse]
+	updateResource *connect.Client[v1.UpdateResourceRequest, v1.UpdateResourceResponse]
 }
 
 // GetProduct calls tank.hosting.v1.HostingService.GetProduct.
@@ -91,12 +162,55 @@ func (c *hostingServiceClient) CheckProduct(ctx context.Context, req *connect.Re
 	return c.checkProduct.CallUnary(ctx, req)
 }
 
+// GetResources calls tank.hosting.v1.HostingService.GetResources.
+func (c *hostingServiceClient) GetResources(ctx context.Context, req *connect.Request[v1.GetResourcesRequest]) (*connect.Response[v1.GetResourcesResponse], error) {
+	return c.getResources.CallUnary(ctx, req)
+}
+
+// ApproveBuild calls tank.hosting.v1.HostingService.ApproveBuild.
+func (c *hostingServiceClient) ApproveBuild(ctx context.Context, req *connect.Request[v1.ApproveBuildRequest]) (*connect.Response[v1.ApproveBuildResponse], error) {
+	return c.approveBuild.CallUnary(ctx, req)
+}
+
+// Operate calls tank.hosting.v1.HostingService.Operate.
+func (c *hostingServiceClient) Operate(ctx context.Context, req *connect.Request[v1.OperateRequest]) (*connect.Response[v1.OperateResponse], error) {
+	return c.operate.CallUnary(ctx, req)
+}
+
+// ListChanges calls tank.hosting.v1.HostingService.ListChanges.
+func (c *hostingServiceClient) ListChanges(ctx context.Context, req *connect.Request[v1.ListChangesRequest]) (*connect.Response[v1.ListChangesResponse], error) {
+	return c.listChanges.CallUnary(ctx, req)
+}
+
+// Rollback calls tank.hosting.v1.HostingService.Rollback.
+func (c *hostingServiceClient) Rollback(ctx context.Context, req *connect.Request[v1.RollbackRequest]) (*connect.Response[v1.RollbackResponse], error) {
+	return c.rollback.CallUnary(ctx, req)
+}
+
+// UpdateResource calls tank.hosting.v1.HostingService.UpdateResource.
+func (c *hostingServiceClient) UpdateResource(ctx context.Context, req *connect.Request[v1.UpdateResourceRequest]) (*connect.Response[v1.UpdateResourceResponse], error) {
+	return c.updateResource.CallUnary(ctx, req)
+}
+
 // HostingServiceHandler is an implementation of the tank.hosting.v1.HostingService service.
 type HostingServiceHandler interface {
 	// The product's running state, recent cluster events and log tail.
 	GetProduct(context.Context, *connect.Request[v1.GetProductRequest]) (*connect.Response[v1.GetProductResponse], error)
 	// Opens a page of the product as a visitor would and returns what it showed.
 	CheckProduct(context.Context, *connect.Request[v1.CheckProductRequest]) (*connect.Response[v1.CheckProductResponse], error)
+	// What the product is made of (from its tank.yaml), what it costs, and a build waiting
+	// to land. Members read it.
+	GetResources(context.Context, *connect.Request[v1.GetResourcesRequest]) (*connect.Response[v1.GetResourcesResponse], error)
+	// Owners and billing admins approve a build that costs more than the product was approved for.
+	ApproveBuild(context.Context, *connect.Request[v1.ApproveBuildRequest]) (*connect.Response[v1.ApproveBuildResponse], error)
+	// Admins: restart, pause or resume a schedule, run a job.
+	Operate(context.Context, *connect.Request[v1.OperateRequest]) (*connect.Response[v1.OperateResponse], error)
+	// Every deploy, hold, approval and operation, newest first. Members read it.
+	ListChanges(context.Context, *connect.Request[v1.ListChangesRequest]) (*connect.Response[v1.ListChangesResponse], error)
+	// Admins put an earlier build back; one that costs more waits for an owner like any build.
+	Rollback(context.Context, *connect.Request[v1.RollbackRequest]) (*connect.Response[v1.RollbackResponse], error)
+	// Admins change a process's size, scale or schedule: a commit to tank.yaml in their name.
+	UpdateResource(context.Context, *connect.Request[v1.UpdateResourceRequest]) (*connect.Response[v1.UpdateResourceResponse], error)
 }
 
 // NewHostingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -118,12 +232,60 @@ func NewHostingServiceHandler(svc HostingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(hostingServiceMethods.ByName("CheckProduct")),
 		connect.WithHandlerOptions(opts...),
 	)
+	hostingServiceGetResourcesHandler := connect.NewUnaryHandler(
+		HostingServiceGetResourcesProcedure,
+		svc.GetResources,
+		connect.WithSchema(hostingServiceMethods.ByName("GetResources")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostingServiceApproveBuildHandler := connect.NewUnaryHandler(
+		HostingServiceApproveBuildProcedure,
+		svc.ApproveBuild,
+		connect.WithSchema(hostingServiceMethods.ByName("ApproveBuild")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostingServiceOperateHandler := connect.NewUnaryHandler(
+		HostingServiceOperateProcedure,
+		svc.Operate,
+		connect.WithSchema(hostingServiceMethods.ByName("Operate")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostingServiceListChangesHandler := connect.NewUnaryHandler(
+		HostingServiceListChangesProcedure,
+		svc.ListChanges,
+		connect.WithSchema(hostingServiceMethods.ByName("ListChanges")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostingServiceRollbackHandler := connect.NewUnaryHandler(
+		HostingServiceRollbackProcedure,
+		svc.Rollback,
+		connect.WithSchema(hostingServiceMethods.ByName("Rollback")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostingServiceUpdateResourceHandler := connect.NewUnaryHandler(
+		HostingServiceUpdateResourceProcedure,
+		svc.UpdateResource,
+		connect.WithSchema(hostingServiceMethods.ByName("UpdateResource")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.hosting.v1.HostingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case HostingServiceGetProductProcedure:
 			hostingServiceGetProductHandler.ServeHTTP(w, r)
 		case HostingServiceCheckProductProcedure:
 			hostingServiceCheckProductHandler.ServeHTTP(w, r)
+		case HostingServiceGetResourcesProcedure:
+			hostingServiceGetResourcesHandler.ServeHTTP(w, r)
+		case HostingServiceApproveBuildProcedure:
+			hostingServiceApproveBuildHandler.ServeHTTP(w, r)
+		case HostingServiceOperateProcedure:
+			hostingServiceOperateHandler.ServeHTTP(w, r)
+		case HostingServiceListChangesProcedure:
+			hostingServiceListChangesHandler.ServeHTTP(w, r)
+		case HostingServiceRollbackProcedure:
+			hostingServiceRollbackHandler.ServeHTTP(w, r)
+		case HostingServiceUpdateResourceProcedure:
+			hostingServiceUpdateResourceHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -139,4 +301,28 @@ func (UnimplementedHostingServiceHandler) GetProduct(context.Context, *connect.R
 
 func (UnimplementedHostingServiceHandler) CheckProduct(context.Context, *connect.Request[v1.CheckProductRequest]) (*connect.Response[v1.CheckProductResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.CheckProduct is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) GetResources(context.Context, *connect.Request[v1.GetResourcesRequest]) (*connect.Response[v1.GetResourcesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.GetResources is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) ApproveBuild(context.Context, *connect.Request[v1.ApproveBuildRequest]) (*connect.Response[v1.ApproveBuildResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.ApproveBuild is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) Operate(context.Context, *connect.Request[v1.OperateRequest]) (*connect.Response[v1.OperateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.Operate is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) ListChanges(context.Context, *connect.Request[v1.ListChangesRequest]) (*connect.Response[v1.ListChangesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.ListChanges is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) Rollback(context.Context, *connect.Request[v1.RollbackRequest]) (*connect.Response[v1.RollbackResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.Rollback is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) UpdateResource(context.Context, *connect.Request[v1.UpdateResourceRequest]) (*connect.Response[v1.UpdateResourceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.UpdateResource is not implemented"))
 }

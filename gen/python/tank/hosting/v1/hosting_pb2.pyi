@@ -105,3 +105,179 @@ class LiveCheck(_message.Message):
     checked_at: _timestamp_pb2.Timestamp
     note: str
     def __init__(self, url: _Optional[str] = ..., status: _Optional[int] = ..., build_sha: _Optional[str] = ..., title: _Optional[str] = ..., text_length: _Optional[int] = ..., errors: _Optional[_Iterable[str]] = ..., screenshot_png: _Optional[bytes] = ..., checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., note: _Optional[str] = ...) -> None: ...
+
+class Resource(_message.Message):
+    __slots__ = ("name", "kind", "size", "cpu", "memory", "public", "min", "max", "schedule", "timeout_seconds", "volume", "ready", "desired", "paused", "last_run_at", "last_run_result")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    SIZE_FIELD_NUMBER: _ClassVar[int]
+    CPU_FIELD_NUMBER: _ClassVar[int]
+    MEMORY_FIELD_NUMBER: _ClassVar[int]
+    PUBLIC_FIELD_NUMBER: _ClassVar[int]
+    MIN_FIELD_NUMBER: _ClassVar[int]
+    MAX_FIELD_NUMBER: _ClassVar[int]
+    SCHEDULE_FIELD_NUMBER: _ClassVar[int]
+    TIMEOUT_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    VOLUME_FIELD_NUMBER: _ClassVar[int]
+    READY_FIELD_NUMBER: _ClassVar[int]
+    DESIRED_FIELD_NUMBER: _ClassVar[int]
+    PAUSED_FIELD_NUMBER: _ClassVar[int]
+    LAST_RUN_AT_FIELD_NUMBER: _ClassVar[int]
+    LAST_RUN_RESULT_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    kind: str
+    size: str
+    cpu: str
+    memory: str
+    public: bool
+    min: int
+    max: int
+    schedule: str
+    timeout_seconds: int
+    volume: str
+    ready: int
+    desired: int
+    paused: bool
+    last_run_at: _timestamp_pb2.Timestamp
+    last_run_result: str
+    def __init__(self, name: _Optional[str] = ..., kind: _Optional[str] = ..., size: _Optional[str] = ..., cpu: _Optional[str] = ..., memory: _Optional[str] = ..., public: bool = ..., min: _Optional[int] = ..., max: _Optional[int] = ..., schedule: _Optional[str] = ..., timeout_seconds: _Optional[int] = ..., volume: _Optional[str] = ..., ready: _Optional[int] = ..., desired: _Optional[int] = ..., paused: bool = ..., last_run_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_run_result: _Optional[str] = ...) -> None: ...
+
+class Cost(_message.Message):
+    __slots__ = ("base_cents", "overage_cents", "total_cents", "lines")
+    BASE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    OVERAGE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    TOTAL_CENTS_FIELD_NUMBER: _ClassVar[int]
+    LINES_FIELD_NUMBER: _ClassVar[int]
+    base_cents: int
+    overage_cents: int
+    total_cents: int
+    lines: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, base_cents: _Optional[int] = ..., overage_cents: _Optional[int] = ..., total_cents: _Optional[int] = ..., lines: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class PendingBuild(_message.Message):
+    __slots__ = ("sha", "reason", "problems", "estimate", "at", "can_approve")
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    PROBLEMS_FIELD_NUMBER: _ClassVar[int]
+    ESTIMATE_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    CAN_APPROVE_FIELD_NUMBER: _ClassVar[int]
+    sha: str
+    reason: str
+    problems: _containers.RepeatedScalarFieldContainer[str]
+    estimate: Cost
+    at: _timestamp_pb2.Timestamp
+    can_approve: bool
+    def __init__(self, sha: _Optional[str] = ..., reason: _Optional[str] = ..., problems: _Optional[_Iterable[str]] = ..., estimate: _Optional[_Union[Cost, _Mapping]] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., can_approve: bool = ...) -> None: ...
+
+class GetResourcesRequest(_message.Message):
+    __slots__ = ("channel_id",)
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
+
+class GetResourcesResponse(_message.Message):
+    __slots__ = ("resources", "estimate", "pending", "secrets", "can_manage")
+    RESOURCES_FIELD_NUMBER: _ClassVar[int]
+    ESTIMATE_FIELD_NUMBER: _ClassVar[int]
+    PENDING_FIELD_NUMBER: _ClassVar[int]
+    SECRETS_FIELD_NUMBER: _ClassVar[int]
+    CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
+    resources: _containers.RepeatedCompositeFieldContainer[Resource]
+    estimate: Cost
+    pending: PendingBuild
+    secrets: _containers.RepeatedScalarFieldContainer[str]
+    can_manage: bool
+    def __init__(self, resources: _Optional[_Iterable[_Union[Resource, _Mapping]]] = ..., estimate: _Optional[_Union[Cost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., secrets: _Optional[_Iterable[str]] = ..., can_manage: bool = ...) -> None: ...
+
+class ApproveBuildRequest(_message.Message):
+    __slots__ = ("channel_id", "sha")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    sha: str
+    def __init__(self, channel_id: _Optional[str] = ..., sha: _Optional[str] = ...) -> None: ...
+
+class ApproveBuildResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class OperateRequest(_message.Message):
+    __slots__ = ("channel_id", "action", "process")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    ACTION_FIELD_NUMBER: _ClassVar[int]
+    PROCESS_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    action: str
+    process: str
+    def __init__(self, channel_id: _Optional[str] = ..., action: _Optional[str] = ..., process: _Optional[str] = ...) -> None: ...
+
+class OperateResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class Change(_message.Message):
+    __slots__ = ("sha", "message", "at")
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    sha: str
+    message: str
+    at: _timestamp_pb2.Timestamp
+    def __init__(self, sha: _Optional[str] = ..., message: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ListChangesRequest(_message.Message):
+    __slots__ = ("channel_id", "limit")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    limit: int
+    def __init__(self, channel_id: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListChangesResponse(_message.Message):
+    __slots__ = ("changes",)
+    CHANGES_FIELD_NUMBER: _ClassVar[int]
+    changes: _containers.RepeatedCompositeFieldContainer[Change]
+    def __init__(self, changes: _Optional[_Iterable[_Union[Change, _Mapping]]] = ...) -> None: ...
+
+class RollbackRequest(_message.Message):
+    __slots__ = ("channel_id", "sha")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    sha: str
+    def __init__(self, channel_id: _Optional[str] = ..., sha: _Optional[str] = ...) -> None: ...
+
+class RollbackResponse(_message.Message):
+    __slots__ = ("applied", "reason", "problems", "estimate")
+    APPLIED_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    PROBLEMS_FIELD_NUMBER: _ClassVar[int]
+    ESTIMATE_FIELD_NUMBER: _ClassVar[int]
+    applied: bool
+    reason: str
+    problems: _containers.RepeatedScalarFieldContainer[str]
+    estimate: Cost
+    def __init__(self, applied: bool = ..., reason: _Optional[str] = ..., problems: _Optional[_Iterable[str]] = ..., estimate: _Optional[_Union[Cost, _Mapping]] = ...) -> None: ...
+
+class UpdateResourceRequest(_message.Message):
+    __slots__ = ("channel_id", "name", "size", "min", "max", "schedule")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    SIZE_FIELD_NUMBER: _ClassVar[int]
+    MIN_FIELD_NUMBER: _ClassVar[int]
+    MAX_FIELD_NUMBER: _ClassVar[int]
+    SCHEDULE_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    name: str
+    size: str
+    min: int
+    max: int
+    schedule: str
+    def __init__(self, channel_id: _Optional[str] = ..., name: _Optional[str] = ..., size: _Optional[str] = ..., min: _Optional[int] = ..., max: _Optional[int] = ..., schedule: _Optional[str] = ...) -> None: ...
+
+class UpdateResourceResponse(_message.Message):
+    __slots__ = ("estimate",)
+    ESTIMATE_FIELD_NUMBER: _ClassVar[int]
+    estimate: Cost
+    def __init__(self, estimate: _Optional[_Union[Cost, _Mapping]] = ...) -> None: ...

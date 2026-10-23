@@ -15,6 +15,19 @@ service HostingService {
   rpc GetProduct(GetProductRequest) returns (GetProductResponse);
   // Opens a page of the product as a visitor would and returns what it showed.
   rpc CheckProduct(CheckProductRequest) returns (CheckProductResponse);
+  // What the product is made of (from its tank.yaml), what it costs, and a build waiting
+  // to land. Members read it.
+  rpc GetResources(GetResourcesRequest) returns (GetResourcesResponse);
+  // Owners and billing admins approve a build that costs more than the product was approved for.
+  rpc ApproveBuild(ApproveBuildRequest) returns (ApproveBuildResponse);
+  // Admins: restart, pause or resume a schedule, run a job.
+  rpc Operate(OperateRequest) returns (OperateResponse);
+  // Every deploy, hold, approval and operation, newest first. Members read it.
+  rpc ListChanges(ListChangesRequest) returns (ListChangesResponse);
+  // Admins put an earlier build back; one that costs more waits for an owner like any build.
+  rpc Rollback(RollbackRequest) returns (RollbackResponse);
+  // Admins change a process's size, scale or schedule: a commit to tank.yaml in their name.
+  rpc UpdateResource(UpdateResourceRequest) returns (UpdateResourceResponse);
 }
 
 message GetProductRequest {
@@ -69,3 +82,94 @@ message LiveCheck {
   google.protobuf.Timestamp checked_at = 8;
   string note = 9;                // why nothing could be checked
 }
+
+// One process of the product, with what the cluster says about it.
+message Resource {
+  string name = 1;
+  string kind = 2;              // service | worker | cron | job
+  string size = 3;              // s | m | l | xl | 2xl
+  string cpu = 4;
+  string memory = 5;
+  bool public = 6;
+  int32 min = 7;
+  int32 max = 8;
+  string schedule = 9;
+  int32 timeout_seconds = 10;
+  string volume = 11;
+  // From the cluster:
+  int32 ready = 12;
+  int32 desired = 13;
+  bool paused = 14;
+  google.protobuf.Timestamp last_run_at = 15;
+  string last_run_result = 16;  // succeeded | failed | running
+}
+
+message Cost {
+  int64 base_cents = 1;
+  int64 overage_cents = 2;
+  int64 total_cents = 3;
+  repeated string lines = 4;
+}
+
+message PendingBuild {
+  string sha = 1;
+  string reason = 2;            // spec | cost
+  repeated string problems = 3;
+  Cost estimate = 4;
+  google.protobuf.Timestamp at = 5;
+  bool can_approve = 6;         // the caller is an owner or billing admin
+}
+
+message GetResourcesRequest { string channel_id = 1; }
+message GetResourcesResponse {
+  repeated Resource resources = 1;
+  Cost estimate = 2;            // what the running build costs a month
+  PendingBuild pending = 3;
+  repeated string secrets = 4;  // names only, never values
+  bool can_manage = 5;          // admins: operate, change, roll back
+}
+
+message ApproveBuildRequest {
+  string channel_id = 1;
+  string sha = 2;
+}
+message ApproveBuildResponse {}
+
+message OperateRequest {
+  string channel_id = 1;
+  string action = 2;            // restart | pause | resume | run
+  string process = 3;
+}
+message OperateResponse {}
+
+message Change {
+  string sha = 1;
+  string message = 2;
+  google.protobuf.Timestamp at = 3;
+}
+message ListChangesRequest {
+  string channel_id = 1;
+  int32 limit = 2;
+}
+message ListChangesResponse { repeated Change changes = 1; }
+
+message RollbackRequest {
+  string channel_id = 1;
+  string sha = 2;               // the product repository commit whose build to put back
+}
+message RollbackResponse {
+  bool applied = 1;
+  string reason = 2;
+  repeated string problems = 3;
+  Cost estimate = 4;
+}
+
+message UpdateResourceRequest {
+  string channel_id = 1;
+  string name = 2;
+  string size = 3;
+  int32 min = 4;
+  int32 max = 5;
+  string schedule = 6;
+}
+message UpdateResourceResponse { Cost estimate = 1; }

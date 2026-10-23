@@ -767,6 +767,8 @@ service RunnerService {
   // is up, how often it has restarted and why, recent cluster events and its log. So an
   // agent can see the product it built fail instead of hearing about it from a person.
   rpc ReadProduct(ReadProductRequest) returns (ReadProductResponse);
+  // Checks a tank.yaml the way a deploy will and prices it, before anything is built.
+  rpc ValidateSpec(ValidateSpecRequest) returns (ValidateSpecResponse);
   rpc ReadThread(ReadThreadRequest) returns (ReadThreadResponse);
   rpc BoardResearch(BoardResearchRequest) returns (BoardResearchResponse);
   rpc CommitFiles(CommitFilesRequest) returns (CommitFilesResponse);
@@ -966,6 +968,19 @@ service ControlService {
   rpc GetProductState(GetProductStateRequest) returns (GetProductStateResponse);
   // Opens a page of a slug's product through the headless reader, as a visitor would.
   rpc CheckProductPage(CheckProductPageRequest) returns (CheckProductPageResponse);
+  // A product's compiled spec, its cost, a build waiting to land, and the operations taken.
+  rpc GetProductSpec(GetProductSpecRequest) returns (GetProductSpecResponse);
+  // Lands a build that waits on a cost approval. The sha must be the waiting build's.
+  rpc ApproveProductBuild(ApproveProductBuildRequest) returns (ApproveProductBuildResponse);
+  // Restart, pause or resume a schedule, run a job: recorded in GitOps like everything else.
+  rpc OperateProduct(OperateProductRequest) returns (OperateProductResponse);
+  // The product's history: every deploy, hold, approval and operation, newest first.
+  rpc ListProductChanges(ListProductChangesRequest) returns (ListProductChangesResponse);
+  // Puts an earlier build back, with the tank.yaml it was built from.
+  rpc RollbackProduct(RollbackProductRequest) returns (RollbackProductResponse);
+  // Changes one process's size, scale or schedule as a commit to the product's tank.yaml,
+  // authored as the person who asked; the build that follows deploys it.
+  rpc UpdateProductSpec(UpdateProductSpecRequest) returns (UpdateProductSpecResponse);
   // Adds the preview-reporting workflow to repositories the workspace's own
   // installation reaches, each as a pull request: branch, file, pull request. Nothing
   // is merged and nothing is written to a default branch — TANK proposes, the
@@ -1039,6 +1054,117 @@ message RegisterDeploymentResponse {
 }
 message GetDeploymentRequest { string slug = 1; }
 
+// One process of a product: a service, a worker, a schedule or a job.
+message ProductProcess {
+  string name = 1;
+  string kind = 2;              // service | worker | cron | job
+  string size = 3;              // s | m | l | xl | 2xl
+  string cpu = 4;
+  string memory = 5;
+  int32 port = 6;
+  bool public = 7;              // served at <slug>.tank.chat (web)
+  int32 min = 8;
+  int32 max = 9;
+  string schedule = 10;
+  int32 timeout_seconds = 11;
+  repeated string command = 12;
+  string volume = 13;           // web's data volume, "20Gi"
+}
+message ProductCost {
+  int64 base_cents = 1;
+  int64 overage_cents = 2;
+  repeated string lines = 3;
+}
+message PendingBuild {
+  string sha = 1;
+  string reason = 2;            // spec | cost
+  repeated string problems = 3;
+  ProductCost estimate = 4;
+  string at = 5;                // RFC 3339
+  repeated ProductProcess processes = 6;
+}
+message ProcessState {
+  string name = 1;
+  string kind = 2;
+  int32 desired = 3;
+  int32 ready = 4;
+  bool suspended = 5;           // a paused schedule
+  string last_run_at = 6;       // RFC 3339, schedules and jobs
+  string last_run_result = 7;   // succeeded | failed | running
+}
+message JobRun {
+  string job = 1;
+  string id = 2;
+}
+message ProductChange {
+  string sha = 1;               // the GitOps commit
+  string message = 2;
+  string at = 3;                // RFC 3339
+  string image_tag = 4;         // the build the product ran after it, when it changed
+}
+
+message ValidateSpecRequest { string tank_yaml = 1; }
+message ValidateSpecResponse {
+  bool ok = 1;
+  repeated string problems = 2;
+  ProductCost estimate = 3;
+  repeated ProductProcess processes = 4;
+}
+message GetProductSpecRequest { string slug = 1; }
+message GetProductSpecResponse {
+  repeated ProductProcess processes = 1;   // empty: the single web process of a product with no tank.yaml
+  ProductCost estimate = 2;
+  PendingBuild pending = 3;
+  string restarted_at = 4;
+  repeated string paused = 5;
+  repeated JobRun runs = 6;
+  repeated string env_keys = 7;
+  repeated string secrets = 8;
+}
+message ApproveProductBuildRequest {
+  string slug = 1;
+  string sha = 2;
+  string by = 3;                // who, for the commit message
+}
+message ApproveProductBuildResponse {}
+message OperateProductRequest {
+  string slug = 1;
+  string action = 2;            // restart | pause | resume | run
+  string process = 3;           // the schedule or job; empty for restart
+  string by = 4;
+}
+message OperateProductResponse { string run_id = 1; }
+message ListProductChangesRequest {
+  string slug = 1;
+  int32 limit = 2;              // 0 = 30, at most 100
+}
+message ListProductChangesResponse { repeated ProductChange changes = 1; }
+message RollbackProductRequest {
+  string slug = 1;
+  string sha = 2;               // the build (product repository commit) to put back
+  string by = 3;
+}
+message RollbackProductResponse {
+  bool applied = 1;
+  string reason = 2;            // spec | cost when it waits instead
+  repeated string problems = 3;
+  ProductCost estimate = 4;
+}
+message UpdateProductSpecRequest {
+  string slug = 1;
+  string process = 2;
+  string size = 3;              // empty leaves it
+  int32 min = 4;                // 0 leaves it
+  int32 max = 5;
+  string schedule = 6;          // empty leaves it
+  string author_name = 7;
+  string author_email = 8;
+}
+message UpdateProductSpecResponse {
+  string commit_sha = 1;
+  ProductCost estimate = 2;     // what the product will cost once the build lands
+}
+
 // What the cluster says about a running product.
 message ProductState {
   string phase = 1;             // not_deployed | asleep | starting | running | failing
@@ -1053,6 +1179,7 @@ message ProductState {
   string cpu_limit = 10;        // "1"
   string memory_limit = 11;     // "2Gi"
   repeated ProductEvent events = 12;
+  repeated ProcessState processes = 13;
 }
 message ProductEvent {
   string at = 1;                // RFC 3339
