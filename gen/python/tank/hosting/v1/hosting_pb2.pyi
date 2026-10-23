@@ -177,7 +177,7 @@ class GetResourcesRequest(_message.Message):
     def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
 
 class GetResourcesResponse(_message.Message):
-    __slots__ = ("resources", "estimate", "pending", "secrets", "can_manage", "month_cents", "cap_cents", "capped", "can_set_cap")
+    __slots__ = ("resources", "estimate", "pending", "secrets", "can_manage", "month_cents", "cap_cents", "capped", "can_set_cap", "previews")
     RESOURCES_FIELD_NUMBER: _ClassVar[int]
     ESTIMATE_FIELD_NUMBER: _ClassVar[int]
     PENDING_FIELD_NUMBER: _ClassVar[int]
@@ -187,6 +187,7 @@ class GetResourcesResponse(_message.Message):
     CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
     CAPPED_FIELD_NUMBER: _ClassVar[int]
     CAN_SET_CAP_FIELD_NUMBER: _ClassVar[int]
+    PREVIEWS_FIELD_NUMBER: _ClassVar[int]
     resources: _containers.RepeatedCompositeFieldContainer[Resource]
     estimate: Cost
     pending: PendingBuild
@@ -196,7 +197,20 @@ class GetResourcesResponse(_message.Message):
     cap_cents: int
     capped: bool
     can_set_cap: bool
-    def __init__(self, resources: _Optional[_Iterable[_Union[Resource, _Mapping]]] = ..., estimate: _Optional[_Union[Cost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., secrets: _Optional[_Iterable[str]] = ..., can_manage: bool = ..., month_cents: _Optional[int] = ..., cap_cents: _Optional[int] = ..., capped: bool = ..., can_set_cap: bool = ...) -> None: ...
+    previews: _containers.RepeatedCompositeFieldContainer[Preview]
+    def __init__(self, resources: _Optional[_Iterable[_Union[Resource, _Mapping]]] = ..., estimate: _Optional[_Union[Cost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., secrets: _Optional[_Iterable[str]] = ..., can_manage: bool = ..., month_cents: _Optional[int] = ..., cap_cents: _Optional[int] = ..., capped: bool = ..., can_set_cap: bool = ..., previews: _Optional[_Iterable[_Union[Preview, _Mapping]]] = ...) -> None: ...
+
+class Preview(_message.Message):
+    __slots__ = ("pull_request", "url", "build", "expires_at")
+    PULL_REQUEST_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    BUILD_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    pull_request: int
+    url: str
+    build: str
+    expires_at: _timestamp_pb2.Timestamp
+    def __init__(self, pull_request: _Optional[int] = ..., url: _Optional[str] = ..., build: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class ApproveBuildRequest(_message.Message):
     __slots__ = ("channel_id", "sha")

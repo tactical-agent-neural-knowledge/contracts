@@ -140,6 +140,14 @@ message GetResourcesResponse {
   int64 cap_cents = 7;          // the monthly cap; 0 is none
   bool capped = 8;              // at the cap now: workers and schedules paused
   bool can_set_cap = 9;         // the caller is an owner
+  repeated Preview previews = 10; // open pull requests running the whole product
+}
+
+message Preview {
+  int32 pull_request = 1;
+  string url = 2;               // https://<slug>--pr<n>.tank.chat
+  string build = 3;             // the commit it runs
+  google.protobuf.Timestamp expires_at = 4;
 }
 
 message ApproveBuildRequest {

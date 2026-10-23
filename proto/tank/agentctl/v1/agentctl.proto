@@ -259,6 +259,7 @@ message ReportCompletionResponse {}
 
 message ReadProductRequest {
   int32 tail_lines = 1;         // 0 = 200, at most 2000
+  int32 pull_request = 2;       // read that pull request's preview instead of the live product
 }
 message ReadProductResponse {
   string slug = 1;
@@ -272,6 +273,7 @@ message CheckLiveRequest {
   int32 viewport_width = 2;     // 0 = 1440
   int32 viewport_height = 3;    // 0 = 900
   string expect_sha = 4;        // wait (up to ten minutes) until the live build is this commit
+  int32 pull_request = 5;       // open that pull request's preview (<slug>--pr<n>) instead of the live product
 }
 message CheckLiveResponse {
   string url = 1;
@@ -1120,6 +1122,13 @@ message GetProductSpecResponse {
   repeated JobRun runs = 6;
   repeated string env_keys = 7;
   repeated string secrets = 8;
+  repeated ProductPreview previews = 9;   // open pull requests' previews
+}
+message ProductPreview {
+  int32 pull_request = 1;
+  string url = 2;
+  string image_tag = 3;
+  string expires_at = 4;        // RFC 3339
 }
 message ApproveProductBuildRequest {
   string slug = 1;

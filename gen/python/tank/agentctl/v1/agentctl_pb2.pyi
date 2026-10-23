@@ -384,10 +384,12 @@ class ReportCompletionResponse(_message.Message):
     def __init__(self) -> None: ...
 
 class ReadProductRequest(_message.Message):
-    __slots__ = ("tail_lines",)
+    __slots__ = ("tail_lines", "pull_request")
     TAIL_LINES_FIELD_NUMBER: _ClassVar[int]
+    PULL_REQUEST_FIELD_NUMBER: _ClassVar[int]
     tail_lines: int
-    def __init__(self, tail_lines: _Optional[int] = ...) -> None: ...
+    pull_request: int
+    def __init__(self, tail_lines: _Optional[int] = ..., pull_request: _Optional[int] = ...) -> None: ...
 
 class ReadProductResponse(_message.Message):
     __slots__ = ("slug", "state", "logs", "note")
@@ -402,16 +404,18 @@ class ReadProductResponse(_message.Message):
     def __init__(self, slug: _Optional[str] = ..., state: _Optional[_Union[ProductState, _Mapping]] = ..., logs: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
 
 class CheckLiveRequest(_message.Message):
-    __slots__ = ("path", "viewport_width", "viewport_height", "expect_sha")
+    __slots__ = ("path", "viewport_width", "viewport_height", "expect_sha", "pull_request")
     PATH_FIELD_NUMBER: _ClassVar[int]
     VIEWPORT_WIDTH_FIELD_NUMBER: _ClassVar[int]
     VIEWPORT_HEIGHT_FIELD_NUMBER: _ClassVar[int]
     EXPECT_SHA_FIELD_NUMBER: _ClassVar[int]
+    PULL_REQUEST_FIELD_NUMBER: _ClassVar[int]
     path: str
     viewport_width: int
     viewport_height: int
     expect_sha: str
-    def __init__(self, path: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., expect_sha: _Optional[str] = ...) -> None: ...
+    pull_request: int
+    def __init__(self, path: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., expect_sha: _Optional[str] = ..., pull_request: _Optional[int] = ...) -> None: ...
 
 class CheckLiveResponse(_message.Message):
     __slots__ = ("url", "status", "build_sha", "deployed", "title", "text_length", "errors", "screenshot_png", "note")
@@ -1598,7 +1602,7 @@ class GetProductSpecRequest(_message.Message):
     def __init__(self, slug: _Optional[str] = ...) -> None: ...
 
 class GetProductSpecResponse(_message.Message):
-    __slots__ = ("processes", "estimate", "pending", "restarted_at", "paused", "runs", "env_keys", "secrets")
+    __slots__ = ("processes", "estimate", "pending", "restarted_at", "paused", "runs", "env_keys", "secrets", "previews")
     PROCESSES_FIELD_NUMBER: _ClassVar[int]
     ESTIMATE_FIELD_NUMBER: _ClassVar[int]
     PENDING_FIELD_NUMBER: _ClassVar[int]
@@ -1607,6 +1611,7 @@ class GetProductSpecResponse(_message.Message):
     RUNS_FIELD_NUMBER: _ClassVar[int]
     ENV_KEYS_FIELD_NUMBER: _ClassVar[int]
     SECRETS_FIELD_NUMBER: _ClassVar[int]
+    PREVIEWS_FIELD_NUMBER: _ClassVar[int]
     processes: _containers.RepeatedCompositeFieldContainer[ProductProcess]
     estimate: ProductCost
     pending: PendingBuild
@@ -1615,7 +1620,20 @@ class GetProductSpecResponse(_message.Message):
     runs: _containers.RepeatedCompositeFieldContainer[JobRun]
     env_keys: _containers.RepeatedScalarFieldContainer[str]
     secrets: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, processes: _Optional[_Iterable[_Union[ProductProcess, _Mapping]]] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., restarted_at: _Optional[str] = ..., paused: _Optional[_Iterable[str]] = ..., runs: _Optional[_Iterable[_Union[JobRun, _Mapping]]] = ..., env_keys: _Optional[_Iterable[str]] = ..., secrets: _Optional[_Iterable[str]] = ...) -> None: ...
+    previews: _containers.RepeatedCompositeFieldContainer[ProductPreview]
+    def __init__(self, processes: _Optional[_Iterable[_Union[ProductProcess, _Mapping]]] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., restarted_at: _Optional[str] = ..., paused: _Optional[_Iterable[str]] = ..., runs: _Optional[_Iterable[_Union[JobRun, _Mapping]]] = ..., env_keys: _Optional[_Iterable[str]] = ..., secrets: _Optional[_Iterable[str]] = ..., previews: _Optional[_Iterable[_Union[ProductPreview, _Mapping]]] = ...) -> None: ...
+
+class ProductPreview(_message.Message):
+    __slots__ = ("pull_request", "url", "image_tag", "expires_at")
+    PULL_REQUEST_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    IMAGE_TAG_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    pull_request: int
+    url: str
+    image_tag: str
+    expires_at: str
+    def __init__(self, pull_request: _Optional[int] = ..., url: _Optional[str] = ..., image_tag: _Optional[str] = ..., expires_at: _Optional[str] = ...) -> None: ...
 
 class ApproveProductBuildRequest(_message.Message):
     __slots__ = ("slug", "sha", "by")
