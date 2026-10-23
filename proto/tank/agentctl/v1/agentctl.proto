@@ -257,6 +257,16 @@ message ReportCompletionRequest {
 }
 message ReportCompletionResponse {}
 
+message ReadProductRequest {
+  int32 tail_lines = 1;         // 0 = 200, at most 2000
+}
+message ReadProductResponse {
+  string slug = 1;
+  ProductState state = 2;
+  string logs = 3;
+  string note = 4;              // why nothing could be read (no product for this repository)
+}
+
 message CheckLiveRequest {
   string path = 1;              // "/map"; the host is the product TANK runs for this repository
   int32 viewport_width = 2;     // 0 = 1440
@@ -753,6 +763,10 @@ service RunnerService {
   // Opens a page of the product TANK hosts for this run's repository, as a visitor would,
   // once it serves the expected build: status, errors, how much it shows, a screenshot.
   rpc CheckLive(CheckLiveRequest) returns (CheckLiveResponse);
+  // The product TANK runs for this run's repository, as its operator sees it: whether it
+  // is up, how often it has restarted and why, recent cluster events and its log. So an
+  // agent can see the product it built fail instead of hearing about it from a person.
+  rpc ReadProduct(ReadProductRequest) returns (ReadProductResponse);
   rpc ReadThread(ReadThreadRequest) returns (ReadThreadResponse);
   rpc BoardResearch(BoardResearchRequest) returns (BoardResearchResponse);
   rpc CommitFiles(CommitFilesRequest) returns (CommitFilesResponse);
@@ -947,6 +961,9 @@ service ControlService {
   // What GitOps holds for a slug right now, and whether the repository carries the
   // deploy workflow yet.
   rpc GetDeployment(GetDeploymentRequest) returns (GetDeploymentResponse);
+  // The running state of a slug read from the cluster, with its log tail: what the
+  // Infrastructure page shows. Read only.
+  rpc GetProductState(GetProductStateRequest) returns (GetProductStateResponse);
   // Adds the preview-reporting workflow to repositories the workspace's own
   // installation reaches, each as a pull request: branch, file, pull request. Nothing
   // is merged and nothing is written to a default branch — TANK proposes, the
@@ -1019,6 +1036,36 @@ message RegisterDeploymentResponse {
   string url = 1;
 }
 message GetDeploymentRequest { string slug = 1; }
+
+// What the cluster says about a running product.
+message ProductState {
+  string phase = 1;             // not_deployed | asleep | starting | running | failing
+  string image_tag = 2;         // what the workload runs
+  int32 replicas = 3;           // wanted
+  int32 ready = 4;              // serving
+  int32 restarts = 5;           // since the pod started
+  string last_exit_reason = 6;  // "Error", "OOMKilled", … of the last crash
+  int32 last_exit_code = 7;
+  string started_at = 8;        // RFC 3339, when the current pod started
+  int64 disk_bytes = 9;         // capacity of the product's data volume
+  string cpu_limit = 10;        // "1"
+  string memory_limit = 11;     // "2Gi"
+  repeated ProductEvent events = 12;
+}
+message ProductEvent {
+  string at = 1;                // RFC 3339
+  string type = 2;              // Normal | Warning
+  string reason = 3;
+  string message = 4;
+}
+message GetProductStateRequest {
+  string slug = 1;
+  int32 tail_lines = 2;         // 0 = 200, at most 2000
+}
+message GetProductStateResponse {
+  ProductState state = 1;
+  string logs = 2;              // the app's log tail; the previous container's when it crashed
+}
 message GetDeploymentResponse {
   string repo = 1;              // owner/name recorded for the slug
   string url = 2;

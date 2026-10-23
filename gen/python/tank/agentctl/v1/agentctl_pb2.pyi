@@ -383,6 +383,24 @@ class ReportCompletionResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class ReadProductRequest(_message.Message):
+    __slots__ = ("tail_lines",)
+    TAIL_LINES_FIELD_NUMBER: _ClassVar[int]
+    tail_lines: int
+    def __init__(self, tail_lines: _Optional[int] = ...) -> None: ...
+
+class ReadProductResponse(_message.Message):
+    __slots__ = ("slug", "state", "logs", "note")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    LOGS_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    state: ProductState
+    logs: str
+    note: str
+    def __init__(self, slug: _Optional[str] = ..., state: _Optional[_Union[ProductState, _Mapping]] = ..., logs: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
+
 class CheckLiveRequest(_message.Message):
     __slots__ = ("path", "viewport_width", "viewport_height", "expect_sha")
     PATH_FIELD_NUMBER: _ClassVar[int]
@@ -1460,6 +1478,62 @@ class GetDeploymentRequest(_message.Message):
     SLUG_FIELD_NUMBER: _ClassVar[int]
     slug: str
     def __init__(self, slug: _Optional[str] = ...) -> None: ...
+
+class ProductState(_message.Message):
+    __slots__ = ("phase", "image_tag", "replicas", "ready", "restarts", "last_exit_reason", "last_exit_code", "started_at", "disk_bytes", "cpu_limit", "memory_limit", "events")
+    PHASE_FIELD_NUMBER: _ClassVar[int]
+    IMAGE_TAG_FIELD_NUMBER: _ClassVar[int]
+    REPLICAS_FIELD_NUMBER: _ClassVar[int]
+    READY_FIELD_NUMBER: _ClassVar[int]
+    RESTARTS_FIELD_NUMBER: _ClassVar[int]
+    LAST_EXIT_REASON_FIELD_NUMBER: _ClassVar[int]
+    LAST_EXIT_CODE_FIELD_NUMBER: _ClassVar[int]
+    STARTED_AT_FIELD_NUMBER: _ClassVar[int]
+    DISK_BYTES_FIELD_NUMBER: _ClassVar[int]
+    CPU_LIMIT_FIELD_NUMBER: _ClassVar[int]
+    MEMORY_LIMIT_FIELD_NUMBER: _ClassVar[int]
+    EVENTS_FIELD_NUMBER: _ClassVar[int]
+    phase: str
+    image_tag: str
+    replicas: int
+    ready: int
+    restarts: int
+    last_exit_reason: str
+    last_exit_code: int
+    started_at: str
+    disk_bytes: int
+    cpu_limit: str
+    memory_limit: str
+    events: _containers.RepeatedCompositeFieldContainer[ProductEvent]
+    def __init__(self, phase: _Optional[str] = ..., image_tag: _Optional[str] = ..., replicas: _Optional[int] = ..., ready: _Optional[int] = ..., restarts: _Optional[int] = ..., last_exit_reason: _Optional[str] = ..., last_exit_code: _Optional[int] = ..., started_at: _Optional[str] = ..., disk_bytes: _Optional[int] = ..., cpu_limit: _Optional[str] = ..., memory_limit: _Optional[str] = ..., events: _Optional[_Iterable[_Union[ProductEvent, _Mapping]]] = ...) -> None: ...
+
+class ProductEvent(_message.Message):
+    __slots__ = ("at", "type", "reason", "message")
+    AT_FIELD_NUMBER: _ClassVar[int]
+    TYPE_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    at: str
+    type: str
+    reason: str
+    message: str
+    def __init__(self, at: _Optional[str] = ..., type: _Optional[str] = ..., reason: _Optional[str] = ..., message: _Optional[str] = ...) -> None: ...
+
+class GetProductStateRequest(_message.Message):
+    __slots__ = ("slug", "tail_lines")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    TAIL_LINES_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    tail_lines: int
+    def __init__(self, slug: _Optional[str] = ..., tail_lines: _Optional[int] = ...) -> None: ...
+
+class GetProductStateResponse(_message.Message):
+    __slots__ = ("state", "logs")
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    LOGS_FIELD_NUMBER: _ClassVar[int]
+    state: ProductState
+    logs: str
+    def __init__(self, state: _Optional[_Union[ProductState, _Mapping]] = ..., logs: _Optional[str] = ...) -> None: ...
 
 class GetDeploymentResponse(_message.Message):
     __slots__ = ("repo", "url", "image_tag", "replicas", "workflow_present", "managed")

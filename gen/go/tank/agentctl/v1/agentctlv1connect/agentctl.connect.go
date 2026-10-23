@@ -69,6 +69,9 @@ const (
 	RunnerServiceReportCompletionProcedure = "/tank.agentctl.v1.RunnerService/ReportCompletion"
 	// RunnerServiceCheckLiveProcedure is the fully-qualified name of the RunnerService's CheckLive RPC.
 	RunnerServiceCheckLiveProcedure = "/tank.agentctl.v1.RunnerService/CheckLive"
+	// RunnerServiceReadProductProcedure is the fully-qualified name of the RunnerService's ReadProduct
+	// RPC.
+	RunnerServiceReadProductProcedure = "/tank.agentctl.v1.RunnerService/ReadProduct"
 	// RunnerServiceReadThreadProcedure is the fully-qualified name of the RunnerService's ReadThread
 	// RPC.
 	RunnerServiceReadThreadProcedure = "/tank.agentctl.v1.RunnerService/ReadThread"
@@ -210,6 +213,9 @@ const (
 	// ControlServiceGetDeploymentProcedure is the fully-qualified name of the ControlService's
 	// GetDeployment RPC.
 	ControlServiceGetDeploymentProcedure = "/tank.agentctl.v1.ControlService/GetDeployment"
+	// ControlServiceGetProductStateProcedure is the fully-qualified name of the ControlService's
+	// GetProductState RPC.
+	ControlServiceGetProductStateProcedure = "/tank.agentctl.v1.ControlService/GetProductState"
 	// ControlServiceSetUpPreviewWorkflowProcedure is the fully-qualified name of the ControlService's
 	// SetUpPreviewWorkflow RPC.
 	ControlServiceSetUpPreviewWorkflowProcedure = "/tank.agentctl.v1.ControlService/SetUpPreviewWorkflow"
@@ -265,6 +271,10 @@ type RunnerServiceClient interface {
 	// Opens a page of the product TANK hosts for this run's repository, as a visitor would,
 	// once it serves the expected build: status, errors, how much it shows, a screenshot.
 	CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error)
+	// The product TANK runs for this run's repository, as its operator sees it: whether it
+	// is up, how often it has restarted and why, recent cluster events and its log. So an
+	// agent can see the product it built fail instead of hearing about it from a person.
+	ReadProduct(context.Context, *connect.Request[v1.ReadProductRequest]) (*connect.Response[v1.ReadProductResponse], error)
 	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error)
 	CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error)
@@ -385,6 +395,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServiceCheckLiveProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("CheckLive")),
+			connect.WithClientOptions(opts...),
+		),
+		readProduct: connect.NewClient[v1.ReadProductRequest, v1.ReadProductResponse](
+			httpClient,
+			baseURL+RunnerServiceReadProductProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ReadProduct")),
 			connect.WithClientOptions(opts...),
 		),
 		readThread: connect.NewClient[v1.ReadThreadRequest, v1.ReadThreadResponse](
@@ -614,6 +630,7 @@ type runnerServiceClient struct {
 	reportStatus             *connect.Client[v1.ReportStatusRequest, v1.ReportStatusResponse]
 	reportCompletion         *connect.Client[v1.ReportCompletionRequest, v1.ReportCompletionResponse]
 	checkLive                *connect.Client[v1.CheckLiveRequest, v1.CheckLiveResponse]
+	readProduct              *connect.Client[v1.ReadProductRequest, v1.ReadProductResponse]
 	readThread               *connect.Client[v1.ReadThreadRequest, v1.ReadThreadResponse]
 	boardResearch            *connect.Client[v1.BoardResearchRequest, v1.BoardResearchResponse]
 	commitFiles              *connect.Client[v1.CommitFilesRequest, v1.CommitFilesResponse]
@@ -709,6 +726,11 @@ func (c *runnerServiceClient) ReportCompletion(ctx context.Context, req *connect
 // CheckLive calls tank.agentctl.v1.RunnerService.CheckLive.
 func (c *runnerServiceClient) CheckLive(ctx context.Context, req *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error) {
 	return c.checkLive.CallUnary(ctx, req)
+}
+
+// ReadProduct calls tank.agentctl.v1.RunnerService.ReadProduct.
+func (c *runnerServiceClient) ReadProduct(ctx context.Context, req *connect.Request[v1.ReadProductRequest]) (*connect.Response[v1.ReadProductResponse], error) {
+	return c.readProduct.CallUnary(ctx, req)
 }
 
 // ReadThread calls tank.agentctl.v1.RunnerService.ReadThread.
@@ -904,6 +926,10 @@ type RunnerServiceHandler interface {
 	// Opens a page of the product TANK hosts for this run's repository, as a visitor would,
 	// once it serves the expected build: status, errors, how much it shows, a screenshot.
 	CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error)
+	// The product TANK runs for this run's repository, as its operator sees it: whether it
+	// is up, how often it has restarted and why, recent cluster events and its log. So an
+	// agent can see the product it built fail instead of hearing about it from a person.
+	ReadProduct(context.Context, *connect.Request[v1.ReadProductRequest]) (*connect.Response[v1.ReadProductResponse], error)
 	ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error)
 	BoardResearch(context.Context, *connect.Request[v1.BoardResearchRequest]) (*connect.Response[v1.BoardResearchResponse], error)
 	CommitFiles(context.Context, *connect.Request[v1.CommitFilesRequest]) (*connect.Response[v1.CommitFilesResponse], error)
@@ -1020,6 +1046,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceCheckLiveProcedure,
 		svc.CheckLive,
 		connect.WithSchema(runnerServiceMethods.ByName("CheckLive")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceReadProductHandler := connect.NewUnaryHandler(
+		RunnerServiceReadProductProcedure,
+		svc.ReadProduct,
+		connect.WithSchema(runnerServiceMethods.ByName("ReadProduct")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServiceReadThreadHandler := connect.NewUnaryHandler(
@@ -1258,6 +1290,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceReportCompletionHandler.ServeHTTP(w, r)
 		case RunnerServiceCheckLiveProcedure:
 			runnerServiceCheckLiveHandler.ServeHTTP(w, r)
+		case RunnerServiceReadProductProcedure:
+			runnerServiceReadProductHandler.ServeHTTP(w, r)
 		case RunnerServiceReadThreadProcedure:
 			runnerServiceReadThreadHandler.ServeHTTP(w, r)
 		case RunnerServiceBoardResearchProcedure:
@@ -1383,6 +1417,10 @@ func (UnimplementedRunnerServiceHandler) ReportCompletion(context.Context, *conn
 
 func (UnimplementedRunnerServiceHandler) CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.CheckLive is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ReadProduct(context.Context, *connect.Request[v1.ReadProductRequest]) (*connect.Response[v1.ReadProductResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReadProduct is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) ReadThread(context.Context, *connect.Request[v1.ReadThreadRequest]) (*connect.Response[v1.ReadThreadResponse], error) {
@@ -1556,6 +1594,9 @@ type ControlServiceClient interface {
 	// What GitOps holds for a slug right now, and whether the repository carries the
 	// deploy workflow yet.
 	GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error)
+	// The running state of a slug read from the cluster, with its log tail: what the
+	// Infrastructure page shows. Read only.
+	GetProductState(context.Context, *connect.Request[v1.GetProductStateRequest]) (*connect.Response[v1.GetProductStateResponse], error)
 	// Adds the preview-reporting workflow to repositories the workspace's own
 	// installation reaches, each as a pull request: branch, file, pull request. Nothing
 	// is merged and nothing is written to a default branch — TANK proposes, the
@@ -1693,6 +1734,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("GetDeployment")),
 			connect.WithClientOptions(opts...),
 		),
+		getProductState: connect.NewClient[v1.GetProductStateRequest, v1.GetProductStateResponse](
+			httpClient,
+			baseURL+ControlServiceGetProductStateProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("GetProductState")),
+			connect.WithClientOptions(opts...),
+		),
 		setUpPreviewWorkflow: connect.NewClient[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse](
 			httpClient,
 			baseURL+ControlServiceSetUpPreviewWorkflowProcedure,
@@ -1785,6 +1832,7 @@ type controlServiceClient struct {
 	setProductReplicas       *connect.Client[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse]
 	registerDeployment       *connect.Client[v1.RegisterDeploymentRequest, v1.RegisterDeploymentResponse]
 	getDeployment            *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
+	getProductState          *connect.Client[v1.GetProductStateRequest, v1.GetProductStateResponse]
 	setUpPreviewWorkflow     *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
 	readRepo                 *connect.Client[v1.ReadRepoRequest, v1.ReadRepoResponse]
 	buildPreview             *connect.Client[v1.BuildPreviewRequest, v1.BuildPreviewResponse]
@@ -1872,6 +1920,11 @@ func (c *controlServiceClient) RegisterDeployment(ctx context.Context, req *conn
 // GetDeployment calls tank.agentctl.v1.ControlService.GetDeployment.
 func (c *controlServiceClient) GetDeployment(ctx context.Context, req *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error) {
 	return c.getDeployment.CallUnary(ctx, req)
+}
+
+// GetProductState calls tank.agentctl.v1.ControlService.GetProductState.
+func (c *controlServiceClient) GetProductState(ctx context.Context, req *connect.Request[v1.GetProductStateRequest]) (*connect.Response[v1.GetProductStateResponse], error) {
+	return c.getProductState.CallUnary(ctx, req)
 }
 
 // SetUpPreviewWorkflow calls tank.agentctl.v1.ControlService.SetUpPreviewWorkflow.
@@ -1965,6 +2018,9 @@ type ControlServiceHandler interface {
 	// What GitOps holds for a slug right now, and whether the repository carries the
 	// deploy workflow yet.
 	GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error)
+	// The running state of a slug read from the cluster, with its log tail: what the
+	// Infrastructure page shows. Read only.
+	GetProductState(context.Context, *connect.Request[v1.GetProductStateRequest]) (*connect.Response[v1.GetProductStateResponse], error)
 	// Adds the preview-reporting workflow to repositories the workspace's own
 	// installation reaches, each as a pull request: branch, file, pull request. Nothing
 	// is merged and nothing is written to a default branch — TANK proposes, the
@@ -2098,6 +2154,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("GetDeployment")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceGetProductStateHandler := connect.NewUnaryHandler(
+		ControlServiceGetProductStateProcedure,
+		svc.GetProductState,
+		connect.WithSchema(controlServiceMethods.ByName("GetProductState")),
+		connect.WithHandlerOptions(opts...),
+	)
 	controlServiceSetUpPreviewWorkflowHandler := connect.NewUnaryHandler(
 		ControlServiceSetUpPreviewWorkflowProcedure,
 		svc.SetUpPreviewWorkflow,
@@ -2202,6 +2264,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceRegisterDeploymentHandler.ServeHTTP(w, r)
 		case ControlServiceGetDeploymentProcedure:
 			controlServiceGetDeploymentHandler.ServeHTTP(w, r)
+		case ControlServiceGetProductStateProcedure:
+			controlServiceGetProductStateHandler.ServeHTTP(w, r)
 		case ControlServiceSetUpPreviewWorkflowProcedure:
 			controlServiceSetUpPreviewWorkflowHandler.ServeHTTP(w, r)
 		case ControlServiceReadRepoProcedure:
@@ -2293,6 +2357,10 @@ func (UnimplementedControlServiceHandler) RegisterDeployment(context.Context, *c
 
 func (UnimplementedControlServiceHandler) GetDeployment(context.Context, *connect.Request[v1.GetDeploymentRequest]) (*connect.Response[v1.GetDeploymentResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.GetDeployment is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) GetProductState(context.Context, *connect.Request[v1.GetProductStateRequest]) (*connect.Response[v1.GetProductStateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.GetProductState is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) SetUpPreviewWorkflow(context.Context, *connect.Request[v1.SetUpPreviewWorkflowRequest]) (*connect.Response[v1.SetUpPreviewWorkflowResponse], error) {
