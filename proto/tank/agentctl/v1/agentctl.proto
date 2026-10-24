@@ -983,6 +983,12 @@ service ControlService {
   // Changes one process's size, scale or schedule as a commit to the product's tank.yaml,
   // authored as the person who asked; the build that follows deploys it.
   rpc UpdateProductSpec(UpdateProductSpecRequest) returns (UpdateProductSpecResponse);
+  // What a change to tank.yaml would cost and whether it compiles, without making it.
+  rpc PreviewProductSpec(PreviewProductSpecRequest) returns (PreviewProductSpecResponse);
+  // Makes the change: a commit to tank.yaml in the person's name, deployed on the running
+  // build; one that costs more lands at once only with an owner's accepted price.
+  rpc ApplyProductSpec(ApplyProductSpecRequest) returns (ApplyProductSpecResponse);
+  rpc GetProductSpecText(GetProductSpecTextRequest) returns (GetProductSpecTextResponse);
   // The running product as a docker-compose file anybody can run without TANK.
   rpc ExportProduct(ExportProductRequest) returns (ExportProductResponse);
   // Sets one of a product's declared secrets. The value is stored and never returned.
@@ -1075,6 +1081,72 @@ message ProductProcess {
   int32 timeout_seconds = 11;
   repeated string command = 12;
   string volume = 13;           // web's data volume, "20Gi"
+  int32 scratch_gi = 14;        // working disk at /scratch for a worker, schedule or job
+}
+// What else a product is made of besides its processes.
+message ProductParts {
+  repeated ProductDatabase databases = 1;
+  string cache_size = 2;        // empty: no cache
+  repeated string buckets = 3;
+  repeated string datasets = 4;
+  repeated string library = 5;  // every dataset TANK's library offers
+}
+message ProductDatabase {
+  string name = 1;
+  string size = 2;
+  string storage = 3;           // "20Gi"
+  repeated string extensions = 4;
+}
+// One change to tank.yaml from hosting settings. kind and name say what it is about.
+message ProductSpecChange {
+  string kind = 1;              // service | worker | cron | job | database | cache | bucket | dataset | env
+  string name = 2;              // empty for cache
+  bool remove = 3;
+  string size = 4;              // empty leaves it
+  int32 min = 5;                // 0 leaves it
+  int32 max = 6;
+  string schedule = 7;
+  string storage = 8;           // a database's storage, or web's /data volume: "40Gi"
+  repeated string extensions = 9;
+  repeated string command = 10;
+  string scratch = 11;          // "50Gi"; "0" removes it
+  string timeout = 12;
+  string value = 13;            // env
+}
+message PreviewProductSpecRequest {
+  string slug = 1;
+  oneof edit {
+    ProductSpecChange change = 2;
+    string text = 3;            // the whole tank.yaml
+  }
+}
+message PreviewProductSpecResponse {
+  string text = 1;              // tank.yaml as it would be
+  ProductCost before = 2;       // what the running build costs
+  ProductCost after = 3;
+  repeated string problems = 4; // non-empty: the change cannot be made as it is
+}
+message ApplyProductSpecRequest {
+  string slug = 1;
+  oneof edit {
+    ProductSpecChange change = 2;
+    string text = 3;
+  }
+  string author_name = 4;
+  string author_email = 5;
+  // The monthly total an owner saw and accepted. A change that costs more lands at once
+  // when this equals its estimate; otherwise it waits for an owner like any build.
+  int64 accepted_total_cents = 6;
+  string accepted_by = 7;
+}
+message ApplyProductSpecResponse {
+  string commit_sha = 1;
+  ProductCost estimate = 2;
+  bool live = 3;                // false: held, see GetProductSpec's pending
+}
+message GetProductSpecTextRequest { string slug = 1; }
+message GetProductSpecTextResponse {
+  string text = 1;              // empty: the product has no tank.yaml yet
 }
 message ProductCost {
   int64 base_cents = 1;
@@ -1128,6 +1200,7 @@ message GetProductSpecResponse {
   repeated string secrets = 8;
   repeated ProductPreview previews = 9;   // open pull requests' previews
   repeated string secrets_set = 10;       // the declared secrets that have a value
+  ProductParts parts = 11;
 }
 message ProductPreview {
   int32 pull_request = 1;

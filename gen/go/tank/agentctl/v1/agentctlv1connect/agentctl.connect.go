@@ -240,6 +240,15 @@ const (
 	// ControlServiceUpdateProductSpecProcedure is the fully-qualified name of the ControlService's
 	// UpdateProductSpec RPC.
 	ControlServiceUpdateProductSpecProcedure = "/tank.agentctl.v1.ControlService/UpdateProductSpec"
+	// ControlServicePreviewProductSpecProcedure is the fully-qualified name of the ControlService's
+	// PreviewProductSpec RPC.
+	ControlServicePreviewProductSpecProcedure = "/tank.agentctl.v1.ControlService/PreviewProductSpec"
+	// ControlServiceApplyProductSpecProcedure is the fully-qualified name of the ControlService's
+	// ApplyProductSpec RPC.
+	ControlServiceApplyProductSpecProcedure = "/tank.agentctl.v1.ControlService/ApplyProductSpec"
+	// ControlServiceGetProductSpecTextProcedure is the fully-qualified name of the ControlService's
+	// GetProductSpecText RPC.
+	ControlServiceGetProductSpecTextProcedure = "/tank.agentctl.v1.ControlService/GetProductSpecText"
 	// ControlServiceExportProductProcedure is the fully-qualified name of the ControlService's
 	// ExportProduct RPC.
 	ControlServiceExportProductProcedure = "/tank.agentctl.v1.ControlService/ExportProduct"
@@ -1670,6 +1679,12 @@ type ControlServiceClient interface {
 	// Changes one process's size, scale or schedule as a commit to the product's tank.yaml,
 	// authored as the person who asked; the build that follows deploys it.
 	UpdateProductSpec(context.Context, *connect.Request[v1.UpdateProductSpecRequest]) (*connect.Response[v1.UpdateProductSpecResponse], error)
+	// What a change to tank.yaml would cost and whether it compiles, without making it.
+	PreviewProductSpec(context.Context, *connect.Request[v1.PreviewProductSpecRequest]) (*connect.Response[v1.PreviewProductSpecResponse], error)
+	// Makes the change: a commit to tank.yaml in the person's name, deployed on the running
+	// build; one that costs more lands at once only with an owner's accepted price.
+	ApplyProductSpec(context.Context, *connect.Request[v1.ApplyProductSpecRequest]) (*connect.Response[v1.ApplyProductSpecResponse], error)
+	GetProductSpecText(context.Context, *connect.Request[v1.GetProductSpecTextRequest]) (*connect.Response[v1.GetProductSpecTextResponse], error)
 	// The running product as a docker-compose file anybody can run without TANK.
 	ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error)
 	// Sets one of a product's declared secrets. The value is stored and never returned.
@@ -1859,6 +1874,24 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("UpdateProductSpec")),
 			connect.WithClientOptions(opts...),
 		),
+		previewProductSpec: connect.NewClient[v1.PreviewProductSpecRequest, v1.PreviewProductSpecResponse](
+			httpClient,
+			baseURL+ControlServicePreviewProductSpecProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("PreviewProductSpec")),
+			connect.WithClientOptions(opts...),
+		),
+		applyProductSpec: connect.NewClient[v1.ApplyProductSpecRequest, v1.ApplyProductSpecResponse](
+			httpClient,
+			baseURL+ControlServiceApplyProductSpecProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ApplyProductSpec")),
+			connect.WithClientOptions(opts...),
+		),
+		getProductSpecText: connect.NewClient[v1.GetProductSpecTextRequest, v1.GetProductSpecTextResponse](
+			httpClient,
+			baseURL+ControlServiceGetProductSpecTextProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("GetProductSpecText")),
+			connect.WithClientOptions(opts...),
+		),
 		exportProduct: connect.NewClient[v1.ExportProductRequest, v1.ExportProductResponse](
 			httpClient,
 			baseURL+ControlServiceExportProductProcedure,
@@ -1971,6 +2004,9 @@ type controlServiceClient struct {
 	listProductChanges       *connect.Client[v1.ListProductChangesRequest, v1.ListProductChangesResponse]
 	rollbackProduct          *connect.Client[v1.RollbackProductRequest, v1.RollbackProductResponse]
 	updateProductSpec        *connect.Client[v1.UpdateProductSpecRequest, v1.UpdateProductSpecResponse]
+	previewProductSpec       *connect.Client[v1.PreviewProductSpecRequest, v1.PreviewProductSpecResponse]
+	applyProductSpec         *connect.Client[v1.ApplyProductSpecRequest, v1.ApplyProductSpecResponse]
+	getProductSpecText       *connect.Client[v1.GetProductSpecTextRequest, v1.GetProductSpecTextResponse]
 	exportProduct            *connect.Client[v1.ExportProductRequest, v1.ExportProductResponse]
 	setProductSecret         *connect.Client[v1.SetProductSecretRequest, v1.SetProductSecretResponse]
 	setUpPreviewWorkflow     *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
@@ -2102,6 +2138,21 @@ func (c *controlServiceClient) UpdateProductSpec(ctx context.Context, req *conne
 	return c.updateProductSpec.CallUnary(ctx, req)
 }
 
+// PreviewProductSpec calls tank.agentctl.v1.ControlService.PreviewProductSpec.
+func (c *controlServiceClient) PreviewProductSpec(ctx context.Context, req *connect.Request[v1.PreviewProductSpecRequest]) (*connect.Response[v1.PreviewProductSpecResponse], error) {
+	return c.previewProductSpec.CallUnary(ctx, req)
+}
+
+// ApplyProductSpec calls tank.agentctl.v1.ControlService.ApplyProductSpec.
+func (c *controlServiceClient) ApplyProductSpec(ctx context.Context, req *connect.Request[v1.ApplyProductSpecRequest]) (*connect.Response[v1.ApplyProductSpecResponse], error) {
+	return c.applyProductSpec.CallUnary(ctx, req)
+}
+
+// GetProductSpecText calls tank.agentctl.v1.ControlService.GetProductSpecText.
+func (c *controlServiceClient) GetProductSpecText(ctx context.Context, req *connect.Request[v1.GetProductSpecTextRequest]) (*connect.Response[v1.GetProductSpecTextResponse], error) {
+	return c.getProductSpecText.CallUnary(ctx, req)
+}
+
 // ExportProduct calls tank.agentctl.v1.ControlService.ExportProduct.
 func (c *controlServiceClient) ExportProduct(ctx context.Context, req *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error) {
 	return c.exportProduct.CallUnary(ctx, req)
@@ -2221,6 +2272,12 @@ type ControlServiceHandler interface {
 	// Changes one process's size, scale or schedule as a commit to the product's tank.yaml,
 	// authored as the person who asked; the build that follows deploys it.
 	UpdateProductSpec(context.Context, *connect.Request[v1.UpdateProductSpecRequest]) (*connect.Response[v1.UpdateProductSpecResponse], error)
+	// What a change to tank.yaml would cost and whether it compiles, without making it.
+	PreviewProductSpec(context.Context, *connect.Request[v1.PreviewProductSpecRequest]) (*connect.Response[v1.PreviewProductSpecResponse], error)
+	// Makes the change: a commit to tank.yaml in the person's name, deployed on the running
+	// build; one that costs more lands at once only with an owner's accepted price.
+	ApplyProductSpec(context.Context, *connect.Request[v1.ApplyProductSpecRequest]) (*connect.Response[v1.ApplyProductSpecResponse], error)
+	GetProductSpecText(context.Context, *connect.Request[v1.GetProductSpecTextRequest]) (*connect.Response[v1.GetProductSpecTextResponse], error)
 	// The running product as a docker-compose file anybody can run without TANK.
 	ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error)
 	// Sets one of a product's declared secrets. The value is stored and never returned.
@@ -2406,6 +2463,24 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("UpdateProductSpec")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServicePreviewProductSpecHandler := connect.NewUnaryHandler(
+		ControlServicePreviewProductSpecProcedure,
+		svc.PreviewProductSpec,
+		connect.WithSchema(controlServiceMethods.ByName("PreviewProductSpec")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceApplyProductSpecHandler := connect.NewUnaryHandler(
+		ControlServiceApplyProductSpecProcedure,
+		svc.ApplyProductSpec,
+		connect.WithSchema(controlServiceMethods.ByName("ApplyProductSpec")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceGetProductSpecTextHandler := connect.NewUnaryHandler(
+		ControlServiceGetProductSpecTextProcedure,
+		svc.GetProductSpecText,
+		connect.WithSchema(controlServiceMethods.ByName("GetProductSpecText")),
+		connect.WithHandlerOptions(opts...),
+	)
 	controlServiceExportProductHandler := connect.NewUnaryHandler(
 		ControlServiceExportProductProcedure,
 		svc.ExportProduct,
@@ -2538,6 +2613,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceRollbackProductHandler.ServeHTTP(w, r)
 		case ControlServiceUpdateProductSpecProcedure:
 			controlServiceUpdateProductSpecHandler.ServeHTTP(w, r)
+		case ControlServicePreviewProductSpecProcedure:
+			controlServicePreviewProductSpecHandler.ServeHTTP(w, r)
+		case ControlServiceApplyProductSpecProcedure:
+			controlServiceApplyProductSpecHandler.ServeHTTP(w, r)
+		case ControlServiceGetProductSpecTextProcedure:
+			controlServiceGetProductSpecTextHandler.ServeHTTP(w, r)
 		case ControlServiceExportProductProcedure:
 			controlServiceExportProductHandler.ServeHTTP(w, r)
 		case ControlServiceSetProductSecretProcedure:
@@ -2665,6 +2746,18 @@ func (UnimplementedControlServiceHandler) RollbackProduct(context.Context, *conn
 
 func (UnimplementedControlServiceHandler) UpdateProductSpec(context.Context, *connect.Request[v1.UpdateProductSpecRequest]) (*connect.Response[v1.UpdateProductSpecResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.UpdateProductSpec is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) PreviewProductSpec(context.Context, *connect.Request[v1.PreviewProductSpecRequest]) (*connect.Response[v1.PreviewProductSpecResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.PreviewProductSpec is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ApplyProductSpec(context.Context, *connect.Request[v1.ApplyProductSpecRequest]) (*connect.Response[v1.ApplyProductSpecResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ApplyProductSpec is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) GetProductSpecText(context.Context, *connect.Request[v1.GetProductSpecTextRequest]) (*connect.Response[v1.GetProductSpecTextResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.GetProductSpecText is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error) {

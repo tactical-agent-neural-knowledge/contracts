@@ -1484,7 +1484,7 @@ class GetDeploymentRequest(_message.Message):
     def __init__(self, slug: _Optional[str] = ...) -> None: ...
 
 class ProductProcess(_message.Message):
-    __slots__ = ("name", "kind", "size", "cpu", "memory", "port", "public", "min", "max", "schedule", "timeout_seconds", "command", "volume")
+    __slots__ = ("name", "kind", "size", "cpu", "memory", "port", "public", "min", "max", "schedule", "timeout_seconds", "command", "volume", "scratch_gi")
     NAME_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     SIZE_FIELD_NUMBER: _ClassVar[int]
@@ -1498,6 +1498,7 @@ class ProductProcess(_message.Message):
     TIMEOUT_SECONDS_FIELD_NUMBER: _ClassVar[int]
     COMMAND_FIELD_NUMBER: _ClassVar[int]
     VOLUME_FIELD_NUMBER: _ClassVar[int]
+    SCRATCH_GI_FIELD_NUMBER: _ClassVar[int]
     name: str
     kind: str
     size: str
@@ -1511,7 +1512,126 @@ class ProductProcess(_message.Message):
     timeout_seconds: int
     command: _containers.RepeatedScalarFieldContainer[str]
     volume: str
-    def __init__(self, name: _Optional[str] = ..., kind: _Optional[str] = ..., size: _Optional[str] = ..., cpu: _Optional[str] = ..., memory: _Optional[str] = ..., port: _Optional[int] = ..., public: bool = ..., min: _Optional[int] = ..., max: _Optional[int] = ..., schedule: _Optional[str] = ..., timeout_seconds: _Optional[int] = ..., command: _Optional[_Iterable[str]] = ..., volume: _Optional[str] = ...) -> None: ...
+    scratch_gi: int
+    def __init__(self, name: _Optional[str] = ..., kind: _Optional[str] = ..., size: _Optional[str] = ..., cpu: _Optional[str] = ..., memory: _Optional[str] = ..., port: _Optional[int] = ..., public: bool = ..., min: _Optional[int] = ..., max: _Optional[int] = ..., schedule: _Optional[str] = ..., timeout_seconds: _Optional[int] = ..., command: _Optional[_Iterable[str]] = ..., volume: _Optional[str] = ..., scratch_gi: _Optional[int] = ...) -> None: ...
+
+class ProductParts(_message.Message):
+    __slots__ = ("databases", "cache_size", "buckets", "datasets", "library")
+    DATABASES_FIELD_NUMBER: _ClassVar[int]
+    CACHE_SIZE_FIELD_NUMBER: _ClassVar[int]
+    BUCKETS_FIELD_NUMBER: _ClassVar[int]
+    DATASETS_FIELD_NUMBER: _ClassVar[int]
+    LIBRARY_FIELD_NUMBER: _ClassVar[int]
+    databases: _containers.RepeatedCompositeFieldContainer[ProductDatabase]
+    cache_size: str
+    buckets: _containers.RepeatedScalarFieldContainer[str]
+    datasets: _containers.RepeatedScalarFieldContainer[str]
+    library: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, databases: _Optional[_Iterable[_Union[ProductDatabase, _Mapping]]] = ..., cache_size: _Optional[str] = ..., buckets: _Optional[_Iterable[str]] = ..., datasets: _Optional[_Iterable[str]] = ..., library: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ProductDatabase(_message.Message):
+    __slots__ = ("name", "size", "storage", "extensions")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    SIZE_FIELD_NUMBER: _ClassVar[int]
+    STORAGE_FIELD_NUMBER: _ClassVar[int]
+    EXTENSIONS_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    size: str
+    storage: str
+    extensions: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, name: _Optional[str] = ..., size: _Optional[str] = ..., storage: _Optional[str] = ..., extensions: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ProductSpecChange(_message.Message):
+    __slots__ = ("kind", "name", "remove", "size", "min", "max", "schedule", "storage", "extensions", "command", "scratch", "timeout", "value")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    REMOVE_FIELD_NUMBER: _ClassVar[int]
+    SIZE_FIELD_NUMBER: _ClassVar[int]
+    MIN_FIELD_NUMBER: _ClassVar[int]
+    MAX_FIELD_NUMBER: _ClassVar[int]
+    SCHEDULE_FIELD_NUMBER: _ClassVar[int]
+    STORAGE_FIELD_NUMBER: _ClassVar[int]
+    EXTENSIONS_FIELD_NUMBER: _ClassVar[int]
+    COMMAND_FIELD_NUMBER: _ClassVar[int]
+    SCRATCH_FIELD_NUMBER: _ClassVar[int]
+    TIMEOUT_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    name: str
+    remove: bool
+    size: str
+    min: int
+    max: int
+    schedule: str
+    storage: str
+    extensions: _containers.RepeatedScalarFieldContainer[str]
+    command: _containers.RepeatedScalarFieldContainer[str]
+    scratch: str
+    timeout: str
+    value: str
+    def __init__(self, kind: _Optional[str] = ..., name: _Optional[str] = ..., remove: bool = ..., size: _Optional[str] = ..., min: _Optional[int] = ..., max: _Optional[int] = ..., schedule: _Optional[str] = ..., storage: _Optional[str] = ..., extensions: _Optional[_Iterable[str]] = ..., command: _Optional[_Iterable[str]] = ..., scratch: _Optional[str] = ..., timeout: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+
+class PreviewProductSpecRequest(_message.Message):
+    __slots__ = ("slug", "change", "text")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    change: ProductSpecChange
+    text: str
+    def __init__(self, slug: _Optional[str] = ..., change: _Optional[_Union[ProductSpecChange, _Mapping]] = ..., text: _Optional[str] = ...) -> None: ...
+
+class PreviewProductSpecResponse(_message.Message):
+    __slots__ = ("text", "before", "after", "problems")
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    BEFORE_FIELD_NUMBER: _ClassVar[int]
+    AFTER_FIELD_NUMBER: _ClassVar[int]
+    PROBLEMS_FIELD_NUMBER: _ClassVar[int]
+    text: str
+    before: ProductCost
+    after: ProductCost
+    problems: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, text: _Optional[str] = ..., before: _Optional[_Union[ProductCost, _Mapping]] = ..., after: _Optional[_Union[ProductCost, _Mapping]] = ..., problems: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ApplyProductSpecRequest(_message.Message):
+    __slots__ = ("slug", "change", "text", "author_name", "author_email", "accepted_total_cents", "accepted_by")
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    AUTHOR_NAME_FIELD_NUMBER: _ClassVar[int]
+    AUTHOR_EMAIL_FIELD_NUMBER: _ClassVar[int]
+    ACCEPTED_TOTAL_CENTS_FIELD_NUMBER: _ClassVar[int]
+    ACCEPTED_BY_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    change: ProductSpecChange
+    text: str
+    author_name: str
+    author_email: str
+    accepted_total_cents: int
+    accepted_by: str
+    def __init__(self, slug: _Optional[str] = ..., change: _Optional[_Union[ProductSpecChange, _Mapping]] = ..., text: _Optional[str] = ..., author_name: _Optional[str] = ..., author_email: _Optional[str] = ..., accepted_total_cents: _Optional[int] = ..., accepted_by: _Optional[str] = ...) -> None: ...
+
+class ApplyProductSpecResponse(_message.Message):
+    __slots__ = ("commit_sha", "estimate", "live")
+    COMMIT_SHA_FIELD_NUMBER: _ClassVar[int]
+    ESTIMATE_FIELD_NUMBER: _ClassVar[int]
+    LIVE_FIELD_NUMBER: _ClassVar[int]
+    commit_sha: str
+    estimate: ProductCost
+    live: bool
+    def __init__(self, commit_sha: _Optional[str] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ..., live: bool = ...) -> None: ...
+
+class GetProductSpecTextRequest(_message.Message):
+    __slots__ = ("slug",)
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    slug: str
+    def __init__(self, slug: _Optional[str] = ...) -> None: ...
+
+class GetProductSpecTextResponse(_message.Message):
+    __slots__ = ("text",)
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    text: str
+    def __init__(self, text: _Optional[str] = ...) -> None: ...
 
 class ProductCost(_message.Message):
     __slots__ = ("base_cents", "overage_cents", "lines")
@@ -1602,7 +1722,7 @@ class GetProductSpecRequest(_message.Message):
     def __init__(self, slug: _Optional[str] = ...) -> None: ...
 
 class GetProductSpecResponse(_message.Message):
-    __slots__ = ("processes", "estimate", "pending", "restarted_at", "paused", "runs", "env_keys", "secrets", "previews", "secrets_set")
+    __slots__ = ("processes", "estimate", "pending", "restarted_at", "paused", "runs", "env_keys", "secrets", "previews", "secrets_set", "parts")
     PROCESSES_FIELD_NUMBER: _ClassVar[int]
     ESTIMATE_FIELD_NUMBER: _ClassVar[int]
     PENDING_FIELD_NUMBER: _ClassVar[int]
@@ -1613,6 +1733,7 @@ class GetProductSpecResponse(_message.Message):
     SECRETS_FIELD_NUMBER: _ClassVar[int]
     PREVIEWS_FIELD_NUMBER: _ClassVar[int]
     SECRETS_SET_FIELD_NUMBER: _ClassVar[int]
+    PARTS_FIELD_NUMBER: _ClassVar[int]
     processes: _containers.RepeatedCompositeFieldContainer[ProductProcess]
     estimate: ProductCost
     pending: PendingBuild
@@ -1623,7 +1744,8 @@ class GetProductSpecResponse(_message.Message):
     secrets: _containers.RepeatedScalarFieldContainer[str]
     previews: _containers.RepeatedCompositeFieldContainer[ProductPreview]
     secrets_set: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, processes: _Optional[_Iterable[_Union[ProductProcess, _Mapping]]] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., restarted_at: _Optional[str] = ..., paused: _Optional[_Iterable[str]] = ..., runs: _Optional[_Iterable[_Union[JobRun, _Mapping]]] = ..., env_keys: _Optional[_Iterable[str]] = ..., secrets: _Optional[_Iterable[str]] = ..., previews: _Optional[_Iterable[_Union[ProductPreview, _Mapping]]] = ..., secrets_set: _Optional[_Iterable[str]] = ...) -> None: ...
+    parts: ProductParts
+    def __init__(self, processes: _Optional[_Iterable[_Union[ProductProcess, _Mapping]]] = ..., estimate: _Optional[_Union[ProductCost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., restarted_at: _Optional[str] = ..., paused: _Optional[_Iterable[str]] = ..., runs: _Optional[_Iterable[_Union[JobRun, _Mapping]]] = ..., env_keys: _Optional[_Iterable[str]] = ..., secrets: _Optional[_Iterable[str]] = ..., previews: _Optional[_Iterable[_Union[ProductPreview, _Mapping]]] = ..., secrets_set: _Optional[_Iterable[str]] = ..., parts: _Optional[_Union[ProductParts, _Mapping]] = ...) -> None: ...
 
 class ProductPreview(_message.Message):
     __slots__ = ("pull_request", "url", "image_tag", "expires_at")

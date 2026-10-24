@@ -107,7 +107,7 @@ class LiveCheck(_message.Message):
     def __init__(self, url: _Optional[str] = ..., status: _Optional[int] = ..., build_sha: _Optional[str] = ..., title: _Optional[str] = ..., text_length: _Optional[int] = ..., errors: _Optional[_Iterable[str]] = ..., screenshot_png: _Optional[bytes] = ..., checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., note: _Optional[str] = ...) -> None: ...
 
 class Resource(_message.Message):
-    __slots__ = ("name", "kind", "size", "cpu", "memory", "public", "min", "max", "schedule", "timeout_seconds", "volume", "ready", "desired", "paused", "last_run_at", "last_run_result")
+    __slots__ = ("name", "kind", "size", "cpu", "memory", "public", "min", "max", "schedule", "timeout_seconds", "volume", "ready", "desired", "paused", "last_run_at", "last_run_result", "storage", "extensions", "scratch_gi")
     NAME_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     SIZE_FIELD_NUMBER: _ClassVar[int]
@@ -124,6 +124,9 @@ class Resource(_message.Message):
     PAUSED_FIELD_NUMBER: _ClassVar[int]
     LAST_RUN_AT_FIELD_NUMBER: _ClassVar[int]
     LAST_RUN_RESULT_FIELD_NUMBER: _ClassVar[int]
+    STORAGE_FIELD_NUMBER: _ClassVar[int]
+    EXTENSIONS_FIELD_NUMBER: _ClassVar[int]
+    SCRATCH_GI_FIELD_NUMBER: _ClassVar[int]
     name: str
     kind: str
     size: str
@@ -140,7 +143,10 @@ class Resource(_message.Message):
     paused: bool
     last_run_at: _timestamp_pb2.Timestamp
     last_run_result: str
-    def __init__(self, name: _Optional[str] = ..., kind: _Optional[str] = ..., size: _Optional[str] = ..., cpu: _Optional[str] = ..., memory: _Optional[str] = ..., public: bool = ..., min: _Optional[int] = ..., max: _Optional[int] = ..., schedule: _Optional[str] = ..., timeout_seconds: _Optional[int] = ..., volume: _Optional[str] = ..., ready: _Optional[int] = ..., desired: _Optional[int] = ..., paused: bool = ..., last_run_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_run_result: _Optional[str] = ...) -> None: ...
+    storage: str
+    extensions: _containers.RepeatedScalarFieldContainer[str]
+    scratch_gi: int
+    def __init__(self, name: _Optional[str] = ..., kind: _Optional[str] = ..., size: _Optional[str] = ..., cpu: _Optional[str] = ..., memory: _Optional[str] = ..., public: bool = ..., min: _Optional[int] = ..., max: _Optional[int] = ..., schedule: _Optional[str] = ..., timeout_seconds: _Optional[int] = ..., volume: _Optional[str] = ..., ready: _Optional[int] = ..., desired: _Optional[int] = ..., paused: bool = ..., last_run_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_run_result: _Optional[str] = ..., storage: _Optional[str] = ..., extensions: _Optional[_Iterable[str]] = ..., scratch_gi: _Optional[int] = ...) -> None: ...
 
 class Cost(_message.Message):
     __slots__ = ("base_cents", "overage_cents", "total_cents", "lines")
@@ -177,7 +183,7 @@ class GetResourcesRequest(_message.Message):
     def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
 
 class GetResourcesResponse(_message.Message):
-    __slots__ = ("resources", "estimate", "pending", "secrets", "can_manage", "month_cents", "cap_cents", "capped", "can_set_cap", "previews", "secrets_set")
+    __slots__ = ("resources", "estimate", "pending", "secrets", "can_manage", "month_cents", "cap_cents", "capped", "can_set_cap", "previews", "secrets_set", "library", "env_keys")
     RESOURCES_FIELD_NUMBER: _ClassVar[int]
     ESTIMATE_FIELD_NUMBER: _ClassVar[int]
     PENDING_FIELD_NUMBER: _ClassVar[int]
@@ -189,6 +195,8 @@ class GetResourcesResponse(_message.Message):
     CAN_SET_CAP_FIELD_NUMBER: _ClassVar[int]
     PREVIEWS_FIELD_NUMBER: _ClassVar[int]
     SECRETS_SET_FIELD_NUMBER: _ClassVar[int]
+    LIBRARY_FIELD_NUMBER: _ClassVar[int]
+    ENV_KEYS_FIELD_NUMBER: _ClassVar[int]
     resources: _containers.RepeatedCompositeFieldContainer[Resource]
     estimate: Cost
     pending: PendingBuild
@@ -200,7 +208,9 @@ class GetResourcesResponse(_message.Message):
     can_set_cap: bool
     previews: _containers.RepeatedCompositeFieldContainer[Preview]
     secrets_set: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, resources: _Optional[_Iterable[_Union[Resource, _Mapping]]] = ..., estimate: _Optional[_Union[Cost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., secrets: _Optional[_Iterable[str]] = ..., can_manage: bool = ..., month_cents: _Optional[int] = ..., cap_cents: _Optional[int] = ..., capped: bool = ..., can_set_cap: bool = ..., previews: _Optional[_Iterable[_Union[Preview, _Mapping]]] = ..., secrets_set: _Optional[_Iterable[str]] = ...) -> None: ...
+    library: _containers.RepeatedScalarFieldContainer[str]
+    env_keys: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, resources: _Optional[_Iterable[_Union[Resource, _Mapping]]] = ..., estimate: _Optional[_Union[Cost, _Mapping]] = ..., pending: _Optional[_Union[PendingBuild, _Mapping]] = ..., secrets: _Optional[_Iterable[str]] = ..., can_manage: bool = ..., month_cents: _Optional[int] = ..., cap_cents: _Optional[int] = ..., capped: bool = ..., can_set_cap: bool = ..., previews: _Optional[_Iterable[_Union[Preview, _Mapping]]] = ..., secrets_set: _Optional[_Iterable[str]] = ..., library: _Optional[_Iterable[str]] = ..., env_keys: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class Preview(_message.Message):
     __slots__ = ("pull_request", "url", "build", "expires_at")
@@ -395,3 +405,95 @@ class SetSecretRequest(_message.Message):
 class SetSecretResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class ResourceChange(_message.Message):
+    __slots__ = ("kind", "name", "remove", "size", "min", "max", "schedule", "storage", "extensions", "command", "scratch", "timeout", "value")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    REMOVE_FIELD_NUMBER: _ClassVar[int]
+    SIZE_FIELD_NUMBER: _ClassVar[int]
+    MIN_FIELD_NUMBER: _ClassVar[int]
+    MAX_FIELD_NUMBER: _ClassVar[int]
+    SCHEDULE_FIELD_NUMBER: _ClassVar[int]
+    STORAGE_FIELD_NUMBER: _ClassVar[int]
+    EXTENSIONS_FIELD_NUMBER: _ClassVar[int]
+    COMMAND_FIELD_NUMBER: _ClassVar[int]
+    SCRATCH_FIELD_NUMBER: _ClassVar[int]
+    TIMEOUT_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    name: str
+    remove: bool
+    size: str
+    min: int
+    max: int
+    schedule: str
+    storage: str
+    extensions: _containers.RepeatedScalarFieldContainer[str]
+    command: _containers.RepeatedScalarFieldContainer[str]
+    scratch: str
+    timeout: str
+    value: str
+    def __init__(self, kind: _Optional[str] = ..., name: _Optional[str] = ..., remove: bool = ..., size: _Optional[str] = ..., min: _Optional[int] = ..., max: _Optional[int] = ..., schedule: _Optional[str] = ..., storage: _Optional[str] = ..., extensions: _Optional[_Iterable[str]] = ..., command: _Optional[_Iterable[str]] = ..., scratch: _Optional[str] = ..., timeout: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+
+class PreviewChangeRequest(_message.Message):
+    __slots__ = ("channel_id", "change", "text")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    change: ResourceChange
+    text: str
+    def __init__(self, channel_id: _Optional[str] = ..., change: _Optional[_Union[ResourceChange, _Mapping]] = ..., text: _Optional[str] = ...) -> None: ...
+
+class PreviewChangeResponse(_message.Message):
+    __slots__ = ("text", "before", "after", "problems", "needs_owner", "can_apply")
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    BEFORE_FIELD_NUMBER: _ClassVar[int]
+    AFTER_FIELD_NUMBER: _ClassVar[int]
+    PROBLEMS_FIELD_NUMBER: _ClassVar[int]
+    NEEDS_OWNER_FIELD_NUMBER: _ClassVar[int]
+    CAN_APPLY_FIELD_NUMBER: _ClassVar[int]
+    text: str
+    before: Cost
+    after: Cost
+    problems: _containers.RepeatedScalarFieldContainer[str]
+    needs_owner: bool
+    can_apply: bool
+    def __init__(self, text: _Optional[str] = ..., before: _Optional[_Union[Cost, _Mapping]] = ..., after: _Optional[_Union[Cost, _Mapping]] = ..., problems: _Optional[_Iterable[str]] = ..., needs_owner: bool = ..., can_apply: bool = ...) -> None: ...
+
+class ApplyChangeRequest(_message.Message):
+    __slots__ = ("channel_id", "change", "text", "accepted_total_cents")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    ACCEPTED_TOTAL_CENTS_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    change: ResourceChange
+    text: str
+    accepted_total_cents: int
+    def __init__(self, channel_id: _Optional[str] = ..., change: _Optional[_Union[ResourceChange, _Mapping]] = ..., text: _Optional[str] = ..., accepted_total_cents: _Optional[int] = ...) -> None: ...
+
+class ApplyChangeResponse(_message.Message):
+    __slots__ = ("commit_sha", "estimate", "live")
+    COMMIT_SHA_FIELD_NUMBER: _ClassVar[int]
+    ESTIMATE_FIELD_NUMBER: _ClassVar[int]
+    LIVE_FIELD_NUMBER: _ClassVar[int]
+    commit_sha: str
+    estimate: Cost
+    live: bool
+    def __init__(self, commit_sha: _Optional[str] = ..., estimate: _Optional[_Union[Cost, _Mapping]] = ..., live: bool = ...) -> None: ...
+
+class GetSpecTextRequest(_message.Message):
+    __slots__ = ("channel_id",)
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
+
+class GetSpecTextResponse(_message.Message):
+    __slots__ = ("text", "can_edit")
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    CAN_EDIT_FIELD_NUMBER: _ClassVar[int]
+    text: str
+    can_edit: bool
+    def __init__(self, text: _Optional[str] = ..., can_edit: bool = ...) -> None: ...

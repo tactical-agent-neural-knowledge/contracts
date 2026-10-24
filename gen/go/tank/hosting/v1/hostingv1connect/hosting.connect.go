@@ -69,6 +69,15 @@ const (
 	// HostingServiceSetSecretProcedure is the fully-qualified name of the HostingService's SetSecret
 	// RPC.
 	HostingServiceSetSecretProcedure = "/tank.hosting.v1.HostingService/SetSecret"
+	// HostingServicePreviewChangeProcedure is the fully-qualified name of the HostingService's
+	// PreviewChange RPC.
+	HostingServicePreviewChangeProcedure = "/tank.hosting.v1.HostingService/PreviewChange"
+	// HostingServiceApplyChangeProcedure is the fully-qualified name of the HostingService's
+	// ApplyChange RPC.
+	HostingServiceApplyChangeProcedure = "/tank.hosting.v1.HostingService/ApplyChange"
+	// HostingServiceGetSpecTextProcedure is the fully-qualified name of the HostingService's
+	// GetSpecText RPC.
+	HostingServiceGetSpecTextProcedure = "/tank.hosting.v1.HostingService/GetSpecText"
 )
 
 // HostingServiceClient is a client for the tank.hosting.v1.HostingService service.
@@ -103,6 +112,13 @@ type HostingServiceClient interface {
 	ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error)
 	// Admins set a declared secret's value. Never returned; the product restarts with it.
 	SetSecret(context.Context, *connect.Request[v1.SetSecretRequest]) (*connect.Response[v1.SetSecretResponse], error)
+	// Hosting settings: what a change would cost before anybody commits to it. Members read.
+	PreviewChange(context.Context, *connect.Request[v1.PreviewChangeRequest]) (*connect.Response[v1.PreviewChangeResponse], error)
+	// Makes a change: admins for one that costs the same or less; a change that costs more
+	// is a purchase, so it takes an owner and the exact monthly price they were shown.
+	ApplyChange(context.Context, *connect.Request[v1.ApplyChangeRequest]) (*connect.Response[v1.ApplyChangeResponse], error)
+	// tank.yaml as it is, for the editor. Members read.
+	GetSpecText(context.Context, *connect.Request[v1.GetSpecTextRequest]) (*connect.Response[v1.GetSpecTextResponse], error)
 }
 
 // NewHostingServiceClient constructs a client for the tank.hosting.v1.HostingService service. By
@@ -194,6 +210,24 @@ func NewHostingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(hostingServiceMethods.ByName("SetSecret")),
 			connect.WithClientOptions(opts...),
 		),
+		previewChange: connect.NewClient[v1.PreviewChangeRequest, v1.PreviewChangeResponse](
+			httpClient,
+			baseURL+HostingServicePreviewChangeProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("PreviewChange")),
+			connect.WithClientOptions(opts...),
+		),
+		applyChange: connect.NewClient[v1.ApplyChangeRequest, v1.ApplyChangeResponse](
+			httpClient,
+			baseURL+HostingServiceApplyChangeProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("ApplyChange")),
+			connect.WithClientOptions(opts...),
+		),
+		getSpecText: connect.NewClient[v1.GetSpecTextRequest, v1.GetSpecTextResponse](
+			httpClient,
+			baseURL+HostingServiceGetSpecTextProcedure,
+			connect.WithSchema(hostingServiceMethods.ByName("GetSpecText")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -212,6 +246,9 @@ type hostingServiceClient struct {
 	setAllowance   *connect.Client[v1.SetAllowanceRequest, v1.SetAllowanceResponse]
 	exportProduct  *connect.Client[v1.ExportProductRequest, v1.ExportProductResponse]
 	setSecret      *connect.Client[v1.SetSecretRequest, v1.SetSecretResponse]
+	previewChange  *connect.Client[v1.PreviewChangeRequest, v1.PreviewChangeResponse]
+	applyChange    *connect.Client[v1.ApplyChangeRequest, v1.ApplyChangeResponse]
+	getSpecText    *connect.Client[v1.GetSpecTextRequest, v1.GetSpecTextResponse]
 }
 
 // GetProduct calls tank.hosting.v1.HostingService.GetProduct.
@@ -279,6 +316,21 @@ func (c *hostingServiceClient) SetSecret(ctx context.Context, req *connect.Reque
 	return c.setSecret.CallUnary(ctx, req)
 }
 
+// PreviewChange calls tank.hosting.v1.HostingService.PreviewChange.
+func (c *hostingServiceClient) PreviewChange(ctx context.Context, req *connect.Request[v1.PreviewChangeRequest]) (*connect.Response[v1.PreviewChangeResponse], error) {
+	return c.previewChange.CallUnary(ctx, req)
+}
+
+// ApplyChange calls tank.hosting.v1.HostingService.ApplyChange.
+func (c *hostingServiceClient) ApplyChange(ctx context.Context, req *connect.Request[v1.ApplyChangeRequest]) (*connect.Response[v1.ApplyChangeResponse], error) {
+	return c.applyChange.CallUnary(ctx, req)
+}
+
+// GetSpecText calls tank.hosting.v1.HostingService.GetSpecText.
+func (c *hostingServiceClient) GetSpecText(ctx context.Context, req *connect.Request[v1.GetSpecTextRequest]) (*connect.Response[v1.GetSpecTextResponse], error) {
+	return c.getSpecText.CallUnary(ctx, req)
+}
+
 // HostingServiceHandler is an implementation of the tank.hosting.v1.HostingService service.
 type HostingServiceHandler interface {
 	// The product's running state, recent cluster events and log tail.
@@ -311,6 +363,13 @@ type HostingServiceHandler interface {
 	ExportProduct(context.Context, *connect.Request[v1.ExportProductRequest]) (*connect.Response[v1.ExportProductResponse], error)
 	// Admins set a declared secret's value. Never returned; the product restarts with it.
 	SetSecret(context.Context, *connect.Request[v1.SetSecretRequest]) (*connect.Response[v1.SetSecretResponse], error)
+	// Hosting settings: what a change would cost before anybody commits to it. Members read.
+	PreviewChange(context.Context, *connect.Request[v1.PreviewChangeRequest]) (*connect.Response[v1.PreviewChangeResponse], error)
+	// Makes a change: admins for one that costs the same or less; a change that costs more
+	// is a purchase, so it takes an owner and the exact monthly price they were shown.
+	ApplyChange(context.Context, *connect.Request[v1.ApplyChangeRequest]) (*connect.Response[v1.ApplyChangeResponse], error)
+	// tank.yaml as it is, for the editor. Members read.
+	GetSpecText(context.Context, *connect.Request[v1.GetSpecTextRequest]) (*connect.Response[v1.GetSpecTextResponse], error)
 }
 
 // NewHostingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -398,6 +457,24 @@ func NewHostingServiceHandler(svc HostingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(hostingServiceMethods.ByName("SetSecret")),
 		connect.WithHandlerOptions(opts...),
 	)
+	hostingServicePreviewChangeHandler := connect.NewUnaryHandler(
+		HostingServicePreviewChangeProcedure,
+		svc.PreviewChange,
+		connect.WithSchema(hostingServiceMethods.ByName("PreviewChange")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostingServiceApplyChangeHandler := connect.NewUnaryHandler(
+		HostingServiceApplyChangeProcedure,
+		svc.ApplyChange,
+		connect.WithSchema(hostingServiceMethods.ByName("ApplyChange")),
+		connect.WithHandlerOptions(opts...),
+	)
+	hostingServiceGetSpecTextHandler := connect.NewUnaryHandler(
+		HostingServiceGetSpecTextProcedure,
+		svc.GetSpecText,
+		connect.WithSchema(hostingServiceMethods.ByName("GetSpecText")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.hosting.v1.HostingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case HostingServiceGetProductProcedure:
@@ -426,6 +503,12 @@ func NewHostingServiceHandler(svc HostingServiceHandler, opts ...connect.Handler
 			hostingServiceExportProductHandler.ServeHTTP(w, r)
 		case HostingServiceSetSecretProcedure:
 			hostingServiceSetSecretHandler.ServeHTTP(w, r)
+		case HostingServicePreviewChangeProcedure:
+			hostingServicePreviewChangeHandler.ServeHTTP(w, r)
+		case HostingServiceApplyChangeProcedure:
+			hostingServiceApplyChangeHandler.ServeHTTP(w, r)
+		case HostingServiceGetSpecTextProcedure:
+			hostingServiceGetSpecTextHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -485,4 +568,16 @@ func (UnimplementedHostingServiceHandler) ExportProduct(context.Context, *connec
 
 func (UnimplementedHostingServiceHandler) SetSecret(context.Context, *connect.Request[v1.SetSecretRequest]) (*connect.Response[v1.SetSecretResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.SetSecret is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) PreviewChange(context.Context, *connect.Request[v1.PreviewChangeRequest]) (*connect.Response[v1.PreviewChangeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.PreviewChange is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) ApplyChange(context.Context, *connect.Request[v1.ApplyChangeRequest]) (*connect.Response[v1.ApplyChangeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.ApplyChange is not implemented"))
+}
+
+func (UnimplementedHostingServiceHandler) GetSpecText(context.Context, *connect.Request[v1.GetSpecTextRequest]) (*connect.Response[v1.GetSpecTextResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.hosting.v1.HostingService.GetSpecText is not implemented"))
 }
