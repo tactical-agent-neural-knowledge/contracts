@@ -27,6 +27,9 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
       - run: buf lint
       # The check that makes the polyrepo safe: a wire break here would be a
       # production incident in web/mobile/agent-runner, so it is caught at the source.
@@ -39,14 +42,12 @@ jobs:
           buf breaking --against ".git#branch=main"
       - name: generated code is current
         run: |
+          make tools
           buf generate
           if ! git diff --exit-code --stat gen/; then
             echo "::error::gen/ is stale. Run 'make gen' and commit the result."; exit 1
           fi
       - run: go build ./...
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
       - name: typescript compiles
         working-directory: gen/ts
         run: npm install --no-audit --no-fund && npm run build

@@ -6,24 +6,31 @@ managed:
     - file_option: go_package_prefix
       value: github.com/tactical-agent-neural-knowledge/contracts/gen/go
 
+# Every plugin runs here, pinned, rather than on buf.build. On 2026-10-24 the BSR started
+# refusing CI's anonymous remote-plugin calls ("internal error") while a laptop's went
+# through, so the wire contract every repo depends on could not be checked. The versions
+# are the ones the remote plugins were pinned to, so the output is byte for byte the same.
+# `make tools` puts them, and protoc for the Python builtins, in .tools/.
 plugins:
   # Go — consumed by api and agent-control as a Go module.
-  - remote: buf.build/protocolbuffers/go:v1.36.4
+  - local: .tools/bin/protoc-gen-go
     out: gen/go
     opt: paths=source_relative
-  - remote: buf.build/connectrpc/go:v1.18.1
+  - local: .tools/bin/protoc-gen-connect-go
     out: gen/go
     opt: paths=source_relative
 
   # TypeScript — consumed by sdk-ts, web, mobile, agent-runner as @tactical-agent-neural-knowledge/contracts.
-  - remote: buf.build/bufbuild/es:v2.2.3
+  - local: .tools/node_modules/.bin/protoc-gen-es
     out: gen/ts/src
     opt:
       - target=ts
       - import_extension=js
 
   # Python — consumed by knowledge.
-  - remote: buf.build/protocolbuffers/python:v29.3
+  - protoc_builtin: python
+    protoc_path: .tools/protoc/bin/protoc
     out: gen/python
-  - remote: buf.build/protocolbuffers/pyi:v29.3
+  - protoc_builtin: pyi
+    protoc_path: .tools/protoc/bin/protoc
     out: gen/python
