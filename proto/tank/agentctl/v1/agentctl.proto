@@ -130,6 +130,12 @@ message RunContext {
   // The thread's Workbench: the board the agent lays its steps and its work on while
   // people watch in the thread. Empty for runs nobody watches (neural, recon, remediation).
   string workbench_board_id = 30;
+  // Everything the Tread holds, as one brief the control plane writes: its settings, what
+  // TANK hosts for it and anything waiting on an owner, recent runs, boards and pages, the
+  // latest messages with who wrote them (the agent's own notices included), and what the
+  // Neural Vault knows about the ask. The same brief the agent's thread replies are written
+  // from, so a run and a reply never disagree about the Tread.
+  string tread_brief = 31;
 }
 
 message GetRunContextRequest {}
