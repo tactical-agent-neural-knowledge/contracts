@@ -115,6 +115,9 @@ message SendMessageResponse {
     Message done = 3;
     // The conversation got a title (after the first reply).
     string title = 4;
+    // The model was asleep and is starting: the reply follows in a few minutes. The
+    // sentence to show, from the server.
+    string warming = 5;
   }
 }
 message Started {
