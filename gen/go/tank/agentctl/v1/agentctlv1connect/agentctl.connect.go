@@ -64,6 +64,9 @@ const (
 	// RunnerServiceReportStatusProcedure is the fully-qualified name of the RunnerService's
 	// ReportStatus RPC.
 	RunnerServiceReportStatusProcedure = "/tank.agentctl.v1.RunnerService/ReportStatus"
+	// RunnerServiceUpdatePlanStepsProcedure is the fully-qualified name of the RunnerService's
+	// UpdatePlanSteps RPC.
+	RunnerServiceUpdatePlanStepsProcedure = "/tank.agentctl.v1.RunnerService/UpdatePlanSteps"
 	// RunnerServiceReportCompletionProcedure is the fully-qualified name of the RunnerService's
 	// ReportCompletion RPC.
 	RunnerServiceReportCompletionProcedure = "/tank.agentctl.v1.RunnerService/ReportCompletion"
@@ -304,6 +307,7 @@ type RunnerServiceClient interface {
 	AskForApproval(context.Context, *connect.Request[v1.AskForApprovalRequest]) (*connect.Response[v1.AskForApprovalResponse], error)
 	AskQuestion(context.Context, *connect.Request[v1.AskQuestionRequest]) (*connect.Response[v1.AskQuestionResponse], error)
 	ReportStatus(context.Context, *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error)
+	UpdatePlanSteps(context.Context, *connect.Request[v1.UpdatePlanStepsRequest]) (*connect.Response[v1.UpdatePlanStepsResponse], error)
 	// How far the run got against the whole ask (2026-10-23): what is done, what is left,
 	// and what needs a person. Items left with nothing blocked start a continuation run.
 	ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error)
@@ -424,6 +428,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServiceReportStatusProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("ReportStatus")),
+			connect.WithClientOptions(opts...),
+		),
+		updatePlanSteps: connect.NewClient[v1.UpdatePlanStepsRequest, v1.UpdatePlanStepsResponse](
+			httpClient,
+			baseURL+RunnerServiceUpdatePlanStepsProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("UpdatePlanSteps")),
 			connect.WithClientOptions(opts...),
 		),
 		reportCompletion: connect.NewClient[v1.ReportCompletionRequest, v1.ReportCompletionResponse](
@@ -675,6 +685,7 @@ type runnerServiceClient struct {
 	askForApproval           *connect.Client[v1.AskForApprovalRequest, v1.AskForApprovalResponse]
 	askQuestion              *connect.Client[v1.AskQuestionRequest, v1.AskQuestionResponse]
 	reportStatus             *connect.Client[v1.ReportStatusRequest, v1.ReportStatusResponse]
+	updatePlanSteps          *connect.Client[v1.UpdatePlanStepsRequest, v1.UpdatePlanStepsResponse]
 	reportCompletion         *connect.Client[v1.ReportCompletionRequest, v1.ReportCompletionResponse]
 	checkLive                *connect.Client[v1.CheckLiveRequest, v1.CheckLiveResponse]
 	readProduct              *connect.Client[v1.ReadProductRequest, v1.ReadProductResponse]
@@ -764,6 +775,11 @@ func (c *runnerServiceClient) AskQuestion(ctx context.Context, req *connect.Requ
 // ReportStatus calls tank.agentctl.v1.RunnerService.ReportStatus.
 func (c *runnerServiceClient) ReportStatus(ctx context.Context, req *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error) {
 	return c.reportStatus.CallUnary(ctx, req)
+}
+
+// UpdatePlanSteps calls tank.agentctl.v1.RunnerService.UpdatePlanSteps.
+func (c *runnerServiceClient) UpdatePlanSteps(ctx context.Context, req *connect.Request[v1.UpdatePlanStepsRequest]) (*connect.Response[v1.UpdatePlanStepsResponse], error) {
+	return c.updatePlanSteps.CallUnary(ctx, req)
 }
 
 // ReportCompletion calls tank.agentctl.v1.RunnerService.ReportCompletion.
@@ -973,6 +989,7 @@ type RunnerServiceHandler interface {
 	AskForApproval(context.Context, *connect.Request[v1.AskForApprovalRequest]) (*connect.Response[v1.AskForApprovalResponse], error)
 	AskQuestion(context.Context, *connect.Request[v1.AskQuestionRequest]) (*connect.Response[v1.AskQuestionResponse], error)
 	ReportStatus(context.Context, *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error)
+	UpdatePlanSteps(context.Context, *connect.Request[v1.UpdatePlanStepsRequest]) (*connect.Response[v1.UpdatePlanStepsResponse], error)
 	// How far the run got against the whole ask (2026-10-23): what is done, what is left,
 	// and what needs a person. Items left with nothing blocked start a continuation run.
 	ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error)
@@ -1089,6 +1106,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceReportStatusProcedure,
 		svc.ReportStatus,
 		connect.WithSchema(runnerServiceMethods.ByName("ReportStatus")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceUpdatePlanStepsHandler := connect.NewUnaryHandler(
+		RunnerServiceUpdatePlanStepsProcedure,
+		svc.UpdatePlanSteps,
+		connect.WithSchema(runnerServiceMethods.ByName("UpdatePlanSteps")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServiceReportCompletionHandler := connect.NewUnaryHandler(
@@ -1347,6 +1370,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceAskQuestionHandler.ServeHTTP(w, r)
 		case RunnerServiceReportStatusProcedure:
 			runnerServiceReportStatusHandler.ServeHTTP(w, r)
+		case RunnerServiceUpdatePlanStepsProcedure:
+			runnerServiceUpdatePlanStepsHandler.ServeHTTP(w, r)
 		case RunnerServiceReportCompletionProcedure:
 			runnerServiceReportCompletionHandler.ServeHTTP(w, r)
 		case RunnerServiceCheckLiveProcedure:
@@ -1472,6 +1497,10 @@ func (UnimplementedRunnerServiceHandler) AskQuestion(context.Context, *connect.R
 
 func (UnimplementedRunnerServiceHandler) ReportStatus(context.Context, *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReportStatus is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) UpdatePlanSteps(context.Context, *connect.Request[v1.UpdatePlanStepsRequest]) (*connect.Response[v1.UpdatePlanStepsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.UpdatePlanSteps is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error) {

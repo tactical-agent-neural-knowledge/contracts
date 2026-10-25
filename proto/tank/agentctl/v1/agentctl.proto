@@ -256,6 +256,21 @@ message ReportStatusRequest {
 }
 message ReportStatusResponse {}
 
+// Progress through the approved plan, shown on the plan card as it moves: a step is
+// running when the run starts it and done when it is proven. Steps are named by the id
+// they were posted with, or by their 1-based position ("3"). A continuation run updates
+// the plan card of the thread's approved plan, whichever run posted it.
+message UpdatePlanStepsRequest {
+  repeated PlanStepUpdate steps = 1;
+}
+message PlanStepUpdate {
+  string id = 1;
+  tank.blocks.v1.StepStatus status = 2;
+}
+message UpdatePlanStepsResponse {
+  repeated string unknown_ids = 1; // ids that matched no step on the card
+}
+
 message ReportCompletionRequest {
   repeated string done = 1;       // parts of the ask finished and pushed
   repeated string remaining = 2;  // parts not started or not finished, in order
@@ -765,6 +780,7 @@ service RunnerService {
   rpc AskForApproval(AskForApprovalRequest) returns (AskForApprovalResponse);
   rpc AskQuestion(AskQuestionRequest) returns (AskQuestionResponse);
   rpc ReportStatus(ReportStatusRequest) returns (ReportStatusResponse);
+  rpc UpdatePlanSteps(UpdatePlanStepsRequest) returns (UpdatePlanStepsResponse);
   // How far the run got against the whole ask (2026-10-23): what is done, what is left,
   // and what needs a person. Items left with nothing blocked start a continuation run.
   rpc ReportCompletion(ReportCompletionRequest) returns (ReportCompletionResponse);

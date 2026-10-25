@@ -371,6 +371,26 @@ class ReportStatusResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class UpdatePlanStepsRequest(_message.Message):
+    __slots__ = ("steps",)
+    STEPS_FIELD_NUMBER: _ClassVar[int]
+    steps: _containers.RepeatedCompositeFieldContainer[PlanStepUpdate]
+    def __init__(self, steps: _Optional[_Iterable[_Union[PlanStepUpdate, _Mapping]]] = ...) -> None: ...
+
+class PlanStepUpdate(_message.Message):
+    __slots__ = ("id", "status")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    status: _blocks_pb2.StepStatus
+    def __init__(self, id: _Optional[str] = ..., status: _Optional[_Union[_blocks_pb2.StepStatus, str]] = ...) -> None: ...
+
+class UpdatePlanStepsResponse(_message.Message):
+    __slots__ = ("unknown_ids",)
+    UNKNOWN_IDS_FIELD_NUMBER: _ClassVar[int]
+    unknown_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, unknown_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+
 class ReportCompletionRequest(_message.Message):
     __slots__ = ("done", "remaining", "blocked")
     DONE_FIELD_NUMBER: _ClassVar[int]
