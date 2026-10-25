@@ -1,16 +1,16 @@
 {
   "generated_by": "TANK Neural Knowledge",
-  "commit": "e71dfe1d8dbe23b748128e2d086d7398be53ea7f",
-  "refreshed_at": "2026-10-24T12:08:56.705Z",
+  "commit": "f5d6e925c54b1b2d2696a063ce150e879a39529f",
+  "refreshed_at": "2026-10-25T17:17:40.518Z",
   "areas": {
     ".": {
       "neurons": ".neural/neurons/root.md",
       "hot": [
         "AGENTS.md",
         "README.md",
-        "CLAUDE.md",
         "Makefile",
         "buf.gen.yaml",
+        "CLAUDE.md",
         "buf.yaml"
       ],
       "files": [
@@ -39,11 +39,11 @@
       "neurons": ".neural/neurons/proto.md",
       "hot": [
         "proto/tank/agentctl/v1/agentctl.proto",
+        "proto/tank/board/v1/board.proto",
         "proto/tank/agent/v1/agent.proto",
         "proto/tank/hosting/v1/hosting.proto",
-        "proto/tank/board/v1/board.proto",
         "proto/tank/workspace/v1/workspace.proto",
-        "proto/tank/billing/v1/billing.proto"
+        "proto/tank/books/v1/books.proto"
       ],
       "files": [
         "proto/tank/admin/v1/admin.proto",
