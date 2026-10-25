@@ -35,6 +35,9 @@ const (
 const (
 	// AgentServiceStartRunProcedure is the fully-qualified name of the AgentService's StartRun RPC.
 	AgentServiceStartRunProcedure = "/tank.agent.v1.AgentService/StartRun"
+	// AgentServiceGetTreadPlanProcedure is the fully-qualified name of the AgentService's GetTreadPlan
+	// RPC.
+	AgentServiceGetTreadPlanProcedure = "/tank.agent.v1.AgentService/GetTreadPlan"
 	// AgentServiceStopRunProcedure is the fully-qualified name of the AgentService's StopRun RPC.
 	AgentServiceStopRunProcedure = "/tank.agent.v1.AgentService/StopRun"
 	// AgentServiceHeartbeatProcedure is the fully-qualified name of the AgentService's Heartbeat RPC.
@@ -98,6 +101,7 @@ const (
 // AgentServiceClient is a client for the tank.agent.v1.AgentService service.
 type AgentServiceClient interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
+	GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error)
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
 	Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error)
 	SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error)
@@ -147,6 +151,12 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			httpClient,
 			baseURL+AgentServiceStartRunProcedure,
 			connect.WithSchema(agentServiceMethods.ByName("StartRun")),
+			connect.WithClientOptions(opts...),
+		),
+		getTreadPlan: connect.NewClient[v1.GetTreadPlanRequest, v1.GetTreadPlanResponse](
+			httpClient,
+			baseURL+AgentServiceGetTreadPlanProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("GetTreadPlan")),
 			connect.WithClientOptions(opts...),
 		),
 		stopRun: connect.NewClient[v1.StopRunRequest, v1.StopRunResponse](
@@ -287,6 +297,7 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 // agentServiceClient implements AgentServiceClient.
 type agentServiceClient struct {
 	startRun                 *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	getTreadPlan             *connect.Client[v1.GetTreadPlanRequest, v1.GetTreadPlanResponse]
 	stopRun                  *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
 	heartbeat                *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
 	setStatus                *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
@@ -314,6 +325,11 @@ type agentServiceClient struct {
 // StartRun calls tank.agent.v1.AgentService.StartRun.
 func (c *agentServiceClient) StartRun(ctx context.Context, req *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error) {
 	return c.startRun.CallUnary(ctx, req)
+}
+
+// GetTreadPlan calls tank.agent.v1.AgentService.GetTreadPlan.
+func (c *agentServiceClient) GetTreadPlan(ctx context.Context, req *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error) {
+	return c.getTreadPlan.CallUnary(ctx, req)
 }
 
 // StopRun calls tank.agent.v1.AgentService.StopRun.
@@ -429,6 +445,7 @@ func (c *agentServiceClient) ListWorkspaceDeployments(ctx context.Context, req *
 // AgentServiceHandler is an implementation of the tank.agent.v1.AgentService service.
 type AgentServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
+	GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error)
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
 	Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error)
 	SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error)
@@ -474,6 +491,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		AgentServiceStartRunProcedure,
 		svc.StartRun,
 		connect.WithSchema(agentServiceMethods.ByName("StartRun")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceGetTreadPlanHandler := connect.NewUnaryHandler(
+		AgentServiceGetTreadPlanProcedure,
+		svc.GetTreadPlan,
+		connect.WithSchema(agentServiceMethods.ByName("GetTreadPlan")),
 		connect.WithHandlerOptions(opts...),
 	)
 	agentServiceStopRunHandler := connect.NewUnaryHandler(
@@ -612,6 +635,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		switch r.URL.Path {
 		case AgentServiceStartRunProcedure:
 			agentServiceStartRunHandler.ServeHTTP(w, r)
+		case AgentServiceGetTreadPlanProcedure:
+			agentServiceGetTreadPlanHandler.ServeHTTP(w, r)
 		case AgentServiceStopRunProcedure:
 			agentServiceStopRunHandler.ServeHTTP(w, r)
 		case AgentServiceHeartbeatProcedure:
@@ -667,6 +692,10 @@ type UnimplementedAgentServiceHandler struct{}
 
 func (UnimplementedAgentServiceHandler) StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.StartRun is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.GetTreadPlan is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error) {

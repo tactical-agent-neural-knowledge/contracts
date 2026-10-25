@@ -28,6 +28,15 @@ class RunState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     RUN_STATE_BUDGET_EXHAUSTED: _ClassVar[RunState]
     RUN_STATE_TIMED_OUT: _ClassVar[RunState]
     RUN_STATE_APPROVAL_EXPIRED: _ClassVar[RunState]
+
+class PlanItemStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    PLAN_ITEM_STATUS_UNSPECIFIED: _ClassVar[PlanItemStatus]
+    PLAN_ITEM_STATUS_TODO: _ClassVar[PlanItemStatus]
+    PLAN_ITEM_STATUS_DOING: _ClassVar[PlanItemStatus]
+    PLAN_ITEM_STATUS_DONE: _ClassVar[PlanItemStatus]
+    PLAN_ITEM_STATUS_NEEDS_PERSON: _ClassVar[PlanItemStatus]
+    PLAN_ITEM_STATUS_DROPPED: _ClassVar[PlanItemStatus]
 RUN_STATE_UNSPECIFIED: RunState
 RUN_STATE_REQUESTED: RunState
 RUN_STATE_ADMITTED: RunState
@@ -47,6 +56,12 @@ RUN_STATE_FAILED: RunState
 RUN_STATE_BUDGET_EXHAUSTED: RunState
 RUN_STATE_TIMED_OUT: RunState
 RUN_STATE_APPROVAL_EXPIRED: RunState
+PLAN_ITEM_STATUS_UNSPECIFIED: PlanItemStatus
+PLAN_ITEM_STATUS_TODO: PlanItemStatus
+PLAN_ITEM_STATUS_DOING: PlanItemStatus
+PLAN_ITEM_STATUS_DONE: PlanItemStatus
+PLAN_ITEM_STATUS_NEEDS_PERSON: PlanItemStatus
+PLAN_ITEM_STATUS_DROPPED: PlanItemStatus
 
 class Agent(_message.Message):
     __slots__ = ("id", "workspace_id", "principal_id", "name", "scopes", "title", "skill")
@@ -639,3 +654,47 @@ class SetTreadDeploymentResponse(_message.Message):
     DEPLOYMENT_FIELD_NUMBER: _ClassVar[int]
     deployment: TreadDeployment
     def __init__(self, deployment: _Optional[_Union[TreadDeployment, _Mapping]] = ...) -> None: ...
+
+class TreadPlanItem(_message.Message):
+    __slots__ = ("key", "title", "status", "phase", "note")
+    KEY_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    PHASE_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    key: str
+    title: str
+    status: PlanItemStatus
+    phase: str
+    note: str
+    def __init__(self, key: _Optional[str] = ..., title: _Optional[str] = ..., status: _Optional[_Union[PlanItemStatus, str]] = ..., phase: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
+
+class TreadPlan(_message.Message):
+    __slots__ = ("channel_id", "title", "source", "items", "version", "first_total", "updated_at")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    ITEMS_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    FIRST_TOTAL_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    title: str
+    source: str
+    items: _containers.RepeatedCompositeFieldContainer[TreadPlanItem]
+    version: int
+    first_total: int
+    updated_at: _timestamp_pb2.Timestamp
+    def __init__(self, channel_id: _Optional[str] = ..., title: _Optional[str] = ..., source: _Optional[str] = ..., items: _Optional[_Iterable[_Union[TreadPlanItem, _Mapping]]] = ..., version: _Optional[int] = ..., first_total: _Optional[int] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class GetTreadPlanRequest(_message.Message):
+    __slots__ = ("channel_id",)
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
+
+class GetTreadPlanResponse(_message.Message):
+    __slots__ = ("plan",)
+    PLAN_FIELD_NUMBER: _ClassVar[int]
+    plan: TreadPlan
+    def __init__(self, plan: _Optional[_Union[TreadPlan, _Mapping]] = ...) -> None: ...

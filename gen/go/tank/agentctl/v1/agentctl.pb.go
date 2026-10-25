@@ -7,12 +7,12 @@
 package agentctlv1
 
 import (
-	v15 "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/agent/v1"
+	v11 "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/agent/v1"
 	v1 "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/blocks/v1"
-	v14 "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/board/v1"
-	v11 "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/books/v1"
-	v13 "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/canvas/v1"
-	v12 "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/social/v1"
+	v15 "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/board/v1"
+	v12 "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/books/v1"
+	v14 "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/canvas/v1"
+	v13 "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/social/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -642,7 +642,10 @@ type RunContext struct {
 	// latest messages with who wrote them (the agent's own notices included), and what the
 	// Neural Vault knows about the ask. The same brief the agent's thread replies are written
 	// from, so a run and a reply never disagree about the Tread.
-	TreadBrief    string `protobuf:"bytes,31,opt,name=tread_brief,json=treadBrief,proto3" json:"tread_brief,omitempty"`
+	TreadBrief string `protobuf:"bytes,31,opt,name=tread_brief,json=treadBrief,proto3" json:"tread_brief,omitempty"`
+	// The Tread's plan ledger as it stands, so the run works against the whole plan and keeps
+	// it current with UpdateTreadPlan. Unset when the Tread has none yet.
+	TreadPlan     *v11.TreadPlan `protobuf:"bytes,32,opt,name=tread_plan,json=treadPlan,proto3" json:"tread_plan,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -892,6 +895,13 @@ func (x *RunContext) GetTreadBrief() string {
 		return x.TreadBrief
 	}
 	return ""
+}
+
+func (x *RunContext) GetTreadPlan() *v11.TreadPlan {
+	if x != nil {
+		return x.TreadPlan
+	}
+	return nil
 }
 
 type GetRunContextRequest struct {
@@ -2042,6 +2052,121 @@ func (*ReportStatusResponse) Descriptor() ([]byte, []int) {
 // running when the run starts it and done when it is proven. Steps are named by the id
 // they were posted with, or by their 1-based position ("3"). A continuation run updates
 // the plan card of the thread's approved plan, whichever run posted it.
+// Keeps the Tread's plan ledger. Items are matched by key: a new key adds an item, a known
+// key updates its title, status, phase or note. replace_all sets the whole list (a new
+// version; keys left out are dropped), for creating the ledger or when the scope changes.
+type UpdateTreadPlanRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Source        string                 `protobuf:"bytes,2,opt,name=source,proto3" json:"source,omitempty"`
+	Items         []*v11.TreadPlanItem   `protobuf:"bytes,3,rep,name=items,proto3" json:"items,omitempty"`
+	ReplaceAll    bool                   `protobuf:"varint,4,opt,name=replace_all,json=replaceAll,proto3" json:"replace_all,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateTreadPlanRequest) Reset() {
+	*x = UpdateTreadPlanRequest{}
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateTreadPlanRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateTreadPlanRequest) ProtoMessage() {}
+
+func (x *UpdateTreadPlanRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateTreadPlanRequest.ProtoReflect.Descriptor instead.
+func (*UpdateTreadPlanRequest) Descriptor() ([]byte, []int) {
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *UpdateTreadPlanRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *UpdateTreadPlanRequest) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+func (x *UpdateTreadPlanRequest) GetItems() []*v11.TreadPlanItem {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *UpdateTreadPlanRequest) GetReplaceAll() bool {
+	if x != nil {
+		return x.ReplaceAll
+	}
+	return false
+}
+
+type UpdateTreadPlanResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Plan          *v11.TreadPlan         `protobuf:"bytes,1,opt,name=plan,proto3" json:"plan,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateTreadPlanResponse) Reset() {
+	*x = UpdateTreadPlanResponse{}
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateTreadPlanResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateTreadPlanResponse) ProtoMessage() {}
+
+func (x *UpdateTreadPlanResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateTreadPlanResponse.ProtoReflect.Descriptor instead.
+func (*UpdateTreadPlanResponse) Descriptor() ([]byte, []int) {
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *UpdateTreadPlanResponse) GetPlan() *v11.TreadPlan {
+	if x != nil {
+		return x.Plan
+	}
+	return nil
+}
+
 type UpdatePlanStepsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Steps         []*PlanStepUpdate      `protobuf:"bytes,1,rep,name=steps,proto3" json:"steps,omitempty"`
@@ -2051,7 +2176,7 @@ type UpdatePlanStepsRequest struct {
 
 func (x *UpdatePlanStepsRequest) Reset() {
 	*x = UpdatePlanStepsRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[26]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2063,7 +2188,7 @@ func (x *UpdatePlanStepsRequest) String() string {
 func (*UpdatePlanStepsRequest) ProtoMessage() {}
 
 func (x *UpdatePlanStepsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[26]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2076,7 +2201,7 @@ func (x *UpdatePlanStepsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePlanStepsRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePlanStepsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{26}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *UpdatePlanStepsRequest) GetSteps() []*PlanStepUpdate {
@@ -2096,7 +2221,7 @@ type PlanStepUpdate struct {
 
 func (x *PlanStepUpdate) Reset() {
 	*x = PlanStepUpdate{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[27]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2108,7 +2233,7 @@ func (x *PlanStepUpdate) String() string {
 func (*PlanStepUpdate) ProtoMessage() {}
 
 func (x *PlanStepUpdate) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[27]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2121,7 +2246,7 @@ func (x *PlanStepUpdate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlanStepUpdate.ProtoReflect.Descriptor instead.
 func (*PlanStepUpdate) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{27}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *PlanStepUpdate) GetId() string {
@@ -2147,7 +2272,7 @@ type UpdatePlanStepsResponse struct {
 
 func (x *UpdatePlanStepsResponse) Reset() {
 	*x = UpdatePlanStepsResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[28]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2159,7 +2284,7 @@ func (x *UpdatePlanStepsResponse) String() string {
 func (*UpdatePlanStepsResponse) ProtoMessage() {}
 
 func (x *UpdatePlanStepsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[28]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2172,7 +2297,7 @@ func (x *UpdatePlanStepsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePlanStepsResponse.ProtoReflect.Descriptor instead.
 func (*UpdatePlanStepsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{28}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *UpdatePlanStepsResponse) GetUnknownIds() []string {
@@ -2193,7 +2318,7 @@ type ReportCompletionRequest struct {
 
 func (x *ReportCompletionRequest) Reset() {
 	*x = ReportCompletionRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[29]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2205,7 +2330,7 @@ func (x *ReportCompletionRequest) String() string {
 func (*ReportCompletionRequest) ProtoMessage() {}
 
 func (x *ReportCompletionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[29]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2218,7 +2343,7 @@ func (x *ReportCompletionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportCompletionRequest.ProtoReflect.Descriptor instead.
 func (*ReportCompletionRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{29}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *ReportCompletionRequest) GetDone() []string {
@@ -2250,7 +2375,7 @@ type ReportCompletionResponse struct {
 
 func (x *ReportCompletionResponse) Reset() {
 	*x = ReportCompletionResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[30]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2262,7 +2387,7 @@ func (x *ReportCompletionResponse) String() string {
 func (*ReportCompletionResponse) ProtoMessage() {}
 
 func (x *ReportCompletionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[30]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2275,7 +2400,7 @@ func (x *ReportCompletionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportCompletionResponse.ProtoReflect.Descriptor instead.
 func (*ReportCompletionResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{30}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{32}
 }
 
 type ReadProductRequest struct {
@@ -2288,7 +2413,7 @@ type ReadProductRequest struct {
 
 func (x *ReadProductRequest) Reset() {
 	*x = ReadProductRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[31]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2300,7 +2425,7 @@ func (x *ReadProductRequest) String() string {
 func (*ReadProductRequest) ProtoMessage() {}
 
 func (x *ReadProductRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[31]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2313,7 +2438,7 @@ func (x *ReadProductRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadProductRequest.ProtoReflect.Descriptor instead.
 func (*ReadProductRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{31}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *ReadProductRequest) GetTailLines() int32 {
@@ -2342,7 +2467,7 @@ type ReadProductResponse struct {
 
 func (x *ReadProductResponse) Reset() {
 	*x = ReadProductResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[32]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2354,7 +2479,7 @@ func (x *ReadProductResponse) String() string {
 func (*ReadProductResponse) ProtoMessage() {}
 
 func (x *ReadProductResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[32]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2367,7 +2492,7 @@ func (x *ReadProductResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadProductResponse.ProtoReflect.Descriptor instead.
 func (*ReadProductResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{32}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *ReadProductResponse) GetSlug() string {
@@ -2411,7 +2536,7 @@ type CheckLiveRequest struct {
 
 func (x *CheckLiveRequest) Reset() {
 	*x = CheckLiveRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[33]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2423,7 +2548,7 @@ func (x *CheckLiveRequest) String() string {
 func (*CheckLiveRequest) ProtoMessage() {}
 
 func (x *CheckLiveRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[33]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2436,7 +2561,7 @@ func (x *CheckLiveRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckLiveRequest.ProtoReflect.Descriptor instead.
 func (*CheckLiveRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{33}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *CheckLiveRequest) GetPath() string {
@@ -2491,7 +2616,7 @@ type CheckLiveResponse struct {
 
 func (x *CheckLiveResponse) Reset() {
 	*x = CheckLiveResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[34]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2503,7 +2628,7 @@ func (x *CheckLiveResponse) String() string {
 func (*CheckLiveResponse) ProtoMessage() {}
 
 func (x *CheckLiveResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[34]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2516,7 +2641,7 @@ func (x *CheckLiveResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckLiveResponse.ProtoReflect.Descriptor instead.
 func (*CheckLiveResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{34}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *CheckLiveResponse) GetUrl() string {
@@ -2592,7 +2717,7 @@ type ReadThreadRequest struct {
 
 func (x *ReadThreadRequest) Reset() {
 	*x = ReadThreadRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[35]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2604,7 +2729,7 @@ func (x *ReadThreadRequest) String() string {
 func (*ReadThreadRequest) ProtoMessage() {}
 
 func (x *ReadThreadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[35]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2617,7 +2742,7 @@ func (x *ReadThreadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadThreadRequest.ProtoReflect.Descriptor instead.
 func (*ReadThreadRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{35}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *ReadThreadRequest) GetAfterThreadSeq() int64 {
@@ -2643,7 +2768,7 @@ type ReadThreadResponse struct {
 
 func (x *ReadThreadResponse) Reset() {
 	*x = ReadThreadResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[36]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2655,7 +2780,7 @@ func (x *ReadThreadResponse) String() string {
 func (*ReadThreadResponse) ProtoMessage() {}
 
 func (x *ReadThreadResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[36]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2668,7 +2793,7 @@ func (x *ReadThreadResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadThreadResponse.ProtoReflect.Descriptor instead.
 func (*ReadThreadResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{36}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *ReadThreadResponse) GetMessages() []*ThreadMessage {
@@ -2691,7 +2816,7 @@ type BoardResearchRequest struct {
 
 func (x *BoardResearchRequest) Reset() {
 	*x = BoardResearchRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[37]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2703,7 +2828,7 @@ func (x *BoardResearchRequest) String() string {
 func (*BoardResearchRequest) ProtoMessage() {}
 
 func (x *BoardResearchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[37]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2716,7 +2841,7 @@ func (x *BoardResearchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BoardResearchRequest.ProtoReflect.Descriptor instead.
 func (*BoardResearchRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{37}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *BoardResearchRequest) GetQuery() string {
@@ -2747,7 +2872,7 @@ type ResearchHit struct {
 
 func (x *ResearchHit) Reset() {
 	*x = ResearchHit{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[38]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2759,7 +2884,7 @@ func (x *ResearchHit) String() string {
 func (*ResearchHit) ProtoMessage() {}
 
 func (x *ResearchHit) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[38]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2772,7 +2897,7 @@ func (x *ResearchHit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResearchHit.ProtoReflect.Descriptor instead.
 func (*ResearchHit) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{38}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *ResearchHit) GetProduct() string {
@@ -2826,7 +2951,7 @@ type BoardResearchResponse struct {
 
 func (x *BoardResearchResponse) Reset() {
 	*x = BoardResearchResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[39]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2838,7 +2963,7 @@ func (x *BoardResearchResponse) String() string {
 func (*BoardResearchResponse) ProtoMessage() {}
 
 func (x *BoardResearchResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[39]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2851,7 +2976,7 @@ func (x *BoardResearchResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BoardResearchResponse.ProtoReflect.Descriptor instead.
 func (*BoardResearchResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{39}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *BoardResearchResponse) GetHits() []*ResearchHit {
@@ -2874,7 +2999,7 @@ type RepoFile struct {
 
 func (x *RepoFile) Reset() {
 	*x = RepoFile{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[40]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2886,7 +3011,7 @@ func (x *RepoFile) String() string {
 func (*RepoFile) ProtoMessage() {}
 
 func (x *RepoFile) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[40]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2899,7 +3024,7 @@ func (x *RepoFile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepoFile.ProtoReflect.Descriptor instead.
 func (*RepoFile) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{40}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *RepoFile) GetPath() string {
@@ -2927,7 +3052,7 @@ type CommitFilesRequest struct {
 
 func (x *CommitFilesRequest) Reset() {
 	*x = CommitFilesRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[41]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2939,7 +3064,7 @@ func (x *CommitFilesRequest) String() string {
 func (*CommitFilesRequest) ProtoMessage() {}
 
 func (x *CommitFilesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[41]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2952,7 +3077,7 @@ func (x *CommitFilesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommitFilesRequest.ProtoReflect.Descriptor instead.
 func (*CommitFilesRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{41}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *CommitFilesRequest) GetFiles() []*RepoFile {
@@ -2985,7 +3110,7 @@ type CommitFilesResponse struct {
 
 func (x *CommitFilesResponse) Reset() {
 	*x = CommitFilesResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[42]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2997,7 +3122,7 @@ func (x *CommitFilesResponse) String() string {
 func (*CommitFilesResponse) ProtoMessage() {}
 
 func (x *CommitFilesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[42]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3010,7 +3135,7 @@ func (x *CommitFilesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommitFilesResponse.ProtoReflect.Descriptor instead.
 func (*CommitFilesResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{42}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *CommitFilesResponse) GetCommitted() int32 {
@@ -3035,7 +3160,7 @@ type SetBrandRequest struct {
 
 func (x *SetBrandRequest) Reset() {
 	*x = SetBrandRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[43]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3047,7 +3172,7 @@ func (x *SetBrandRequest) String() string {
 func (*SetBrandRequest) ProtoMessage() {}
 
 func (x *SetBrandRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[43]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3060,7 +3185,7 @@ func (x *SetBrandRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetBrandRequest.ProtoReflect.Descriptor instead.
 func (*SetBrandRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{43}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *SetBrandRequest) GetIconSvg() string {
@@ -3114,7 +3239,7 @@ type SetBrandResponse struct {
 
 func (x *SetBrandResponse) Reset() {
 	*x = SetBrandResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[44]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3126,7 +3251,7 @@ func (x *SetBrandResponse) String() string {
 func (*SetBrandResponse) ProtoMessage() {}
 
 func (x *SetBrandResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[44]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3139,7 +3264,7 @@ func (x *SetBrandResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetBrandResponse.ProtoReflect.Descriptor instead.
 func (*SetBrandResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{44}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *SetBrandResponse) GetIconUrl() string {
@@ -3158,7 +3283,7 @@ type SetLandingRequest struct {
 
 func (x *SetLandingRequest) Reset() {
 	*x = SetLandingRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[45]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3170,7 +3295,7 @@ func (x *SetLandingRequest) String() string {
 func (*SetLandingRequest) ProtoMessage() {}
 
 func (x *SetLandingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[45]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3183,7 +3308,7 @@ func (x *SetLandingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetLandingRequest.ProtoReflect.Descriptor instead.
 func (*SetLandingRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{45}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *SetLandingRequest) GetHtml() string {
@@ -3201,7 +3326,7 @@ type SetLandingResponse struct {
 
 func (x *SetLandingResponse) Reset() {
 	*x = SetLandingResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[46]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3213,7 +3338,7 @@ func (x *SetLandingResponse) String() string {
 func (*SetLandingResponse) ProtoMessage() {}
 
 func (x *SetLandingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[46]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3226,7 +3351,7 @@ func (x *SetLandingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetLandingResponse.ProtoReflect.Descriptor instead.
 func (*SetLandingResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{46}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{48}
 }
 
 // RecordFinding writes one structured fact the agent learned about an existing tool
@@ -3247,7 +3372,7 @@ type RecordFindingRequest struct {
 
 func (x *RecordFindingRequest) Reset() {
 	*x = RecordFindingRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[47]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3259,7 +3384,7 @@ func (x *RecordFindingRequest) String() string {
 func (*RecordFindingRequest) ProtoMessage() {}
 
 func (x *RecordFindingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[47]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3272,7 +3397,7 @@ func (x *RecordFindingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordFindingRequest.ProtoReflect.Descriptor instead.
 func (*RecordFindingRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{47}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *RecordFindingRequest) GetTool() string {
@@ -3332,7 +3457,7 @@ type RecordFindingResponse struct {
 
 func (x *RecordFindingResponse) Reset() {
 	*x = RecordFindingResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[48]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3344,7 +3469,7 @@ func (x *RecordFindingResponse) String() string {
 func (*RecordFindingResponse) ProtoMessage() {}
 
 func (x *RecordFindingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[48]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3357,7 +3482,7 @@ func (x *RecordFindingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordFindingResponse.ProtoReflect.Descriptor instead.
 func (*RecordFindingResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{48}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{50}
 }
 
 // Neuralbooks, from the thread. The run acts as the workspace's agent: the same
@@ -3370,7 +3495,7 @@ type BooksSummaryRequest struct {
 
 func (x *BooksSummaryRequest) Reset() {
 	*x = BooksSummaryRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[49]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3382,7 +3507,7 @@ func (x *BooksSummaryRequest) String() string {
 func (*BooksSummaryRequest) ProtoMessage() {}
 
 func (x *BooksSummaryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[49]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3395,22 +3520,22 @@ func (x *BooksSummaryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooksSummaryRequest.ProtoReflect.Descriptor instead.
 func (*BooksSummaryRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{49}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{51}
 }
 
 type BooksSummaryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Enabled       bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"` // false: say so and stop; nothing else is set
-	Summary       *v11.CashSummary       `protobuf:"bytes,2,opt,name=summary,proto3" json:"summary,omitempty"`
-	OpenInvoices  []*v11.Invoice         `protobuf:"bytes,3,rep,name=open_invoices,json=openInvoices,proto3" json:"open_invoices,omitempty"`
-	Customers     []*v11.Customer        `protobuf:"bytes,4,rep,name=customers,proto3" json:"customers,omitempty"`
+	Summary       *v12.CashSummary       `protobuf:"bytes,2,opt,name=summary,proto3" json:"summary,omitempty"`
+	OpenInvoices  []*v12.Invoice         `protobuf:"bytes,3,rep,name=open_invoices,json=openInvoices,proto3" json:"open_invoices,omitempty"`
+	Customers     []*v12.Customer        `protobuf:"bytes,4,rep,name=customers,proto3" json:"customers,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BooksSummaryResponse) Reset() {
 	*x = BooksSummaryResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[50]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3422,7 +3547,7 @@ func (x *BooksSummaryResponse) String() string {
 func (*BooksSummaryResponse) ProtoMessage() {}
 
 func (x *BooksSummaryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[50]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3435,7 +3560,7 @@ func (x *BooksSummaryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooksSummaryResponse.ProtoReflect.Descriptor instead.
 func (*BooksSummaryResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{50}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *BooksSummaryResponse) GetEnabled() bool {
@@ -3445,21 +3570,21 @@ func (x *BooksSummaryResponse) GetEnabled() bool {
 	return false
 }
 
-func (x *BooksSummaryResponse) GetSummary() *v11.CashSummary {
+func (x *BooksSummaryResponse) GetSummary() *v12.CashSummary {
 	if x != nil {
 		return x.Summary
 	}
 	return nil
 }
 
-func (x *BooksSummaryResponse) GetOpenInvoices() []*v11.Invoice {
+func (x *BooksSummaryResponse) GetOpenInvoices() []*v12.Invoice {
 	if x != nil {
 		return x.OpenInvoices
 	}
 	return nil
 }
 
-func (x *BooksSummaryResponse) GetCustomers() []*v11.Customer {
+func (x *BooksSummaryResponse) GetCustomers() []*v12.Customer {
 	if x != nil {
 		return x.Customers
 	}
@@ -3469,7 +3594,7 @@ func (x *BooksSummaryResponse) GetCustomers() []*v11.Customer {
 type BooksCreateInvoiceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CustomerName  string                 `protobuf:"bytes,1,opt,name=customer_name,json=customerName,proto3" json:"customer_name,omitempty"` // found or created, case-insensitively
-	Lines         []*v11.InvoiceLine     `protobuf:"bytes,2,rep,name=lines,proto3" json:"lines,omitempty"`                                   // description, quantity, unit_cents
+	Lines         []*v12.InvoiceLine     `protobuf:"bytes,2,rep,name=lines,proto3" json:"lines,omitempty"`                                   // description, quantity, unit_cents
 	TaxCents      int64                  `protobuf:"varint,3,opt,name=tax_cents,json=taxCents,proto3" json:"tax_cents,omitempty"`
 	DueDays       int32                  `protobuf:"varint,4,opt,name=due_days,json=dueDays,proto3" json:"due_days,omitempty"` // 0 = the workspace default
 	Notes         string                 `protobuf:"bytes,5,opt,name=notes,proto3" json:"notes,omitempty"`
@@ -3480,7 +3605,7 @@ type BooksCreateInvoiceRequest struct {
 
 func (x *BooksCreateInvoiceRequest) Reset() {
 	*x = BooksCreateInvoiceRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[51]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3492,7 +3617,7 @@ func (x *BooksCreateInvoiceRequest) String() string {
 func (*BooksCreateInvoiceRequest) ProtoMessage() {}
 
 func (x *BooksCreateInvoiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[51]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3505,7 +3630,7 @@ func (x *BooksCreateInvoiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooksCreateInvoiceRequest.ProtoReflect.Descriptor instead.
 func (*BooksCreateInvoiceRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{51}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *BooksCreateInvoiceRequest) GetCustomerName() string {
@@ -3515,7 +3640,7 @@ func (x *BooksCreateInvoiceRequest) GetCustomerName() string {
 	return ""
 }
 
-func (x *BooksCreateInvoiceRequest) GetLines() []*v11.InvoiceLine {
+func (x *BooksCreateInvoiceRequest) GetLines() []*v12.InvoiceLine {
 	if x != nil {
 		return x.Lines
 	}
@@ -3552,14 +3677,14 @@ func (x *BooksCreateInvoiceRequest) GetSend() bool {
 
 type BooksCreateInvoiceResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Invoice       *v11.Invoice           `protobuf:"bytes,1,opt,name=invoice,proto3" json:"invoice,omitempty"`
+	Invoice       *v12.Invoice           `protobuf:"bytes,1,opt,name=invoice,proto3" json:"invoice,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BooksCreateInvoiceResponse) Reset() {
 	*x = BooksCreateInvoiceResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[52]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3571,7 +3696,7 @@ func (x *BooksCreateInvoiceResponse) String() string {
 func (*BooksCreateInvoiceResponse) ProtoMessage() {}
 
 func (x *BooksCreateInvoiceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[52]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3584,10 +3709,10 @@ func (x *BooksCreateInvoiceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooksCreateInvoiceResponse.ProtoReflect.Descriptor instead.
 func (*BooksCreateInvoiceResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{52}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{54}
 }
 
-func (x *BooksCreateInvoiceResponse) GetInvoice() *v11.Invoice {
+func (x *BooksCreateInvoiceResponse) GetInvoice() *v12.Invoice {
 	if x != nil {
 		return x.Invoice
 	}
@@ -3607,7 +3732,7 @@ type BooksRecordExpenseRequest struct {
 
 func (x *BooksRecordExpenseRequest) Reset() {
 	*x = BooksRecordExpenseRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[53]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3619,7 +3744,7 @@ func (x *BooksRecordExpenseRequest) String() string {
 func (*BooksRecordExpenseRequest) ProtoMessage() {}
 
 func (x *BooksRecordExpenseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[53]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3632,7 +3757,7 @@ func (x *BooksRecordExpenseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooksRecordExpenseRequest.ProtoReflect.Descriptor instead.
 func (*BooksRecordExpenseRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{53}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *BooksRecordExpenseRequest) GetVendor() string {
@@ -3672,14 +3797,14 @@ func (x *BooksRecordExpenseRequest) GetReceiptFileId() string {
 
 type BooksRecordExpenseResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Expense       *v11.Expense           `protobuf:"bytes,1,opt,name=expense,proto3" json:"expense,omitempty"`
+	Expense       *v12.Expense           `protobuf:"bytes,1,opt,name=expense,proto3" json:"expense,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BooksRecordExpenseResponse) Reset() {
 	*x = BooksRecordExpenseResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[54]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3691,7 +3816,7 @@ func (x *BooksRecordExpenseResponse) String() string {
 func (*BooksRecordExpenseResponse) ProtoMessage() {}
 
 func (x *BooksRecordExpenseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[54]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3704,10 +3829,10 @@ func (x *BooksRecordExpenseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooksRecordExpenseResponse.ProtoReflect.Descriptor instead.
 func (*BooksRecordExpenseResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{54}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{56}
 }
 
-func (x *BooksRecordExpenseResponse) GetExpense() *v11.Expense {
+func (x *BooksRecordExpenseResponse) GetExpense() *v12.Expense {
 	if x != nil {
 		return x.Expense
 	}
@@ -3726,7 +3851,7 @@ type BooksRecordPaymentRequest struct {
 
 func (x *BooksRecordPaymentRequest) Reset() {
 	*x = BooksRecordPaymentRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[55]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3738,7 +3863,7 @@ func (x *BooksRecordPaymentRequest) String() string {
 func (*BooksRecordPaymentRequest) ProtoMessage() {}
 
 func (x *BooksRecordPaymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[55]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3751,7 +3876,7 @@ func (x *BooksRecordPaymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooksRecordPaymentRequest.ProtoReflect.Descriptor instead.
 func (*BooksRecordPaymentRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{55}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *BooksRecordPaymentRequest) GetInvoiceNumber() string {
@@ -3784,14 +3909,14 @@ func (x *BooksRecordPaymentRequest) GetReference() string {
 
 type BooksRecordPaymentResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Invoice       *v11.Invoice           `protobuf:"bytes,1,opt,name=invoice,proto3" json:"invoice,omitempty"`
+	Invoice       *v12.Invoice           `protobuf:"bytes,1,opt,name=invoice,proto3" json:"invoice,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BooksRecordPaymentResponse) Reset() {
 	*x = BooksRecordPaymentResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[56]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3803,7 +3928,7 @@ func (x *BooksRecordPaymentResponse) String() string {
 func (*BooksRecordPaymentResponse) ProtoMessage() {}
 
 func (x *BooksRecordPaymentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[56]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3816,10 +3941,10 @@ func (x *BooksRecordPaymentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooksRecordPaymentResponse.ProtoReflect.Descriptor instead.
 func (*BooksRecordPaymentResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{56}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{58}
 }
 
-func (x *BooksRecordPaymentResponse) GetInvoice() *v11.Invoice {
+func (x *BooksRecordPaymentResponse) GetInvoice() *v12.Invoice {
 	if x != nil {
 		return x.Invoice
 	}
@@ -3835,7 +3960,7 @@ type BooksReportRequest struct {
 
 func (x *BooksReportRequest) Reset() {
 	*x = BooksReportRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[57]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3847,7 +3972,7 @@ func (x *BooksReportRequest) String() string {
 func (*BooksReportRequest) ProtoMessage() {}
 
 func (x *BooksReportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[57]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3860,7 +3985,7 @@ func (x *BooksReportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooksReportRequest.ProtoReflect.Descriptor instead.
 func (*BooksReportRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{57}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *BooksReportRequest) GetPeriod() string {
@@ -3880,7 +4005,7 @@ type SocialAccountsRequest struct {
 
 func (x *SocialAccountsRequest) Reset() {
 	*x = SocialAccountsRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[58]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3892,7 +4017,7 @@ func (x *SocialAccountsRequest) String() string {
 func (*SocialAccountsRequest) ProtoMessage() {}
 
 func (x *SocialAccountsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[58]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3905,14 +4030,14 @@ func (x *SocialAccountsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SocialAccountsRequest.ProtoReflect.Descriptor instead.
 func (*SocialAccountsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{58}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{60}
 }
 
 type SocialAccountsResponse struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Enabled        bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`                                     // false: say so and stop; nothing else is set
 	ReviewRequired bool                   `protobuf:"varint,2,opt,name=review_required,json=reviewRequired,proto3" json:"review_required,omitempty"` // true: the post is a draft; ask for a go, then social_publish
-	Accounts       []*v12.Account         `protobuf:"bytes,3,rep,name=accounts,proto3" json:"accounts,omitempty"`
+	Accounts       []*v13.Account         `protobuf:"bytes,3,rep,name=accounts,proto3" json:"accounts,omitempty"`
 	Voice          string                 `protobuf:"bytes,4,opt,name=voice,proto3" json:"voice,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -3920,7 +4045,7 @@ type SocialAccountsResponse struct {
 
 func (x *SocialAccountsResponse) Reset() {
 	*x = SocialAccountsResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[59]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3932,7 +4057,7 @@ func (x *SocialAccountsResponse) String() string {
 func (*SocialAccountsResponse) ProtoMessage() {}
 
 func (x *SocialAccountsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[59]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3945,7 +4070,7 @@ func (x *SocialAccountsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SocialAccountsResponse.ProtoReflect.Descriptor instead.
 func (*SocialAccountsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{59}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *SocialAccountsResponse) GetEnabled() bool {
@@ -3962,7 +4087,7 @@ func (x *SocialAccountsResponse) GetReviewRequired() bool {
 	return false
 }
 
-func (x *SocialAccountsResponse) GetAccounts() []*v12.Account {
+func (x *SocialAccountsResponse) GetAccounts() []*v13.Account {
 	if x != nil {
 		return x.Accounts
 	}
@@ -3978,7 +4103,7 @@ func (x *SocialAccountsResponse) GetVoice() string {
 
 type SocialCreatePostRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Platform      v12.Platform           `protobuf:"varint,1,opt,name=platform,proto3,enum=tank.social.v1.Platform" json:"platform,omitempty"`
+	Platform      v13.Platform           `protobuf:"varint,1,opt,name=platform,proto3,enum=tank.social.v1.Platform" json:"platform,omitempty"`
 	Text          string                 `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
 	FileIds       []string               `protobuf:"bytes,3,rep,name=file_ids,json=fileIds,proto3" json:"file_ids,omitempty"` // from list_attachments; Instagram needs one
 	unknownFields protoimpl.UnknownFields
@@ -3987,7 +4112,7 @@ type SocialCreatePostRequest struct {
 
 func (x *SocialCreatePostRequest) Reset() {
 	*x = SocialCreatePostRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[60]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3999,7 +4124,7 @@ func (x *SocialCreatePostRequest) String() string {
 func (*SocialCreatePostRequest) ProtoMessage() {}
 
 func (x *SocialCreatePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[60]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4012,14 +4137,14 @@ func (x *SocialCreatePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SocialCreatePostRequest.ProtoReflect.Descriptor instead.
 func (*SocialCreatePostRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{60}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{62}
 }
 
-func (x *SocialCreatePostRequest) GetPlatform() v12.Platform {
+func (x *SocialCreatePostRequest) GetPlatform() v13.Platform {
 	if x != nil {
 		return x.Platform
 	}
-	return v12.Platform(0)
+	return v13.Platform(0)
 }
 
 func (x *SocialCreatePostRequest) GetText() string {
@@ -4038,7 +4163,7 @@ func (x *SocialCreatePostRequest) GetFileIds() []string {
 
 type SocialCreatePostResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Post          *v12.Post              `protobuf:"bytes,1,opt,name=post,proto3" json:"post,omitempty"`
+	Post          *v13.Post              `protobuf:"bytes,1,opt,name=post,proto3" json:"post,omitempty"`
 	NeedsReview   bool                   `protobuf:"varint,2,opt,name=needs_review,json=needsReview,proto3" json:"needs_review,omitempty"` // the post is a draft until social_publish
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -4046,7 +4171,7 @@ type SocialCreatePostResponse struct {
 
 func (x *SocialCreatePostResponse) Reset() {
 	*x = SocialCreatePostResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[61]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4058,7 +4183,7 @@ func (x *SocialCreatePostResponse) String() string {
 func (*SocialCreatePostResponse) ProtoMessage() {}
 
 func (x *SocialCreatePostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[61]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4071,10 +4196,10 @@ func (x *SocialCreatePostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SocialCreatePostResponse.ProtoReflect.Descriptor instead.
 func (*SocialCreatePostResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{61}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{63}
 }
 
-func (x *SocialCreatePostResponse) GetPost() *v12.Post {
+func (x *SocialCreatePostResponse) GetPost() *v13.Post {
 	if x != nil {
 		return x.Post
 	}
@@ -4097,7 +4222,7 @@ type SocialPublishPostRequest struct {
 
 func (x *SocialPublishPostRequest) Reset() {
 	*x = SocialPublishPostRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[62]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4109,7 +4234,7 @@ func (x *SocialPublishPostRequest) String() string {
 func (*SocialPublishPostRequest) ProtoMessage() {}
 
 func (x *SocialPublishPostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[62]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4122,7 +4247,7 @@ func (x *SocialPublishPostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SocialPublishPostRequest.ProtoReflect.Descriptor instead.
 func (*SocialPublishPostRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{62}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *SocialPublishPostRequest) GetPostId() string {
@@ -4134,14 +4259,14 @@ func (x *SocialPublishPostRequest) GetPostId() string {
 
 type SocialPublishPostResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Post          *v12.Post              `protobuf:"bytes,1,opt,name=post,proto3" json:"post,omitempty"`
+	Post          *v13.Post              `protobuf:"bytes,1,opt,name=post,proto3" json:"post,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SocialPublishPostResponse) Reset() {
 	*x = SocialPublishPostResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[63]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4153,7 +4278,7 @@ func (x *SocialPublishPostResponse) String() string {
 func (*SocialPublishPostResponse) ProtoMessage() {}
 
 func (x *SocialPublishPostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[63]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4166,10 +4291,10 @@ func (x *SocialPublishPostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SocialPublishPostResponse.ProtoReflect.Descriptor instead.
 func (*SocialPublishPostResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{63}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{65}
 }
 
-func (x *SocialPublishPostResponse) GetPost() *v12.Post {
+func (x *SocialPublishPostResponse) GetPost() *v13.Post {
 	if x != nil {
 		return x.Post
 	}
@@ -4186,7 +4311,7 @@ type WriteUpThreadRequest struct {
 
 func (x *WriteUpThreadRequest) Reset() {
 	*x = WriteUpThreadRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[64]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4198,7 +4323,7 @@ func (x *WriteUpThreadRequest) String() string {
 func (*WriteUpThreadRequest) ProtoMessage() {}
 
 func (x *WriteUpThreadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[64]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4211,7 +4336,7 @@ func (x *WriteUpThreadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WriteUpThreadRequest.ProtoReflect.Descriptor instead.
 func (*WriteUpThreadRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{64}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *WriteUpThreadRequest) GetTitle() string {
@@ -4233,7 +4358,7 @@ type WriteUpThreadResponse struct {
 
 func (x *WriteUpThreadResponse) Reset() {
 	*x = WriteUpThreadResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[65]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4245,7 +4370,7 @@ func (x *WriteUpThreadResponse) String() string {
 func (*WriteUpThreadResponse) ProtoMessage() {}
 
 func (x *WriteUpThreadResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[65]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4258,7 +4383,7 @@ func (x *WriteUpThreadResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WriteUpThreadResponse.ProtoReflect.Descriptor instead.
 func (*WriteUpThreadResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{65}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *WriteUpThreadResponse) GetCanvasId() string {
@@ -4298,7 +4423,7 @@ type ReadCanvasRequest struct {
 
 func (x *ReadCanvasRequest) Reset() {
 	*x = ReadCanvasRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[66]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4310,7 +4435,7 @@ func (x *ReadCanvasRequest) String() string {
 func (*ReadCanvasRequest) ProtoMessage() {}
 
 func (x *ReadCanvasRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[66]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4323,7 +4448,7 @@ func (x *ReadCanvasRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadCanvasRequest.ProtoReflect.Descriptor instead.
 func (*ReadCanvasRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{66}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *ReadCanvasRequest) GetCanvasId() string {
@@ -4335,14 +4460,14 @@ func (x *ReadCanvasRequest) GetCanvasId() string {
 
 type ReadCanvasResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Canvas        *v13.Canvas            `protobuf:"bytes,1,opt,name=canvas,proto3" json:"canvas,omitempty"`
+	Canvas        *v14.Canvas            `protobuf:"bytes,1,opt,name=canvas,proto3" json:"canvas,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ReadCanvasResponse) Reset() {
 	*x = ReadCanvasResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[67]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4354,7 +4479,7 @@ func (x *ReadCanvasResponse) String() string {
 func (*ReadCanvasResponse) ProtoMessage() {}
 
 func (x *ReadCanvasResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[67]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4367,10 +4492,10 @@ func (x *ReadCanvasResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadCanvasResponse.ProtoReflect.Descriptor instead.
 func (*ReadCanvasResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{67}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{69}
 }
 
-func (x *ReadCanvasResponse) GetCanvas() *v13.Canvas {
+func (x *ReadCanvasResponse) GetCanvas() *v14.Canvas {
 	if x != nil {
 		return x.Canvas
 	}
@@ -4387,7 +4512,7 @@ type AskCanvasRequest struct {
 
 func (x *AskCanvasRequest) Reset() {
 	*x = AskCanvasRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[68]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4399,7 +4524,7 @@ func (x *AskCanvasRequest) String() string {
 func (*AskCanvasRequest) ProtoMessage() {}
 
 func (x *AskCanvasRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[68]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4412,7 +4537,7 @@ func (x *AskCanvasRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AskCanvasRequest.ProtoReflect.Descriptor instead.
 func (*AskCanvasRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{68}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *AskCanvasRequest) GetQuestion() string {
@@ -4432,14 +4557,14 @@ func (x *AskCanvasRequest) GetLimit() int32 {
 type AskCanvasResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Summary       string                 `protobuf:"bytes,1,opt,name=summary,proto3" json:"summary,omitempty"`
-	Answers       []*v13.Answer          `protobuf:"bytes,2,rep,name=answers,proto3" json:"answers,omitempty"`
+	Answers       []*v14.Answer          `protobuf:"bytes,2,rep,name=answers,proto3" json:"answers,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AskCanvasResponse) Reset() {
 	*x = AskCanvasResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[69]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4451,7 +4576,7 @@ func (x *AskCanvasResponse) String() string {
 func (*AskCanvasResponse) ProtoMessage() {}
 
 func (x *AskCanvasResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[69]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4464,7 +4589,7 @@ func (x *AskCanvasResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AskCanvasResponse.ProtoReflect.Descriptor instead.
 func (*AskCanvasResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{69}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *AskCanvasResponse) GetSummary() string {
@@ -4474,7 +4599,7 @@ func (x *AskCanvasResponse) GetSummary() string {
 	return ""
 }
 
-func (x *AskCanvasResponse) GetAnswers() []*v13.Answer {
+func (x *AskCanvasResponse) GetAnswers() []*v14.Answer {
 	if x != nil {
 		return x.Answers
 	}
@@ -4484,14 +4609,14 @@ func (x *AskCanvasResponse) GetAnswers() []*v13.Answer {
 type BooksReportResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Enabled       bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	Report        *v11.Report            `protobuf:"bytes,2,opt,name=report,proto3" json:"report,omitempty"`
+	Report        *v12.Report            `protobuf:"bytes,2,opt,name=report,proto3" json:"report,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BooksReportResponse) Reset() {
 	*x = BooksReportResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[70]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4503,7 +4628,7 @@ func (x *BooksReportResponse) String() string {
 func (*BooksReportResponse) ProtoMessage() {}
 
 func (x *BooksReportResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[70]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4516,7 +4641,7 @@ func (x *BooksReportResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BooksReportResponse.ProtoReflect.Descriptor instead.
 func (*BooksReportResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{70}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *BooksReportResponse) GetEnabled() bool {
@@ -4526,7 +4651,7 @@ func (x *BooksReportResponse) GetEnabled() bool {
 	return false
 }
 
-func (x *BooksReportResponse) GetReport() *v11.Report {
+func (x *BooksReportResponse) GetReport() *v12.Report {
 	if x != nil {
 		return x.Report
 	}
@@ -4542,7 +4667,7 @@ type ListBoardsRequest struct {
 
 func (x *ListBoardsRequest) Reset() {
 	*x = ListBoardsRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[71]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4554,7 +4679,7 @@ func (x *ListBoardsRequest) String() string {
 func (*ListBoardsRequest) ProtoMessage() {}
 
 func (x *ListBoardsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[71]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4567,7 +4692,7 @@ func (x *ListBoardsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBoardsRequest.ProtoReflect.Descriptor instead.
 func (*ListBoardsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{71}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *ListBoardsRequest) GetLimit() int32 {
@@ -4589,7 +4714,7 @@ type BoardListing struct {
 
 func (x *BoardListing) Reset() {
 	*x = BoardListing{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[72]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4601,7 +4726,7 @@ func (x *BoardListing) String() string {
 func (*BoardListing) ProtoMessage() {}
 
 func (x *BoardListing) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[72]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4614,7 +4739,7 @@ func (x *BoardListing) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BoardListing.ProtoReflect.Descriptor instead.
 func (*BoardListing) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{72}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *BoardListing) GetBoardId() string {
@@ -4654,7 +4779,7 @@ type ListBoardsResponse struct {
 
 func (x *ListBoardsResponse) Reset() {
 	*x = ListBoardsResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[73]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4666,7 +4791,7 @@ func (x *ListBoardsResponse) String() string {
 func (*ListBoardsResponse) ProtoMessage() {}
 
 func (x *ListBoardsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[73]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4679,7 +4804,7 @@ func (x *ListBoardsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBoardsResponse.ProtoReflect.Descriptor instead.
 func (*ListBoardsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{73}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *ListBoardsResponse) GetBoards() []*BoardListing {
@@ -4698,7 +4823,7 @@ type ReadBoardRequest struct {
 
 func (x *ReadBoardRequest) Reset() {
 	*x = ReadBoardRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[74]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4710,7 +4835,7 @@ func (x *ReadBoardRequest) String() string {
 func (*ReadBoardRequest) ProtoMessage() {}
 
 func (x *ReadBoardRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[74]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4723,7 +4848,7 @@ func (x *ReadBoardRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadBoardRequest.ProtoReflect.Descriptor instead.
 func (*ReadBoardRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{74}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *ReadBoardRequest) GetBoardId() string {
@@ -4735,14 +4860,14 @@ func (x *ReadBoardRequest) GetBoardId() string {
 
 type ReadBoardResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Board         *v14.Board             `protobuf:"bytes,1,opt,name=board,proto3" json:"board,omitempty"`
+	Board         *v15.Board             `protobuf:"bytes,1,opt,name=board,proto3" json:"board,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ReadBoardResponse) Reset() {
 	*x = ReadBoardResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[75]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4754,7 +4879,7 @@ func (x *ReadBoardResponse) String() string {
 func (*ReadBoardResponse) ProtoMessage() {}
 
 func (x *ReadBoardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[75]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4767,10 +4892,10 @@ func (x *ReadBoardResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadBoardResponse.ProtoReflect.Descriptor instead.
 func (*ReadBoardResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{75}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{77}
 }
 
-func (x *ReadBoardResponse) GetBoard() *v14.Board {
+func (x *ReadBoardResponse) GetBoard() *v15.Board {
 	if x != nil {
 		return x.Board
 	}
@@ -4805,7 +4930,7 @@ type BoardShape struct {
 
 func (x *BoardShape) Reset() {
 	*x = BoardShape{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[76]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4817,7 +4942,7 @@ func (x *BoardShape) String() string {
 func (*BoardShape) ProtoMessage() {}
 
 func (x *BoardShape) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[76]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4830,7 +4955,7 @@ func (x *BoardShape) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BoardShape.ProtoReflect.Descriptor instead.
 func (*BoardShape) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{76}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *BoardShape) GetId() string {
@@ -4944,7 +5069,7 @@ type AppFrameSpec struct {
 
 func (x *AppFrameSpec) Reset() {
 	*x = AppFrameSpec{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[77]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4956,7 +5081,7 @@ func (x *AppFrameSpec) String() string {
 func (*AppFrameSpec) ProtoMessage() {}
 
 func (x *AppFrameSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[77]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4969,7 +5094,7 @@ func (x *AppFrameSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppFrameSpec.ProtoReflect.Descriptor instead.
 func (*AppFrameSpec) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{77}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *AppFrameSpec) GetRepo() string {
@@ -5020,7 +5145,7 @@ type WorkbenchStep struct {
 
 func (x *WorkbenchStep) Reset() {
 	*x = WorkbenchStep{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[78]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5032,7 +5157,7 @@ func (x *WorkbenchStep) String() string {
 func (*WorkbenchStep) ProtoMessage() {}
 
 func (x *WorkbenchStep) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[78]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5045,7 +5170,7 @@ func (x *WorkbenchStep) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkbenchStep.ProtoReflect.Descriptor instead.
 func (*WorkbenchStep) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{78}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *WorkbenchStep) GetId() string {
@@ -5078,7 +5203,7 @@ type WorkbenchStepsRequest struct {
 
 func (x *WorkbenchStepsRequest) Reset() {
 	*x = WorkbenchStepsRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[79]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5090,7 +5215,7 @@ func (x *WorkbenchStepsRequest) String() string {
 func (*WorkbenchStepsRequest) ProtoMessage() {}
 
 func (x *WorkbenchStepsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[79]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5103,7 +5228,7 @@ func (x *WorkbenchStepsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkbenchStepsRequest.ProtoReflect.Descriptor instead.
 func (*WorkbenchStepsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{79}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *WorkbenchStepsRequest) GetSteps() []*WorkbenchStep {
@@ -5122,7 +5247,7 @@ type WorkbenchStepsResponse struct {
 
 func (x *WorkbenchStepsResponse) Reset() {
 	*x = WorkbenchStepsResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[80]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5134,7 +5259,7 @@ func (x *WorkbenchStepsResponse) String() string {
 func (*WorkbenchStepsResponse) ProtoMessage() {}
 
 func (x *WorkbenchStepsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[80]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5147,7 +5272,7 @@ func (x *WorkbenchStepsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkbenchStepsResponse.ProtoReflect.Descriptor instead.
 func (*WorkbenchStepsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{80}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *WorkbenchStepsResponse) GetBoardId() string {
@@ -5171,7 +5296,7 @@ type WorkbenchShowRequest struct {
 
 func (x *WorkbenchShowRequest) Reset() {
 	*x = WorkbenchShowRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[81]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5183,7 +5308,7 @@ func (x *WorkbenchShowRequest) String() string {
 func (*WorkbenchShowRequest) ProtoMessage() {}
 
 func (x *WorkbenchShowRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[81]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5196,7 +5321,7 @@ func (x *WorkbenchShowRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkbenchShowRequest.ProtoReflect.Descriptor instead.
 func (*WorkbenchShowRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{81}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *WorkbenchShowRequest) GetKind() string {
@@ -5251,7 +5376,7 @@ type WorkbenchShowResponse struct {
 
 func (x *WorkbenchShowResponse) Reset() {
 	*x = WorkbenchShowResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[82]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5263,7 +5388,7 @@ func (x *WorkbenchShowResponse) String() string {
 func (*WorkbenchShowResponse) ProtoMessage() {}
 
 func (x *WorkbenchShowResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[82]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5276,7 +5401,7 @@ func (x *WorkbenchShowResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkbenchShowResponse.ProtoReflect.Descriptor instead.
 func (*WorkbenchShowResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{82}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *WorkbenchShowResponse) GetBoardId() string {
@@ -5307,7 +5432,7 @@ type DrawOnBoardRequest struct {
 
 func (x *DrawOnBoardRequest) Reset() {
 	*x = DrawOnBoardRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[83]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5319,7 +5444,7 @@ func (x *DrawOnBoardRequest) String() string {
 func (*DrawOnBoardRequest) ProtoMessage() {}
 
 func (x *DrawOnBoardRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[83]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5332,7 +5457,7 @@ func (x *DrawOnBoardRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DrawOnBoardRequest.ProtoReflect.Descriptor instead.
 func (*DrawOnBoardRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{83}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *DrawOnBoardRequest) GetBoardId() string {
@@ -5375,7 +5500,7 @@ type DrawOnBoardResponse struct {
 
 func (x *DrawOnBoardResponse) Reset() {
 	*x = DrawOnBoardResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[84]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5387,7 +5512,7 @@ func (x *DrawOnBoardResponse) String() string {
 func (*DrawOnBoardResponse) ProtoMessage() {}
 
 func (x *DrawOnBoardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[84]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5400,7 +5525,7 @@ func (x *DrawOnBoardResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DrawOnBoardResponse.ProtoReflect.Descriptor instead.
 func (*DrawOnBoardResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{84}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *DrawOnBoardResponse) GetObjectIds() []string {
@@ -5445,7 +5570,7 @@ type ArrangeBoardRequest struct {
 
 func (x *ArrangeBoardRequest) Reset() {
 	*x = ArrangeBoardRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[85]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5457,7 +5582,7 @@ func (x *ArrangeBoardRequest) String() string {
 func (*ArrangeBoardRequest) ProtoMessage() {}
 
 func (x *ArrangeBoardRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[85]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5470,7 +5595,7 @@ func (x *ArrangeBoardRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArrangeBoardRequest.ProtoReflect.Descriptor instead.
 func (*ArrangeBoardRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{85}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{87}
 }
 
 func (x *ArrangeBoardRequest) GetBoardId() string {
@@ -5527,7 +5652,7 @@ type ArrangeBoardResponse struct {
 
 func (x *ArrangeBoardResponse) Reset() {
 	*x = ArrangeBoardResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[86]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5539,7 +5664,7 @@ func (x *ArrangeBoardResponse) String() string {
 func (*ArrangeBoardResponse) ProtoMessage() {}
 
 func (x *ArrangeBoardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[86]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5552,7 +5677,7 @@ func (x *ArrangeBoardResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArrangeBoardResponse.ProtoReflect.Descriptor instead.
 func (*ArrangeBoardResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{86}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *ArrangeBoardResponse) GetMoved() int32 {
@@ -5595,7 +5720,7 @@ type OpenPullRequestRequest struct {
 
 func (x *OpenPullRequestRequest) Reset() {
 	*x = OpenPullRequestRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[87]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5607,7 +5732,7 @@ func (x *OpenPullRequestRequest) String() string {
 func (*OpenPullRequestRequest) ProtoMessage() {}
 
 func (x *OpenPullRequestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[87]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5620,7 +5745,7 @@ func (x *OpenPullRequestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpenPullRequestRequest.ProtoReflect.Descriptor instead.
 func (*OpenPullRequestRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{87}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{89}
 }
 
 func (x *OpenPullRequestRequest) GetTitle() string {
@@ -5661,7 +5786,7 @@ type OpenPullRequestResponse struct {
 
 func (x *OpenPullRequestResponse) Reset() {
 	*x = OpenPullRequestResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[88]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5673,7 +5798,7 @@ func (x *OpenPullRequestResponse) String() string {
 func (*OpenPullRequestResponse) ProtoMessage() {}
 
 func (x *OpenPullRequestResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[88]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5686,7 +5811,7 @@ func (x *OpenPullRequestResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpenPullRequestResponse.ProtoReflect.Descriptor instead.
 func (*OpenPullRequestResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{88}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{90}
 }
 
 func (x *OpenPullRequestResponse) GetPrUrl() string {
@@ -5713,7 +5838,7 @@ type RequestCiWatchRequest struct {
 
 func (x *RequestCiWatchRequest) Reset() {
 	*x = RequestCiWatchRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[89]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5725,7 +5850,7 @@ func (x *RequestCiWatchRequest) String() string {
 func (*RequestCiWatchRequest) ProtoMessage() {}
 
 func (x *RequestCiWatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[89]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5738,7 +5863,7 @@ func (x *RequestCiWatchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestCiWatchRequest.ProtoReflect.Descriptor instead.
 func (*RequestCiWatchRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{89}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *RequestCiWatchRequest) GetHeadSha() string {
@@ -5764,7 +5889,7 @@ type RequestCiWatchResponse struct {
 
 func (x *RequestCiWatchResponse) Reset() {
 	*x = RequestCiWatchResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[90]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5776,7 +5901,7 @@ func (x *RequestCiWatchResponse) String() string {
 func (*RequestCiWatchResponse) ProtoMessage() {}
 
 func (x *RequestCiWatchResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[90]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5789,7 +5914,7 @@ func (x *RequestCiWatchResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestCiWatchResponse.ProtoReflect.Descriptor instead.
 func (*RequestCiWatchResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{90}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{92}
 }
 
 func (x *RequestCiWatchResponse) GetWatchId() string {
@@ -5808,7 +5933,7 @@ type GetCiFailureRequest struct {
 
 func (x *GetCiFailureRequest) Reset() {
 	*x = GetCiFailureRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[91]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5820,7 +5945,7 @@ func (x *GetCiFailureRequest) String() string {
 func (*GetCiFailureRequest) ProtoMessage() {}
 
 func (x *GetCiFailureRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[91]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5833,7 +5958,7 @@ func (x *GetCiFailureRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCiFailureRequest.ProtoReflect.Descriptor instead.
 func (*GetCiFailureRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{91}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{93}
 }
 
 func (x *GetCiFailureRequest) GetHeadSha() string {
@@ -5855,7 +5980,7 @@ type GetCiFailureResponse struct {
 
 func (x *GetCiFailureResponse) Reset() {
 	*x = GetCiFailureResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[92]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5867,7 +5992,7 @@ func (x *GetCiFailureResponse) String() string {
 func (*GetCiFailureResponse) ProtoMessage() {}
 
 func (x *GetCiFailureResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[92]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5880,7 +6005,7 @@ func (x *GetCiFailureResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCiFailureResponse.ProtoReflect.Descriptor instead.
 func (*GetCiFailureResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{92}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *GetCiFailureResponse) GetComplete() bool {
@@ -5922,7 +6047,7 @@ type RecordDecisionRequest struct {
 
 func (x *RecordDecisionRequest) Reset() {
 	*x = RecordDecisionRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[93]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5934,7 +6059,7 @@ func (x *RecordDecisionRequest) String() string {
 func (*RecordDecisionRequest) ProtoMessage() {}
 
 func (x *RecordDecisionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[93]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5947,7 +6072,7 @@ func (x *RecordDecisionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordDecisionRequest.ProtoReflect.Descriptor instead.
 func (*RecordDecisionRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{93}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{95}
 }
 
 func (x *RecordDecisionRequest) GetTitle() string {
@@ -5980,7 +6105,7 @@ type RecordDecisionResponse struct {
 
 func (x *RecordDecisionResponse) Reset() {
 	*x = RecordDecisionResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[94]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5992,7 +6117,7 @@ func (x *RecordDecisionResponse) String() string {
 func (*RecordDecisionResponse) ProtoMessage() {}
 
 func (x *RecordDecisionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[94]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6005,7 +6130,7 @@ func (x *RecordDecisionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordDecisionResponse.ProtoReflect.Descriptor instead.
 func (*RecordDecisionResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{94}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{96}
 }
 
 func (x *RecordDecisionResponse) GetDecisionId() string {
@@ -6025,7 +6150,7 @@ type RememberRequest struct {
 
 func (x *RememberRequest) Reset() {
 	*x = RememberRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[95]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6037,7 +6162,7 @@ func (x *RememberRequest) String() string {
 func (*RememberRequest) ProtoMessage() {}
 
 func (x *RememberRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[95]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6050,7 +6175,7 @@ func (x *RememberRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RememberRequest.ProtoReflect.Descriptor instead.
 func (*RememberRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{95}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{97}
 }
 
 func (x *RememberRequest) GetKey() string {
@@ -6075,7 +6200,7 @@ type RememberResponse struct {
 
 func (x *RememberResponse) Reset() {
 	*x = RememberResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[96]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6087,7 +6212,7 @@ func (x *RememberResponse) String() string {
 func (*RememberResponse) ProtoMessage() {}
 
 func (x *RememberResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[96]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6100,7 +6225,7 @@ func (x *RememberResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RememberResponse.ProtoReflect.Descriptor instead.
 func (*RememberResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{96}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{98}
 }
 
 type Usage struct {
@@ -6117,7 +6242,7 @@ type Usage struct {
 
 func (x *Usage) Reset() {
 	*x = Usage{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[97]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6129,7 +6254,7 @@ func (x *Usage) String() string {
 func (*Usage) ProtoMessage() {}
 
 func (x *Usage) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[97]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6142,7 +6267,7 @@ func (x *Usage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Usage.ProtoReflect.Descriptor instead.
 func (*Usage) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{97}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *Usage) GetInputTokens() int64 {
@@ -6210,7 +6335,7 @@ type RunEvent struct {
 
 func (x *RunEvent) Reset() {
 	*x = RunEvent{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[98]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6222,7 +6347,7 @@ func (x *RunEvent) String() string {
 func (*RunEvent) ProtoMessage() {}
 
 func (x *RunEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[98]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6235,7 +6360,7 @@ func (x *RunEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunEvent.ProtoReflect.Descriptor instead.
 func (*RunEvent) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{98}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *RunEvent) GetSeq() int64 {
@@ -6352,7 +6477,7 @@ type StreamEventsRequest struct {
 
 func (x *StreamEventsRequest) Reset() {
 	*x = StreamEventsRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[99]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6364,7 +6489,7 @@ func (x *StreamEventsRequest) String() string {
 func (*StreamEventsRequest) ProtoMessage() {}
 
 func (x *StreamEventsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[99]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6377,7 +6502,7 @@ func (x *StreamEventsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamEventsRequest.ProtoReflect.Descriptor instead.
 func (*StreamEventsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{99}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *StreamEventsRequest) GetEvent() *RunEvent {
@@ -6396,7 +6521,7 @@ type StreamEventsResponse struct {
 
 func (x *StreamEventsResponse) Reset() {
 	*x = StreamEventsResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[100]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6408,7 +6533,7 @@ func (x *StreamEventsResponse) String() string {
 func (*StreamEventsResponse) ProtoMessage() {}
 
 func (x *StreamEventsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[100]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6421,7 +6546,7 @@ func (x *StreamEventsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamEventsResponse.ProtoReflect.Descriptor instead.
 func (*StreamEventsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{100}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *StreamEventsResponse) GetAccepted() int64 {
@@ -6449,7 +6574,7 @@ type SessionEntry struct {
 
 func (x *SessionEntry) Reset() {
 	*x = SessionEntry{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[101]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6461,7 +6586,7 @@ func (x *SessionEntry) String() string {
 func (*SessionEntry) ProtoMessage() {}
 
 func (x *SessionEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[101]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6474,7 +6599,7 @@ func (x *SessionEntry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionEntry.ProtoReflect.Descriptor instead.
 func (*SessionEntry) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{101}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *SessionEntry) GetSessionId() string {
@@ -6537,7 +6662,7 @@ type SessionSummary struct {
 
 func (x *SessionSummary) Reset() {
 	*x = SessionSummary{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[102]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6549,7 +6674,7 @@ func (x *SessionSummary) String() string {
 func (*SessionSummary) ProtoMessage() {}
 
 func (x *SessionSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[102]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6562,7 +6687,7 @@ func (x *SessionSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionSummary.ProtoReflect.Descriptor instead.
 func (*SessionSummary) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{102}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *SessionSummary) GetSessionId() string {
@@ -6596,7 +6721,7 @@ type SessionStorePutRequest struct {
 
 func (x *SessionStorePutRequest) Reset() {
 	*x = SessionStorePutRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[103]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6608,7 +6733,7 @@ func (x *SessionStorePutRequest) String() string {
 func (*SessionStorePutRequest) ProtoMessage() {}
 
 func (x *SessionStorePutRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[103]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6621,7 +6746,7 @@ func (x *SessionStorePutRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionStorePutRequest.ProtoReflect.Descriptor instead.
 func (*SessionStorePutRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{103}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *SessionStorePutRequest) GetEntries() []*SessionEntry {
@@ -6647,7 +6772,7 @@ type SessionStorePutResponse struct {
 
 func (x *SessionStorePutResponse) Reset() {
 	*x = SessionStorePutResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[104]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6659,7 +6784,7 @@ func (x *SessionStorePutResponse) String() string {
 func (*SessionStorePutResponse) ProtoMessage() {}
 
 func (x *SessionStorePutResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[104]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6672,7 +6797,7 @@ func (x *SessionStorePutResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionStorePutResponse.ProtoReflect.Descriptor instead.
 func (*SessionStorePutResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{104}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *SessionStorePutResponse) GetWritten() int32 {
@@ -6695,7 +6820,7 @@ type SessionStoreListRequest struct {
 
 func (x *SessionStoreListRequest) Reset() {
 	*x = SessionStoreListRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[105]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6707,7 +6832,7 @@ func (x *SessionStoreListRequest) String() string {
 func (*SessionStoreListRequest) ProtoMessage() {}
 
 func (x *SessionStoreListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[105]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6720,7 +6845,7 @@ func (x *SessionStoreListRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionStoreListRequest.ProtoReflect.Descriptor instead.
 func (*SessionStoreListRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{105}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *SessionStoreListRequest) GetSessionId() string {
@@ -6769,7 +6894,7 @@ type SessionStoreListResponse struct {
 
 func (x *SessionStoreListResponse) Reset() {
 	*x = SessionStoreListResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[106]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6781,7 +6906,7 @@ func (x *SessionStoreListResponse) String() string {
 func (*SessionStoreListResponse) ProtoMessage() {}
 
 func (x *SessionStoreListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[106]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6794,7 +6919,7 @@ func (x *SessionStoreListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionStoreListResponse.ProtoReflect.Descriptor instead.
 func (*SessionStoreListResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{106}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *SessionStoreListResponse) GetEntries() []*SessionEntry {
@@ -6827,7 +6952,7 @@ type SessionStoreListSessionsRequest struct {
 
 func (x *SessionStoreListSessionsRequest) Reset() {
 	*x = SessionStoreListSessionsRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[107]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6839,7 +6964,7 @@ func (x *SessionStoreListSessionsRequest) String() string {
 func (*SessionStoreListSessionsRequest) ProtoMessage() {}
 
 func (x *SessionStoreListSessionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[107]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6852,7 +6977,7 @@ func (x *SessionStoreListSessionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionStoreListSessionsRequest.ProtoReflect.Descriptor instead.
 func (*SessionStoreListSessionsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{107}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *SessionStoreListSessionsRequest) GetProjectKey() string {
@@ -6871,7 +6996,7 @@ type SessionStoreListSessionsResponse struct {
 
 func (x *SessionStoreListSessionsResponse) Reset() {
 	*x = SessionStoreListSessionsResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[108]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6883,7 +7008,7 @@ func (x *SessionStoreListSessionsResponse) String() string {
 func (*SessionStoreListSessionsResponse) ProtoMessage() {}
 
 func (x *SessionStoreListSessionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[108]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6896,7 +7021,7 @@ func (x *SessionStoreListSessionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionStoreListSessionsResponse.ProtoReflect.Descriptor instead.
 func (*SessionStoreListSessionsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{108}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *SessionStoreListSessionsResponse) GetSessions() []*SessionSummary {
@@ -6916,7 +7041,7 @@ type SessionStoreListSubkeysRequest struct {
 
 func (x *SessionStoreListSubkeysRequest) Reset() {
 	*x = SessionStoreListSubkeysRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[109]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6928,7 +7053,7 @@ func (x *SessionStoreListSubkeysRequest) String() string {
 func (*SessionStoreListSubkeysRequest) ProtoMessage() {}
 
 func (x *SessionStoreListSubkeysRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[109]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6941,7 +7066,7 @@ func (x *SessionStoreListSubkeysRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionStoreListSubkeysRequest.ProtoReflect.Descriptor instead.
 func (*SessionStoreListSubkeysRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{109}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *SessionStoreListSubkeysRequest) GetSessionId() string {
@@ -6967,7 +7092,7 @@ type SessionStoreListSubkeysResponse struct {
 
 func (x *SessionStoreListSubkeysResponse) Reset() {
 	*x = SessionStoreListSubkeysResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[110]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6979,7 +7104,7 @@ func (x *SessionStoreListSubkeysResponse) String() string {
 func (*SessionStoreListSubkeysResponse) ProtoMessage() {}
 
 func (x *SessionStoreListSubkeysResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[110]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6992,7 +7117,7 @@ func (x *SessionStoreListSubkeysResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionStoreListSubkeysResponse.ProtoReflect.Descriptor instead.
 func (*SessionStoreListSubkeysResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{110}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *SessionStoreListSubkeysResponse) GetSubpaths() []string {
@@ -7013,7 +7138,7 @@ type SessionStoreDeleteRequest struct {
 
 func (x *SessionStoreDeleteRequest) Reset() {
 	*x = SessionStoreDeleteRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[111]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7025,7 +7150,7 @@ func (x *SessionStoreDeleteRequest) String() string {
 func (*SessionStoreDeleteRequest) ProtoMessage() {}
 
 func (x *SessionStoreDeleteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[111]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7038,7 +7163,7 @@ func (x *SessionStoreDeleteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionStoreDeleteRequest.ProtoReflect.Descriptor instead.
 func (*SessionStoreDeleteRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{111}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *SessionStoreDeleteRequest) GetSessionId() string {
@@ -7070,7 +7195,7 @@ type SessionStoreDeleteResponse struct {
 
 func (x *SessionStoreDeleteResponse) Reset() {
 	*x = SessionStoreDeleteResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[112]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7082,7 +7207,7 @@ func (x *SessionStoreDeleteResponse) String() string {
 func (*SessionStoreDeleteResponse) ProtoMessage() {}
 
 func (x *SessionStoreDeleteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[112]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7095,7 +7220,7 @@ func (x *SessionStoreDeleteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionStoreDeleteResponse.ProtoReflect.Descriptor instead.
 func (*SessionStoreDeleteResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{112}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{114}
 }
 
 type InboxItem struct {
@@ -7115,7 +7240,7 @@ type InboxItem struct {
 
 func (x *InboxItem) Reset() {
 	*x = InboxItem{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[113]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7127,7 +7252,7 @@ func (x *InboxItem) String() string {
 func (*InboxItem) ProtoMessage() {}
 
 func (x *InboxItem) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[113]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7140,7 +7265,7 @@ func (x *InboxItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InboxItem.ProtoReflect.Descriptor instead.
 func (*InboxItem) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{113}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *InboxItem) GetSeq() int64 {
@@ -7218,7 +7343,7 @@ type PollInboxRequest struct {
 
 func (x *PollInboxRequest) Reset() {
 	*x = PollInboxRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[114]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7230,7 +7355,7 @@ func (x *PollInboxRequest) String() string {
 func (*PollInboxRequest) ProtoMessage() {}
 
 func (x *PollInboxRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[114]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7243,7 +7368,7 @@ func (x *PollInboxRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PollInboxRequest.ProtoReflect.Descriptor instead.
 func (*PollInboxRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{114}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *PollInboxRequest) GetAfterSeq() int64 {
@@ -7269,7 +7394,7 @@ type PollInboxResponse struct {
 
 func (x *PollInboxResponse) Reset() {
 	*x = PollInboxResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[115]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7281,7 +7406,7 @@ func (x *PollInboxResponse) String() string {
 func (*PollInboxResponse) ProtoMessage() {}
 
 func (x *PollInboxResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[115]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7294,7 +7419,7 @@ func (x *PollInboxResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PollInboxResponse.ProtoReflect.Descriptor instead.
 func (*PollInboxResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{115}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *PollInboxResponse) GetItems() []*InboxItem {
@@ -7325,7 +7450,7 @@ type StartRunRequest struct {
 
 func (x *StartRunRequest) Reset() {
 	*x = StartRunRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[116]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7337,7 +7462,7 @@ func (x *StartRunRequest) String() string {
 func (*StartRunRequest) ProtoMessage() {}
 
 func (x *StartRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[116]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7350,7 +7475,7 @@ func (x *StartRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartRunRequest.ProtoReflect.Descriptor instead.
 func (*StartRunRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{116}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *StartRunRequest) GetWorkspaceId() string {
@@ -7418,14 +7543,14 @@ func (x *StartRunRequest) GetSkipNeuralKnowledge() bool {
 
 type StartRunResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Run           *v15.Run               `protobuf:"bytes,1,opt,name=run,proto3" json:"run,omitempty"`
+	Run           *v11.Run               `protobuf:"bytes,1,opt,name=run,proto3" json:"run,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *StartRunResponse) Reset() {
 	*x = StartRunResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[117]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7437,7 +7562,7 @@ func (x *StartRunResponse) String() string {
 func (*StartRunResponse) ProtoMessage() {}
 
 func (x *StartRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[117]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7450,10 +7575,10 @@ func (x *StartRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartRunResponse.ProtoReflect.Descriptor instead.
 func (*StartRunResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{117}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{119}
 }
 
-func (x *StartRunResponse) GetRun() *v15.Run {
+func (x *StartRunResponse) GetRun() *v11.Run {
 	if x != nil {
 		return x.Run
 	}
@@ -7469,7 +7594,7 @@ type GetRunRequest struct {
 
 func (x *GetRunRequest) Reset() {
 	*x = GetRunRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[118]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7481,7 +7606,7 @@ func (x *GetRunRequest) String() string {
 func (*GetRunRequest) ProtoMessage() {}
 
 func (x *GetRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[118]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7494,7 +7619,7 @@ func (x *GetRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunRequest.ProtoReflect.Descriptor instead.
 func (*GetRunRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{118}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *GetRunRequest) GetRunId() string {
@@ -7506,7 +7631,7 @@ func (x *GetRunRequest) GetRunId() string {
 
 type GetRunResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Run           *v15.Run               `protobuf:"bytes,1,opt,name=run,proto3" json:"run,omitempty"`
+	Run           *v11.Run               `protobuf:"bytes,1,opt,name=run,proto3" json:"run,omitempty"`
 	SdkSessionId  string                 `protobuf:"bytes,2,opt,name=sdk_session_id,json=sdkSessionId,proto3" json:"sdk_session_id,omitempty"`
 	HeadSha       string                 `protobuf:"bytes,3,opt,name=head_sha,json=headSha,proto3" json:"head_sha,omitempty"`
 	Gates         []*Gate                `protobuf:"bytes,4,rep,name=gates,proto3" json:"gates,omitempty"`
@@ -7516,7 +7641,7 @@ type GetRunResponse struct {
 
 func (x *GetRunResponse) Reset() {
 	*x = GetRunResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[119]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7528,7 +7653,7 @@ func (x *GetRunResponse) String() string {
 func (*GetRunResponse) ProtoMessage() {}
 
 func (x *GetRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[119]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7541,10 +7666,10 @@ func (x *GetRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunResponse.ProtoReflect.Descriptor instead.
 func (*GetRunResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{119}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{121}
 }
 
-func (x *GetRunResponse) GetRun() *v15.Run {
+func (x *GetRunResponse) GetRun() *v11.Run {
 	if x != nil {
 		return x.Run
 	}
@@ -7588,7 +7713,7 @@ type Gate struct {
 
 func (x *Gate) Reset() {
 	*x = Gate{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[120]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7600,7 +7725,7 @@ func (x *Gate) String() string {
 func (*Gate) ProtoMessage() {}
 
 func (x *Gate) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[120]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7613,7 +7738,7 @@ func (x *Gate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Gate.ProtoReflect.Descriptor instead.
 func (*Gate) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{120}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *Gate) GetId() string {
@@ -7684,7 +7809,7 @@ type GateDecision struct {
 
 func (x *GateDecision) Reset() {
 	*x = GateDecision{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[121]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7696,7 +7821,7 @@ func (x *GateDecision) String() string {
 func (*GateDecision) ProtoMessage() {}
 
 func (x *GateDecision) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[121]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7709,7 +7834,7 @@ func (x *GateDecision) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GateDecision.ProtoReflect.Descriptor instead.
 func (*GateDecision) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{121}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *GateDecision) GetUserId() string {
@@ -7752,7 +7877,7 @@ type ListRunsRequest struct {
 
 func (x *ListRunsRequest) Reset() {
 	*x = ListRunsRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[122]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[124]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7764,7 +7889,7 @@ func (x *ListRunsRequest) String() string {
 func (*ListRunsRequest) ProtoMessage() {}
 
 func (x *ListRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[122]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[124]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7777,7 +7902,7 @@ func (x *ListRunsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRunsRequest.ProtoReflect.Descriptor instead.
 func (*ListRunsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{122}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{124}
 }
 
 func (x *ListRunsRequest) GetWorkspaceId() string {
@@ -7810,14 +7935,14 @@ func (x *ListRunsRequest) GetLimit() int32 {
 
 type ListRunsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Runs          []*v15.Run             `protobuf:"bytes,1,rep,name=runs,proto3" json:"runs,omitempty"`
+	Runs          []*v11.Run             `protobuf:"bytes,1,rep,name=runs,proto3" json:"runs,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListRunsResponse) Reset() {
 	*x = ListRunsResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[123]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[125]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7829,7 +7954,7 @@ func (x *ListRunsResponse) String() string {
 func (*ListRunsResponse) ProtoMessage() {}
 
 func (x *ListRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[123]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[125]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7842,10 +7967,10 @@ func (x *ListRunsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRunsResponse.ProtoReflect.Descriptor instead.
 func (*ListRunsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{123}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{125}
 }
 
-func (x *ListRunsResponse) GetRuns() []*v15.Run {
+func (x *ListRunsResponse) GetRuns() []*v11.Run {
 	if x != nil {
 		return x.Runs
 	}
@@ -7865,7 +7990,7 @@ type DecideGateRequest struct {
 
 func (x *DecideGateRequest) Reset() {
 	*x = DecideGateRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[124]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7877,7 +8002,7 @@ func (x *DecideGateRequest) String() string {
 func (*DecideGateRequest) ProtoMessage() {}
 
 func (x *DecideGateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[124]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7890,7 +8015,7 @@ func (x *DecideGateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DecideGateRequest.ProtoReflect.Descriptor instead.
 func (*DecideGateRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{124}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{126}
 }
 
 func (x *DecideGateRequest) GetRunId() string {
@@ -7937,7 +8062,7 @@ type DecideGateResponse struct {
 
 func (x *DecideGateResponse) Reset() {
 	*x = DecideGateResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[125]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7949,7 +8074,7 @@ func (x *DecideGateResponse) String() string {
 func (*DecideGateResponse) ProtoMessage() {}
 
 func (x *DecideGateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[125]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7962,7 +8087,7 @@ func (x *DecideGateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DecideGateResponse.ProtoReflect.Descriptor instead.
 func (*DecideGateResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{125}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{127}
 }
 
 func (x *DecideGateResponse) GetGate() *Gate {
@@ -7983,7 +8108,7 @@ type SteerRunRequest struct {
 
 func (x *SteerRunRequest) Reset() {
 	*x = SteerRunRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[126]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7995,7 +8120,7 @@ func (x *SteerRunRequest) String() string {
 func (*SteerRunRequest) ProtoMessage() {}
 
 func (x *SteerRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[126]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8008,7 +8133,7 @@ func (x *SteerRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SteerRunRequest.ProtoReflect.Descriptor instead.
 func (*SteerRunRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{126}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *SteerRunRequest) GetRunId() string {
@@ -8040,7 +8165,7 @@ type SteerRunResponse struct {
 
 func (x *SteerRunResponse) Reset() {
 	*x = SteerRunResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[127]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8052,7 +8177,7 @@ func (x *SteerRunResponse) String() string {
 func (*SteerRunResponse) ProtoMessage() {}
 
 func (x *SteerRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[127]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8065,7 +8190,7 @@ func (x *SteerRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SteerRunResponse.ProtoReflect.Descriptor instead.
 func (*SteerRunResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{127}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{129}
 }
 
 type CancelRunRequest struct {
@@ -8079,7 +8204,7 @@ type CancelRunRequest struct {
 
 func (x *CancelRunRequest) Reset() {
 	*x = CancelRunRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[128]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[130]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8091,7 +8216,7 @@ func (x *CancelRunRequest) String() string {
 func (*CancelRunRequest) ProtoMessage() {}
 
 func (x *CancelRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[128]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[130]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8104,7 +8229,7 @@ func (x *CancelRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelRunRequest.ProtoReflect.Descriptor instead.
 func (*CancelRunRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{128}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{130}
 }
 
 func (x *CancelRunRequest) GetRunId() string {
@@ -8136,7 +8261,7 @@ type CancelRunResponse struct {
 
 func (x *CancelRunResponse) Reset() {
 	*x = CancelRunResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[129]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[131]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8148,7 +8273,7 @@ func (x *CancelRunResponse) String() string {
 func (*CancelRunResponse) ProtoMessage() {}
 
 func (x *CancelRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[129]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[131]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8161,7 +8286,7 @@ func (x *CancelRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelRunResponse.ProtoReflect.Descriptor instead.
 func (*CancelRunResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{129}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{131}
 }
 
 type ListRunEventsRequest struct {
@@ -8175,7 +8300,7 @@ type ListRunEventsRequest struct {
 
 func (x *ListRunEventsRequest) Reset() {
 	*x = ListRunEventsRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[130]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[132]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8187,7 +8312,7 @@ func (x *ListRunEventsRequest) String() string {
 func (*ListRunEventsRequest) ProtoMessage() {}
 
 func (x *ListRunEventsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[130]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[132]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8200,7 +8325,7 @@ func (x *ListRunEventsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRunEventsRequest.ProtoReflect.Descriptor instead.
 func (*ListRunEventsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{130}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{132}
 }
 
 func (x *ListRunEventsRequest) GetRunId() string {
@@ -8234,7 +8359,7 @@ type ListRunEventsResponse struct {
 
 func (x *ListRunEventsResponse) Reset() {
 	*x = ListRunEventsResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[131]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[133]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8246,7 +8371,7 @@ func (x *ListRunEventsResponse) String() string {
 func (*ListRunEventsResponse) ProtoMessage() {}
 
 func (x *ListRunEventsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[131]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[133]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8259,7 +8384,7 @@ func (x *ListRunEventsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRunEventsResponse.ProtoReflect.Descriptor instead.
 func (*ListRunEventsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{131}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *ListRunEventsResponse) GetEvents() []*RunEvent {
@@ -8290,7 +8415,7 @@ type RefreshNeuralKnowledgeRequest struct {
 
 func (x *RefreshNeuralKnowledgeRequest) Reset() {
 	*x = RefreshNeuralKnowledgeRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[132]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[134]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8302,7 +8427,7 @@ func (x *RefreshNeuralKnowledgeRequest) String() string {
 func (*RefreshNeuralKnowledgeRequest) ProtoMessage() {}
 
 func (x *RefreshNeuralKnowledgeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[132]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[134]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8315,7 +8440,7 @@ func (x *RefreshNeuralKnowledgeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefreshNeuralKnowledgeRequest.ProtoReflect.Descriptor instead.
 func (*RefreshNeuralKnowledgeRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{132}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{134}
 }
 
 func (x *RefreshNeuralKnowledgeRequest) GetWorkspaceId() string {
@@ -8350,7 +8475,7 @@ type RefreshNeuralKnowledgeResponse struct {
 
 func (x *RefreshNeuralKnowledgeResponse) Reset() {
 	*x = RefreshNeuralKnowledgeResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[133]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[135]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8362,7 +8487,7 @@ func (x *RefreshNeuralKnowledgeResponse) String() string {
 func (*RefreshNeuralKnowledgeResponse) ProtoMessage() {}
 
 func (x *RefreshNeuralKnowledgeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[133]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[135]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8375,7 +8500,7 @@ func (x *RefreshNeuralKnowledgeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefreshNeuralKnowledgeResponse.ProtoReflect.Descriptor instead.
 func (*RefreshNeuralKnowledgeResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{133}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{135}
 }
 
 func (x *RefreshNeuralKnowledgeResponse) GetChannelId() string {
@@ -8412,7 +8537,7 @@ type OpenThreadRequest struct {
 
 func (x *OpenThreadRequest) Reset() {
 	*x = OpenThreadRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[134]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[136]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8424,7 +8549,7 @@ func (x *OpenThreadRequest) String() string {
 func (*OpenThreadRequest) ProtoMessage() {}
 
 func (x *OpenThreadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[134]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[136]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8437,7 +8562,7 @@ func (x *OpenThreadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpenThreadRequest.ProtoReflect.Descriptor instead.
 func (*OpenThreadRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{134}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{136}
 }
 
 func (x *OpenThreadRequest) GetWorkspaceId() string {
@@ -8470,7 +8595,7 @@ type OpenThreadResponse struct {
 
 func (x *OpenThreadResponse) Reset() {
 	*x = OpenThreadResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[135]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[137]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8482,7 +8607,7 @@ func (x *OpenThreadResponse) String() string {
 func (*OpenThreadResponse) ProtoMessage() {}
 
 func (x *OpenThreadResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[135]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[137]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8495,7 +8620,7 @@ func (x *OpenThreadResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpenThreadResponse.ProtoReflect.Descriptor instead.
 func (*OpenThreadResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{135}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{137}
 }
 
 func (x *OpenThreadResponse) GetThreadRootId() string {
@@ -8523,7 +8648,7 @@ type SetUpPreviewWorkflowRequest struct {
 
 func (x *SetUpPreviewWorkflowRequest) Reset() {
 	*x = SetUpPreviewWorkflowRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[136]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[138]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8535,7 +8660,7 @@ func (x *SetUpPreviewWorkflowRequest) String() string {
 func (*SetUpPreviewWorkflowRequest) ProtoMessage() {}
 
 func (x *SetUpPreviewWorkflowRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[136]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[138]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8548,7 +8673,7 @@ func (x *SetUpPreviewWorkflowRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetUpPreviewWorkflowRequest.ProtoReflect.Descriptor instead.
 func (*SetUpPreviewWorkflowRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{136}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{138}
 }
 
 func (x *SetUpPreviewWorkflowRequest) GetWorkspaceId() string {
@@ -8608,7 +8733,7 @@ type PreviewWorkflowResult struct {
 
 func (x *PreviewWorkflowResult) Reset() {
 	*x = PreviewWorkflowResult{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[137]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[139]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8620,7 +8745,7 @@ func (x *PreviewWorkflowResult) String() string {
 func (*PreviewWorkflowResult) ProtoMessage() {}
 
 func (x *PreviewWorkflowResult) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[137]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[139]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8633,7 +8758,7 @@ func (x *PreviewWorkflowResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PreviewWorkflowResult.ProtoReflect.Descriptor instead.
 func (*PreviewWorkflowResult) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{137}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{139}
 }
 
 func (x *PreviewWorkflowResult) GetRepo() string {
@@ -8694,7 +8819,7 @@ type SetUpPreviewWorkflowResponse struct {
 
 func (x *SetUpPreviewWorkflowResponse) Reset() {
 	*x = SetUpPreviewWorkflowResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[138]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[140]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8706,7 +8831,7 @@ func (x *SetUpPreviewWorkflowResponse) String() string {
 func (*SetUpPreviewWorkflowResponse) ProtoMessage() {}
 
 func (x *SetUpPreviewWorkflowResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[138]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[140]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8719,7 +8844,7 @@ func (x *SetUpPreviewWorkflowResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetUpPreviewWorkflowResponse.ProtoReflect.Descriptor instead.
 func (*SetUpPreviewWorkflowResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{138}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{140}
 }
 
 func (x *SetUpPreviewWorkflowResponse) GetResults() []*PreviewWorkflowResult {
@@ -8741,7 +8866,7 @@ type RegisterDeploymentRequest struct {
 
 func (x *RegisterDeploymentRequest) Reset() {
 	*x = RegisterDeploymentRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[139]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[141]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8753,7 +8878,7 @@ func (x *RegisterDeploymentRequest) String() string {
 func (*RegisterDeploymentRequest) ProtoMessage() {}
 
 func (x *RegisterDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[139]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[141]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8766,7 +8891,7 @@ func (x *RegisterDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*RegisterDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{139}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{141}
 }
 
 func (x *RegisterDeploymentRequest) GetWorkspaceId() string {
@@ -8806,7 +8931,7 @@ type RegisterDeploymentResponse struct {
 
 func (x *RegisterDeploymentResponse) Reset() {
 	*x = RegisterDeploymentResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[140]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[142]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8818,7 +8943,7 @@ func (x *RegisterDeploymentResponse) String() string {
 func (*RegisterDeploymentResponse) ProtoMessage() {}
 
 func (x *RegisterDeploymentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[140]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[142]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8831,7 +8956,7 @@ func (x *RegisterDeploymentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterDeploymentResponse.ProtoReflect.Descriptor instead.
 func (*RegisterDeploymentResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{140}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{142}
 }
 
 func (x *RegisterDeploymentResponse) GetUrl() string {
@@ -8850,7 +8975,7 @@ type GetDeploymentRequest struct {
 
 func (x *GetDeploymentRequest) Reset() {
 	*x = GetDeploymentRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[141]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[143]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8862,7 +8987,7 @@ func (x *GetDeploymentRequest) String() string {
 func (*GetDeploymentRequest) ProtoMessage() {}
 
 func (x *GetDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[141]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[143]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8875,7 +9000,7 @@ func (x *GetDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*GetDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{141}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{143}
 }
 
 func (x *GetDeploymentRequest) GetSlug() string {
@@ -8908,7 +9033,7 @@ type ProductProcess struct {
 
 func (x *ProductProcess) Reset() {
 	*x = ProductProcess{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[142]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[144]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8920,7 +9045,7 @@ func (x *ProductProcess) String() string {
 func (*ProductProcess) ProtoMessage() {}
 
 func (x *ProductProcess) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[142]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[144]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8933,7 +9058,7 @@ func (x *ProductProcess) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProductProcess.ProtoReflect.Descriptor instead.
 func (*ProductProcess) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{142}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{144}
 }
 
 func (x *ProductProcess) GetName() string {
@@ -9048,7 +9173,7 @@ type ProductParts struct {
 
 func (x *ProductParts) Reset() {
 	*x = ProductParts{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[143]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[145]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9060,7 +9185,7 @@ func (x *ProductParts) String() string {
 func (*ProductParts) ProtoMessage() {}
 
 func (x *ProductParts) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[143]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[145]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9073,7 +9198,7 @@ func (x *ProductParts) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProductParts.ProtoReflect.Descriptor instead.
 func (*ProductParts) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{143}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{145}
 }
 
 func (x *ProductParts) GetDatabases() []*ProductDatabase {
@@ -9123,7 +9248,7 @@ type ProductDatabase struct {
 
 func (x *ProductDatabase) Reset() {
 	*x = ProductDatabase{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[144]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[146]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9135,7 +9260,7 @@ func (x *ProductDatabase) String() string {
 func (*ProductDatabase) ProtoMessage() {}
 
 func (x *ProductDatabase) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[144]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[146]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9148,7 +9273,7 @@ func (x *ProductDatabase) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProductDatabase.ProtoReflect.Descriptor instead.
 func (*ProductDatabase) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{144}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{146}
 }
 
 func (x *ProductDatabase) GetName() string {
@@ -9201,7 +9326,7 @@ type ProductSpecChange struct {
 
 func (x *ProductSpecChange) Reset() {
 	*x = ProductSpecChange{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[145]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[147]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9213,7 +9338,7 @@ func (x *ProductSpecChange) String() string {
 func (*ProductSpecChange) ProtoMessage() {}
 
 func (x *ProductSpecChange) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[145]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[147]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9226,7 +9351,7 @@ func (x *ProductSpecChange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProductSpecChange.ProtoReflect.Descriptor instead.
 func (*ProductSpecChange) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{145}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{147}
 }
 
 func (x *ProductSpecChange) GetKind() string {
@@ -9334,7 +9459,7 @@ type PreviewProductSpecRequest struct {
 
 func (x *PreviewProductSpecRequest) Reset() {
 	*x = PreviewProductSpecRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[146]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[148]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9346,7 +9471,7 @@ func (x *PreviewProductSpecRequest) String() string {
 func (*PreviewProductSpecRequest) ProtoMessage() {}
 
 func (x *PreviewProductSpecRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[146]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[148]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9359,7 +9484,7 @@ func (x *PreviewProductSpecRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PreviewProductSpecRequest.ProtoReflect.Descriptor instead.
 func (*PreviewProductSpecRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{146}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{148}
 }
 
 func (x *PreviewProductSpecRequest) GetSlug() string {
@@ -9422,7 +9547,7 @@ type PreviewProductSpecResponse struct {
 
 func (x *PreviewProductSpecResponse) Reset() {
 	*x = PreviewProductSpecResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[147]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[149]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9434,7 +9559,7 @@ func (x *PreviewProductSpecResponse) String() string {
 func (*PreviewProductSpecResponse) ProtoMessage() {}
 
 func (x *PreviewProductSpecResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[147]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[149]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9447,7 +9572,7 @@ func (x *PreviewProductSpecResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PreviewProductSpecResponse.ProtoReflect.Descriptor instead.
 func (*PreviewProductSpecResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{147}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{149}
 }
 
 func (x *PreviewProductSpecResponse) GetText() string {
@@ -9498,7 +9623,7 @@ type ApplyProductSpecRequest struct {
 
 func (x *ApplyProductSpecRequest) Reset() {
 	*x = ApplyProductSpecRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[148]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[150]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9510,7 +9635,7 @@ func (x *ApplyProductSpecRequest) String() string {
 func (*ApplyProductSpecRequest) ProtoMessage() {}
 
 func (x *ApplyProductSpecRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[148]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[150]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9523,7 +9648,7 @@ func (x *ApplyProductSpecRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApplyProductSpecRequest.ProtoReflect.Descriptor instead.
 func (*ApplyProductSpecRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{148}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{150}
 }
 
 func (x *ApplyProductSpecRequest) GetSlug() string {
@@ -9613,7 +9738,7 @@ type ApplyProductSpecResponse struct {
 
 func (x *ApplyProductSpecResponse) Reset() {
 	*x = ApplyProductSpecResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[149]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[151]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9625,7 +9750,7 @@ func (x *ApplyProductSpecResponse) String() string {
 func (*ApplyProductSpecResponse) ProtoMessage() {}
 
 func (x *ApplyProductSpecResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[149]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[151]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9638,7 +9763,7 @@ func (x *ApplyProductSpecResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApplyProductSpecResponse.ProtoReflect.Descriptor instead.
 func (*ApplyProductSpecResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{149}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{151}
 }
 
 func (x *ApplyProductSpecResponse) GetCommitSha() string {
@@ -9671,7 +9796,7 @@ type GetProductSpecTextRequest struct {
 
 func (x *GetProductSpecTextRequest) Reset() {
 	*x = GetProductSpecTextRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[150]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[152]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9683,7 +9808,7 @@ func (x *GetProductSpecTextRequest) String() string {
 func (*GetProductSpecTextRequest) ProtoMessage() {}
 
 func (x *GetProductSpecTextRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[150]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[152]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9696,7 +9821,7 @@ func (x *GetProductSpecTextRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProductSpecTextRequest.ProtoReflect.Descriptor instead.
 func (*GetProductSpecTextRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{150}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{152}
 }
 
 func (x *GetProductSpecTextRequest) GetSlug() string {
@@ -9715,7 +9840,7 @@ type GetProductSpecTextResponse struct {
 
 func (x *GetProductSpecTextResponse) Reset() {
 	*x = GetProductSpecTextResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[151]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[153]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9727,7 +9852,7 @@ func (x *GetProductSpecTextResponse) String() string {
 func (*GetProductSpecTextResponse) ProtoMessage() {}
 
 func (x *GetProductSpecTextResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[151]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[153]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9740,7 +9865,7 @@ func (x *GetProductSpecTextResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProductSpecTextResponse.ProtoReflect.Descriptor instead.
 func (*GetProductSpecTextResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{151}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{153}
 }
 
 func (x *GetProductSpecTextResponse) GetText() string {
@@ -9761,7 +9886,7 @@ type ProductCost struct {
 
 func (x *ProductCost) Reset() {
 	*x = ProductCost{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[152]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[154]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9773,7 +9898,7 @@ func (x *ProductCost) String() string {
 func (*ProductCost) ProtoMessage() {}
 
 func (x *ProductCost) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[152]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[154]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9786,7 +9911,7 @@ func (x *ProductCost) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProductCost.ProtoReflect.Descriptor instead.
 func (*ProductCost) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{152}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{154}
 }
 
 func (x *ProductCost) GetBaseCents() int64 {
@@ -9824,7 +9949,7 @@ type PendingBuild struct {
 
 func (x *PendingBuild) Reset() {
 	*x = PendingBuild{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[153]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[155]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9836,7 +9961,7 @@ func (x *PendingBuild) String() string {
 func (*PendingBuild) ProtoMessage() {}
 
 func (x *PendingBuild) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[153]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[155]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9849,7 +9974,7 @@ func (x *PendingBuild) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PendingBuild.ProtoReflect.Descriptor instead.
 func (*PendingBuild) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{153}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{155}
 }
 
 func (x *PendingBuild) GetSha() string {
@@ -9909,7 +10034,7 @@ type ProcessState struct {
 
 func (x *ProcessState) Reset() {
 	*x = ProcessState{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[154]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[156]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9921,7 +10046,7 @@ func (x *ProcessState) String() string {
 func (*ProcessState) ProtoMessage() {}
 
 func (x *ProcessState) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[154]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[156]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9934,7 +10059,7 @@ func (x *ProcessState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProcessState.ProtoReflect.Descriptor instead.
 func (*ProcessState) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{154}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{156}
 }
 
 func (x *ProcessState) GetName() string {
@@ -9996,7 +10121,7 @@ type JobRun struct {
 
 func (x *JobRun) Reset() {
 	*x = JobRun{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[155]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[157]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10008,7 +10133,7 @@ func (x *JobRun) String() string {
 func (*JobRun) ProtoMessage() {}
 
 func (x *JobRun) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[155]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[157]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10021,7 +10146,7 @@ func (x *JobRun) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JobRun.ProtoReflect.Descriptor instead.
 func (*JobRun) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{155}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{157}
 }
 
 func (x *JobRun) GetJob() string {
@@ -10050,7 +10175,7 @@ type ProductChange struct {
 
 func (x *ProductChange) Reset() {
 	*x = ProductChange{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[156]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[158]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10062,7 +10187,7 @@ func (x *ProductChange) String() string {
 func (*ProductChange) ProtoMessage() {}
 
 func (x *ProductChange) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[156]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[158]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10075,7 +10200,7 @@ func (x *ProductChange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProductChange.ProtoReflect.Descriptor instead.
 func (*ProductChange) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{156}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{158}
 }
 
 func (x *ProductChange) GetSha() string {
@@ -10115,7 +10240,7 @@ type ValidateSpecRequest struct {
 
 func (x *ValidateSpecRequest) Reset() {
 	*x = ValidateSpecRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[157]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[159]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10127,7 +10252,7 @@ func (x *ValidateSpecRequest) String() string {
 func (*ValidateSpecRequest) ProtoMessage() {}
 
 func (x *ValidateSpecRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[157]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[159]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10140,7 +10265,7 @@ func (x *ValidateSpecRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidateSpecRequest.ProtoReflect.Descriptor instead.
 func (*ValidateSpecRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{157}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{159}
 }
 
 func (x *ValidateSpecRequest) GetTankYaml() string {
@@ -10162,7 +10287,7 @@ type ValidateSpecResponse struct {
 
 func (x *ValidateSpecResponse) Reset() {
 	*x = ValidateSpecResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[158]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[160]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10174,7 +10299,7 @@ func (x *ValidateSpecResponse) String() string {
 func (*ValidateSpecResponse) ProtoMessage() {}
 
 func (x *ValidateSpecResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[158]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[160]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10187,7 +10312,7 @@ func (x *ValidateSpecResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidateSpecResponse.ProtoReflect.Descriptor instead.
 func (*ValidateSpecResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{158}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{160}
 }
 
 func (x *ValidateSpecResponse) GetOk() bool {
@@ -10227,7 +10352,7 @@ type GetProductSpecRequest struct {
 
 func (x *GetProductSpecRequest) Reset() {
 	*x = GetProductSpecRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[159]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[161]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10239,7 +10364,7 @@ func (x *GetProductSpecRequest) String() string {
 func (*GetProductSpecRequest) ProtoMessage() {}
 
 func (x *GetProductSpecRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[159]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[161]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10252,7 +10377,7 @@ func (x *GetProductSpecRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProductSpecRequest.ProtoReflect.Descriptor instead.
 func (*GetProductSpecRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{159}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{161}
 }
 
 func (x *GetProductSpecRequest) GetSlug() string {
@@ -10281,7 +10406,7 @@ type GetProductSpecResponse struct {
 
 func (x *GetProductSpecResponse) Reset() {
 	*x = GetProductSpecResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[160]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[162]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10293,7 +10418,7 @@ func (x *GetProductSpecResponse) String() string {
 func (*GetProductSpecResponse) ProtoMessage() {}
 
 func (x *GetProductSpecResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[160]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[162]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10306,7 +10431,7 @@ func (x *GetProductSpecResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProductSpecResponse.ProtoReflect.Descriptor instead.
 func (*GetProductSpecResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{160}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{162}
 }
 
 func (x *GetProductSpecResponse) GetProcesses() []*ProductProcess {
@@ -10398,7 +10523,7 @@ type ProductPreview struct {
 
 func (x *ProductPreview) Reset() {
 	*x = ProductPreview{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[161]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[163]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10410,7 +10535,7 @@ func (x *ProductPreview) String() string {
 func (*ProductPreview) ProtoMessage() {}
 
 func (x *ProductPreview) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[161]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[163]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10423,7 +10548,7 @@ func (x *ProductPreview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProductPreview.ProtoReflect.Descriptor instead.
 func (*ProductPreview) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{161}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{163}
 }
 
 func (x *ProductPreview) GetPullRequest() int32 {
@@ -10465,7 +10590,7 @@ type ApproveProductBuildRequest struct {
 
 func (x *ApproveProductBuildRequest) Reset() {
 	*x = ApproveProductBuildRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[162]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[164]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10477,7 +10602,7 @@ func (x *ApproveProductBuildRequest) String() string {
 func (*ApproveProductBuildRequest) ProtoMessage() {}
 
 func (x *ApproveProductBuildRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[162]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[164]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10490,7 +10615,7 @@ func (x *ApproveProductBuildRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveProductBuildRequest.ProtoReflect.Descriptor instead.
 func (*ApproveProductBuildRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{162}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{164}
 }
 
 func (x *ApproveProductBuildRequest) GetSlug() string {
@@ -10522,7 +10647,7 @@ type ApproveProductBuildResponse struct {
 
 func (x *ApproveProductBuildResponse) Reset() {
 	*x = ApproveProductBuildResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[163]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[165]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10534,7 +10659,7 @@ func (x *ApproveProductBuildResponse) String() string {
 func (*ApproveProductBuildResponse) ProtoMessage() {}
 
 func (x *ApproveProductBuildResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[163]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[165]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10547,7 +10672,7 @@ func (x *ApproveProductBuildResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ApproveProductBuildResponse.ProtoReflect.Descriptor instead.
 func (*ApproveProductBuildResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{163}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{165}
 }
 
 type OperateProductRequest struct {
@@ -10562,7 +10687,7 @@ type OperateProductRequest struct {
 
 func (x *OperateProductRequest) Reset() {
 	*x = OperateProductRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[164]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[166]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10574,7 +10699,7 @@ func (x *OperateProductRequest) String() string {
 func (*OperateProductRequest) ProtoMessage() {}
 
 func (x *OperateProductRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[164]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[166]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10587,7 +10712,7 @@ func (x *OperateProductRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperateProductRequest.ProtoReflect.Descriptor instead.
 func (*OperateProductRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{164}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{166}
 }
 
 func (x *OperateProductRequest) GetSlug() string {
@@ -10627,7 +10752,7 @@ type OperateProductResponse struct {
 
 func (x *OperateProductResponse) Reset() {
 	*x = OperateProductResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[165]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[167]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10639,7 +10764,7 @@ func (x *OperateProductResponse) String() string {
 func (*OperateProductResponse) ProtoMessage() {}
 
 func (x *OperateProductResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[165]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[167]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10652,7 +10777,7 @@ func (x *OperateProductResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperateProductResponse.ProtoReflect.Descriptor instead.
 func (*OperateProductResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{165}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{167}
 }
 
 func (x *OperateProductResponse) GetRunId() string {
@@ -10672,7 +10797,7 @@ type ListProductChangesRequest struct {
 
 func (x *ListProductChangesRequest) Reset() {
 	*x = ListProductChangesRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[166]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[168]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10684,7 +10809,7 @@ func (x *ListProductChangesRequest) String() string {
 func (*ListProductChangesRequest) ProtoMessage() {}
 
 func (x *ListProductChangesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[166]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[168]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10697,7 +10822,7 @@ func (x *ListProductChangesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListProductChangesRequest.ProtoReflect.Descriptor instead.
 func (*ListProductChangesRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{166}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{168}
 }
 
 func (x *ListProductChangesRequest) GetSlug() string {
@@ -10723,7 +10848,7 @@ type ListProductChangesResponse struct {
 
 func (x *ListProductChangesResponse) Reset() {
 	*x = ListProductChangesResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[167]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[169]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10735,7 +10860,7 @@ func (x *ListProductChangesResponse) String() string {
 func (*ListProductChangesResponse) ProtoMessage() {}
 
 func (x *ListProductChangesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[167]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[169]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10748,7 +10873,7 @@ func (x *ListProductChangesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListProductChangesResponse.ProtoReflect.Descriptor instead.
 func (*ListProductChangesResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{167}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{169}
 }
 
 func (x *ListProductChangesResponse) GetChanges() []*ProductChange {
@@ -10769,7 +10894,7 @@ type RollbackProductRequest struct {
 
 func (x *RollbackProductRequest) Reset() {
 	*x = RollbackProductRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[168]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[170]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10781,7 +10906,7 @@ func (x *RollbackProductRequest) String() string {
 func (*RollbackProductRequest) ProtoMessage() {}
 
 func (x *RollbackProductRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[168]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[170]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10794,7 +10919,7 @@ func (x *RollbackProductRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RollbackProductRequest.ProtoReflect.Descriptor instead.
 func (*RollbackProductRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{168}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{170}
 }
 
 func (x *RollbackProductRequest) GetSlug() string {
@@ -10830,7 +10955,7 @@ type RollbackProductResponse struct {
 
 func (x *RollbackProductResponse) Reset() {
 	*x = RollbackProductResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[169]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[171]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10842,7 +10967,7 @@ func (x *RollbackProductResponse) String() string {
 func (*RollbackProductResponse) ProtoMessage() {}
 
 func (x *RollbackProductResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[169]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[171]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10855,7 +10980,7 @@ func (x *RollbackProductResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RollbackProductResponse.ProtoReflect.Descriptor instead.
 func (*RollbackProductResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{169}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{171}
 }
 
 func (x *RollbackProductResponse) GetApplied() bool {
@@ -10897,7 +11022,7 @@ type SetProductSecretRequest struct {
 
 func (x *SetProductSecretRequest) Reset() {
 	*x = SetProductSecretRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[170]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[172]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10909,7 +11034,7 @@ func (x *SetProductSecretRequest) String() string {
 func (*SetProductSecretRequest) ProtoMessage() {}
 
 func (x *SetProductSecretRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[170]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[172]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10922,7 +11047,7 @@ func (x *SetProductSecretRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetProductSecretRequest.ProtoReflect.Descriptor instead.
 func (*SetProductSecretRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{170}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{172}
 }
 
 func (x *SetProductSecretRequest) GetSlug() string {
@@ -10954,7 +11079,7 @@ type SetProductSecretResponse struct {
 
 func (x *SetProductSecretResponse) Reset() {
 	*x = SetProductSecretResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[171]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[173]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10966,7 +11091,7 @@ func (x *SetProductSecretResponse) String() string {
 func (*SetProductSecretResponse) ProtoMessage() {}
 
 func (x *SetProductSecretResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[171]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[173]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10979,7 +11104,7 @@ func (x *SetProductSecretResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetProductSecretResponse.ProtoReflect.Descriptor instead.
 func (*SetProductSecretResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{171}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{173}
 }
 
 type ExportProductRequest struct {
@@ -10991,7 +11116,7 @@ type ExportProductRequest struct {
 
 func (x *ExportProductRequest) Reset() {
 	*x = ExportProductRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[172]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[174]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11003,7 +11128,7 @@ func (x *ExportProductRequest) String() string {
 func (*ExportProductRequest) ProtoMessage() {}
 
 func (x *ExportProductRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[172]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[174]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11016,7 +11141,7 @@ func (x *ExportProductRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportProductRequest.ProtoReflect.Descriptor instead.
 func (*ExportProductRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{172}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{174}
 }
 
 func (x *ExportProductRequest) GetSlug() string {
@@ -11036,7 +11161,7 @@ type ExportProductResponse struct {
 
 func (x *ExportProductResponse) Reset() {
 	*x = ExportProductResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[173]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[175]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11048,7 +11173,7 @@ func (x *ExportProductResponse) String() string {
 func (*ExportProductResponse) ProtoMessage() {}
 
 func (x *ExportProductResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[173]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[175]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11061,7 +11186,7 @@ func (x *ExportProductResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportProductResponse.ProtoReflect.Descriptor instead.
 func (*ExportProductResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{173}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{175}
 }
 
 func (x *ExportProductResponse) GetComposeYaml() string {
@@ -11094,7 +11219,7 @@ type UpdateProductSpecRequest struct {
 
 func (x *UpdateProductSpecRequest) Reset() {
 	*x = UpdateProductSpecRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[174]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[176]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11106,7 +11231,7 @@ func (x *UpdateProductSpecRequest) String() string {
 func (*UpdateProductSpecRequest) ProtoMessage() {}
 
 func (x *UpdateProductSpecRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[174]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[176]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11119,7 +11244,7 @@ func (x *UpdateProductSpecRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateProductSpecRequest.ProtoReflect.Descriptor instead.
 func (*UpdateProductSpecRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{174}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{176}
 }
 
 func (x *UpdateProductSpecRequest) GetSlug() string {
@@ -11188,7 +11313,7 @@ type UpdateProductSpecResponse struct {
 
 func (x *UpdateProductSpecResponse) Reset() {
 	*x = UpdateProductSpecResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[175]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[177]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11200,7 +11325,7 @@ func (x *UpdateProductSpecResponse) String() string {
 func (*UpdateProductSpecResponse) ProtoMessage() {}
 
 func (x *UpdateProductSpecResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[175]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[177]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11213,7 +11338,7 @@ func (x *UpdateProductSpecResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateProductSpecResponse.ProtoReflect.Descriptor instead.
 func (*UpdateProductSpecResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{175}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{177}
 }
 
 func (x *UpdateProductSpecResponse) GetCommitSha() string {
@@ -11252,7 +11377,7 @@ type ProductState struct {
 
 func (x *ProductState) Reset() {
 	*x = ProductState{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[176]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[178]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11264,7 +11389,7 @@ func (x *ProductState) String() string {
 func (*ProductState) ProtoMessage() {}
 
 func (x *ProductState) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[176]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[178]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11277,7 +11402,7 @@ func (x *ProductState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProductState.ProtoReflect.Descriptor instead.
 func (*ProductState) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{176}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{178}
 }
 
 func (x *ProductState) GetPhase() string {
@@ -11383,7 +11508,7 @@ type ProductEvent struct {
 
 func (x *ProductEvent) Reset() {
 	*x = ProductEvent{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[177]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[179]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11395,7 +11520,7 @@ func (x *ProductEvent) String() string {
 func (*ProductEvent) ProtoMessage() {}
 
 func (x *ProductEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[177]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[179]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11408,7 +11533,7 @@ func (x *ProductEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProductEvent.ProtoReflect.Descriptor instead.
 func (*ProductEvent) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{177}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{179}
 }
 
 func (x *ProductEvent) GetAt() string {
@@ -11449,7 +11574,7 @@ type CheckProductPageRequest struct {
 
 func (x *CheckProductPageRequest) Reset() {
 	*x = CheckProductPageRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[178]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[180]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11461,7 +11586,7 @@ func (x *CheckProductPageRequest) String() string {
 func (*CheckProductPageRequest) ProtoMessage() {}
 
 func (x *CheckProductPageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[178]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[180]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11474,7 +11599,7 @@ func (x *CheckProductPageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckProductPageRequest.ProtoReflect.Descriptor instead.
 func (*CheckProductPageRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{178}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{180}
 }
 
 func (x *CheckProductPageRequest) GetSlug() string {
@@ -11500,7 +11625,7 @@ type CheckProductPageResponse struct {
 
 func (x *CheckProductPageResponse) Reset() {
 	*x = CheckProductPageResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[179]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[181]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11512,7 +11637,7 @@ func (x *CheckProductPageResponse) String() string {
 func (*CheckProductPageResponse) ProtoMessage() {}
 
 func (x *CheckProductPageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[179]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[181]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11525,7 +11650,7 @@ func (x *CheckProductPageResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckProductPageResponse.ProtoReflect.Descriptor instead.
 func (*CheckProductPageResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{179}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{181}
 }
 
 func (x *CheckProductPageResponse) GetCheck() *CheckLiveResponse {
@@ -11545,7 +11670,7 @@ type GetProductStateRequest struct {
 
 func (x *GetProductStateRequest) Reset() {
 	*x = GetProductStateRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[180]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[182]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11557,7 +11682,7 @@ func (x *GetProductStateRequest) String() string {
 func (*GetProductStateRequest) ProtoMessage() {}
 
 func (x *GetProductStateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[180]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[182]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11570,7 +11695,7 @@ func (x *GetProductStateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProductStateRequest.ProtoReflect.Descriptor instead.
 func (*GetProductStateRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{180}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{182}
 }
 
 func (x *GetProductStateRequest) GetSlug() string {
@@ -11597,7 +11722,7 @@ type GetProductStateResponse struct {
 
 func (x *GetProductStateResponse) Reset() {
 	*x = GetProductStateResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[181]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[183]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11609,7 +11734,7 @@ func (x *GetProductStateResponse) String() string {
 func (*GetProductStateResponse) ProtoMessage() {}
 
 func (x *GetProductStateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[181]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[183]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11622,7 +11747,7 @@ func (x *GetProductStateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProductStateResponse.ProtoReflect.Descriptor instead.
 func (*GetProductStateResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{181}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{183}
 }
 
 func (x *GetProductStateResponse) GetState() *ProductState {
@@ -11653,7 +11778,7 @@ type GetDeploymentResponse struct {
 
 func (x *GetDeploymentResponse) Reset() {
 	*x = GetDeploymentResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[182]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[184]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11665,7 +11790,7 @@ func (x *GetDeploymentResponse) String() string {
 func (*GetDeploymentResponse) ProtoMessage() {}
 
 func (x *GetDeploymentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[182]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[184]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11678,7 +11803,7 @@ func (x *GetDeploymentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeploymentResponse.ProtoReflect.Descriptor instead.
 func (*GetDeploymentResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{182}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{184}
 }
 
 func (x *GetDeploymentResponse) GetRepo() string {
@@ -11734,7 +11859,7 @@ type SetProductReplicasRequest struct {
 
 func (x *SetProductReplicasRequest) Reset() {
 	*x = SetProductReplicasRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[183]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[185]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11746,7 +11871,7 @@ func (x *SetProductReplicasRequest) String() string {
 func (*SetProductReplicasRequest) ProtoMessage() {}
 
 func (x *SetProductReplicasRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[183]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[185]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11759,7 +11884,7 @@ func (x *SetProductReplicasRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetProductReplicasRequest.ProtoReflect.Descriptor instead.
 func (*SetProductReplicasRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{183}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{185}
 }
 
 func (x *SetProductReplicasRequest) GetSlug() string {
@@ -11792,7 +11917,7 @@ type SetProductReplicasResponse struct {
 
 func (x *SetProductReplicasResponse) Reset() {
 	*x = SetProductReplicasResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[184]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[186]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11804,7 +11929,7 @@ func (x *SetProductReplicasResponse) String() string {
 func (*SetProductReplicasResponse) ProtoMessage() {}
 
 func (x *SetProductReplicasResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[184]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[186]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11817,7 +11942,7 @@ func (x *SetProductReplicasResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetProductReplicasResponse.ProtoReflect.Descriptor instead.
 func (*SetProductReplicasResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{184}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{186}
 }
 
 func (x *SetProductReplicasResponse) GetUrl() string {
@@ -11838,7 +11963,7 @@ type CreateProductRepoRequest struct {
 
 func (x *CreateProductRepoRequest) Reset() {
 	*x = CreateProductRepoRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[185]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[187]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11850,7 +11975,7 @@ func (x *CreateProductRepoRequest) String() string {
 func (*CreateProductRepoRequest) ProtoMessage() {}
 
 func (x *CreateProductRepoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[185]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[187]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11863,7 +11988,7 @@ func (x *CreateProductRepoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateProductRepoRequest.ProtoReflect.Descriptor instead.
 func (*CreateProductRepoRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{185}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{187}
 }
 
 func (x *CreateProductRepoRequest) GetWorkspaceId() string {
@@ -11896,7 +12021,7 @@ type CreateProductRepoResponse struct {
 
 func (x *CreateProductRepoResponse) Reset() {
 	*x = CreateProductRepoResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[186]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[188]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11908,7 +12033,7 @@ func (x *CreateProductRepoResponse) String() string {
 func (*CreateProductRepoResponse) ProtoMessage() {}
 
 func (x *CreateProductRepoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[186]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[188]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11921,7 +12046,7 @@ func (x *CreateProductRepoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateProductRepoResponse.ProtoReflect.Descriptor instead.
 func (*CreateProductRepoResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{186}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{188}
 }
 
 func (x *CreateProductRepoResponse) GetRepo() string {
@@ -11945,7 +12070,7 @@ type CommitProductFilesRequest struct {
 
 func (x *CommitProductFilesRequest) Reset() {
 	*x = CommitProductFilesRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[187]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[189]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11957,7 +12082,7 @@ func (x *CommitProductFilesRequest) String() string {
 func (*CommitProductFilesRequest) ProtoMessage() {}
 
 func (x *CommitProductFilesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[187]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[189]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11970,7 +12095,7 @@ func (x *CommitProductFilesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommitProductFilesRequest.ProtoReflect.Descriptor instead.
 func (*CommitProductFilesRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{187}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{189}
 }
 
 func (x *CommitProductFilesRequest) GetSlug() string {
@@ -12010,7 +12135,7 @@ type CommitProductFilesResponse struct {
 
 func (x *CommitProductFilesResponse) Reset() {
 	*x = CommitProductFilesResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[188]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[190]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12022,7 +12147,7 @@ func (x *CommitProductFilesResponse) String() string {
 func (*CommitProductFilesResponse) ProtoMessage() {}
 
 func (x *CommitProductFilesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[188]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[190]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12035,7 +12160,7 @@ func (x *CommitProductFilesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommitProductFilesResponse.ProtoReflect.Descriptor instead.
 func (*CommitProductFilesResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{188}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{190}
 }
 
 func (x *CommitProductFilesResponse) GetCommitted() int32 {
@@ -12063,7 +12188,7 @@ type BindChannelRepoRequest struct {
 
 func (x *BindChannelRepoRequest) Reset() {
 	*x = BindChannelRepoRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[189]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[191]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12075,7 +12200,7 @@ func (x *BindChannelRepoRequest) String() string {
 func (*BindChannelRepoRequest) ProtoMessage() {}
 
 func (x *BindChannelRepoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[189]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[191]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12088,7 +12213,7 @@ func (x *BindChannelRepoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BindChannelRepoRequest.ProtoReflect.Descriptor instead.
 func (*BindChannelRepoRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{189}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{191}
 }
 
 func (x *BindChannelRepoRequest) GetWorkspaceId() string {
@@ -12154,7 +12279,7 @@ type BindChannelRepoResponse struct {
 
 func (x *BindChannelRepoResponse) Reset() {
 	*x = BindChannelRepoResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[190]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[192]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12166,7 +12291,7 @@ func (x *BindChannelRepoResponse) String() string {
 func (*BindChannelRepoResponse) ProtoMessage() {}
 
 func (x *BindChannelRepoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[190]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[192]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12179,7 +12304,7 @@ func (x *BindChannelRepoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BindChannelRepoResponse.ProtoReflect.Descriptor instead.
 func (*BindChannelRepoResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{190}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{192}
 }
 
 func (x *BindChannelRepoResponse) GetRepo() string {
@@ -12221,7 +12346,7 @@ type UnbindChannelRepoRequest struct {
 
 func (x *UnbindChannelRepoRequest) Reset() {
 	*x = UnbindChannelRepoRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[191]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[193]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12233,7 +12358,7 @@ func (x *UnbindChannelRepoRequest) String() string {
 func (*UnbindChannelRepoRequest) ProtoMessage() {}
 
 func (x *UnbindChannelRepoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[191]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[193]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12246,7 +12371,7 @@ func (x *UnbindChannelRepoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnbindChannelRepoRequest.ProtoReflect.Descriptor instead.
 func (*UnbindChannelRepoRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{191}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{193}
 }
 
 func (x *UnbindChannelRepoRequest) GetWorkspaceId() string {
@@ -12279,7 +12404,7 @@ type UnbindChannelRepoResponse struct {
 
 func (x *UnbindChannelRepoResponse) Reset() {
 	*x = UnbindChannelRepoResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[192]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[194]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12291,7 +12416,7 @@ func (x *UnbindChannelRepoResponse) String() string {
 func (*UnbindChannelRepoResponse) ProtoMessage() {}
 
 func (x *UnbindChannelRepoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[192]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[194]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12304,7 +12429,7 @@ func (x *UnbindChannelRepoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnbindChannelRepoResponse.ProtoReflect.Descriptor instead.
 func (*UnbindChannelRepoResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{192}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{194}
 }
 
 func (x *UnbindChannelRepoResponse) GetRemoved() bool {
@@ -12324,7 +12449,7 @@ type RepoAccessEntry struct {
 
 func (x *RepoAccessEntry) Reset() {
 	*x = RepoAccessEntry{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[193]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[195]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12336,7 +12461,7 @@ func (x *RepoAccessEntry) String() string {
 func (*RepoAccessEntry) ProtoMessage() {}
 
 func (x *RepoAccessEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[193]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[195]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12349,7 +12474,7 @@ func (x *RepoAccessEntry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepoAccessEntry.ProtoReflect.Descriptor instead.
 func (*RepoAccessEntry) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{193}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{195}
 }
 
 func (x *RepoAccessEntry) GetRepo() string {
@@ -12381,7 +12506,7 @@ type SetChannelRepoAccessRequest struct {
 
 func (x *SetChannelRepoAccessRequest) Reset() {
 	*x = SetChannelRepoAccessRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[194]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[196]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12393,7 +12518,7 @@ func (x *SetChannelRepoAccessRequest) String() string {
 func (*SetChannelRepoAccessRequest) ProtoMessage() {}
 
 func (x *SetChannelRepoAccessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[194]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[196]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12406,7 +12531,7 @@ func (x *SetChannelRepoAccessRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetChannelRepoAccessRequest.ProtoReflect.Descriptor instead.
 func (*SetChannelRepoAccessRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{194}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{196}
 }
 
 func (x *SetChannelRepoAccessRequest) GetWorkspaceId() string {
@@ -12449,7 +12574,7 @@ type SetChannelRepoAccessResponse struct {
 
 func (x *SetChannelRepoAccessResponse) Reset() {
 	*x = SetChannelRepoAccessResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[195]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[197]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12461,7 +12586,7 @@ func (x *SetChannelRepoAccessResponse) String() string {
 func (*SetChannelRepoAccessResponse) ProtoMessage() {}
 
 func (x *SetChannelRepoAccessResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[195]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[197]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12474,7 +12599,7 @@ func (x *SetChannelRepoAccessResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetChannelRepoAccessResponse.ProtoReflect.Descriptor instead.
 func (*SetChannelRepoAccessResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{195}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{197}
 }
 
 func (x *SetChannelRepoAccessResponse) GetEntries() []*RepoAccessEntry {
@@ -12504,7 +12629,7 @@ type CreateGitHubConnectStateRequest struct {
 
 func (x *CreateGitHubConnectStateRequest) Reset() {
 	*x = CreateGitHubConnectStateRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[196]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[198]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12516,7 +12641,7 @@ func (x *CreateGitHubConnectStateRequest) String() string {
 func (*CreateGitHubConnectStateRequest) ProtoMessage() {}
 
 func (x *CreateGitHubConnectStateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[196]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[198]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12529,7 +12654,7 @@ func (x *CreateGitHubConnectStateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGitHubConnectStateRequest.ProtoReflect.Descriptor instead.
 func (*CreateGitHubConnectStateRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{196}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{198}
 }
 
 func (x *CreateGitHubConnectStateRequest) GetWorkspaceId() string {
@@ -12563,7 +12688,7 @@ type CreateGitHubConnectStateResponse struct {
 
 func (x *CreateGitHubConnectStateResponse) Reset() {
 	*x = CreateGitHubConnectStateResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[197]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[199]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12575,7 +12700,7 @@ func (x *CreateGitHubConnectStateResponse) String() string {
 func (*CreateGitHubConnectStateResponse) ProtoMessage() {}
 
 func (x *CreateGitHubConnectStateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[197]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[199]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12588,7 +12713,7 @@ func (x *CreateGitHubConnectStateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateGitHubConnectStateResponse.ProtoReflect.Descriptor instead.
 func (*CreateGitHubConnectStateResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{197}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{199}
 }
 
 func (x *CreateGitHubConnectStateResponse) GetStateToken() string {
@@ -12613,7 +12738,7 @@ type SetChannelAgentSettingsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	WorkspaceId   string                 `protobuf:"bytes,1,opt,name=workspace_id,json=workspaceId,proto3" json:"workspace_id,omitempty"`
 	ChannelId     string                 `protobuf:"bytes,2,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
-	Settings      *v15.TreadSettings     `protobuf:"bytes,3,opt,name=settings,proto3" json:"settings,omitempty"`
+	Settings      *v11.TreadSettings     `protobuf:"bytes,3,opt,name=settings,proto3" json:"settings,omitempty"`
 	RequestedBy   string                 `protobuf:"bytes,4,opt,name=requested_by,json=requestedBy,proto3" json:"requested_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -12621,7 +12746,7 @@ type SetChannelAgentSettingsRequest struct {
 
 func (x *SetChannelAgentSettingsRequest) Reset() {
 	*x = SetChannelAgentSettingsRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[198]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[200]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12633,7 +12758,7 @@ func (x *SetChannelAgentSettingsRequest) String() string {
 func (*SetChannelAgentSettingsRequest) ProtoMessage() {}
 
 func (x *SetChannelAgentSettingsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[198]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[200]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12646,7 +12771,7 @@ func (x *SetChannelAgentSettingsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetChannelAgentSettingsRequest.ProtoReflect.Descriptor instead.
 func (*SetChannelAgentSettingsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{198}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{200}
 }
 
 func (x *SetChannelAgentSettingsRequest) GetWorkspaceId() string {
@@ -12663,7 +12788,7 @@ func (x *SetChannelAgentSettingsRequest) GetChannelId() string {
 	return ""
 }
 
-func (x *SetChannelAgentSettingsRequest) GetSettings() *v15.TreadSettings {
+func (x *SetChannelAgentSettingsRequest) GetSettings() *v11.TreadSettings {
 	if x != nil {
 		return x.Settings
 	}
@@ -12679,14 +12804,14 @@ func (x *SetChannelAgentSettingsRequest) GetRequestedBy() string {
 
 type SetChannelAgentSettingsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Settings      *v15.TreadSettings     `protobuf:"bytes,1,opt,name=settings,proto3" json:"settings,omitempty"`
+	Settings      *v11.TreadSettings     `protobuf:"bytes,1,opt,name=settings,proto3" json:"settings,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SetChannelAgentSettingsResponse) Reset() {
 	*x = SetChannelAgentSettingsResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[199]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[201]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12698,7 +12823,7 @@ func (x *SetChannelAgentSettingsResponse) String() string {
 func (*SetChannelAgentSettingsResponse) ProtoMessage() {}
 
 func (x *SetChannelAgentSettingsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[199]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[201]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12711,10 +12836,10 @@ func (x *SetChannelAgentSettingsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetChannelAgentSettingsResponse.ProtoReflect.Descriptor instead.
 func (*SetChannelAgentSettingsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{199}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{201}
 }
 
-func (x *SetChannelAgentSettingsResponse) GetSettings() *v15.TreadSettings {
+func (x *SetChannelAgentSettingsResponse) GetSettings() *v11.TreadSettings {
 	if x != nil {
 		return x.Settings
 	}
@@ -12736,7 +12861,7 @@ type SetWorkspaceAgentPolicyRequest struct {
 
 func (x *SetWorkspaceAgentPolicyRequest) Reset() {
 	*x = SetWorkspaceAgentPolicyRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[200]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[202]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12748,7 +12873,7 @@ func (x *SetWorkspaceAgentPolicyRequest) String() string {
 func (*SetWorkspaceAgentPolicyRequest) ProtoMessage() {}
 
 func (x *SetWorkspaceAgentPolicyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[200]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[202]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12761,7 +12886,7 @@ func (x *SetWorkspaceAgentPolicyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetWorkspaceAgentPolicyRequest.ProtoReflect.Descriptor instead.
 func (*SetWorkspaceAgentPolicyRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{200}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{202}
 }
 
 func (x *SetWorkspaceAgentPolicyRequest) GetWorkspaceId() string {
@@ -12794,7 +12919,7 @@ type SetWorkspaceAgentPolicyResponse struct {
 
 func (x *SetWorkspaceAgentPolicyResponse) Reset() {
 	*x = SetWorkspaceAgentPolicyResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[201]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[203]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12806,7 +12931,7 @@ func (x *SetWorkspaceAgentPolicyResponse) String() string {
 func (*SetWorkspaceAgentPolicyResponse) ProtoMessage() {}
 
 func (x *SetWorkspaceAgentPolicyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[201]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[203]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12819,7 +12944,7 @@ func (x *SetWorkspaceAgentPolicyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetWorkspaceAgentPolicyResponse.ProtoReflect.Descriptor instead.
 func (*SetWorkspaceAgentPolicyResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{201}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{203}
 }
 
 func (x *SetWorkspaceAgentPolicyResponse) GetPolicy() []byte {
@@ -12843,7 +12968,7 @@ type ArenaTurnRequest struct {
 
 func (x *ArenaTurnRequest) Reset() {
 	*x = ArenaTurnRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[202]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[204]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12855,7 +12980,7 @@ func (x *ArenaTurnRequest) String() string {
 func (*ArenaTurnRequest) ProtoMessage() {}
 
 func (x *ArenaTurnRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[202]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[204]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12868,7 +12993,7 @@ func (x *ArenaTurnRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArenaTurnRequest.ProtoReflect.Descriptor instead.
 func (*ArenaTurnRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{202}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{204}
 }
 
 func (x *ArenaTurnRequest) GetEnvironmentId() string {
@@ -12926,7 +13051,7 @@ type ArenaTurnResponse struct {
 
 func (x *ArenaTurnResponse) Reset() {
 	*x = ArenaTurnResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[203]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[205]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12938,7 +13063,7 @@ func (x *ArenaTurnResponse) String() string {
 func (*ArenaTurnResponse) ProtoMessage() {}
 
 func (x *ArenaTurnResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[203]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[205]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12951,7 +13076,7 @@ func (x *ArenaTurnResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ArenaTurnResponse.ProtoReflect.Descriptor instead.
 func (*ArenaTurnResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{203}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{205}
 }
 
 func (x *ArenaTurnResponse) GetText() string {
@@ -13003,7 +13128,7 @@ type ReadRepoRequest struct {
 
 func (x *ReadRepoRequest) Reset() {
 	*x = ReadRepoRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[204]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[206]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13015,7 +13140,7 @@ func (x *ReadRepoRequest) String() string {
 func (*ReadRepoRequest) ProtoMessage() {}
 
 func (x *ReadRepoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[204]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[206]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13028,7 +13153,7 @@ func (x *ReadRepoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadRepoRequest.ProtoReflect.Descriptor instead.
 func (*ReadRepoRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{204}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{206}
 }
 
 func (x *ReadRepoRequest) GetWorkspaceId() string {
@@ -13087,7 +13212,7 @@ type ReadRepoResponse struct {
 
 func (x *ReadRepoResponse) Reset() {
 	*x = ReadRepoResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[205]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[207]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13099,7 +13224,7 @@ func (x *ReadRepoResponse) String() string {
 func (*ReadRepoResponse) ProtoMessage() {}
 
 func (x *ReadRepoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[205]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[207]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13112,7 +13237,7 @@ func (x *ReadRepoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadRepoResponse.ProtoReflect.Descriptor instead.
 func (*ReadRepoResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{205}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{207}
 }
 
 func (x *ReadRepoResponse) GetSha() string {
@@ -13168,7 +13293,7 @@ type BuildPreviewRequest struct {
 
 func (x *BuildPreviewRequest) Reset() {
 	*x = BuildPreviewRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[206]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[208]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13180,7 +13305,7 @@ func (x *BuildPreviewRequest) String() string {
 func (*BuildPreviewRequest) ProtoMessage() {}
 
 func (x *BuildPreviewRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[206]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[208]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13193,7 +13318,7 @@ func (x *BuildPreviewRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildPreviewRequest.ProtoReflect.Descriptor instead.
 func (*BuildPreviewRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{206}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{208}
 }
 
 func (x *BuildPreviewRequest) GetWorkspaceId() string {
@@ -13230,7 +13355,7 @@ type BuildPreviewResponse struct {
 
 func (x *BuildPreviewResponse) Reset() {
 	*x = BuildPreviewResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[207]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[209]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13242,7 +13367,7 @@ func (x *BuildPreviewResponse) String() string {
 func (*BuildPreviewResponse) ProtoMessage() {}
 
 func (x *BuildPreviewResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[207]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[209]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13255,7 +13380,7 @@ func (x *BuildPreviewResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildPreviewResponse.ProtoReflect.Descriptor instead.
 func (*BuildPreviewResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{207}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{209}
 }
 
 func (x *BuildPreviewResponse) GetState() string {
@@ -13305,7 +13430,7 @@ type OpenSetupPullRequestRequest struct {
 
 func (x *OpenSetupPullRequestRequest) Reset() {
 	*x = OpenSetupPullRequestRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[208]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[210]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13317,7 +13442,7 @@ func (x *OpenSetupPullRequestRequest) String() string {
 func (*OpenSetupPullRequestRequest) ProtoMessage() {}
 
 func (x *OpenSetupPullRequestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[208]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[210]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13330,7 +13455,7 @@ func (x *OpenSetupPullRequestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpenSetupPullRequestRequest.ProtoReflect.Descriptor instead.
 func (*OpenSetupPullRequestRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{208}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{210}
 }
 
 func (x *OpenSetupPullRequestRequest) GetWorkspaceId() string {
@@ -13376,7 +13501,7 @@ type OpenSetupPullRequestResponse struct {
 
 func (x *OpenSetupPullRequestResponse) Reset() {
 	*x = OpenSetupPullRequestResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[209]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[211]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13388,7 +13513,7 @@ func (x *OpenSetupPullRequestResponse) String() string {
 func (*OpenSetupPullRequestResponse) ProtoMessage() {}
 
 func (x *OpenSetupPullRequestResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[209]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[211]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13401,7 +13526,7 @@ func (x *OpenSetupPullRequestResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpenSetupPullRequestResponse.ProtoReflect.Descriptor instead.
 func (*OpenSetupPullRequestResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{209}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{211}
 }
 
 func (x *OpenSetupPullRequestResponse) GetUrl() string {
@@ -13452,7 +13577,7 @@ type ReadElementAtRequest struct {
 
 func (x *ReadElementAtRequest) Reset() {
 	*x = ReadElementAtRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[210]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[212]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13464,7 +13589,7 @@ func (x *ReadElementAtRequest) String() string {
 func (*ReadElementAtRequest) ProtoMessage() {}
 
 func (x *ReadElementAtRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[210]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[212]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13477,7 +13602,7 @@ func (x *ReadElementAtRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadElementAtRequest.ProtoReflect.Descriptor instead.
 func (*ReadElementAtRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{210}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{212}
 }
 
 func (x *ReadElementAtRequest) GetUrl() string {
@@ -13533,7 +13658,7 @@ type ReadElementAtResponse struct {
 
 func (x *ReadElementAtResponse) Reset() {
 	*x = ReadElementAtResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[211]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[213]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13545,7 +13670,7 @@ func (x *ReadElementAtResponse) String() string {
 func (*ReadElementAtResponse) ProtoMessage() {}
 
 func (x *ReadElementAtResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[211]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[213]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13558,7 +13683,7 @@ func (x *ReadElementAtResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadElementAtResponse.ProtoReflect.Descriptor instead.
 func (*ReadElementAtResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{211}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{213}
 }
 
 func (x *ReadElementAtResponse) GetTag() string {
@@ -13642,7 +13767,7 @@ type MergeChangeRequest struct {
 
 func (x *MergeChangeRequest) Reset() {
 	*x = MergeChangeRequest{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[212]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[214]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13654,7 +13779,7 @@ func (x *MergeChangeRequest) String() string {
 func (*MergeChangeRequest) ProtoMessage() {}
 
 func (x *MergeChangeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[212]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[214]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13667,7 +13792,7 @@ func (x *MergeChangeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MergeChangeRequest.ProtoReflect.Descriptor instead.
 func (*MergeChangeRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{212}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{214}
 }
 
 func (x *MergeChangeRequest) GetWorkspaceId() string {
@@ -13702,7 +13827,7 @@ type MergeChangeResponse struct {
 
 func (x *MergeChangeResponse) Reset() {
 	*x = MergeChangeResponse{}
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[213]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[215]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13714,7 +13839,7 @@ func (x *MergeChangeResponse) String() string {
 func (*MergeChangeResponse) ProtoMessage() {}
 
 func (x *MergeChangeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[213]
+	mi := &file_tank_agentctl_v1_agentctl_proto_msgTypes[215]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13727,7 +13852,7 @@ func (x *MergeChangeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MergeChangeResponse.ProtoReflect.Descriptor instead.
 func (*MergeChangeResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{213}
+	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{215}
 }
 
 func (x *MergeChangeResponse) GetMerged() bool {
@@ -13835,7 +13960,7 @@ var file_tank_agentctl_v1_agentctl_proto_rawDesc = string([]byte{
 	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
 	0x52, 0x0a, 0x61, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x64, 0x41, 0x74, 0x12, 0x1a, 0x0a, 0x08,
 	0x66, 0x65, 0x65, 0x64, 0x62, 0x61, 0x63, 0x6b, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
-	0x66, 0x65, 0x65, 0x64, 0x62, 0x61, 0x63, 0x6b, 0x22, 0xd9, 0x09, 0x0a, 0x0a, 0x52, 0x75, 0x6e,
+	0x66, 0x65, 0x65, 0x64, 0x62, 0x61, 0x63, 0x6b, 0x22, 0x92, 0x0a, 0x0a, 0x0a, 0x52, 0x75, 0x6e,
 	0x43, 0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74, 0x12, 0x15, 0x0a, 0x06, 0x72, 0x75, 0x6e, 0x5f, 0x69,
 	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x72, 0x75, 0x6e, 0x49, 0x64, 0x12, 0x21,
 	0x0a, 0x0c, 0x77, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02,
@@ -13913,123 +14038,141 @@ var file_tank_agentctl_v1_agentctl_proto_rawDesc = string([]byte{
 	0x09, 0x52, 0x10, 0x77, 0x6f, 0x72, 0x6b, 0x62, 0x65, 0x6e, 0x63, 0x68, 0x42, 0x6f, 0x61, 0x72,
 	0x64, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x74, 0x72, 0x65, 0x61, 0x64, 0x5f, 0x62, 0x72, 0x69,
 	0x65, 0x66, 0x18, 0x1f, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x74, 0x72, 0x65, 0x61, 0x64, 0x42,
-	0x72, 0x69, 0x65, 0x66, 0x22, 0x16, 0x0a, 0x14, 0x47, 0x65, 0x74, 0x52, 0x75, 0x6e, 0x43, 0x6f,
-	0x6e, 0x74, 0x65, 0x78, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x4f, 0x0a, 0x15,
-	0x47, 0x65, 0x74, 0x52, 0x75, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x36, 0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
-	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x75, 0x6e, 0x43, 0x6f, 0x6e,
-	0x74, 0x65, 0x78, 0x74, 0x52, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74, 0x22, 0x38, 0x0a,
-	0x0a, 0x52, 0x65, 0x70, 0x6f, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x72,
-	0x65, 0x70, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x72, 0x65, 0x70, 0x6f, 0x12,
-	0x16, 0x0a, 0x06, 0x61, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x06, 0x61, 0x63, 0x63, 0x65, 0x73, 0x73, 0x22, 0x43, 0x0a, 0x17, 0x47, 0x65, 0x74, 0x47, 0x69,
-	0x74, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x63, 0x6f, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x05, 0x73, 0x63, 0x6f, 0x70, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x72, 0x65, 0x70, 0x6f,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x72, 0x65, 0x70, 0x6f, 0x22, 0xac, 0x01, 0x0a,
-	0x18, 0x47, 0x65, 0x74, 0x47, 0x69, 0x74, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61,
-	0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65,
-	0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65,
-	0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72,
-	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72,
-	0x64, 0x12, 0x39, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x65, 0x73, 0x5f, 0x61, 0x74, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
-	0x70, 0x52, 0x09, 0x65, 0x78, 0x70, 0x69, 0x72, 0x65, 0x73, 0x41, 0x74, 0x12, 0x1d, 0x0a, 0x0a,
-	0x72, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x5f, 0x75, 0x72, 0x6c, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x09, 0x72, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x55, 0x72, 0x6c, 0x22, 0x7a, 0x0a, 0x13, 0x50,
-	0x6f, 0x73, 0x74, 0x54, 0x6f, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x65, 0x78, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x04, 0x74, 0x65, 0x78, 0x74, 0x12, 0x22, 0x0a, 0x0d, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74,
-	0x5f, 0x6d, 0x73, 0x67, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x63,
-	0x6c, 0x69, 0x65, 0x6e, 0x74, 0x4d, 0x73, 0x67, 0x49, 0x64, 0x12, 0x2b, 0x0a, 0x12, 0x61, 0x6c,
-	0x73, 0x6f, 0x5f, 0x73, 0x65, 0x6e, 0x64, 0x5f, 0x74, 0x6f, 0x5f, 0x74, 0x72, 0x65, 0x61, 0x64,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0f, 0x61, 0x6c, 0x73, 0x6f, 0x53, 0x65, 0x6e, 0x64,
-	0x54, 0x6f, 0x54, 0x72, 0x65, 0x61, 0x64, 0x22, 0x35, 0x0a, 0x14, 0x50, 0x6f, 0x73, 0x74, 0x54,
-	0x6f, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x1d, 0x0a, 0x0a, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x09, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x49, 0x64, 0x22, 0xb9,
-	0x01, 0x0a, 0x0f, 0x50, 0x6f, 0x73, 0x74, 0x50, 0x6c, 0x61, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x07, 0x73, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x12, 0x2e, 0x0a, 0x05,
-	0x73, 0x74, 0x65, 0x70, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x74, 0x61,
-	0x6e, 0x6b, 0x2e, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6c, 0x61,
-	0x6e, 0x53, 0x74, 0x65, 0x70, 0x52, 0x05, 0x73, 0x74, 0x65, 0x70, 0x73, 0x12, 0x14, 0x0a, 0x05,
-	0x72, 0x69, 0x73, 0x6b, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x72, 0x69, 0x73,
-	0x6b, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x71, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18,
-	0x04, 0x20, 0x03, 0x28, 0x09, 0x52, 0x09, 0x71, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x73,
-	0x12, 0x28, 0x0a, 0x10, 0x70, 0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x5f, 0x66, 0x69, 0x6c, 0x65,
-	0x5f, 0x69, 0x64, 0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x65, 0x76,
-	0x69, 0x65, 0x77, 0x46, 0x69, 0x6c, 0x65, 0x49, 0x64, 0x73, 0x22, 0x61, 0x0a, 0x10, 0x50, 0x6f,
-	0x73, 0x74, 0x50, 0x6c, 0x61, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x17,
-	0x0a, 0x07, 0x63, 0x61, 0x72, 0x64, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x06, 0x63, 0x61, 0x72, 0x64, 0x49, 0x64, 0x12, 0x17, 0x0a, 0x07, 0x67, 0x61, 0x74, 0x65, 0x5f,
-	0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x67, 0x61, 0x74, 0x65, 0x49, 0x64,
-	0x12, 0x1b, 0x0a, 0x09, 0x70, 0x6c, 0x61, 0x6e, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x48, 0x61, 0x73, 0x68, 0x22, 0x8d, 0x01,
-	0x0a, 0x15, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68, 0x41, 0x72, 0x74, 0x69, 0x66, 0x61, 0x63, 0x74,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6d,
-	0x69, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6d, 0x69, 0x6d, 0x65, 0x12,
-	0x18, 0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c,
-	0x52, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x61, 0x70,
-	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x61, 0x70, 0x74,
-	0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x64, 0x65, 0x6c, 0x69, 0x76, 0x65, 0x72, 0x18, 0x05,
-	0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x64, 0x65, 0x6c, 0x69, 0x76, 0x65, 0x72, 0x22, 0x31, 0x0a,
-	0x16, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68, 0x41, 0x72, 0x74, 0x69, 0x66, 0x61, 0x63, 0x74, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x17, 0x0a, 0x07, 0x66, 0x69, 0x6c, 0x65, 0x5f,
-	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x66, 0x69, 0x6c, 0x65, 0x49, 0x64,
-	0x22, 0x2f, 0x0a, 0x14, 0x47, 0x65, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68, 0x6d, 0x65, 0x6e,
-	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x17, 0x0a, 0x07, 0x66, 0x69, 0x6c, 0x65,
-	0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x66, 0x69, 0x6c, 0x65, 0x49,
-	0x64, 0x22, 0x6b, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68, 0x6d, 0x65,
-	0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3c, 0x0a, 0x0a, 0x61, 0x74,
-	0x74, 0x61, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x0a, 0x61, 0x74,
-	0x74, 0x61, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x63, 0x68, 0x75, 0x6e,
-	0x6b, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05, 0x63, 0x68, 0x75, 0x6e, 0x6b, 0x22, 0x70,
-	0x0a, 0x11, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x61, 0x72, 0x64, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x12, 0x17, 0x0a, 0x07, 0x63, 0x61, 0x72, 0x64, 0x5f, 0x69, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x63, 0x61, 0x72, 0x64, 0x49, 0x64, 0x12, 0x2e, 0x0a, 0x06,
-	0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x74,
-	0x61, 0x6e, 0x6b, 0x2e, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6c,
-	0x6f, 0x63, 0x6b, 0x73, 0x52, 0x06, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x73, 0x12, 0x12, 0x0a, 0x04,
-	0x74, 0x65, 0x78, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x65, 0x78, 0x74,
-	0x22, 0x14, 0x0a, 0x12, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x61, 0x72, 0x64, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x77, 0x0a, 0x15, 0x41, 0x73, 0x6b, 0x46, 0x6f, 0x72,
-	0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x61, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
-	0x2c, 0x0a, 0x04, 0x6b, 0x69, 0x6e, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x18, 0x2e,
-	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x47,
-	0x61, 0x74, 0x65, 0x4b, 0x69, 0x6e, 0x64, 0x52, 0x04, 0x6b, 0x69, 0x6e, 0x64, 0x12, 0x18, 0x0a,
-	0x07, 0x73, 0x75, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x73, 0x75, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f,
-	0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x22,
-	0x69, 0x0a, 0x16, 0x41, 0x73, 0x6b, 0x46, 0x6f, 0x72, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x61,
-	0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x17, 0x0a, 0x07, 0x67, 0x61, 0x74,
-	0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x67, 0x61, 0x74, 0x65,
-	0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x64, 0x65, 0x63, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x64, 0x65, 0x63, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x1a,
-	0x0a, 0x08, 0x66, 0x65, 0x65, 0x64, 0x62, 0x61, 0x63, 0x6b, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x08, 0x66, 0x65, 0x65, 0x64, 0x62, 0x61, 0x63, 0x6b, 0x22, 0x6d, 0x0a, 0x12, 0x41, 0x73,
-	0x6b, 0x51, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x12, 0x1a, 0x0a, 0x08, 0x71, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x08, 0x71, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07,
-	0x6f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x07, 0x6f,
-	0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x21, 0x0a, 0x0c, 0x6d, 0x75, 0x6c, 0x74, 0x69, 0x5f,
-	0x73, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0b, 0x6d, 0x75,
-	0x6c, 0x74, 0x69, 0x53, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x22, 0x46, 0x0a, 0x13, 0x41, 0x73, 0x6b,
-	0x51, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x17, 0x0a, 0x07, 0x63, 0x61, 0x72, 0x64, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x06, 0x63, 0x61, 0x72, 0x64, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6e, 0x73,
-	0x77, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6e, 0x73, 0x77, 0x65,
-	0x72, 0x22, 0x45, 0x0a, 0x13, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75,
-	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74,
-	0x75, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73,
-	0x12, 0x16, 0x0a, 0x06, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x06, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x16, 0x0a, 0x14, 0x52, 0x65, 0x70, 0x6f,
-	0x72, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x72, 0x69, 0x65, 0x66, 0x12, 0x37, 0x0a, 0x0a, 0x74, 0x72, 0x65, 0x61, 0x64, 0x5f, 0x70, 0x6c,
+	0x61, 0x6e, 0x18, 0x20, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x54, 0x72, 0x65, 0x61, 0x64, 0x50, 0x6c,
+	0x61, 0x6e, 0x52, 0x09, 0x74, 0x72, 0x65, 0x61, 0x64, 0x50, 0x6c, 0x61, 0x6e, 0x22, 0x16, 0x0a,
+	0x14, 0x47, 0x65, 0x74, 0x52, 0x75, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x4f, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x52, 0x75, 0x6e, 0x43,
+	0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x36,
+	0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
+	0x76, 0x31, 0x2e, 0x52, 0x75, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74, 0x52, 0x07, 0x63,
+	0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74, 0x22, 0x38, 0x0a, 0x0a, 0x52, 0x65, 0x70, 0x6f, 0x41, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x72, 0x65, 0x70, 0x6f, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x04, 0x72, 0x65, 0x70, 0x6f, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x63, 0x63, 0x65,
+	0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x63, 0x63, 0x65, 0x73, 0x73,
+	0x22, 0x43, 0x0a, 0x17, 0x47, 0x65, 0x74, 0x47, 0x69, 0x74, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e,
+	0x74, 0x69, 0x61, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x73,
+	0x63, 0x6f, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x73, 0x63, 0x6f, 0x70,
+	0x65, 0x12, 0x12, 0x0a, 0x04, 0x72, 0x65, 0x70, 0x6f, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x04, 0x72, 0x65, 0x70, 0x6f, 0x22, 0xac, 0x01, 0x0a, 0x18, 0x47, 0x65, 0x74, 0x47, 0x69, 0x74,
+	0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a,
+	0x0a, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x12, 0x39, 0x0a, 0x0a, 0x65, 0x78,
+	0x70, 0x69, 0x72, 0x65, 0x73, 0x5f, 0x61, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x65, 0x78, 0x70, 0x69,
+	0x72, 0x65, 0x73, 0x41, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x72, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x5f,
+	0x75, 0x72, 0x6c, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x6d, 0x6f, 0x74,
+	0x65, 0x55, 0x72, 0x6c, 0x22, 0x7a, 0x0a, 0x13, 0x50, 0x6f, 0x73, 0x74, 0x54, 0x6f, 0x54, 0x68,
+	0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x74,
+	0x65, 0x78, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x65, 0x78, 0x74, 0x12,
+	0x22, 0x0a, 0x0d, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x6d, 0x73, 0x67, 0x5f, 0x69, 0x64,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x4d, 0x73,
+	0x67, 0x49, 0x64, 0x12, 0x2b, 0x0a, 0x12, 0x61, 0x6c, 0x73, 0x6f, 0x5f, 0x73, 0x65, 0x6e, 0x64,
+	0x5f, 0x74, 0x6f, 0x5f, 0x74, 0x72, 0x65, 0x61, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x0f, 0x61, 0x6c, 0x73, 0x6f, 0x53, 0x65, 0x6e, 0x64, 0x54, 0x6f, 0x54, 0x72, 0x65, 0x61, 0x64,
+	0x22, 0x35, 0x0a, 0x14, 0x50, 0x6f, 0x73, 0x74, 0x54, 0x6f, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x6d, 0x65, 0x73, 0x73,
+	0x61, 0x67, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x6d, 0x65,
+	0x73, 0x73, 0x61, 0x67, 0x65, 0x49, 0x64, 0x22, 0xb9, 0x01, 0x0a, 0x0f, 0x50, 0x6f, 0x73, 0x74,
+	0x50, 0x6c, 0x61, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x73,
+	0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x73, 0x75,
+	0x6d, 0x6d, 0x61, 0x72, 0x79, 0x12, 0x2e, 0x0a, 0x05, 0x73, 0x74, 0x65, 0x70, 0x73, 0x18, 0x02,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x62, 0x6c, 0x6f, 0x63,
+	0x6b, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6c, 0x61, 0x6e, 0x53, 0x74, 0x65, 0x70, 0x52, 0x05,
+	0x73, 0x74, 0x65, 0x70, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x72, 0x69, 0x73, 0x6b, 0x73, 0x18, 0x03,
+	0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x72, 0x69, 0x73, 0x6b, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x09, 0x52, 0x09,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x28, 0x0a, 0x10, 0x70, 0x72, 0x65,
+	0x76, 0x69, 0x65, 0x77, 0x5f, 0x66, 0x69, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x73, 0x18, 0x05, 0x20,
+	0x03, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x46, 0x69, 0x6c, 0x65,
+	0x49, 0x64, 0x73, 0x22, 0x61, 0x0a, 0x10, 0x50, 0x6f, 0x73, 0x74, 0x50, 0x6c, 0x61, 0x6e, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x17, 0x0a, 0x07, 0x63, 0x61, 0x72, 0x64, 0x5f,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x63, 0x61, 0x72, 0x64, 0x49, 0x64,
+	0x12, 0x17, 0x0a, 0x07, 0x67, 0x61, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x67, 0x61, 0x74, 0x65, 0x49, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x70, 0x6c, 0x61,
+	0x6e, 0x5f, 0x68, 0x61, 0x73, 0x68, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c,
+	0x61, 0x6e, 0x48, 0x61, 0x73, 0x68, 0x22, 0x8d, 0x01, 0x0a, 0x15, 0x41, 0x74, 0x74, 0x61, 0x63,
+	0x68, 0x41, 0x72, 0x74, 0x69, 0x66, 0x61, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04,
+	0x6e, 0x61, 0x6d, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6d, 0x69, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x04, 0x6d, 0x69, 0x6d, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x74,
+	0x65, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65,
+	0x6e, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x61, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x61, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07,
+	0x64, 0x65, 0x6c, 0x69, 0x76, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x64,
+	0x65, 0x6c, 0x69, 0x76, 0x65, 0x72, 0x22, 0x31, 0x0a, 0x16, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68,
+	0x41, 0x72, 0x74, 0x69, 0x66, 0x61, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x17, 0x0a, 0x07, 0x66, 0x69, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x66, 0x69, 0x6c, 0x65, 0x49, 0x64, 0x22, 0x2f, 0x0a, 0x14, 0x47, 0x65, 0x74,
+	0x41, 0x74, 0x74, 0x61, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x12, 0x17, 0x0a, 0x07, 0x66, 0x69, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x06, 0x66, 0x69, 0x6c, 0x65, 0x49, 0x64, 0x22, 0x6b, 0x0a, 0x15, 0x47, 0x65,
+	0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x3c, 0x0a, 0x0a, 0x61, 0x74, 0x74, 0x61, 0x63, 0x68, 0x6d, 0x65, 0x6e,
+	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x74, 0x74, 0x61, 0x63,
+	0x68, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x0a, 0x61, 0x74, 0x74, 0x61, 0x63, 0x68, 0x6d, 0x65, 0x6e,
+	0x74, 0x12, 0x14, 0x0a, 0x05, 0x63, 0x68, 0x75, 0x6e, 0x6b, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c,
+	0x52, 0x05, 0x63, 0x68, 0x75, 0x6e, 0x6b, 0x22, 0x70, 0x0a, 0x11, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x43, 0x61, 0x72, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x17, 0x0a, 0x07,
+	0x63, 0x61, 0x72, 0x64, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x63,
+	0x61, 0x72, 0x64, 0x49, 0x64, 0x12, 0x2e, 0x0a, 0x06, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x73, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x62, 0x6c, 0x6f,
+	0x63, 0x6b, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x73, 0x52, 0x06, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x65, 0x78, 0x74, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x65, 0x78, 0x74, 0x22, 0x14, 0x0a, 0x12, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x43, 0x61, 0x72, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x77, 0x0a, 0x15, 0x41, 0x73, 0x6b, 0x46, 0x6f, 0x72, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x61,
+	0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2c, 0x0a, 0x04, 0x6b, 0x69, 0x6e, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x18, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x62, 0x6c,
+	0x6f, 0x63, 0x6b, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x61, 0x74, 0x65, 0x4b, 0x69, 0x6e, 0x64,
+	0x52, 0x04, 0x6b, 0x69, 0x6e, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x62, 0x6a, 0x65, 0x63,
+	0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x73, 0x75, 0x62, 0x6a, 0x65, 0x63, 0x74,
+	0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x22, 0x69, 0x0a, 0x16, 0x41, 0x73, 0x6b, 0x46,
+	0x6f, 0x72, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x61, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x17, 0x0a, 0x07, 0x67, 0x61, 0x74, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x06, 0x67, 0x61, 0x74, 0x65, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x64,
+	0x65, 0x63, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x64,
+	0x65, 0x63, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x66, 0x65, 0x65, 0x64, 0x62,
+	0x61, 0x63, 0x6b, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x66, 0x65, 0x65, 0x64, 0x62,
+	0x61, 0x63, 0x6b, 0x22, 0x6d, 0x0a, 0x12, 0x41, 0x73, 0x6b, 0x51, 0x75, 0x65, 0x73, 0x74, 0x69,
+	0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x6f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x07, 0x6f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12,
+	0x21, 0x0a, 0x0c, 0x6d, 0x75, 0x6c, 0x74, 0x69, 0x5f, 0x73, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0b, 0x6d, 0x75, 0x6c, 0x74, 0x69, 0x53, 0x65, 0x6c, 0x65,
+	0x63, 0x74, 0x22, 0x46, 0x0a, 0x13, 0x41, 0x73, 0x6b, 0x51, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x17, 0x0a, 0x07, 0x63, 0x61, 0x72,
+	0x64, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x63, 0x61, 0x72, 0x64,
+	0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x06, 0x61, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x22, 0x45, 0x0a, 0x13, 0x52, 0x65,
+	0x70, 0x6f, 0x72, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x64, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x22, 0x16, 0x0a, 0x14, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x9b, 0x01, 0x0a, 0x16, 0x55, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x54, 0x72, 0x65, 0x61, 0x64, 0x50, 0x6c, 0x61, 0x6e, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x6f,
+	0x75, 0x72, 0x63, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x12, 0x32, 0x0a, 0x05, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x1c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x76,
+	0x31, 0x2e, 0x54, 0x72, 0x65, 0x61, 0x64, 0x50, 0x6c, 0x61, 0x6e, 0x49, 0x74, 0x65, 0x6d, 0x52,
+	0x05, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x72, 0x65, 0x70, 0x6c, 0x61, 0x63,
+	0x65, 0x5f, 0x61, 0x6c, 0x6c, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0a, 0x72, 0x65, 0x70,
+	0x6c, 0x61, 0x63, 0x65, 0x41, 0x6c, 0x6c, 0x22, 0x47, 0x0a, 0x17, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x54, 0x72, 0x65, 0x61, 0x64, 0x50, 0x6c, 0x61, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x2c, 0x0a, 0x04, 0x70, 0x6c, 0x61, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x18, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x76, 0x31,
+	0x2e, 0x54, 0x72, 0x65, 0x61, 0x64, 0x50, 0x6c, 0x61, 0x6e, 0x52, 0x04, 0x70, 0x6c, 0x61, 0x6e,
 	0x22, 0x50, 0x0a, 0x16, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x6c, 0x61, 0x6e, 0x53, 0x74,
 	0x65, 0x70, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x36, 0x0a, 0x05, 0x73, 0x74,
 	0x65, 0x70, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x74, 0x61, 0x6e, 0x6b,
@@ -15500,7 +15643,7 @@ var file_tank_agentctl_v1_agentctl_proto_rawDesc = string([]byte{
 	0x4e, 0x44, 0x5f, 0x41, 0x50, 0x50, 0x52, 0x4f, 0x56, 0x41, 0x4c, 0x10, 0x02, 0x12, 0x15, 0x0a,
 	0x11, 0x49, 0x4e, 0x42, 0x4f, 0x58, 0x5f, 0x4b, 0x49, 0x4e, 0x44, 0x5f, 0x41, 0x4e, 0x53, 0x57,
 	0x45, 0x52, 0x10, 0x03, 0x12, 0x15, 0x0a, 0x11, 0x49, 0x4e, 0x42, 0x4f, 0x58, 0x5f, 0x4b, 0x49,
-	0x4e, 0x44, 0x5f, 0x43, 0x41, 0x4e, 0x43, 0x45, 0x4c, 0x10, 0x04, 0x32, 0xca, 0x26, 0x0a, 0x0d,
+	0x4e, 0x44, 0x5f, 0x43, 0x41, 0x4e, 0x43, 0x45, 0x4c, 0x10, 0x04, 0x32, 0xb2, 0x27, 0x0a, 0x0d,
 	0x52, 0x75, 0x6e, 0x6e, 0x65, 0x72, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x60, 0x0a,
 	0x0d, 0x47, 0x65, 0x74, 0x52, 0x75, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x78, 0x74, 0x12, 0x26,
 	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
@@ -15568,524 +15711,531 @@ var file_tank_agentctl_v1_agentctl_proto_rawDesc = string([]byte{
 	0x74, 0x65, 0x70, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x74, 0x61,
 	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x55,
 	0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x6c, 0x61, 0x6e, 0x53, 0x74, 0x65, 0x70, 0x73, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x69, 0x0a, 0x10, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74,
-	0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x29, 0x2e, 0x74, 0x61, 0x6e,
-	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65,
-	0x70, 0x6f, 0x72, 0x74, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
-	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x43,
-	0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x54, 0x0a, 0x09, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x4c, 0x69, 0x76, 0x65, 0x12, 0x22,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x0f, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x54, 0x72, 0x65, 0x61, 0x64, 0x50, 0x6c, 0x61, 0x6e, 0x12, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b,
+	0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x54, 0x72, 0x65, 0x61, 0x64, 0x50, 0x6c, 0x61, 0x6e, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
+	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x54, 0x72, 0x65,
+	0x61, 0x64, 0x50, 0x6c, 0x61, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x69,
+	0x0a, 0x10, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
+	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x43, 0x6f, 0x6d, 0x70,
+	0x6c, 0x65, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e,
+	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
+	0x2e, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x54, 0x0a, 0x09, 0x43, 0x68, 0x65,
+	0x63, 0x6b, 0x4c, 0x69, 0x76, 0x65, 0x12, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x4c,
+	0x69, 0x76, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x74, 0x61, 0x6e,
+	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x68,
+	0x65, 0x63, 0x6b, 0x4c, 0x69, 0x76, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x5a, 0x0a, 0x0b, 0x52, 0x65, 0x61, 0x64, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x12, 0x24,
 	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x4c, 0x69, 0x76, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
-	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x4c, 0x69, 0x76, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a, 0x0b, 0x52, 0x65, 0x61, 0x64, 0x50,
-	0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x12, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
-	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x50, 0x72,
-	0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x74,
-	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
-	0x52, 0x65, 0x61, 0x64, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0c, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x53,
-	0x70, 0x65, 0x63, 0x12, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
-	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x53,
-	0x70, 0x65, 0x63, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x74, 0x61, 0x6e,
-	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x56, 0x61,
-	0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x57, 0x0a, 0x0a, 0x52, 0x65, 0x61, 0x64, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64,
-	0x12, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
-	0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
-	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x54, 0x68, 0x72,
-	0x65, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x42,
-	0x6f, 0x61, 0x72, 0x64, 0x52, 0x65, 0x73, 0x65, 0x61, 0x72, 0x63, 0x68, 0x12, 0x26, 0x2e, 0x74,
-	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
-	0x42, 0x6f, 0x61, 0x72, 0x64, 0x52, 0x65, 0x73, 0x65, 0x61, 0x72, 0x63, 0x68, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x50, 0x72, 0x6f, 0x64,
+	0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0c, 0x56,
+	0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x53, 0x70, 0x65, 0x63, 0x12, 0x25, 0x2e, 0x74, 0x61,
+	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x56,
+	0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
+	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x65, 0x53, 0x70,
+	0x65, 0x63, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x0a, 0x52, 0x65,
+	0x61, 0x64, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x12, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64,
+	0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e,
+	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
+	0x2e, 0x52, 0x65, 0x61, 0x64, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x52, 0x65, 0x73, 0x65,
+	0x61, 0x72, 0x63, 0x68, 0x12, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
 	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x52, 0x65, 0x73,
-	0x65, 0x61, 0x72, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a,
-	0x0b, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x46, 0x69, 0x6c, 0x65, 0x73, 0x12, 0x24, 0x2e, 0x74,
+	0x65, 0x61, 0x72, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74,
 	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
-	0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x46, 0x69, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
-	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x46, 0x69, 0x6c, 0x65,
-	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x08, 0x53, 0x65, 0x74,
-	0x42, 0x72, 0x61, 0x6e, 0x64, 0x12, 0x21, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
-	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x42, 0x72, 0x61, 0x6e,
-	0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x42,
-	0x72, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x0a,
-	0x53, 0x65, 0x74, 0x4c, 0x61, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x12, 0x23, 0x2e, 0x74, 0x61, 0x6e,
-	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65,
-	0x74, 0x4c, 0x61, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x4c, 0x61, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x46,
-	0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x12, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
-	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
-	0x46, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27,
+	0x42, 0x6f, 0x61, 0x72, 0x64, 0x52, 0x65, 0x73, 0x65, 0x61, 0x72, 0x63, 0x68, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a, 0x0b, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x46,
+	0x69, 0x6c, 0x65, 0x73, 0x12, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x46, 0x69,
+	0x6c, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x74, 0x61, 0x6e,
+	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f,
+	0x6d, 0x6d, 0x69, 0x74, 0x46, 0x69, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x51, 0x0a, 0x08, 0x53, 0x65, 0x74, 0x42, 0x72, 0x61, 0x6e, 0x64, 0x12, 0x21, 0x2e,
+	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
+	0x2e, 0x53, 0x65, 0x74, 0x42, 0x72, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x42, 0x72, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x0a, 0x53, 0x65, 0x74, 0x4c, 0x61, 0x6e, 0x64, 0x69,
+	0x6e, 0x67, 0x12, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
+	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x4c, 0x61, 0x6e, 0x64, 0x69, 0x6e, 0x67,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x4c, 0x61,
+	0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a,
+	0x0d, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x46, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x12, 0x26,
 	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
 	0x31, 0x2e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x46, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0c, 0x42, 0x6f, 0x6f, 0x6b, 0x73,
-	0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x12, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
-	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73,
-	0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x12, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x43,
-	0x72, 0x65, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x12, 0x2b, 0x2e, 0x74,
-	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
-	0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x76, 0x6f, 0x69,
-	0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b,
-	0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f,
-	0x6b, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x12, 0x42, 0x6f, 0x6f, 0x6b, 0x73,
-	0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x45, 0x78, 0x70, 0x65, 0x6e, 0x73, 0x65, 0x12, 0x2b, 0x2e,
-	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
-	0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x45, 0x78, 0x70, 0x65,
-	0x6e, 0x73, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e,
-	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f,
-	0x6f, 0x6b, 0x73, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x45, 0x78, 0x70, 0x65, 0x6e, 0x73, 0x65,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x12, 0x42, 0x6f, 0x6f, 0x6b,
-	0x73, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x50, 0x61, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x2b,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x50, 0x61, 0x79,
-	0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61,
-	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42,
-	0x6f, 0x6f, 0x6b, 0x73, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x50, 0x61, 0x79, 0x6d, 0x65, 0x6e,
-	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a, 0x0b, 0x42, 0x6f, 0x6f,
-	0x6b, 0x73, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x12, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b,
-	0x73, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0e, 0x53, 0x6f, 0x63, 0x69, 0x61, 0x6c, 0x41,
-	0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x73, 0x12, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
-	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x6f, 0x63, 0x69, 0x61,
-	0x6c, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
-	0x2e, 0x76, 0x31, 0x2e, 0x53, 0x6f, 0x63, 0x69, 0x61, 0x6c, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e,
-	0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x69, 0x0a, 0x10, 0x53, 0x6f,
-	0x63, 0x69, 0x61, 0x6c, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x12, 0x29,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x53, 0x6f, 0x63, 0x69, 0x61, 0x6c, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x6f,
-	0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b,
-	0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x6f, 0x63,
-	0x69, 0x61, 0x6c, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x11, 0x53, 0x6f, 0x63, 0x69, 0x61, 0x6c, 0x50,
-	0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x50, 0x6f, 0x73, 0x74, 0x12, 0x2a, 0x2e, 0x74, 0x61, 0x6e,
-	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x6f,
-	0x63, 0x69, 0x61, 0x6c, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x50, 0x6f, 0x73, 0x74, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
+	0x46, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x5d, 0x0a, 0x0c, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x12,
+	0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
+	0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x53, 0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x53,
+	0x75, 0x6d, 0x6d, 0x61, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f,
+	0x0a, 0x12, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x76,
+	0x6f, 0x69, 0x63, 0x65, 0x12, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x43, 0x72, 0x65,
+	0x61, 0x74, 0x65, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74,
+	0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x6f, 0x0a, 0x12, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x45, 0x78,
+	0x70, 0x65, 0x6e, 0x73, 0x65, 0x12, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
+	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x52, 0x65,
+	0x63, 0x6f, 0x72, 0x64, 0x45, 0x78, 0x70, 0x65, 0x6e, 0x73, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
+	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x52, 0x65, 0x63, 0x6f, 0x72,
+	0x64, 0x45, 0x78, 0x70, 0x65, 0x6e, 0x73, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x6f, 0x0a, 0x12, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x50,
+	0x61, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x52,
+	0x65, 0x63, 0x6f, 0x72, 0x64, 0x50, 0x61, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
+	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x52, 0x65, 0x63, 0x6f,
+	0x72, 0x64, 0x50, 0x61, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x5a, 0x0a, 0x0b, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74,
+	0x12, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x73, 0x52,
+	0x65, 0x70, 0x6f, 0x72, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a,
+	0x0e, 0x53, 0x6f, 0x63, 0x69, 0x61, 0x6c, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x73, 0x12,
+	0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
+	0x76, 0x31, 0x2e, 0x53, 0x6f, 0x63, 0x69, 0x61, 0x6c, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74,
+	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x6f, 0x63, 0x69,
+	0x61, 0x6c, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x69, 0x0a, 0x10, 0x53, 0x6f, 0x63, 0x69, 0x61, 0x6c, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x12, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
 	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x6f, 0x63, 0x69, 0x61, 0x6c,
-	0x50, 0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x57, 0x72, 0x69, 0x74, 0x65, 0x55, 0x70, 0x54, 0x68,
-	0x72, 0x65, 0x61, 0x64, 0x12, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74,
+	0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x6f, 0x63, 0x69, 0x61, 0x6c, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a,
+	0x11, 0x53, 0x6f, 0x63, 0x69, 0x61, 0x6c, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x50, 0x6f,
+	0x73, 0x74, 0x12, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
+	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x6f, 0x63, 0x69, 0x61, 0x6c, 0x50, 0x75, 0x62, 0x6c,
+	0x69, 0x73, 0x68, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b,
+	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
+	0x31, 0x2e, 0x53, 0x6f, 0x63, 0x69, 0x61, 0x6c, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x50,
+	0x6f, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x57,
+	0x72, 0x69, 0x74, 0x65, 0x55, 0x70, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x12, 0x26, 0x2e, 0x74,
+	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
+	0x57, 0x72, 0x69, 0x74, 0x65, 0x55, 0x70, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
 	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x57, 0x72, 0x69, 0x74, 0x65, 0x55, 0x70, 0x54,
-	0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74,
-	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
-	0x57, 0x72, 0x69, 0x74, 0x65, 0x55, 0x70, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x0a, 0x52, 0x65, 0x61, 0x64, 0x43, 0x61, 0x6e,
-	0x76, 0x61, 0x73, 0x12, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
-	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x43, 0x61, 0x6e, 0x76, 0x61,
-	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64,
-	0x43, 0x61, 0x6e, 0x76, 0x61, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x54,
-	0x0a, 0x09, 0x41, 0x73, 0x6b, 0x43, 0x61, 0x6e, 0x76, 0x61, 0x73, 0x12, 0x22, 0x2e, 0x74, 0x61,
-	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41,
-	0x73, 0x6b, 0x43, 0x61, 0x6e, 0x76, 0x61, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x41, 0x73, 0x6b, 0x43, 0x61, 0x6e, 0x76, 0x61, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x0a, 0x4c, 0x69, 0x73, 0x74, 0x42, 0x6f, 0x61, 0x72,
-	0x64, 0x73, 0x12, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
-	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x73,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
-	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x42,
-	0x6f, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x54, 0x0a,
-	0x09, 0x52, 0x65, 0x61, 0x64, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x12, 0x22, 0x2e, 0x74, 0x61, 0x6e,
-	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65,
-	0x61, 0x64, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a, 0x0b, 0x44, 0x72, 0x61, 0x77, 0x4f, 0x6e, 0x42, 0x6f, 0x61,
-	0x72, 0x64, 0x12, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
-	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x72, 0x61, 0x77, 0x4f, 0x6e, 0x42, 0x6f, 0x61, 0x72,
-	0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x72, 0x61, 0x77,
-	0x4f, 0x6e, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x5d, 0x0a, 0x0c, 0x41, 0x72, 0x72, 0x61, 0x6e, 0x67, 0x65, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x12,
-	0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x41, 0x72, 0x72, 0x61, 0x6e, 0x67, 0x65, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
-	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x72, 0x72, 0x61, 0x6e, 0x67,
-	0x65, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63,
-	0x0a, 0x0e, 0x57, 0x6f, 0x72, 0x6b, 0x62, 0x65, 0x6e, 0x63, 0x68, 0x53, 0x74, 0x65, 0x70, 0x73,
-	0x12, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
-	0x2e, 0x76, 0x31, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x62, 0x65, 0x6e, 0x63, 0x68, 0x53, 0x74, 0x65,
-	0x70, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b,
-	0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x57, 0x6f, 0x72,
-	0x6b, 0x62, 0x65, 0x6e, 0x63, 0x68, 0x53, 0x74, 0x65, 0x70, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x57, 0x6f, 0x72, 0x6b, 0x62, 0x65, 0x6e, 0x63, 0x68,
-	0x53, 0x68, 0x6f, 0x77, 0x12, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
-	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x62, 0x65, 0x6e, 0x63,
-	0x68, 0x53, 0x68, 0x6f, 0x77, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74,
-	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
-	0x57, 0x6f, 0x72, 0x6b, 0x62, 0x65, 0x6e, 0x63, 0x68, 0x53, 0x68, 0x6f, 0x77, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x54, 0x0a, 0x09, 0x50, 0x6f, 0x6c, 0x6c, 0x49, 0x6e, 0x62,
-	0x6f, 0x78, 0x12, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
-	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6f, 0x6c, 0x6c, 0x49, 0x6e, 0x62, 0x6f, 0x78, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
-	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6f, 0x6c, 0x6c, 0x49, 0x6e,
-	0x62, 0x6f, 0x78, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x0f, 0x4f,
-	0x70, 0x65, 0x6e, 0x50, 0x75, 0x6c, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x28,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x4f, 0x70, 0x65, 0x6e, 0x50, 0x75, 0x6c, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x6e,
-	0x50, 0x75, 0x6c, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x43, 0x69,
-	0x57, 0x61, 0x74, 0x63, 0x68, 0x12, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
-	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x43, 0x69, 0x57, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x43, 0x69, 0x57, 0x61, 0x74, 0x63, 0x68,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0c, 0x47, 0x65, 0x74, 0x43,
-	0x69, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x12, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x43,
-	0x69, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x69, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0e, 0x52, 0x65, 0x63, 0x6f, 0x72,
-	0x64, 0x44, 0x65, 0x63, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b,
-	0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x63,
-	0x6f, 0x72, 0x64, 0x44, 0x65, 0x63, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
-	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x44, 0x65, 0x63, 0x69,
-	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x08,
-	0x52, 0x65, 0x6d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x12, 0x21, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x6d, 0x65,
-	0x6d, 0x62, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x74, 0x61,
+	0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a,
+	0x0a, 0x52, 0x65, 0x61, 0x64, 0x43, 0x61, 0x6e, 0x76, 0x61, 0x73, 0x12, 0x23, 0x2e, 0x74, 0x61,
 	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52,
-	0x65, 0x6d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x5f, 0x0a, 0x0c, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x12,
-	0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
-	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x28, 0x01,
-	0x12, 0x66, 0x0a, 0x0f, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65,
-	0x50, 0x75, 0x74, 0x12, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
-	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74,
-	0x6f, 0x72, 0x65, 0x50, 0x75, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e,
+	0x65, 0x61, 0x64, 0x43, 0x61, 0x6e, 0x76, 0x61, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x43, 0x61, 0x6e, 0x76, 0x61, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x54, 0x0a, 0x09, 0x41, 0x73, 0x6b, 0x43, 0x61, 0x6e,
+	0x76, 0x61, 0x73, 0x12, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
+	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x73, 0x6b, 0x43, 0x61, 0x6e, 0x76, 0x61, 0x73,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x73, 0x6b, 0x43, 0x61,
+	0x6e, 0x76, 0x61, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x0a,
+	0x4c, 0x69, 0x73, 0x74, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x73, 0x12, 0x23, 0x2e, 0x74, 0x61, 0x6e,
+	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69,
+	0x73, 0x74, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
+	0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x54, 0x0a, 0x09, 0x52, 0x65, 0x61, 0x64, 0x42, 0x6f, 0x61,
+	0x72, 0x64, 0x12, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
+	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x42, 0x6f,
+	0x61, 0x72, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a, 0x0b, 0x44,
+	0x72, 0x61, 0x77, 0x4f, 0x6e, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x12, 0x24, 0x2e, 0x74, 0x61, 0x6e,
+	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x72,
+	0x61, 0x77, 0x4f, 0x6e, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x44, 0x72, 0x61, 0x77, 0x4f, 0x6e, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0c, 0x41, 0x72, 0x72, 0x61, 0x6e,
+	0x67, 0x65, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x12, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x72, 0x72, 0x61, 0x6e,
+	0x67, 0x65, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26,
+	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
+	0x31, 0x2e, 0x41, 0x72, 0x72, 0x61, 0x6e, 0x67, 0x65, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0e, 0x57, 0x6f, 0x72, 0x6b, 0x62, 0x65,
+	0x6e, 0x63, 0x68, 0x53, 0x74, 0x65, 0x70, 0x73, 0x12, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x57, 0x6f, 0x72, 0x6b,
+	0x62, 0x65, 0x6e, 0x63, 0x68, 0x53, 0x74, 0x65, 0x70, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74,
+	0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x62, 0x65, 0x6e, 0x63, 0x68, 0x53, 0x74,
+	0x65, 0x70, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x57,
+	0x6f, 0x72, 0x6b, 0x62, 0x65, 0x6e, 0x63, 0x68, 0x53, 0x68, 0x6f, 0x77, 0x12, 0x26, 0x2e, 0x74,
+	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
+	0x57, 0x6f, 0x72, 0x6b, 0x62, 0x65, 0x6e, 0x63, 0x68, 0x53, 0x68, 0x6f, 0x77, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x62, 0x65, 0x6e, 0x63,
+	0x68, 0x53, 0x68, 0x6f, 0x77, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x54, 0x0a,
+	0x09, 0x50, 0x6f, 0x6c, 0x6c, 0x49, 0x6e, 0x62, 0x6f, 0x78, 0x12, 0x22, 0x2e, 0x74, 0x61, 0x6e,
+	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6f,
+	0x6c, 0x6c, 0x49, 0x6e, 0x62, 0x6f, 0x78, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23,
+	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
+	0x31, 0x2e, 0x50, 0x6f, 0x6c, 0x6c, 0x49, 0x6e, 0x62, 0x6f, 0x78, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x0f, 0x4f, 0x70, 0x65, 0x6e, 0x50, 0x75, 0x6c, 0x6c, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x6e, 0x50, 0x75,
+	0x6c, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x6e, 0x50, 0x75, 0x6c, 0x6c, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0e, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x43, 0x69, 0x57, 0x61, 0x74, 0x63, 0x68, 0x12, 0x27, 0x2e,
 	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
-	0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x50, 0x75, 0x74,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x69, 0x0a, 0x10, 0x53, 0x65, 0x73, 0x73,
-	0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x29, 0x2e, 0x74,
+	0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x43, 0x69, 0x57, 0x61, 0x74, 0x63, 0x68, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x43, 0x69, 0x57, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x5d, 0x0a, 0x0c, 0x47, 0x65, 0x74, 0x43, 0x69, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65,
+	0x12, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x69, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x43, 0x69,
+	0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x63, 0x0a, 0x0e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x44, 0x65, 0x63, 0x69, 0x73, 0x69, 0x6f,
+	0x6e, 0x12, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74,
+	0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x44, 0x65, 0x63, 0x69, 0x73,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x74, 0x61, 0x6e,
+	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65,
+	0x63, 0x6f, 0x72, 0x64, 0x44, 0x65, 0x63, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x08, 0x52, 0x65, 0x6d, 0x65, 0x6d, 0x62, 0x65, 0x72,
+	0x12, 0x21, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x6d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
+	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x6d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x0c, 0x53, 0x74, 0x72, 0x65, 0x61,
+	0x6d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x74, 0x72, 0x65, 0x61,
+	0x6d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26,
+	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
+	0x31, 0x2e, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x28, 0x01, 0x12, 0x66, 0x0a, 0x0f, 0x53, 0x65, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x50, 0x75, 0x74, 0x12, 0x28, 0x2e, 0x74, 0x61,
+	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53,
+	0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x50, 0x75, 0x74, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
+	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x53, 0x74, 0x6f, 0x72, 0x65, 0x50, 0x75, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x69, 0x0a, 0x10, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65,
+	0x4c, 0x69, 0x73, 0x74, 0x12, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53,
+	0x74, 0x6f, 0x72, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
+	0x76, 0x31, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x4c,
+	0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x81, 0x01, 0x0a, 0x18,
+	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x4c, 0x69, 0x73, 0x74,
+	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x31, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x32, 0x2e, 0x74, 0x61,
+	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53,
+	0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x53,
+	0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x7e, 0x0a, 0x17, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x4c,
+	0x69, 0x73, 0x74, 0x53, 0x75, 0x62, 0x6b, 0x65, 0x79, 0x73, 0x12, 0x30, 0x2e, 0x74, 0x61, 0x6e,
+	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65,
+	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x75,
+	0x62, 0x6b, 0x65, 0x79, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x31, 0x2e, 0x74,
 	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
 	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x4c, 0x69, 0x73, 0x74,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
-	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69,
-	0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x81, 0x01, 0x0a, 0x18, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53,
-	0x74, 0x6f, 0x72, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73,
-	0x12, 0x31, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
-	0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65,
-	0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x32, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
-	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74,
-	0x6f, 0x72, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7e, 0x0a, 0x17, 0x53, 0x65, 0x73, 0x73, 0x69,
-	0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x75, 0x62, 0x6b, 0x65,
-	0x79, 0x73, 0x12, 0x30, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
+	0x53, 0x75, 0x62, 0x6b, 0x65, 0x79, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x6f, 0x0a, 0x12, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x44,
+	0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
+	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x53, 0x74, 0x6f, 0x72, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
 	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f,
-	0x72, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x75, 0x62, 0x6b, 0x65, 0x79, 0x73, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x31, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
-	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53,
-	0x74, 0x6f, 0x72, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x75, 0x62, 0x6b, 0x65, 0x79, 0x73, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x12, 0x53, 0x65, 0x73, 0x73, 0x69,
-	0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x2b, 0x2e,
-	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
-	0x2e, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x44, 0x65, 0x6c,
-	0x65, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e,
-	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65,
-	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xd7, 0x20, 0x0a, 0x0e, 0x43, 0x6f, 0x6e,
-	0x74, 0x72, 0x6f, 0x6c, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x54, 0x0a, 0x09, 0x41,
-	0x72, 0x65, 0x6e, 0x61, 0x54, 0x75, 0x72, 0x6e, 0x12, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x72, 0x65, 0x6e,
-	0x61, 0x54, 0x75, 0x72, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x74,
+	0x72, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x32, 0xd7, 0x20, 0x0a, 0x0e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x53, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x12, 0x54, 0x0a, 0x09, 0x41, 0x72, 0x65, 0x6e, 0x61, 0x54, 0x75, 0x72, 0x6e,
+	0x12, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x41, 0x72, 0x65, 0x6e, 0x61, 0x54, 0x75, 0x72, 0x6e, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x72, 0x65, 0x6e, 0x61, 0x54, 0x75, 0x72,
+	0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x08, 0x53, 0x74, 0x61,
+	0x72, 0x74, 0x52, 0x75, 0x6e, 0x12, 0x21, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
+	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x52, 0x75,
+	0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x74, 0x61, 0x72,
+	0x74, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x0a,
+	0x4f, 0x70, 0x65, 0x6e, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x12, 0x23, 0x2e, 0x74, 0x61, 0x6e,
+	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70,
+	0x65, 0x6e, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
+	0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x6e, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x16, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68,
+	0x4e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x4b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x12,
+	0x2f, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
+	0x76, 0x31, 0x2e, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68, 0x4e, 0x65, 0x75, 0x72, 0x61, 0x6c,
+	0x4b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x30, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68, 0x4e, 0x65, 0x75, 0x72, 0x61,
+	0x6c, 0x4b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x4b, 0x0a, 0x06, 0x47, 0x65, 0x74, 0x52, 0x75, 0x6e, 0x12, 0x1f, 0x2e, 0x74,
 	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
-	0x41, 0x72, 0x65, 0x6e, 0x61, 0x54, 0x75, 0x72, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x51, 0x0a, 0x08, 0x53, 0x74, 0x61, 0x72, 0x74, 0x52, 0x75, 0x6e, 0x12, 0x21, 0x2e,
+	0x47, 0x65, 0x74, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e,
 	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
-	0x2e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
-	0x2e, 0x76, 0x31, 0x2e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x0a, 0x4f, 0x70, 0x65, 0x6e, 0x54, 0x68, 0x72, 0x65,
-	0x61, 0x64, 0x12, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
-	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x6e, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
-	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x6e, 0x54,
-	0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a,
-	0x16, 0x52, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68, 0x4e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x4b, 0x6e,
-	0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x12, 0x2f, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
-	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x66, 0x72, 0x65,
-	0x73, 0x68, 0x4e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x4b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67,
-	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x30, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x66, 0x72,
-	0x65, 0x73, 0x68, 0x4e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x4b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64,
-	0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4b, 0x0a, 0x06, 0x47, 0x65,
-	0x74, 0x52, 0x75, 0x6e, 0x12, 0x1f, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
-	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x52, 0x75, 0x6e, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
-	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x52, 0x75, 0x6e, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x08, 0x4c, 0x69, 0x73, 0x74, 0x52,
-	0x75, 0x6e, 0x73, 0x12, 0x21, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
-	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x75, 0x6e, 0x73, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
-	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x75,
-	0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x0a, 0x44, 0x65,
-	0x63, 0x69, 0x64, 0x65, 0x47, 0x61, 0x74, 0x65, 0x12, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x63, 0x69,
-	0x64, 0x65, 0x47, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e,
-	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
-	0x2e, 0x44, 0x65, 0x63, 0x69, 0x64, 0x65, 0x47, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x08, 0x53, 0x74, 0x65, 0x65, 0x72, 0x52, 0x75, 0x6e, 0x12,
-	0x21, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x53, 0x74, 0x65, 0x65, 0x72, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
-	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x74, 0x65, 0x65, 0x72, 0x52, 0x75, 0x6e, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x54, 0x0a, 0x09, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c,
-	0x52, 0x75, 0x6e, 0x12, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
-	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x52, 0x75, 0x6e,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
-	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x61, 0x6e, 0x63, 0x65,
-	0x6c, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d,
-	0x4c, 0x69, 0x73, 0x74, 0x52, 0x75, 0x6e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x26, 0x2e,
+	0x2e, 0x47, 0x65, 0x74, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x51, 0x0a, 0x08, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x75, 0x6e, 0x73, 0x12, 0x21, 0x2e, 0x74, 0x61,
+	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4c,
+	0x69, 0x73, 0x74, 0x52, 0x75, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22,
+	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
+	0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x75, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x57, 0x0a, 0x0a, 0x44, 0x65, 0x63, 0x69, 0x64, 0x65, 0x47, 0x61, 0x74, 0x65,
+	0x12, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x63, 0x69, 0x64, 0x65, 0x47, 0x61, 0x74, 0x65, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
+	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x63, 0x69, 0x64, 0x65, 0x47,
+	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x08, 0x53,
+	0x74, 0x65, 0x65, 0x72, 0x52, 0x75, 0x6e, 0x12, 0x21, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x74, 0x65, 0x65, 0x72,
+	0x52, 0x75, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x74, 0x61, 0x6e,
+	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x74,
+	0x65, 0x65, 0x72, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x54,
+	0x0a, 0x09, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x52, 0x75, 0x6e, 0x12, 0x22, 0x2e, 0x74, 0x61,
+	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43,
+	0x61, 0x6e, 0x63, 0x65, 0x6c, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
+	0x76, 0x31, 0x2e, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x75, 0x6e, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
+	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x75, 0x6e,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e,
 	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
 	0x2e, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x75, 0x6e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
-	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x75, 0x6e,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c,
-	0x0a, 0x11, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52,
-	0x65, 0x70, 0x6f, 0x12, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
-	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f,
-	0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x70, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74,
-	0x52, 0x65, 0x70, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x12,
-	0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x46, 0x69, 0x6c,
-	0x65, 0x73, 0x12, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
-	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x50, 0x72, 0x6f, 0x64,
-	0x75, 0x63, 0x74, 0x46, 0x69, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74,
-	0x46, 0x69, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a,
-	0x12, 0x53, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x70, 0x6c, 0x69,
-	0x63, 0x61, 0x73, 0x12, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
-	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63,
-	0x74, 0x52, 0x65, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
-	0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65,
-	0x70, 0x6c, 0x69, 0x63, 0x61, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f,
-	0x0a, 0x12, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79,
-	0x6d, 0x65, 0x6e, 0x74, 0x12, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
-	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72,
-	0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74,
-	0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x44, 0x65, 0x70,
-	0x6c, 0x6f, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x60, 0x0a, 0x0d, 0x47, 0x65, 0x74, 0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x6d, 0x65, 0x6e, 0x74,
-	0x12, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
-	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x6d, 0x65, 0x6e,
-	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x44,
-	0x65, 0x70, 0x6c, 0x6f, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x66, 0x0a, 0x0f, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53,
-	0x74, 0x61, 0x74, 0x65, 0x12, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
-	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75,
-	0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x69, 0x0a, 0x10, 0x43, 0x68, 0x65,
-	0x63, 0x6b, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x50, 0x61, 0x67, 0x65, 0x12, 0x29, 0x2e,
-	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
-	0x2e, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x50, 0x61, 0x67,
-	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x68, 0x65, 0x63,
-	0x6b, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75,
-	0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x12, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
-	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f,
-	0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65,
-	0x63, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x13, 0x41, 0x70, 0x70,
-	0x72, 0x6f, 0x76, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64,
-	0x12, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
-	0x2e, 0x76, 0x31, 0x2e, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75,
-	0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2d,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74,
-	0x42, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a,
-	0x0e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x12,
-	0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63,
-	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x72,
-	0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x6f, 0x0a, 0x12, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63,
-	0x74, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x12, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74,
-	0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
-	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x72, 0x6f,
-	0x64, 0x75, 0x63, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x0f, 0x52, 0x6f, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x50,
-	0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x12, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
-	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x6f, 0x6c, 0x6c, 0x62, 0x61,
-	0x63, 0x6b, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
-	0x2e, 0x76, 0x31, 0x2e, 0x52, 0x6f, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x50, 0x72, 0x6f, 0x64,
-	0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x11, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63,
-	0x12, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
-	0x2e, 0x76, 0x31, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63,
-	0x74, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x74,
-	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65,
-	0x63, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x12, 0x50, 0x72, 0x65,
-	0x76, 0x69, 0x65, 0x77, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x12,
-	0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x50, 0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63,
-	0x74, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74,
-	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
-	0x50, 0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70,
-	0x65, 0x63, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x69, 0x0a, 0x10, 0x41, 0x70,
-	0x70, 0x6c, 0x79, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x12, 0x29,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70,
-	0x65, 0x63, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b,
-	0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x70, 0x70,
-	0x6c, 0x79, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64,
-	0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x54, 0x65, 0x78, 0x74, 0x12, 0x2b, 0x2e, 0x74, 0x61,
-	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47,
-	0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x54, 0x65, 0x78,
-	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x50,
-	0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x54, 0x65, 0x78, 0x74, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x45, 0x78, 0x70, 0x6f, 0x72, 0x74,
-	0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x12, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
-	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x78, 0x70, 0x6f, 0x72,
-	0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x45, 0x78, 0x70, 0x6f, 0x72, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x69, 0x0a, 0x10, 0x53, 0x65, 0x74, 0x50,
-	0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x12, 0x29, 0x2e, 0x74,
-	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
-	0x53, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
-	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x50, 0x72,
-	0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x14, 0x53, 0x65, 0x74, 0x55, 0x70, 0x50, 0x72, 0x65, 0x76,
-	0x69, 0x65, 0x77, 0x57, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x12, 0x2d, 0x2e, 0x74, 0x61,
-	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53,
-	0x65, 0x74, 0x55, 0x70, 0x50, 0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x57, 0x6f, 0x72, 0x6b, 0x66,
-	0x6c, 0x6f, 0x77, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x74, 0x61, 0x6e,
-	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65,
-	0x74, 0x55, 0x70, 0x50, 0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x57, 0x6f, 0x72, 0x6b, 0x66, 0x6c,
-	0x6f, 0x77, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x08, 0x52, 0x65,
-	0x61, 0x64, 0x52, 0x65, 0x70, 0x6f, 0x12, 0x21, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
-	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x52, 0x65,
-	0x70, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b,
-	0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61,
-	0x64, 0x52, 0x65, 0x70, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a,
-	0x0c, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x50, 0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x12, 0x25, 0x2e,
-	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
-	0x2e, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x50, 0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
-	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x50, 0x72, 0x65,
-	0x76, 0x69, 0x65, 0x77, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x14,
-	0x4f, 0x70, 0x65, 0x6e, 0x53, 0x65, 0x74, 0x75, 0x70, 0x50, 0x75, 0x6c, 0x6c, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x12, 0x2d, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
-	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x6e, 0x53, 0x65, 0x74, 0x75,
-	0x70, 0x50, 0x75, 0x6c, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
-	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x6e, 0x53, 0x65, 0x74, 0x75, 0x70,
-	0x50, 0x75, 0x6c, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x52, 0x65, 0x61, 0x64, 0x45, 0x6c, 0x65, 0x6d, 0x65,
-	0x6e, 0x74, 0x41, 0x74, 0x12, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
-	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x45, 0x6c, 0x65, 0x6d,
-	0x65, 0x6e, 0x74, 0x41, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74,
-	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
-	0x52, 0x65, 0x61, 0x64, 0x45, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a, 0x0b, 0x4d, 0x65, 0x72, 0x67, 0x65, 0x43, 0x68,
-	0x61, 0x6e, 0x67, 0x65, 0x12, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
-	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x65, 0x72, 0x67, 0x65, 0x43, 0x68, 0x61,
-	0x6e, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x74, 0x61, 0x6e,
-	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x65,
-	0x72, 0x67, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x66, 0x0a, 0x0f, 0x42, 0x69, 0x6e, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c,
-	0x52, 0x65, 0x70, 0x6f, 0x12, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
-	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x69, 0x6e, 0x64, 0x43, 0x68, 0x61, 0x6e,
-	0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x42, 0x69, 0x6e, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70,
-	0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x11, 0x55, 0x6e, 0x62,
-	0x69, 0x6e, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f, 0x12, 0x2a,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x55, 0x6e, 0x62, 0x69, 0x6e, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52,
-	0x65, 0x70, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x74, 0x61, 0x6e,
-	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x6e,
-	0x62, 0x69, 0x6e, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x14, 0x53, 0x65, 0x74, 0x43, 0x68,
-	0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12,
-	0x2d, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70,
-	0x6f, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2e,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x53, 0x65, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f,
-	0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x81,
-	0x01, 0x0a, 0x18, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x47, 0x69, 0x74, 0x48, 0x75, 0x62, 0x43,
-	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x31, 0x2e, 0x74, 0x61,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x11, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x70, 0x6f, 0x12, 0x2a, 0x2e, 0x74, 0x61,
 	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43,
-	0x72, 0x65, 0x61, 0x74, 0x65, 0x47, 0x69, 0x74, 0x48, 0x75, 0x62, 0x43, 0x6f, 0x6e, 0x6e, 0x65,
-	0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x32,
+	0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x70, 0x6f,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x70, 0x6f, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x12, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x50, 0x72,
+	0x6f, 0x64, 0x75, 0x63, 0x74, 0x46, 0x69, 0x6c, 0x65, 0x73, 0x12, 0x2b, 0x2e, 0x74, 0x61, 0x6e,
+	0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f,
+	0x6d, 0x6d, 0x69, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x46, 0x69, 0x6c, 0x65, 0x73,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6d, 0x6d, 0x69,
+	0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x46, 0x69, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x12, 0x53, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64,
+	0x75, 0x63, 0x74, 0x52, 0x65, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x73, 0x12, 0x2b, 0x2e, 0x74, 0x61,
+	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53,
+	0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x70, 0x6c, 0x69, 0x63, 0x61,
+	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x50,
+	0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x12, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74,
+	0x65, 0x72, 0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x2b, 0x2e, 0x74,
+	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
+	0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x6d, 0x65,
+	0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b,
+	0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x67,
+	0x69, 0x73, 0x74, 0x65, 0x72, 0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x47, 0x65, 0x74, 0x44, 0x65,
+	0x70, 0x6c, 0x6f, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x44,
+	0x65, 0x70, 0x6c, 0x6f, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x44, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x6d, 0x65, 0x6e,
+	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x0f, 0x47, 0x65, 0x74,
+	0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x28, 0x2e, 0x74,
+	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
+	0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x65, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f,
+	0x64, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x69, 0x0a, 0x10, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63,
+	0x74, 0x50, 0x61, 0x67, 0x65, 0x12, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
+	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x50, 0x72,
+	0x6f, 0x64, 0x75, 0x63, 0x74, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74,
+	0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0e,
+	0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x12, 0x27,
 	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
-	0x31, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x47, 0x69, 0x74, 0x48, 0x75, 0x62, 0x43, 0x6f,
-	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x7e, 0x0a, 0x17, 0x53, 0x65, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c,
-	0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x12, 0x30, 0x2e,
+	0x31, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72,
+	0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x72, 0x0a, 0x13, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x50, 0x72, 0x6f, 0x64,
+	0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x70, 0x70, 0x72,
+	0x6f, 0x76, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2d, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76,
+	0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x65,
+	0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x12, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61,
+	0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75,
+	0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x12, 0x4c, 0x69,
+	0x73, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73,
+	0x12, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x43,
+	0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e,
 	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
-	0x2e, 0x53, 0x65, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x41, 0x67, 0x65, 0x6e, 0x74,
-	0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x31, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x41, 0x67, 0x65,
-	0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x7e, 0x0a, 0x17, 0x53, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61,
-	0x63, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x12, 0x30, 0x2e,
-	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31,
-	0x2e, 0x53, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x41, 0x67, 0x65,
-	0x6e, 0x74, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x31, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
-	0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x41,
-	0x67, 0x65, 0x6e, 0x74, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x42, 0xe0, 0x01, 0x0a, 0x14, 0x63, 0x6f, 0x6d, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x42, 0x0d, 0x41, 0x67, 0x65,
-	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x57, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x74, 0x61, 0x63, 0x74, 0x69, 0x63, 0x61,
-	0x6c, 0x2d, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2d, 0x6e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x2d, 0x6b,
-	0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x2f, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63,
-	0x74, 0x73, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x67, 0x6f, 0x2f, 0x74, 0x61, 0x6e, 0x6b, 0x2f, 0x61,
-	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2f, 0x76, 0x31, 0x3b, 0x61, 0x67, 0x65, 0x6e, 0x74,
-	0x63, 0x74, 0x6c, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x54, 0x41, 0x58, 0xaa, 0x02, 0x10, 0x54, 0x61,
-	0x6e, 0x6b, 0x2e, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x56, 0x31, 0xca, 0x02,
-	0x10, 0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x5c, 0x56,
-	0x31, 0xe2, 0x02, 0x1c, 0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74,
-	0x6c, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
-	0xea, 0x02, 0x12, 0x54, 0x61, 0x6e, 0x6b, 0x3a, 0x3a, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74,
-	0x6c, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x2e, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x43, 0x68, 0x61, 0x6e,
+	0x67, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x0f, 0x52,
+	0x6f, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x12, 0x28,
+	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
+	0x31, 0x2e, 0x52, 0x6f, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63,
+	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x6f, 0x6c, 0x6c,
+	0x62, 0x61, 0x63, 0x6b, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x11, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f,
+	0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x12, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72,
+	0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x6f, 0x0a, 0x12, 0x50, 0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x50, 0x72, 0x6f, 0x64,
+	0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x12, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x65, 0x76, 0x69,
+	0x65, 0x77, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x50,
+	0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x69, 0x0a, 0x10, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x50, 0x72, 0x6f, 0x64, 0x75,
+	0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x12, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x50,
+	0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74,
+	0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63,
+	0x74, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a,
+	0x12, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70, 0x65, 0x63, 0x54,
+	0x65, 0x78, 0x74, 0x12, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
+	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63,
+	0x74, 0x53, 0x70, 0x65, 0x63, 0x54, 0x65, 0x78, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x2c, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x70,
+	0x65, 0x63, 0x54, 0x65, 0x78, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60,
+	0x0a, 0x0d, 0x45, 0x78, 0x70, 0x6f, 0x72, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x12,
+	0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
+	0x76, 0x31, 0x2e, 0x45, 0x78, 0x70, 0x6f, 0x72, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x78, 0x70, 0x6f, 0x72,
+	0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x69, 0x0a, 0x10, 0x53, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x65,
+	0x63, 0x72, 0x65, 0x74, 0x12, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75,
+	0x63, 0x74, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e,
+	0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x65, 0x63,
+	0x72, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x14, 0x53,
+	0x65, 0x74, 0x55, 0x70, 0x50, 0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x57, 0x6f, 0x72, 0x6b, 0x66,
+	0x6c, 0x6f, 0x77, 0x12, 0x2d, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
+	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x55, 0x70, 0x50, 0x72, 0x65, 0x76,
+	0x69, 0x65, 0x77, 0x57, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
+	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x55, 0x70, 0x50, 0x72, 0x65, 0x76, 0x69,
+	0x65, 0x77, 0x57, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x51, 0x0a, 0x08, 0x52, 0x65, 0x61, 0x64, 0x52, 0x65, 0x70, 0x6f, 0x12, 0x21,
+	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76,
+	0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x52, 0x65, 0x70, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74,
+	0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x52, 0x65, 0x70, 0x6f, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0c, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x50, 0x72,
+	0x65, 0x76, 0x69, 0x65, 0x77, 0x12, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
+	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x50, 0x72,
+	0x65, 0x76, 0x69, 0x65, 0x77, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x74,
+	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
+	0x42, 0x75, 0x69, 0x6c, 0x64, 0x50, 0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x14, 0x4f, 0x70, 0x65, 0x6e, 0x53, 0x65, 0x74, 0x75,
+	0x70, 0x50, 0x75, 0x6c, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2d, 0x2e, 0x74,
+	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
+	0x4f, 0x70, 0x65, 0x6e, 0x53, 0x65, 0x74, 0x75, 0x70, 0x50, 0x75, 0x6c, 0x6c, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x74, 0x61,
+	0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4f,
+	0x70, 0x65, 0x6e, 0x53, 0x65, 0x74, 0x75, 0x70, 0x50, 0x75, 0x6c, 0x6c, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x52,
+	0x65, 0x61, 0x64, 0x45, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x12, 0x26, 0x2e, 0x74,
+	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
+	0x52, 0x65, 0x61, 0x64, 0x45, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x45, 0x6c, 0x65, 0x6d,
+	0x65, 0x6e, 0x74, 0x41, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a,
+	0x0b, 0x4d, 0x65, 0x72, 0x67, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x12, 0x24, 0x2e, 0x74,
+	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
+	0x4d, 0x65, 0x72, 0x67, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
+	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x65, 0x72, 0x67, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x67,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x0f, 0x42, 0x69, 0x6e,
+	0x64, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f, 0x12, 0x28, 0x2e, 0x74,
+	0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e,
+	0x42, 0x69, 0x6e, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x69, 0x6e, 0x64, 0x43, 0x68,
+	0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x6c, 0x0a, 0x11, 0x55, 0x6e, 0x62, 0x69, 0x6e, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x6e,
+	0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f, 0x12, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x6e, 0x62, 0x69, 0x6e, 0x64,
+	0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63,
+	0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x6e, 0x62, 0x69, 0x6e, 0x64, 0x43, 0x68, 0x61, 0x6e,
+	0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x75, 0x0a, 0x14, 0x53, 0x65, 0x74, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70,
+	0x6f, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x2d, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x43, 0x68,
+	0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x43, 0x68, 0x61,
+	0x6e, 0x6e, 0x65, 0x6c, 0x52, 0x65, 0x70, 0x6f, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x81, 0x01, 0x0a, 0x18, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x47, 0x69, 0x74, 0x48, 0x75, 0x62, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x53, 0x74,
+	0x61, 0x74, 0x65, 0x12, 0x31, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
+	0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x47, 0x69, 0x74,
+	0x48, 0x75, 0x62, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x65, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x32, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x47, 0x69, 0x74, 0x48, 0x75, 0x62, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x53, 0x74, 0x61,
+	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7e, 0x0a, 0x17, 0x53, 0x65,
+	0x74, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74,
+	0x74, 0x69, 0x6e, 0x67, 0x73, 0x12, 0x30, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
+	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x43, 0x68, 0x61, 0x6e,
+	0x6e, 0x65, 0x6c, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x31, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x43, 0x68,
+	0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e,
+	0x67, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7e, 0x0a, 0x17, 0x53, 0x65,
+	0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x50,
+	0x6f, 0x6c, 0x69, 0x63, 0x79, 0x12, 0x30, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65,
+	0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b,
+	0x73, 0x70, 0x61, 0x63, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x31, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x57, 0x6f,
+	0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x50, 0x6f, 0x6c, 0x69,
+	0x63, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xe0, 0x01, 0x0a, 0x14, 0x63,
+	0x6f, 0x6d, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c,
+	0x2e, 0x76, 0x31, 0x42, 0x0d, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x50, 0x72, 0x6f,
+	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x57, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x74, 0x61, 0x63, 0x74, 0x69, 0x63, 0x61, 0x6c, 0x2d, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2d,
+	0x6e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x2d, 0x6b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65,
+	0x2f, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x67,
+	0x6f, 0x2f, 0x74, 0x61, 0x6e, 0x6b, 0x2f, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x2f,
+	0x76, 0x31, 0x3b, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x76, 0x31, 0xa2, 0x02, 0x03,
+	0x54, 0x41, 0x58, 0xaa, 0x02, 0x10, 0x54, 0x61, 0x6e, 0x6b, 0x2e, 0x41, 0x67, 0x65, 0x6e, 0x74,
+	0x63, 0x74, 0x6c, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x10, 0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x41, 0x67,
+	0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1c, 0x54, 0x61, 0x6e, 0x6b,
+	0x5c, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x12, 0x54, 0x61, 0x6e, 0x6b, 0x3a,
+	0x3a, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x63, 0x74, 0x6c, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
@@ -16101,7 +16251,7 @@ func file_tank_agentctl_v1_agentctl_proto_rawDescGZIP() []byte {
 }
 
 var file_tank_agentctl_v1_agentctl_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_tank_agentctl_v1_agentctl_proto_msgTypes = make([]protoimpl.MessageInfo, 216)
+var file_tank_agentctl_v1_agentctl_proto_msgTypes = make([]protoimpl.MessageInfo, 218)
 var file_tank_agentctl_v1_agentctl_proto_goTypes = []any{
 	(RunPhase)(0),                            // 0: tank.agentctl.v1.RunPhase
 	(RunEventKind)(0),                        // 1: tank.agentctl.v1.RunEventKind
@@ -16132,503 +16282,512 @@ var file_tank_agentctl_v1_agentctl_proto_goTypes = []any{
 	(*AskQuestionResponse)(nil),              // 26: tank.agentctl.v1.AskQuestionResponse
 	(*ReportStatusRequest)(nil),              // 27: tank.agentctl.v1.ReportStatusRequest
 	(*ReportStatusResponse)(nil),             // 28: tank.agentctl.v1.ReportStatusResponse
-	(*UpdatePlanStepsRequest)(nil),           // 29: tank.agentctl.v1.UpdatePlanStepsRequest
-	(*PlanStepUpdate)(nil),                   // 30: tank.agentctl.v1.PlanStepUpdate
-	(*UpdatePlanStepsResponse)(nil),          // 31: tank.agentctl.v1.UpdatePlanStepsResponse
-	(*ReportCompletionRequest)(nil),          // 32: tank.agentctl.v1.ReportCompletionRequest
-	(*ReportCompletionResponse)(nil),         // 33: tank.agentctl.v1.ReportCompletionResponse
-	(*ReadProductRequest)(nil),               // 34: tank.agentctl.v1.ReadProductRequest
-	(*ReadProductResponse)(nil),              // 35: tank.agentctl.v1.ReadProductResponse
-	(*CheckLiveRequest)(nil),                 // 36: tank.agentctl.v1.CheckLiveRequest
-	(*CheckLiveResponse)(nil),                // 37: tank.agentctl.v1.CheckLiveResponse
-	(*ReadThreadRequest)(nil),                // 38: tank.agentctl.v1.ReadThreadRequest
-	(*ReadThreadResponse)(nil),               // 39: tank.agentctl.v1.ReadThreadResponse
-	(*BoardResearchRequest)(nil),             // 40: tank.agentctl.v1.BoardResearchRequest
-	(*ResearchHit)(nil),                      // 41: tank.agentctl.v1.ResearchHit
-	(*BoardResearchResponse)(nil),            // 42: tank.agentctl.v1.BoardResearchResponse
-	(*RepoFile)(nil),                         // 43: tank.agentctl.v1.RepoFile
-	(*CommitFilesRequest)(nil),               // 44: tank.agentctl.v1.CommitFilesRequest
-	(*CommitFilesResponse)(nil),              // 45: tank.agentctl.v1.CommitFilesResponse
-	(*SetBrandRequest)(nil),                  // 46: tank.agentctl.v1.SetBrandRequest
-	(*SetBrandResponse)(nil),                 // 47: tank.agentctl.v1.SetBrandResponse
-	(*SetLandingRequest)(nil),                // 48: tank.agentctl.v1.SetLandingRequest
-	(*SetLandingResponse)(nil),               // 49: tank.agentctl.v1.SetLandingResponse
-	(*RecordFindingRequest)(nil),             // 50: tank.agentctl.v1.RecordFindingRequest
-	(*RecordFindingResponse)(nil),            // 51: tank.agentctl.v1.RecordFindingResponse
-	(*BooksSummaryRequest)(nil),              // 52: tank.agentctl.v1.BooksSummaryRequest
-	(*BooksSummaryResponse)(nil),             // 53: tank.agentctl.v1.BooksSummaryResponse
-	(*BooksCreateInvoiceRequest)(nil),        // 54: tank.agentctl.v1.BooksCreateInvoiceRequest
-	(*BooksCreateInvoiceResponse)(nil),       // 55: tank.agentctl.v1.BooksCreateInvoiceResponse
-	(*BooksRecordExpenseRequest)(nil),        // 56: tank.agentctl.v1.BooksRecordExpenseRequest
-	(*BooksRecordExpenseResponse)(nil),       // 57: tank.agentctl.v1.BooksRecordExpenseResponse
-	(*BooksRecordPaymentRequest)(nil),        // 58: tank.agentctl.v1.BooksRecordPaymentRequest
-	(*BooksRecordPaymentResponse)(nil),       // 59: tank.agentctl.v1.BooksRecordPaymentResponse
-	(*BooksReportRequest)(nil),               // 60: tank.agentctl.v1.BooksReportRequest
-	(*SocialAccountsRequest)(nil),            // 61: tank.agentctl.v1.SocialAccountsRequest
-	(*SocialAccountsResponse)(nil),           // 62: tank.agentctl.v1.SocialAccountsResponse
-	(*SocialCreatePostRequest)(nil),          // 63: tank.agentctl.v1.SocialCreatePostRequest
-	(*SocialCreatePostResponse)(nil),         // 64: tank.agentctl.v1.SocialCreatePostResponse
-	(*SocialPublishPostRequest)(nil),         // 65: tank.agentctl.v1.SocialPublishPostRequest
-	(*SocialPublishPostResponse)(nil),        // 66: tank.agentctl.v1.SocialPublishPostResponse
-	(*WriteUpThreadRequest)(nil),             // 67: tank.agentctl.v1.WriteUpThreadRequest
-	(*WriteUpThreadResponse)(nil),            // 68: tank.agentctl.v1.WriteUpThreadResponse
-	(*ReadCanvasRequest)(nil),                // 69: tank.agentctl.v1.ReadCanvasRequest
-	(*ReadCanvasResponse)(nil),               // 70: tank.agentctl.v1.ReadCanvasResponse
-	(*AskCanvasRequest)(nil),                 // 71: tank.agentctl.v1.AskCanvasRequest
-	(*AskCanvasResponse)(nil),                // 72: tank.agentctl.v1.AskCanvasResponse
-	(*BooksReportResponse)(nil),              // 73: tank.agentctl.v1.BooksReportResponse
-	(*ListBoardsRequest)(nil),                // 74: tank.agentctl.v1.ListBoardsRequest
-	(*BoardListing)(nil),                     // 75: tank.agentctl.v1.BoardListing
-	(*ListBoardsResponse)(nil),               // 76: tank.agentctl.v1.ListBoardsResponse
-	(*ReadBoardRequest)(nil),                 // 77: tank.agentctl.v1.ReadBoardRequest
-	(*ReadBoardResponse)(nil),                // 78: tank.agentctl.v1.ReadBoardResponse
-	(*BoardShape)(nil),                       // 79: tank.agentctl.v1.BoardShape
-	(*AppFrameSpec)(nil),                     // 80: tank.agentctl.v1.AppFrameSpec
-	(*WorkbenchStep)(nil),                    // 81: tank.agentctl.v1.WorkbenchStep
-	(*WorkbenchStepsRequest)(nil),            // 82: tank.agentctl.v1.WorkbenchStepsRequest
-	(*WorkbenchStepsResponse)(nil),           // 83: tank.agentctl.v1.WorkbenchStepsResponse
-	(*WorkbenchShowRequest)(nil),             // 84: tank.agentctl.v1.WorkbenchShowRequest
-	(*WorkbenchShowResponse)(nil),            // 85: tank.agentctl.v1.WorkbenchShowResponse
-	(*DrawOnBoardRequest)(nil),               // 86: tank.agentctl.v1.DrawOnBoardRequest
-	(*DrawOnBoardResponse)(nil),              // 87: tank.agentctl.v1.DrawOnBoardResponse
-	(*ArrangeBoardRequest)(nil),              // 88: tank.agentctl.v1.ArrangeBoardRequest
-	(*ArrangeBoardResponse)(nil),             // 89: tank.agentctl.v1.ArrangeBoardResponse
-	(*OpenPullRequestRequest)(nil),           // 90: tank.agentctl.v1.OpenPullRequestRequest
-	(*OpenPullRequestResponse)(nil),          // 91: tank.agentctl.v1.OpenPullRequestResponse
-	(*RequestCiWatchRequest)(nil),            // 92: tank.agentctl.v1.RequestCiWatchRequest
-	(*RequestCiWatchResponse)(nil),           // 93: tank.agentctl.v1.RequestCiWatchResponse
-	(*GetCiFailureRequest)(nil),              // 94: tank.agentctl.v1.GetCiFailureRequest
-	(*GetCiFailureResponse)(nil),             // 95: tank.agentctl.v1.GetCiFailureResponse
-	(*RecordDecisionRequest)(nil),            // 96: tank.agentctl.v1.RecordDecisionRequest
-	(*RecordDecisionResponse)(nil),           // 97: tank.agentctl.v1.RecordDecisionResponse
-	(*RememberRequest)(nil),                  // 98: tank.agentctl.v1.RememberRequest
-	(*RememberResponse)(nil),                 // 99: tank.agentctl.v1.RememberResponse
-	(*Usage)(nil),                            // 100: tank.agentctl.v1.Usage
-	(*RunEvent)(nil),                         // 101: tank.agentctl.v1.RunEvent
-	(*StreamEventsRequest)(nil),              // 102: tank.agentctl.v1.StreamEventsRequest
-	(*StreamEventsResponse)(nil),             // 103: tank.agentctl.v1.StreamEventsResponse
-	(*SessionEntry)(nil),                     // 104: tank.agentctl.v1.SessionEntry
-	(*SessionSummary)(nil),                   // 105: tank.agentctl.v1.SessionSummary
-	(*SessionStorePutRequest)(nil),           // 106: tank.agentctl.v1.SessionStorePutRequest
-	(*SessionStorePutResponse)(nil),          // 107: tank.agentctl.v1.SessionStorePutResponse
-	(*SessionStoreListRequest)(nil),          // 108: tank.agentctl.v1.SessionStoreListRequest
-	(*SessionStoreListResponse)(nil),         // 109: tank.agentctl.v1.SessionStoreListResponse
-	(*SessionStoreListSessionsRequest)(nil),  // 110: tank.agentctl.v1.SessionStoreListSessionsRequest
-	(*SessionStoreListSessionsResponse)(nil), // 111: tank.agentctl.v1.SessionStoreListSessionsResponse
-	(*SessionStoreListSubkeysRequest)(nil),   // 112: tank.agentctl.v1.SessionStoreListSubkeysRequest
-	(*SessionStoreListSubkeysResponse)(nil),  // 113: tank.agentctl.v1.SessionStoreListSubkeysResponse
-	(*SessionStoreDeleteRequest)(nil),        // 114: tank.agentctl.v1.SessionStoreDeleteRequest
-	(*SessionStoreDeleteResponse)(nil),       // 115: tank.agentctl.v1.SessionStoreDeleteResponse
-	(*InboxItem)(nil),                        // 116: tank.agentctl.v1.InboxItem
-	(*PollInboxRequest)(nil),                 // 117: tank.agentctl.v1.PollInboxRequest
-	(*PollInboxResponse)(nil),                // 118: tank.agentctl.v1.PollInboxResponse
-	(*StartRunRequest)(nil),                  // 119: tank.agentctl.v1.StartRunRequest
-	(*StartRunResponse)(nil),                 // 120: tank.agentctl.v1.StartRunResponse
-	(*GetRunRequest)(nil),                    // 121: tank.agentctl.v1.GetRunRequest
-	(*GetRunResponse)(nil),                   // 122: tank.agentctl.v1.GetRunResponse
-	(*Gate)(nil),                             // 123: tank.agentctl.v1.Gate
-	(*GateDecision)(nil),                     // 124: tank.agentctl.v1.GateDecision
-	(*ListRunsRequest)(nil),                  // 125: tank.agentctl.v1.ListRunsRequest
-	(*ListRunsResponse)(nil),                 // 126: tank.agentctl.v1.ListRunsResponse
-	(*DecideGateRequest)(nil),                // 127: tank.agentctl.v1.DecideGateRequest
-	(*DecideGateResponse)(nil),               // 128: tank.agentctl.v1.DecideGateResponse
-	(*SteerRunRequest)(nil),                  // 129: tank.agentctl.v1.SteerRunRequest
-	(*SteerRunResponse)(nil),                 // 130: tank.agentctl.v1.SteerRunResponse
-	(*CancelRunRequest)(nil),                 // 131: tank.agentctl.v1.CancelRunRequest
-	(*CancelRunResponse)(nil),                // 132: tank.agentctl.v1.CancelRunResponse
-	(*ListRunEventsRequest)(nil),             // 133: tank.agentctl.v1.ListRunEventsRequest
-	(*ListRunEventsResponse)(nil),            // 134: tank.agentctl.v1.ListRunEventsResponse
-	(*RefreshNeuralKnowledgeRequest)(nil),    // 135: tank.agentctl.v1.RefreshNeuralKnowledgeRequest
-	(*RefreshNeuralKnowledgeResponse)(nil),   // 136: tank.agentctl.v1.RefreshNeuralKnowledgeResponse
-	(*OpenThreadRequest)(nil),                // 137: tank.agentctl.v1.OpenThreadRequest
-	(*OpenThreadResponse)(nil),               // 138: tank.agentctl.v1.OpenThreadResponse
-	(*SetUpPreviewWorkflowRequest)(nil),      // 139: tank.agentctl.v1.SetUpPreviewWorkflowRequest
-	(*PreviewWorkflowResult)(nil),            // 140: tank.agentctl.v1.PreviewWorkflowResult
-	(*SetUpPreviewWorkflowResponse)(nil),     // 141: tank.agentctl.v1.SetUpPreviewWorkflowResponse
-	(*RegisterDeploymentRequest)(nil),        // 142: tank.agentctl.v1.RegisterDeploymentRequest
-	(*RegisterDeploymentResponse)(nil),       // 143: tank.agentctl.v1.RegisterDeploymentResponse
-	(*GetDeploymentRequest)(nil),             // 144: tank.agentctl.v1.GetDeploymentRequest
-	(*ProductProcess)(nil),                   // 145: tank.agentctl.v1.ProductProcess
-	(*ProductParts)(nil),                     // 146: tank.agentctl.v1.ProductParts
-	(*ProductDatabase)(nil),                  // 147: tank.agentctl.v1.ProductDatabase
-	(*ProductSpecChange)(nil),                // 148: tank.agentctl.v1.ProductSpecChange
-	(*PreviewProductSpecRequest)(nil),        // 149: tank.agentctl.v1.PreviewProductSpecRequest
-	(*PreviewProductSpecResponse)(nil),       // 150: tank.agentctl.v1.PreviewProductSpecResponse
-	(*ApplyProductSpecRequest)(nil),          // 151: tank.agentctl.v1.ApplyProductSpecRequest
-	(*ApplyProductSpecResponse)(nil),         // 152: tank.agentctl.v1.ApplyProductSpecResponse
-	(*GetProductSpecTextRequest)(nil),        // 153: tank.agentctl.v1.GetProductSpecTextRequest
-	(*GetProductSpecTextResponse)(nil),       // 154: tank.agentctl.v1.GetProductSpecTextResponse
-	(*ProductCost)(nil),                      // 155: tank.agentctl.v1.ProductCost
-	(*PendingBuild)(nil),                     // 156: tank.agentctl.v1.PendingBuild
-	(*ProcessState)(nil),                     // 157: tank.agentctl.v1.ProcessState
-	(*JobRun)(nil),                           // 158: tank.agentctl.v1.JobRun
-	(*ProductChange)(nil),                    // 159: tank.agentctl.v1.ProductChange
-	(*ValidateSpecRequest)(nil),              // 160: tank.agentctl.v1.ValidateSpecRequest
-	(*ValidateSpecResponse)(nil),             // 161: tank.agentctl.v1.ValidateSpecResponse
-	(*GetProductSpecRequest)(nil),            // 162: tank.agentctl.v1.GetProductSpecRequest
-	(*GetProductSpecResponse)(nil),           // 163: tank.agentctl.v1.GetProductSpecResponse
-	(*ProductPreview)(nil),                   // 164: tank.agentctl.v1.ProductPreview
-	(*ApproveProductBuildRequest)(nil),       // 165: tank.agentctl.v1.ApproveProductBuildRequest
-	(*ApproveProductBuildResponse)(nil),      // 166: tank.agentctl.v1.ApproveProductBuildResponse
-	(*OperateProductRequest)(nil),            // 167: tank.agentctl.v1.OperateProductRequest
-	(*OperateProductResponse)(nil),           // 168: tank.agentctl.v1.OperateProductResponse
-	(*ListProductChangesRequest)(nil),        // 169: tank.agentctl.v1.ListProductChangesRequest
-	(*ListProductChangesResponse)(nil),       // 170: tank.agentctl.v1.ListProductChangesResponse
-	(*RollbackProductRequest)(nil),           // 171: tank.agentctl.v1.RollbackProductRequest
-	(*RollbackProductResponse)(nil),          // 172: tank.agentctl.v1.RollbackProductResponse
-	(*SetProductSecretRequest)(nil),          // 173: tank.agentctl.v1.SetProductSecretRequest
-	(*SetProductSecretResponse)(nil),         // 174: tank.agentctl.v1.SetProductSecretResponse
-	(*ExportProductRequest)(nil),             // 175: tank.agentctl.v1.ExportProductRequest
-	(*ExportProductResponse)(nil),            // 176: tank.agentctl.v1.ExportProductResponse
-	(*UpdateProductSpecRequest)(nil),         // 177: tank.agentctl.v1.UpdateProductSpecRequest
-	(*UpdateProductSpecResponse)(nil),        // 178: tank.agentctl.v1.UpdateProductSpecResponse
-	(*ProductState)(nil),                     // 179: tank.agentctl.v1.ProductState
-	(*ProductEvent)(nil),                     // 180: tank.agentctl.v1.ProductEvent
-	(*CheckProductPageRequest)(nil),          // 181: tank.agentctl.v1.CheckProductPageRequest
-	(*CheckProductPageResponse)(nil),         // 182: tank.agentctl.v1.CheckProductPageResponse
-	(*GetProductStateRequest)(nil),           // 183: tank.agentctl.v1.GetProductStateRequest
-	(*GetProductStateResponse)(nil),          // 184: tank.agentctl.v1.GetProductStateResponse
-	(*GetDeploymentResponse)(nil),            // 185: tank.agentctl.v1.GetDeploymentResponse
-	(*SetProductReplicasRequest)(nil),        // 186: tank.agentctl.v1.SetProductReplicasRequest
-	(*SetProductReplicasResponse)(nil),       // 187: tank.agentctl.v1.SetProductReplicasResponse
-	(*CreateProductRepoRequest)(nil),         // 188: tank.agentctl.v1.CreateProductRepoRequest
-	(*CreateProductRepoResponse)(nil),        // 189: tank.agentctl.v1.CreateProductRepoResponse
-	(*CommitProductFilesRequest)(nil),        // 190: tank.agentctl.v1.CommitProductFilesRequest
-	(*CommitProductFilesResponse)(nil),       // 191: tank.agentctl.v1.CommitProductFilesResponse
-	(*BindChannelRepoRequest)(nil),           // 192: tank.agentctl.v1.BindChannelRepoRequest
-	(*BindChannelRepoResponse)(nil),          // 193: tank.agentctl.v1.BindChannelRepoResponse
-	(*UnbindChannelRepoRequest)(nil),         // 194: tank.agentctl.v1.UnbindChannelRepoRequest
-	(*UnbindChannelRepoResponse)(nil),        // 195: tank.agentctl.v1.UnbindChannelRepoResponse
-	(*RepoAccessEntry)(nil),                  // 196: tank.agentctl.v1.RepoAccessEntry
-	(*SetChannelRepoAccessRequest)(nil),      // 197: tank.agentctl.v1.SetChannelRepoAccessRequest
-	(*SetChannelRepoAccessResponse)(nil),     // 198: tank.agentctl.v1.SetChannelRepoAccessResponse
-	(*CreateGitHubConnectStateRequest)(nil),  // 199: tank.agentctl.v1.CreateGitHubConnectStateRequest
-	(*CreateGitHubConnectStateResponse)(nil), // 200: tank.agentctl.v1.CreateGitHubConnectStateResponse
-	(*SetChannelAgentSettingsRequest)(nil),   // 201: tank.agentctl.v1.SetChannelAgentSettingsRequest
-	(*SetChannelAgentSettingsResponse)(nil),  // 202: tank.agentctl.v1.SetChannelAgentSettingsResponse
-	(*SetWorkspaceAgentPolicyRequest)(nil),   // 203: tank.agentctl.v1.SetWorkspaceAgentPolicyRequest
-	(*SetWorkspaceAgentPolicyResponse)(nil),  // 204: tank.agentctl.v1.SetWorkspaceAgentPolicyResponse
-	(*ArenaTurnRequest)(nil),                 // 205: tank.agentctl.v1.ArenaTurnRequest
-	(*ArenaTurnResponse)(nil),                // 206: tank.agentctl.v1.ArenaTurnResponse
-	(*ReadRepoRequest)(nil),                  // 207: tank.agentctl.v1.ReadRepoRequest
-	(*ReadRepoResponse)(nil),                 // 208: tank.agentctl.v1.ReadRepoResponse
-	(*BuildPreviewRequest)(nil),              // 209: tank.agentctl.v1.BuildPreviewRequest
-	(*BuildPreviewResponse)(nil),             // 210: tank.agentctl.v1.BuildPreviewResponse
-	(*OpenSetupPullRequestRequest)(nil),      // 211: tank.agentctl.v1.OpenSetupPullRequestRequest
-	(*OpenSetupPullRequestResponse)(nil),     // 212: tank.agentctl.v1.OpenSetupPullRequestResponse
-	(*ReadElementAtRequest)(nil),             // 213: tank.agentctl.v1.ReadElementAtRequest
-	(*ReadElementAtResponse)(nil),            // 214: tank.agentctl.v1.ReadElementAtResponse
-	(*MergeChangeRequest)(nil),               // 215: tank.agentctl.v1.MergeChangeRequest
-	(*MergeChangeResponse)(nil),              // 216: tank.agentctl.v1.MergeChangeResponse
-	nil,                                      // 217: tank.agentctl.v1.DrawOnBoardRequest.BaseRevsEntry
-	nil,                                      // 218: tank.agentctl.v1.ArrangeBoardRequest.BaseRevsEntry
-	(*timestamppb.Timestamp)(nil),            // 219: google.protobuf.Timestamp
-	(*v1.PlanStep)(nil),                      // 220: tank.blocks.v1.PlanStep
-	(*v1.Blocks)(nil),                        // 221: tank.blocks.v1.Blocks
-	(v1.GateKind)(0),                         // 222: tank.blocks.v1.GateKind
-	(v1.StepStatus)(0),                       // 223: tank.blocks.v1.StepStatus
-	(*v11.CashSummary)(nil),                  // 224: tank.books.v1.CashSummary
-	(*v11.Invoice)(nil),                      // 225: tank.books.v1.Invoice
-	(*v11.Customer)(nil),                     // 226: tank.books.v1.Customer
-	(*v11.InvoiceLine)(nil),                  // 227: tank.books.v1.InvoiceLine
-	(*v11.Expense)(nil),                      // 228: tank.books.v1.Expense
-	(*v12.Account)(nil),                      // 229: tank.social.v1.Account
-	(v12.Platform)(0),                        // 230: tank.social.v1.Platform
-	(*v12.Post)(nil),                         // 231: tank.social.v1.Post
-	(*v13.Canvas)(nil),                       // 232: tank.canvas.v1.Canvas
-	(*v13.Answer)(nil),                       // 233: tank.canvas.v1.Answer
-	(*v11.Report)(nil),                       // 234: tank.books.v1.Report
-	(*v14.Board)(nil),                        // 235: tank.board.v1.Board
-	(*v1.Check)(nil),                         // 236: tank.blocks.v1.Check
-	(*structpb.Struct)(nil),                  // 237: google.protobuf.Struct
-	(*v15.Run)(nil),                          // 238: tank.agent.v1.Run
-	(*v15.TreadSettings)(nil),                // 239: tank.agent.v1.TreadSettings
+	(*UpdateTreadPlanRequest)(nil),           // 29: tank.agentctl.v1.UpdateTreadPlanRequest
+	(*UpdateTreadPlanResponse)(nil),          // 30: tank.agentctl.v1.UpdateTreadPlanResponse
+	(*UpdatePlanStepsRequest)(nil),           // 31: tank.agentctl.v1.UpdatePlanStepsRequest
+	(*PlanStepUpdate)(nil),                   // 32: tank.agentctl.v1.PlanStepUpdate
+	(*UpdatePlanStepsResponse)(nil),          // 33: tank.agentctl.v1.UpdatePlanStepsResponse
+	(*ReportCompletionRequest)(nil),          // 34: tank.agentctl.v1.ReportCompletionRequest
+	(*ReportCompletionResponse)(nil),         // 35: tank.agentctl.v1.ReportCompletionResponse
+	(*ReadProductRequest)(nil),               // 36: tank.agentctl.v1.ReadProductRequest
+	(*ReadProductResponse)(nil),              // 37: tank.agentctl.v1.ReadProductResponse
+	(*CheckLiveRequest)(nil),                 // 38: tank.agentctl.v1.CheckLiveRequest
+	(*CheckLiveResponse)(nil),                // 39: tank.agentctl.v1.CheckLiveResponse
+	(*ReadThreadRequest)(nil),                // 40: tank.agentctl.v1.ReadThreadRequest
+	(*ReadThreadResponse)(nil),               // 41: tank.agentctl.v1.ReadThreadResponse
+	(*BoardResearchRequest)(nil),             // 42: tank.agentctl.v1.BoardResearchRequest
+	(*ResearchHit)(nil),                      // 43: tank.agentctl.v1.ResearchHit
+	(*BoardResearchResponse)(nil),            // 44: tank.agentctl.v1.BoardResearchResponse
+	(*RepoFile)(nil),                         // 45: tank.agentctl.v1.RepoFile
+	(*CommitFilesRequest)(nil),               // 46: tank.agentctl.v1.CommitFilesRequest
+	(*CommitFilesResponse)(nil),              // 47: tank.agentctl.v1.CommitFilesResponse
+	(*SetBrandRequest)(nil),                  // 48: tank.agentctl.v1.SetBrandRequest
+	(*SetBrandResponse)(nil),                 // 49: tank.agentctl.v1.SetBrandResponse
+	(*SetLandingRequest)(nil),                // 50: tank.agentctl.v1.SetLandingRequest
+	(*SetLandingResponse)(nil),               // 51: tank.agentctl.v1.SetLandingResponse
+	(*RecordFindingRequest)(nil),             // 52: tank.agentctl.v1.RecordFindingRequest
+	(*RecordFindingResponse)(nil),            // 53: tank.agentctl.v1.RecordFindingResponse
+	(*BooksSummaryRequest)(nil),              // 54: tank.agentctl.v1.BooksSummaryRequest
+	(*BooksSummaryResponse)(nil),             // 55: tank.agentctl.v1.BooksSummaryResponse
+	(*BooksCreateInvoiceRequest)(nil),        // 56: tank.agentctl.v1.BooksCreateInvoiceRequest
+	(*BooksCreateInvoiceResponse)(nil),       // 57: tank.agentctl.v1.BooksCreateInvoiceResponse
+	(*BooksRecordExpenseRequest)(nil),        // 58: tank.agentctl.v1.BooksRecordExpenseRequest
+	(*BooksRecordExpenseResponse)(nil),       // 59: tank.agentctl.v1.BooksRecordExpenseResponse
+	(*BooksRecordPaymentRequest)(nil),        // 60: tank.agentctl.v1.BooksRecordPaymentRequest
+	(*BooksRecordPaymentResponse)(nil),       // 61: tank.agentctl.v1.BooksRecordPaymentResponse
+	(*BooksReportRequest)(nil),               // 62: tank.agentctl.v1.BooksReportRequest
+	(*SocialAccountsRequest)(nil),            // 63: tank.agentctl.v1.SocialAccountsRequest
+	(*SocialAccountsResponse)(nil),           // 64: tank.agentctl.v1.SocialAccountsResponse
+	(*SocialCreatePostRequest)(nil),          // 65: tank.agentctl.v1.SocialCreatePostRequest
+	(*SocialCreatePostResponse)(nil),         // 66: tank.agentctl.v1.SocialCreatePostResponse
+	(*SocialPublishPostRequest)(nil),         // 67: tank.agentctl.v1.SocialPublishPostRequest
+	(*SocialPublishPostResponse)(nil),        // 68: tank.agentctl.v1.SocialPublishPostResponse
+	(*WriteUpThreadRequest)(nil),             // 69: tank.agentctl.v1.WriteUpThreadRequest
+	(*WriteUpThreadResponse)(nil),            // 70: tank.agentctl.v1.WriteUpThreadResponse
+	(*ReadCanvasRequest)(nil),                // 71: tank.agentctl.v1.ReadCanvasRequest
+	(*ReadCanvasResponse)(nil),               // 72: tank.agentctl.v1.ReadCanvasResponse
+	(*AskCanvasRequest)(nil),                 // 73: tank.agentctl.v1.AskCanvasRequest
+	(*AskCanvasResponse)(nil),                // 74: tank.agentctl.v1.AskCanvasResponse
+	(*BooksReportResponse)(nil),              // 75: tank.agentctl.v1.BooksReportResponse
+	(*ListBoardsRequest)(nil),                // 76: tank.agentctl.v1.ListBoardsRequest
+	(*BoardListing)(nil),                     // 77: tank.agentctl.v1.BoardListing
+	(*ListBoardsResponse)(nil),               // 78: tank.agentctl.v1.ListBoardsResponse
+	(*ReadBoardRequest)(nil),                 // 79: tank.agentctl.v1.ReadBoardRequest
+	(*ReadBoardResponse)(nil),                // 80: tank.agentctl.v1.ReadBoardResponse
+	(*BoardShape)(nil),                       // 81: tank.agentctl.v1.BoardShape
+	(*AppFrameSpec)(nil),                     // 82: tank.agentctl.v1.AppFrameSpec
+	(*WorkbenchStep)(nil),                    // 83: tank.agentctl.v1.WorkbenchStep
+	(*WorkbenchStepsRequest)(nil),            // 84: tank.agentctl.v1.WorkbenchStepsRequest
+	(*WorkbenchStepsResponse)(nil),           // 85: tank.agentctl.v1.WorkbenchStepsResponse
+	(*WorkbenchShowRequest)(nil),             // 86: tank.agentctl.v1.WorkbenchShowRequest
+	(*WorkbenchShowResponse)(nil),            // 87: tank.agentctl.v1.WorkbenchShowResponse
+	(*DrawOnBoardRequest)(nil),               // 88: tank.agentctl.v1.DrawOnBoardRequest
+	(*DrawOnBoardResponse)(nil),              // 89: tank.agentctl.v1.DrawOnBoardResponse
+	(*ArrangeBoardRequest)(nil),              // 90: tank.agentctl.v1.ArrangeBoardRequest
+	(*ArrangeBoardResponse)(nil),             // 91: tank.agentctl.v1.ArrangeBoardResponse
+	(*OpenPullRequestRequest)(nil),           // 92: tank.agentctl.v1.OpenPullRequestRequest
+	(*OpenPullRequestResponse)(nil),          // 93: tank.agentctl.v1.OpenPullRequestResponse
+	(*RequestCiWatchRequest)(nil),            // 94: tank.agentctl.v1.RequestCiWatchRequest
+	(*RequestCiWatchResponse)(nil),           // 95: tank.agentctl.v1.RequestCiWatchResponse
+	(*GetCiFailureRequest)(nil),              // 96: tank.agentctl.v1.GetCiFailureRequest
+	(*GetCiFailureResponse)(nil),             // 97: tank.agentctl.v1.GetCiFailureResponse
+	(*RecordDecisionRequest)(nil),            // 98: tank.agentctl.v1.RecordDecisionRequest
+	(*RecordDecisionResponse)(nil),           // 99: tank.agentctl.v1.RecordDecisionResponse
+	(*RememberRequest)(nil),                  // 100: tank.agentctl.v1.RememberRequest
+	(*RememberResponse)(nil),                 // 101: tank.agentctl.v1.RememberResponse
+	(*Usage)(nil),                            // 102: tank.agentctl.v1.Usage
+	(*RunEvent)(nil),                         // 103: tank.agentctl.v1.RunEvent
+	(*StreamEventsRequest)(nil),              // 104: tank.agentctl.v1.StreamEventsRequest
+	(*StreamEventsResponse)(nil),             // 105: tank.agentctl.v1.StreamEventsResponse
+	(*SessionEntry)(nil),                     // 106: tank.agentctl.v1.SessionEntry
+	(*SessionSummary)(nil),                   // 107: tank.agentctl.v1.SessionSummary
+	(*SessionStorePutRequest)(nil),           // 108: tank.agentctl.v1.SessionStorePutRequest
+	(*SessionStorePutResponse)(nil),          // 109: tank.agentctl.v1.SessionStorePutResponse
+	(*SessionStoreListRequest)(nil),          // 110: tank.agentctl.v1.SessionStoreListRequest
+	(*SessionStoreListResponse)(nil),         // 111: tank.agentctl.v1.SessionStoreListResponse
+	(*SessionStoreListSessionsRequest)(nil),  // 112: tank.agentctl.v1.SessionStoreListSessionsRequest
+	(*SessionStoreListSessionsResponse)(nil), // 113: tank.agentctl.v1.SessionStoreListSessionsResponse
+	(*SessionStoreListSubkeysRequest)(nil),   // 114: tank.agentctl.v1.SessionStoreListSubkeysRequest
+	(*SessionStoreListSubkeysResponse)(nil),  // 115: tank.agentctl.v1.SessionStoreListSubkeysResponse
+	(*SessionStoreDeleteRequest)(nil),        // 116: tank.agentctl.v1.SessionStoreDeleteRequest
+	(*SessionStoreDeleteResponse)(nil),       // 117: tank.agentctl.v1.SessionStoreDeleteResponse
+	(*InboxItem)(nil),                        // 118: tank.agentctl.v1.InboxItem
+	(*PollInboxRequest)(nil),                 // 119: tank.agentctl.v1.PollInboxRequest
+	(*PollInboxResponse)(nil),                // 120: tank.agentctl.v1.PollInboxResponse
+	(*StartRunRequest)(nil),                  // 121: tank.agentctl.v1.StartRunRequest
+	(*StartRunResponse)(nil),                 // 122: tank.agentctl.v1.StartRunResponse
+	(*GetRunRequest)(nil),                    // 123: tank.agentctl.v1.GetRunRequest
+	(*GetRunResponse)(nil),                   // 124: tank.agentctl.v1.GetRunResponse
+	(*Gate)(nil),                             // 125: tank.agentctl.v1.Gate
+	(*GateDecision)(nil),                     // 126: tank.agentctl.v1.GateDecision
+	(*ListRunsRequest)(nil),                  // 127: tank.agentctl.v1.ListRunsRequest
+	(*ListRunsResponse)(nil),                 // 128: tank.agentctl.v1.ListRunsResponse
+	(*DecideGateRequest)(nil),                // 129: tank.agentctl.v1.DecideGateRequest
+	(*DecideGateResponse)(nil),               // 130: tank.agentctl.v1.DecideGateResponse
+	(*SteerRunRequest)(nil),                  // 131: tank.agentctl.v1.SteerRunRequest
+	(*SteerRunResponse)(nil),                 // 132: tank.agentctl.v1.SteerRunResponse
+	(*CancelRunRequest)(nil),                 // 133: tank.agentctl.v1.CancelRunRequest
+	(*CancelRunResponse)(nil),                // 134: tank.agentctl.v1.CancelRunResponse
+	(*ListRunEventsRequest)(nil),             // 135: tank.agentctl.v1.ListRunEventsRequest
+	(*ListRunEventsResponse)(nil),            // 136: tank.agentctl.v1.ListRunEventsResponse
+	(*RefreshNeuralKnowledgeRequest)(nil),    // 137: tank.agentctl.v1.RefreshNeuralKnowledgeRequest
+	(*RefreshNeuralKnowledgeResponse)(nil),   // 138: tank.agentctl.v1.RefreshNeuralKnowledgeResponse
+	(*OpenThreadRequest)(nil),                // 139: tank.agentctl.v1.OpenThreadRequest
+	(*OpenThreadResponse)(nil),               // 140: tank.agentctl.v1.OpenThreadResponse
+	(*SetUpPreviewWorkflowRequest)(nil),      // 141: tank.agentctl.v1.SetUpPreviewWorkflowRequest
+	(*PreviewWorkflowResult)(nil),            // 142: tank.agentctl.v1.PreviewWorkflowResult
+	(*SetUpPreviewWorkflowResponse)(nil),     // 143: tank.agentctl.v1.SetUpPreviewWorkflowResponse
+	(*RegisterDeploymentRequest)(nil),        // 144: tank.agentctl.v1.RegisterDeploymentRequest
+	(*RegisterDeploymentResponse)(nil),       // 145: tank.agentctl.v1.RegisterDeploymentResponse
+	(*GetDeploymentRequest)(nil),             // 146: tank.agentctl.v1.GetDeploymentRequest
+	(*ProductProcess)(nil),                   // 147: tank.agentctl.v1.ProductProcess
+	(*ProductParts)(nil),                     // 148: tank.agentctl.v1.ProductParts
+	(*ProductDatabase)(nil),                  // 149: tank.agentctl.v1.ProductDatabase
+	(*ProductSpecChange)(nil),                // 150: tank.agentctl.v1.ProductSpecChange
+	(*PreviewProductSpecRequest)(nil),        // 151: tank.agentctl.v1.PreviewProductSpecRequest
+	(*PreviewProductSpecResponse)(nil),       // 152: tank.agentctl.v1.PreviewProductSpecResponse
+	(*ApplyProductSpecRequest)(nil),          // 153: tank.agentctl.v1.ApplyProductSpecRequest
+	(*ApplyProductSpecResponse)(nil),         // 154: tank.agentctl.v1.ApplyProductSpecResponse
+	(*GetProductSpecTextRequest)(nil),        // 155: tank.agentctl.v1.GetProductSpecTextRequest
+	(*GetProductSpecTextResponse)(nil),       // 156: tank.agentctl.v1.GetProductSpecTextResponse
+	(*ProductCost)(nil),                      // 157: tank.agentctl.v1.ProductCost
+	(*PendingBuild)(nil),                     // 158: tank.agentctl.v1.PendingBuild
+	(*ProcessState)(nil),                     // 159: tank.agentctl.v1.ProcessState
+	(*JobRun)(nil),                           // 160: tank.agentctl.v1.JobRun
+	(*ProductChange)(nil),                    // 161: tank.agentctl.v1.ProductChange
+	(*ValidateSpecRequest)(nil),              // 162: tank.agentctl.v1.ValidateSpecRequest
+	(*ValidateSpecResponse)(nil),             // 163: tank.agentctl.v1.ValidateSpecResponse
+	(*GetProductSpecRequest)(nil),            // 164: tank.agentctl.v1.GetProductSpecRequest
+	(*GetProductSpecResponse)(nil),           // 165: tank.agentctl.v1.GetProductSpecResponse
+	(*ProductPreview)(nil),                   // 166: tank.agentctl.v1.ProductPreview
+	(*ApproveProductBuildRequest)(nil),       // 167: tank.agentctl.v1.ApproveProductBuildRequest
+	(*ApproveProductBuildResponse)(nil),      // 168: tank.agentctl.v1.ApproveProductBuildResponse
+	(*OperateProductRequest)(nil),            // 169: tank.agentctl.v1.OperateProductRequest
+	(*OperateProductResponse)(nil),           // 170: tank.agentctl.v1.OperateProductResponse
+	(*ListProductChangesRequest)(nil),        // 171: tank.agentctl.v1.ListProductChangesRequest
+	(*ListProductChangesResponse)(nil),       // 172: tank.agentctl.v1.ListProductChangesResponse
+	(*RollbackProductRequest)(nil),           // 173: tank.agentctl.v1.RollbackProductRequest
+	(*RollbackProductResponse)(nil),          // 174: tank.agentctl.v1.RollbackProductResponse
+	(*SetProductSecretRequest)(nil),          // 175: tank.agentctl.v1.SetProductSecretRequest
+	(*SetProductSecretResponse)(nil),         // 176: tank.agentctl.v1.SetProductSecretResponse
+	(*ExportProductRequest)(nil),             // 177: tank.agentctl.v1.ExportProductRequest
+	(*ExportProductResponse)(nil),            // 178: tank.agentctl.v1.ExportProductResponse
+	(*UpdateProductSpecRequest)(nil),         // 179: tank.agentctl.v1.UpdateProductSpecRequest
+	(*UpdateProductSpecResponse)(nil),        // 180: tank.agentctl.v1.UpdateProductSpecResponse
+	(*ProductState)(nil),                     // 181: tank.agentctl.v1.ProductState
+	(*ProductEvent)(nil),                     // 182: tank.agentctl.v1.ProductEvent
+	(*CheckProductPageRequest)(nil),          // 183: tank.agentctl.v1.CheckProductPageRequest
+	(*CheckProductPageResponse)(nil),         // 184: tank.agentctl.v1.CheckProductPageResponse
+	(*GetProductStateRequest)(nil),           // 185: tank.agentctl.v1.GetProductStateRequest
+	(*GetProductStateResponse)(nil),          // 186: tank.agentctl.v1.GetProductStateResponse
+	(*GetDeploymentResponse)(nil),            // 187: tank.agentctl.v1.GetDeploymentResponse
+	(*SetProductReplicasRequest)(nil),        // 188: tank.agentctl.v1.SetProductReplicasRequest
+	(*SetProductReplicasResponse)(nil),       // 189: tank.agentctl.v1.SetProductReplicasResponse
+	(*CreateProductRepoRequest)(nil),         // 190: tank.agentctl.v1.CreateProductRepoRequest
+	(*CreateProductRepoResponse)(nil),        // 191: tank.agentctl.v1.CreateProductRepoResponse
+	(*CommitProductFilesRequest)(nil),        // 192: tank.agentctl.v1.CommitProductFilesRequest
+	(*CommitProductFilesResponse)(nil),       // 193: tank.agentctl.v1.CommitProductFilesResponse
+	(*BindChannelRepoRequest)(nil),           // 194: tank.agentctl.v1.BindChannelRepoRequest
+	(*BindChannelRepoResponse)(nil),          // 195: tank.agentctl.v1.BindChannelRepoResponse
+	(*UnbindChannelRepoRequest)(nil),         // 196: tank.agentctl.v1.UnbindChannelRepoRequest
+	(*UnbindChannelRepoResponse)(nil),        // 197: tank.agentctl.v1.UnbindChannelRepoResponse
+	(*RepoAccessEntry)(nil),                  // 198: tank.agentctl.v1.RepoAccessEntry
+	(*SetChannelRepoAccessRequest)(nil),      // 199: tank.agentctl.v1.SetChannelRepoAccessRequest
+	(*SetChannelRepoAccessResponse)(nil),     // 200: tank.agentctl.v1.SetChannelRepoAccessResponse
+	(*CreateGitHubConnectStateRequest)(nil),  // 201: tank.agentctl.v1.CreateGitHubConnectStateRequest
+	(*CreateGitHubConnectStateResponse)(nil), // 202: tank.agentctl.v1.CreateGitHubConnectStateResponse
+	(*SetChannelAgentSettingsRequest)(nil),   // 203: tank.agentctl.v1.SetChannelAgentSettingsRequest
+	(*SetChannelAgentSettingsResponse)(nil),  // 204: tank.agentctl.v1.SetChannelAgentSettingsResponse
+	(*SetWorkspaceAgentPolicyRequest)(nil),   // 205: tank.agentctl.v1.SetWorkspaceAgentPolicyRequest
+	(*SetWorkspaceAgentPolicyResponse)(nil),  // 206: tank.agentctl.v1.SetWorkspaceAgentPolicyResponse
+	(*ArenaTurnRequest)(nil),                 // 207: tank.agentctl.v1.ArenaTurnRequest
+	(*ArenaTurnResponse)(nil),                // 208: tank.agentctl.v1.ArenaTurnResponse
+	(*ReadRepoRequest)(nil),                  // 209: tank.agentctl.v1.ReadRepoRequest
+	(*ReadRepoResponse)(nil),                 // 210: tank.agentctl.v1.ReadRepoResponse
+	(*BuildPreviewRequest)(nil),              // 211: tank.agentctl.v1.BuildPreviewRequest
+	(*BuildPreviewResponse)(nil),             // 212: tank.agentctl.v1.BuildPreviewResponse
+	(*OpenSetupPullRequestRequest)(nil),      // 213: tank.agentctl.v1.OpenSetupPullRequestRequest
+	(*OpenSetupPullRequestResponse)(nil),     // 214: tank.agentctl.v1.OpenSetupPullRequestResponse
+	(*ReadElementAtRequest)(nil),             // 215: tank.agentctl.v1.ReadElementAtRequest
+	(*ReadElementAtResponse)(nil),            // 216: tank.agentctl.v1.ReadElementAtResponse
+	(*MergeChangeRequest)(nil),               // 217: tank.agentctl.v1.MergeChangeRequest
+	(*MergeChangeResponse)(nil),              // 218: tank.agentctl.v1.MergeChangeResponse
+	nil,                                      // 219: tank.agentctl.v1.DrawOnBoardRequest.BaseRevsEntry
+	nil,                                      // 220: tank.agentctl.v1.ArrangeBoardRequest.BaseRevsEntry
+	(*timestamppb.Timestamp)(nil),            // 221: google.protobuf.Timestamp
+	(*v1.PlanStep)(nil),                      // 222: tank.blocks.v1.PlanStep
+	(*v11.TreadPlan)(nil),                    // 223: tank.agent.v1.TreadPlan
+	(*v1.Blocks)(nil),                        // 224: tank.blocks.v1.Blocks
+	(v1.GateKind)(0),                         // 225: tank.blocks.v1.GateKind
+	(*v11.TreadPlanItem)(nil),                // 226: tank.agent.v1.TreadPlanItem
+	(v1.StepStatus)(0),                       // 227: tank.blocks.v1.StepStatus
+	(*v12.CashSummary)(nil),                  // 228: tank.books.v1.CashSummary
+	(*v12.Invoice)(nil),                      // 229: tank.books.v1.Invoice
+	(*v12.Customer)(nil),                     // 230: tank.books.v1.Customer
+	(*v12.InvoiceLine)(nil),                  // 231: tank.books.v1.InvoiceLine
+	(*v12.Expense)(nil),                      // 232: tank.books.v1.Expense
+	(*v13.Account)(nil),                      // 233: tank.social.v1.Account
+	(v13.Platform)(0),                        // 234: tank.social.v1.Platform
+	(*v13.Post)(nil),                         // 235: tank.social.v1.Post
+	(*v14.Canvas)(nil),                       // 236: tank.canvas.v1.Canvas
+	(*v14.Answer)(nil),                       // 237: tank.canvas.v1.Answer
+	(*v12.Report)(nil),                       // 238: tank.books.v1.Report
+	(*v15.Board)(nil),                        // 239: tank.board.v1.Board
+	(*v1.Check)(nil),                         // 240: tank.blocks.v1.Check
+	(*structpb.Struct)(nil),                  // 241: google.protobuf.Struct
+	(*v11.Run)(nil),                          // 242: tank.agent.v1.Run
+	(*v11.TreadSettings)(nil),                // 243: tank.agent.v1.TreadSettings
 }
 var file_tank_agentctl_v1_agentctl_proto_depIdxs = []int32{
-	219, // 0: tank.agentctl.v1.ThreadMessage.created_at:type_name -> google.protobuf.Timestamp
+	221, // 0: tank.agentctl.v1.ThreadMessage.created_at:type_name -> google.protobuf.Timestamp
 	3,   // 1: tank.agentctl.v1.ThreadMessage.attachments:type_name -> tank.agentctl.v1.Attachment
-	220, // 2: tank.agentctl.v1.ApprovedPlan.steps:type_name -> tank.blocks.v1.PlanStep
-	219, // 3: tank.agentctl.v1.ApprovedPlan.approved_at:type_name -> google.protobuf.Timestamp
+	222, // 2: tank.agentctl.v1.ApprovedPlan.steps:type_name -> tank.blocks.v1.PlanStep
+	221, // 3: tank.agentctl.v1.ApprovedPlan.approved_at:type_name -> google.protobuf.Timestamp
 	0,   // 4: tank.agentctl.v1.RunContext.phase:type_name -> tank.agentctl.v1.RunPhase
 	4,   // 5: tank.agentctl.v1.RunContext.thread_excerpt:type_name -> tank.agentctl.v1.ThreadMessage
 	5,   // 6: tank.agentctl.v1.RunContext.policy:type_name -> tank.agentctl.v1.PolicySummary
 	6,   // 7: tank.agentctl.v1.RunContext.approved_plan:type_name -> tank.agentctl.v1.ApprovedPlan
 	3,   // 8: tank.agentctl.v1.RunContext.attachments:type_name -> tank.agentctl.v1.Attachment
 	10,  // 9: tank.agentctl.v1.RunContext.repo_access:type_name -> tank.agentctl.v1.RepoAccess
-	7,   // 10: tank.agentctl.v1.GetRunContextResponse.context:type_name -> tank.agentctl.v1.RunContext
-	219, // 11: tank.agentctl.v1.GetGitCredentialResponse.expires_at:type_name -> google.protobuf.Timestamp
-	220, // 12: tank.agentctl.v1.PostPlanRequest.steps:type_name -> tank.blocks.v1.PlanStep
-	3,   // 13: tank.agentctl.v1.GetAttachmentResponse.attachment:type_name -> tank.agentctl.v1.Attachment
-	221, // 14: tank.agentctl.v1.UpdateCardRequest.blocks:type_name -> tank.blocks.v1.Blocks
-	222, // 15: tank.agentctl.v1.AskForApprovalRequest.kind:type_name -> tank.blocks.v1.GateKind
-	30,  // 16: tank.agentctl.v1.UpdatePlanStepsRequest.steps:type_name -> tank.agentctl.v1.PlanStepUpdate
-	223, // 17: tank.agentctl.v1.PlanStepUpdate.status:type_name -> tank.blocks.v1.StepStatus
-	179, // 18: tank.agentctl.v1.ReadProductResponse.state:type_name -> tank.agentctl.v1.ProductState
-	4,   // 19: tank.agentctl.v1.ReadThreadResponse.messages:type_name -> tank.agentctl.v1.ThreadMessage
-	41,  // 20: tank.agentctl.v1.BoardResearchResponse.hits:type_name -> tank.agentctl.v1.ResearchHit
-	43,  // 21: tank.agentctl.v1.CommitFilesRequest.files:type_name -> tank.agentctl.v1.RepoFile
-	224, // 22: tank.agentctl.v1.BooksSummaryResponse.summary:type_name -> tank.books.v1.CashSummary
-	225, // 23: tank.agentctl.v1.BooksSummaryResponse.open_invoices:type_name -> tank.books.v1.Invoice
-	226, // 24: tank.agentctl.v1.BooksSummaryResponse.customers:type_name -> tank.books.v1.Customer
-	227, // 25: tank.agentctl.v1.BooksCreateInvoiceRequest.lines:type_name -> tank.books.v1.InvoiceLine
-	225, // 26: tank.agentctl.v1.BooksCreateInvoiceResponse.invoice:type_name -> tank.books.v1.Invoice
-	228, // 27: tank.agentctl.v1.BooksRecordExpenseResponse.expense:type_name -> tank.books.v1.Expense
-	225, // 28: tank.agentctl.v1.BooksRecordPaymentResponse.invoice:type_name -> tank.books.v1.Invoice
-	229, // 29: tank.agentctl.v1.SocialAccountsResponse.accounts:type_name -> tank.social.v1.Account
-	230, // 30: tank.agentctl.v1.SocialCreatePostRequest.platform:type_name -> tank.social.v1.Platform
-	231, // 31: tank.agentctl.v1.SocialCreatePostResponse.post:type_name -> tank.social.v1.Post
-	231, // 32: tank.agentctl.v1.SocialPublishPostResponse.post:type_name -> tank.social.v1.Post
-	232, // 33: tank.agentctl.v1.ReadCanvasResponse.canvas:type_name -> tank.canvas.v1.Canvas
-	233, // 34: tank.agentctl.v1.AskCanvasResponse.answers:type_name -> tank.canvas.v1.Answer
-	234, // 35: tank.agentctl.v1.BooksReportResponse.report:type_name -> tank.books.v1.Report
-	75,  // 36: tank.agentctl.v1.ListBoardsResponse.boards:type_name -> tank.agentctl.v1.BoardListing
-	235, // 37: tank.agentctl.v1.ReadBoardResponse.board:type_name -> tank.board.v1.Board
-	80,  // 38: tank.agentctl.v1.BoardShape.app:type_name -> tank.agentctl.v1.AppFrameSpec
-	81,  // 39: tank.agentctl.v1.WorkbenchStepsRequest.steps:type_name -> tank.agentctl.v1.WorkbenchStep
-	80,  // 40: tank.agentctl.v1.WorkbenchShowRequest.app:type_name -> tank.agentctl.v1.AppFrameSpec
-	79,  // 41: tank.agentctl.v1.DrawOnBoardRequest.shapes:type_name -> tank.agentctl.v1.BoardShape
-	217, // 42: tank.agentctl.v1.DrawOnBoardRequest.base_revs:type_name -> tank.agentctl.v1.DrawOnBoardRequest.BaseRevsEntry
-	218, // 43: tank.agentctl.v1.ArrangeBoardRequest.base_revs:type_name -> tank.agentctl.v1.ArrangeBoardRequest.BaseRevsEntry
-	236, // 44: tank.agentctl.v1.GetCiFailureResponse.checks:type_name -> tank.blocks.v1.Check
-	219, // 45: tank.agentctl.v1.RunEvent.at:type_name -> google.protobuf.Timestamp
-	1,   // 46: tank.agentctl.v1.RunEvent.kind:type_name -> tank.agentctl.v1.RunEventKind
-	237, // 47: tank.agentctl.v1.RunEvent.tool_input:type_name -> google.protobuf.Struct
-	100, // 48: tank.agentctl.v1.RunEvent.usage:type_name -> tank.agentctl.v1.Usage
-	101, // 49: tank.agentctl.v1.StreamEventsRequest.event:type_name -> tank.agentctl.v1.RunEvent
-	219, // 50: tank.agentctl.v1.SessionEntry.created_at:type_name -> google.protobuf.Timestamp
-	237, // 51: tank.agentctl.v1.SessionSummary.data:type_name -> google.protobuf.Struct
-	104, // 52: tank.agentctl.v1.SessionStorePutRequest.entries:type_name -> tank.agentctl.v1.SessionEntry
-	105, // 53: tank.agentctl.v1.SessionStorePutRequest.summary:type_name -> tank.agentctl.v1.SessionSummary
-	104, // 54: tank.agentctl.v1.SessionStoreListResponse.entries:type_name -> tank.agentctl.v1.SessionEntry
-	105, // 55: tank.agentctl.v1.SessionStoreListSessionsResponse.sessions:type_name -> tank.agentctl.v1.SessionSummary
-	2,   // 56: tank.agentctl.v1.InboxItem.kind:type_name -> tank.agentctl.v1.InboxKind
-	219, // 57: tank.agentctl.v1.InboxItem.at:type_name -> google.protobuf.Timestamp
-	116, // 58: tank.agentctl.v1.PollInboxResponse.items:type_name -> tank.agentctl.v1.InboxItem
-	238, // 59: tank.agentctl.v1.StartRunResponse.run:type_name -> tank.agent.v1.Run
-	238, // 60: tank.agentctl.v1.GetRunResponse.run:type_name -> tank.agent.v1.Run
-	123, // 61: tank.agentctl.v1.GetRunResponse.gates:type_name -> tank.agentctl.v1.Gate
-	222, // 62: tank.agentctl.v1.Gate.kind:type_name -> tank.blocks.v1.GateKind
-	219, // 63: tank.agentctl.v1.Gate.expires_at:type_name -> google.protobuf.Timestamp
-	124, // 64: tank.agentctl.v1.Gate.decisions:type_name -> tank.agentctl.v1.GateDecision
-	219, // 65: tank.agentctl.v1.GateDecision.at:type_name -> google.protobuf.Timestamp
-	238, // 66: tank.agentctl.v1.ListRunsResponse.runs:type_name -> tank.agent.v1.Run
-	123, // 67: tank.agentctl.v1.DecideGateResponse.gate:type_name -> tank.agentctl.v1.Gate
-	101, // 68: tank.agentctl.v1.ListRunEventsResponse.events:type_name -> tank.agentctl.v1.RunEvent
-	140, // 69: tank.agentctl.v1.SetUpPreviewWorkflowResponse.results:type_name -> tank.agentctl.v1.PreviewWorkflowResult
-	147, // 70: tank.agentctl.v1.ProductParts.databases:type_name -> tank.agentctl.v1.ProductDatabase
-	148, // 71: tank.agentctl.v1.PreviewProductSpecRequest.change:type_name -> tank.agentctl.v1.ProductSpecChange
-	155, // 72: tank.agentctl.v1.PreviewProductSpecResponse.before:type_name -> tank.agentctl.v1.ProductCost
-	155, // 73: tank.agentctl.v1.PreviewProductSpecResponse.after:type_name -> tank.agentctl.v1.ProductCost
-	148, // 74: tank.agentctl.v1.ApplyProductSpecRequest.change:type_name -> tank.agentctl.v1.ProductSpecChange
-	155, // 75: tank.agentctl.v1.ApplyProductSpecResponse.estimate:type_name -> tank.agentctl.v1.ProductCost
-	155, // 76: tank.agentctl.v1.PendingBuild.estimate:type_name -> tank.agentctl.v1.ProductCost
-	145, // 77: tank.agentctl.v1.PendingBuild.processes:type_name -> tank.agentctl.v1.ProductProcess
-	155, // 78: tank.agentctl.v1.ValidateSpecResponse.estimate:type_name -> tank.agentctl.v1.ProductCost
-	145, // 79: tank.agentctl.v1.ValidateSpecResponse.processes:type_name -> tank.agentctl.v1.ProductProcess
-	145, // 80: tank.agentctl.v1.GetProductSpecResponse.processes:type_name -> tank.agentctl.v1.ProductProcess
-	155, // 81: tank.agentctl.v1.GetProductSpecResponse.estimate:type_name -> tank.agentctl.v1.ProductCost
-	156, // 82: tank.agentctl.v1.GetProductSpecResponse.pending:type_name -> tank.agentctl.v1.PendingBuild
-	158, // 83: tank.agentctl.v1.GetProductSpecResponse.runs:type_name -> tank.agentctl.v1.JobRun
-	164, // 84: tank.agentctl.v1.GetProductSpecResponse.previews:type_name -> tank.agentctl.v1.ProductPreview
-	146, // 85: tank.agentctl.v1.GetProductSpecResponse.parts:type_name -> tank.agentctl.v1.ProductParts
-	159, // 86: tank.agentctl.v1.ListProductChangesResponse.changes:type_name -> tank.agentctl.v1.ProductChange
-	155, // 87: tank.agentctl.v1.RollbackProductResponse.estimate:type_name -> tank.agentctl.v1.ProductCost
-	155, // 88: tank.agentctl.v1.UpdateProductSpecResponse.estimate:type_name -> tank.agentctl.v1.ProductCost
-	180, // 89: tank.agentctl.v1.ProductState.events:type_name -> tank.agentctl.v1.ProductEvent
-	157, // 90: tank.agentctl.v1.ProductState.processes:type_name -> tank.agentctl.v1.ProcessState
-	37,  // 91: tank.agentctl.v1.CheckProductPageResponse.check:type_name -> tank.agentctl.v1.CheckLiveResponse
-	179, // 92: tank.agentctl.v1.GetProductStateResponse.state:type_name -> tank.agentctl.v1.ProductState
-	43,  // 93: tank.agentctl.v1.CommitProductFilesRequest.files:type_name -> tank.agentctl.v1.RepoFile
-	196, // 94: tank.agentctl.v1.SetChannelRepoAccessRequest.entries:type_name -> tank.agentctl.v1.RepoAccessEntry
-	196, // 95: tank.agentctl.v1.SetChannelRepoAccessResponse.entries:type_name -> tank.agentctl.v1.RepoAccessEntry
-	219, // 96: tank.agentctl.v1.CreateGitHubConnectStateResponse.expires_at:type_name -> google.protobuf.Timestamp
-	239, // 97: tank.agentctl.v1.SetChannelAgentSettingsRequest.settings:type_name -> tank.agent.v1.TreadSettings
-	239, // 98: tank.agentctl.v1.SetChannelAgentSettingsResponse.settings:type_name -> tank.agent.v1.TreadSettings
-	8,   // 99: tank.agentctl.v1.RunnerService.GetRunContext:input_type -> tank.agentctl.v1.GetRunContextRequest
-	11,  // 100: tank.agentctl.v1.RunnerService.GetGitCredential:input_type -> tank.agentctl.v1.GetGitCredentialRequest
-	13,  // 101: tank.agentctl.v1.RunnerService.PostToThread:input_type -> tank.agentctl.v1.PostToThreadRequest
-	17,  // 102: tank.agentctl.v1.RunnerService.AttachArtifact:input_type -> tank.agentctl.v1.AttachArtifactRequest
-	19,  // 103: tank.agentctl.v1.RunnerService.GetAttachment:input_type -> tank.agentctl.v1.GetAttachmentRequest
-	15,  // 104: tank.agentctl.v1.RunnerService.PostPlan:input_type -> tank.agentctl.v1.PostPlanRequest
-	21,  // 105: tank.agentctl.v1.RunnerService.UpdateCard:input_type -> tank.agentctl.v1.UpdateCardRequest
-	23,  // 106: tank.agentctl.v1.RunnerService.AskForApproval:input_type -> tank.agentctl.v1.AskForApprovalRequest
-	25,  // 107: tank.agentctl.v1.RunnerService.AskQuestion:input_type -> tank.agentctl.v1.AskQuestionRequest
-	27,  // 108: tank.agentctl.v1.RunnerService.ReportStatus:input_type -> tank.agentctl.v1.ReportStatusRequest
-	29,  // 109: tank.agentctl.v1.RunnerService.UpdatePlanSteps:input_type -> tank.agentctl.v1.UpdatePlanStepsRequest
-	32,  // 110: tank.agentctl.v1.RunnerService.ReportCompletion:input_type -> tank.agentctl.v1.ReportCompletionRequest
-	36,  // 111: tank.agentctl.v1.RunnerService.CheckLive:input_type -> tank.agentctl.v1.CheckLiveRequest
-	34,  // 112: tank.agentctl.v1.RunnerService.ReadProduct:input_type -> tank.agentctl.v1.ReadProductRequest
-	160, // 113: tank.agentctl.v1.RunnerService.ValidateSpec:input_type -> tank.agentctl.v1.ValidateSpecRequest
-	38,  // 114: tank.agentctl.v1.RunnerService.ReadThread:input_type -> tank.agentctl.v1.ReadThreadRequest
-	40,  // 115: tank.agentctl.v1.RunnerService.BoardResearch:input_type -> tank.agentctl.v1.BoardResearchRequest
-	44,  // 116: tank.agentctl.v1.RunnerService.CommitFiles:input_type -> tank.agentctl.v1.CommitFilesRequest
-	46,  // 117: tank.agentctl.v1.RunnerService.SetBrand:input_type -> tank.agentctl.v1.SetBrandRequest
-	48,  // 118: tank.agentctl.v1.RunnerService.SetLanding:input_type -> tank.agentctl.v1.SetLandingRequest
-	50,  // 119: tank.agentctl.v1.RunnerService.RecordFinding:input_type -> tank.agentctl.v1.RecordFindingRequest
-	52,  // 120: tank.agentctl.v1.RunnerService.BooksSummary:input_type -> tank.agentctl.v1.BooksSummaryRequest
-	54,  // 121: tank.agentctl.v1.RunnerService.BooksCreateInvoice:input_type -> tank.agentctl.v1.BooksCreateInvoiceRequest
-	56,  // 122: tank.agentctl.v1.RunnerService.BooksRecordExpense:input_type -> tank.agentctl.v1.BooksRecordExpenseRequest
-	58,  // 123: tank.agentctl.v1.RunnerService.BooksRecordPayment:input_type -> tank.agentctl.v1.BooksRecordPaymentRequest
-	60,  // 124: tank.agentctl.v1.RunnerService.BooksReport:input_type -> tank.agentctl.v1.BooksReportRequest
-	61,  // 125: tank.agentctl.v1.RunnerService.SocialAccounts:input_type -> tank.agentctl.v1.SocialAccountsRequest
-	63,  // 126: tank.agentctl.v1.RunnerService.SocialCreatePost:input_type -> tank.agentctl.v1.SocialCreatePostRequest
-	65,  // 127: tank.agentctl.v1.RunnerService.SocialPublishPost:input_type -> tank.agentctl.v1.SocialPublishPostRequest
-	67,  // 128: tank.agentctl.v1.RunnerService.WriteUpThread:input_type -> tank.agentctl.v1.WriteUpThreadRequest
-	69,  // 129: tank.agentctl.v1.RunnerService.ReadCanvas:input_type -> tank.agentctl.v1.ReadCanvasRequest
-	71,  // 130: tank.agentctl.v1.RunnerService.AskCanvas:input_type -> tank.agentctl.v1.AskCanvasRequest
-	74,  // 131: tank.agentctl.v1.RunnerService.ListBoards:input_type -> tank.agentctl.v1.ListBoardsRequest
-	77,  // 132: tank.agentctl.v1.RunnerService.ReadBoard:input_type -> tank.agentctl.v1.ReadBoardRequest
-	86,  // 133: tank.agentctl.v1.RunnerService.DrawOnBoard:input_type -> tank.agentctl.v1.DrawOnBoardRequest
-	88,  // 134: tank.agentctl.v1.RunnerService.ArrangeBoard:input_type -> tank.agentctl.v1.ArrangeBoardRequest
-	82,  // 135: tank.agentctl.v1.RunnerService.WorkbenchSteps:input_type -> tank.agentctl.v1.WorkbenchStepsRequest
-	84,  // 136: tank.agentctl.v1.RunnerService.WorkbenchShow:input_type -> tank.agentctl.v1.WorkbenchShowRequest
-	117, // 137: tank.agentctl.v1.RunnerService.PollInbox:input_type -> tank.agentctl.v1.PollInboxRequest
-	90,  // 138: tank.agentctl.v1.RunnerService.OpenPullRequest:input_type -> tank.agentctl.v1.OpenPullRequestRequest
-	92,  // 139: tank.agentctl.v1.RunnerService.RequestCiWatch:input_type -> tank.agentctl.v1.RequestCiWatchRequest
-	94,  // 140: tank.agentctl.v1.RunnerService.GetCiFailure:input_type -> tank.agentctl.v1.GetCiFailureRequest
-	96,  // 141: tank.agentctl.v1.RunnerService.RecordDecision:input_type -> tank.agentctl.v1.RecordDecisionRequest
-	98,  // 142: tank.agentctl.v1.RunnerService.Remember:input_type -> tank.agentctl.v1.RememberRequest
-	102, // 143: tank.agentctl.v1.RunnerService.StreamEvents:input_type -> tank.agentctl.v1.StreamEventsRequest
-	106, // 144: tank.agentctl.v1.RunnerService.SessionStorePut:input_type -> tank.agentctl.v1.SessionStorePutRequest
-	108, // 145: tank.agentctl.v1.RunnerService.SessionStoreList:input_type -> tank.agentctl.v1.SessionStoreListRequest
-	110, // 146: tank.agentctl.v1.RunnerService.SessionStoreListSessions:input_type -> tank.agentctl.v1.SessionStoreListSessionsRequest
-	112, // 147: tank.agentctl.v1.RunnerService.SessionStoreListSubkeys:input_type -> tank.agentctl.v1.SessionStoreListSubkeysRequest
-	114, // 148: tank.agentctl.v1.RunnerService.SessionStoreDelete:input_type -> tank.agentctl.v1.SessionStoreDeleteRequest
-	205, // 149: tank.agentctl.v1.ControlService.ArenaTurn:input_type -> tank.agentctl.v1.ArenaTurnRequest
-	119, // 150: tank.agentctl.v1.ControlService.StartRun:input_type -> tank.agentctl.v1.StartRunRequest
-	137, // 151: tank.agentctl.v1.ControlService.OpenThread:input_type -> tank.agentctl.v1.OpenThreadRequest
-	135, // 152: tank.agentctl.v1.ControlService.RefreshNeuralKnowledge:input_type -> tank.agentctl.v1.RefreshNeuralKnowledgeRequest
-	121, // 153: tank.agentctl.v1.ControlService.GetRun:input_type -> tank.agentctl.v1.GetRunRequest
-	125, // 154: tank.agentctl.v1.ControlService.ListRuns:input_type -> tank.agentctl.v1.ListRunsRequest
-	127, // 155: tank.agentctl.v1.ControlService.DecideGate:input_type -> tank.agentctl.v1.DecideGateRequest
-	129, // 156: tank.agentctl.v1.ControlService.SteerRun:input_type -> tank.agentctl.v1.SteerRunRequest
-	131, // 157: tank.agentctl.v1.ControlService.CancelRun:input_type -> tank.agentctl.v1.CancelRunRequest
-	133, // 158: tank.agentctl.v1.ControlService.ListRunEvents:input_type -> tank.agentctl.v1.ListRunEventsRequest
-	188, // 159: tank.agentctl.v1.ControlService.CreateProductRepo:input_type -> tank.agentctl.v1.CreateProductRepoRequest
-	190, // 160: tank.agentctl.v1.ControlService.CommitProductFiles:input_type -> tank.agentctl.v1.CommitProductFilesRequest
-	186, // 161: tank.agentctl.v1.ControlService.SetProductReplicas:input_type -> tank.agentctl.v1.SetProductReplicasRequest
-	142, // 162: tank.agentctl.v1.ControlService.RegisterDeployment:input_type -> tank.agentctl.v1.RegisterDeploymentRequest
-	144, // 163: tank.agentctl.v1.ControlService.GetDeployment:input_type -> tank.agentctl.v1.GetDeploymentRequest
-	183, // 164: tank.agentctl.v1.ControlService.GetProductState:input_type -> tank.agentctl.v1.GetProductStateRequest
-	181, // 165: tank.agentctl.v1.ControlService.CheckProductPage:input_type -> tank.agentctl.v1.CheckProductPageRequest
-	162, // 166: tank.agentctl.v1.ControlService.GetProductSpec:input_type -> tank.agentctl.v1.GetProductSpecRequest
-	165, // 167: tank.agentctl.v1.ControlService.ApproveProductBuild:input_type -> tank.agentctl.v1.ApproveProductBuildRequest
-	167, // 168: tank.agentctl.v1.ControlService.OperateProduct:input_type -> tank.agentctl.v1.OperateProductRequest
-	169, // 169: tank.agentctl.v1.ControlService.ListProductChanges:input_type -> tank.agentctl.v1.ListProductChangesRequest
-	171, // 170: tank.agentctl.v1.ControlService.RollbackProduct:input_type -> tank.agentctl.v1.RollbackProductRequest
-	177, // 171: tank.agentctl.v1.ControlService.UpdateProductSpec:input_type -> tank.agentctl.v1.UpdateProductSpecRequest
-	149, // 172: tank.agentctl.v1.ControlService.PreviewProductSpec:input_type -> tank.agentctl.v1.PreviewProductSpecRequest
-	151, // 173: tank.agentctl.v1.ControlService.ApplyProductSpec:input_type -> tank.agentctl.v1.ApplyProductSpecRequest
-	153, // 174: tank.agentctl.v1.ControlService.GetProductSpecText:input_type -> tank.agentctl.v1.GetProductSpecTextRequest
-	175, // 175: tank.agentctl.v1.ControlService.ExportProduct:input_type -> tank.agentctl.v1.ExportProductRequest
-	173, // 176: tank.agentctl.v1.ControlService.SetProductSecret:input_type -> tank.agentctl.v1.SetProductSecretRequest
-	139, // 177: tank.agentctl.v1.ControlService.SetUpPreviewWorkflow:input_type -> tank.agentctl.v1.SetUpPreviewWorkflowRequest
-	207, // 178: tank.agentctl.v1.ControlService.ReadRepo:input_type -> tank.agentctl.v1.ReadRepoRequest
-	209, // 179: tank.agentctl.v1.ControlService.BuildPreview:input_type -> tank.agentctl.v1.BuildPreviewRequest
-	211, // 180: tank.agentctl.v1.ControlService.OpenSetupPullRequest:input_type -> tank.agentctl.v1.OpenSetupPullRequestRequest
-	213, // 181: tank.agentctl.v1.ControlService.ReadElementAt:input_type -> tank.agentctl.v1.ReadElementAtRequest
-	215, // 182: tank.agentctl.v1.ControlService.MergeChange:input_type -> tank.agentctl.v1.MergeChangeRequest
-	192, // 183: tank.agentctl.v1.ControlService.BindChannelRepo:input_type -> tank.agentctl.v1.BindChannelRepoRequest
-	194, // 184: tank.agentctl.v1.ControlService.UnbindChannelRepo:input_type -> tank.agentctl.v1.UnbindChannelRepoRequest
-	197, // 185: tank.agentctl.v1.ControlService.SetChannelRepoAccess:input_type -> tank.agentctl.v1.SetChannelRepoAccessRequest
-	199, // 186: tank.agentctl.v1.ControlService.CreateGitHubConnectState:input_type -> tank.agentctl.v1.CreateGitHubConnectStateRequest
-	201, // 187: tank.agentctl.v1.ControlService.SetChannelAgentSettings:input_type -> tank.agentctl.v1.SetChannelAgentSettingsRequest
-	203, // 188: tank.agentctl.v1.ControlService.SetWorkspaceAgentPolicy:input_type -> tank.agentctl.v1.SetWorkspaceAgentPolicyRequest
-	9,   // 189: tank.agentctl.v1.RunnerService.GetRunContext:output_type -> tank.agentctl.v1.GetRunContextResponse
-	12,  // 190: tank.agentctl.v1.RunnerService.GetGitCredential:output_type -> tank.agentctl.v1.GetGitCredentialResponse
-	14,  // 191: tank.agentctl.v1.RunnerService.PostToThread:output_type -> tank.agentctl.v1.PostToThreadResponse
-	18,  // 192: tank.agentctl.v1.RunnerService.AttachArtifact:output_type -> tank.agentctl.v1.AttachArtifactResponse
-	20,  // 193: tank.agentctl.v1.RunnerService.GetAttachment:output_type -> tank.agentctl.v1.GetAttachmentResponse
-	16,  // 194: tank.agentctl.v1.RunnerService.PostPlan:output_type -> tank.agentctl.v1.PostPlanResponse
-	22,  // 195: tank.agentctl.v1.RunnerService.UpdateCard:output_type -> tank.agentctl.v1.UpdateCardResponse
-	24,  // 196: tank.agentctl.v1.RunnerService.AskForApproval:output_type -> tank.agentctl.v1.AskForApprovalResponse
-	26,  // 197: tank.agentctl.v1.RunnerService.AskQuestion:output_type -> tank.agentctl.v1.AskQuestionResponse
-	28,  // 198: tank.agentctl.v1.RunnerService.ReportStatus:output_type -> tank.agentctl.v1.ReportStatusResponse
-	31,  // 199: tank.agentctl.v1.RunnerService.UpdatePlanSteps:output_type -> tank.agentctl.v1.UpdatePlanStepsResponse
-	33,  // 200: tank.agentctl.v1.RunnerService.ReportCompletion:output_type -> tank.agentctl.v1.ReportCompletionResponse
-	37,  // 201: tank.agentctl.v1.RunnerService.CheckLive:output_type -> tank.agentctl.v1.CheckLiveResponse
-	35,  // 202: tank.agentctl.v1.RunnerService.ReadProduct:output_type -> tank.agentctl.v1.ReadProductResponse
-	161, // 203: tank.agentctl.v1.RunnerService.ValidateSpec:output_type -> tank.agentctl.v1.ValidateSpecResponse
-	39,  // 204: tank.agentctl.v1.RunnerService.ReadThread:output_type -> tank.agentctl.v1.ReadThreadResponse
-	42,  // 205: tank.agentctl.v1.RunnerService.BoardResearch:output_type -> tank.agentctl.v1.BoardResearchResponse
-	45,  // 206: tank.agentctl.v1.RunnerService.CommitFiles:output_type -> tank.agentctl.v1.CommitFilesResponse
-	47,  // 207: tank.agentctl.v1.RunnerService.SetBrand:output_type -> tank.agentctl.v1.SetBrandResponse
-	49,  // 208: tank.agentctl.v1.RunnerService.SetLanding:output_type -> tank.agentctl.v1.SetLandingResponse
-	51,  // 209: tank.agentctl.v1.RunnerService.RecordFinding:output_type -> tank.agentctl.v1.RecordFindingResponse
-	53,  // 210: tank.agentctl.v1.RunnerService.BooksSummary:output_type -> tank.agentctl.v1.BooksSummaryResponse
-	55,  // 211: tank.agentctl.v1.RunnerService.BooksCreateInvoice:output_type -> tank.agentctl.v1.BooksCreateInvoiceResponse
-	57,  // 212: tank.agentctl.v1.RunnerService.BooksRecordExpense:output_type -> tank.agentctl.v1.BooksRecordExpenseResponse
-	59,  // 213: tank.agentctl.v1.RunnerService.BooksRecordPayment:output_type -> tank.agentctl.v1.BooksRecordPaymentResponse
-	73,  // 214: tank.agentctl.v1.RunnerService.BooksReport:output_type -> tank.agentctl.v1.BooksReportResponse
-	62,  // 215: tank.agentctl.v1.RunnerService.SocialAccounts:output_type -> tank.agentctl.v1.SocialAccountsResponse
-	64,  // 216: tank.agentctl.v1.RunnerService.SocialCreatePost:output_type -> tank.agentctl.v1.SocialCreatePostResponse
-	66,  // 217: tank.agentctl.v1.RunnerService.SocialPublishPost:output_type -> tank.agentctl.v1.SocialPublishPostResponse
-	68,  // 218: tank.agentctl.v1.RunnerService.WriteUpThread:output_type -> tank.agentctl.v1.WriteUpThreadResponse
-	70,  // 219: tank.agentctl.v1.RunnerService.ReadCanvas:output_type -> tank.agentctl.v1.ReadCanvasResponse
-	72,  // 220: tank.agentctl.v1.RunnerService.AskCanvas:output_type -> tank.agentctl.v1.AskCanvasResponse
-	76,  // 221: tank.agentctl.v1.RunnerService.ListBoards:output_type -> tank.agentctl.v1.ListBoardsResponse
-	78,  // 222: tank.agentctl.v1.RunnerService.ReadBoard:output_type -> tank.agentctl.v1.ReadBoardResponse
-	87,  // 223: tank.agentctl.v1.RunnerService.DrawOnBoard:output_type -> tank.agentctl.v1.DrawOnBoardResponse
-	89,  // 224: tank.agentctl.v1.RunnerService.ArrangeBoard:output_type -> tank.agentctl.v1.ArrangeBoardResponse
-	83,  // 225: tank.agentctl.v1.RunnerService.WorkbenchSteps:output_type -> tank.agentctl.v1.WorkbenchStepsResponse
-	85,  // 226: tank.agentctl.v1.RunnerService.WorkbenchShow:output_type -> tank.agentctl.v1.WorkbenchShowResponse
-	118, // 227: tank.agentctl.v1.RunnerService.PollInbox:output_type -> tank.agentctl.v1.PollInboxResponse
-	91,  // 228: tank.agentctl.v1.RunnerService.OpenPullRequest:output_type -> tank.agentctl.v1.OpenPullRequestResponse
-	93,  // 229: tank.agentctl.v1.RunnerService.RequestCiWatch:output_type -> tank.agentctl.v1.RequestCiWatchResponse
-	95,  // 230: tank.agentctl.v1.RunnerService.GetCiFailure:output_type -> tank.agentctl.v1.GetCiFailureResponse
-	97,  // 231: tank.agentctl.v1.RunnerService.RecordDecision:output_type -> tank.agentctl.v1.RecordDecisionResponse
-	99,  // 232: tank.agentctl.v1.RunnerService.Remember:output_type -> tank.agentctl.v1.RememberResponse
-	103, // 233: tank.agentctl.v1.RunnerService.StreamEvents:output_type -> tank.agentctl.v1.StreamEventsResponse
-	107, // 234: tank.agentctl.v1.RunnerService.SessionStorePut:output_type -> tank.agentctl.v1.SessionStorePutResponse
-	109, // 235: tank.agentctl.v1.RunnerService.SessionStoreList:output_type -> tank.agentctl.v1.SessionStoreListResponse
-	111, // 236: tank.agentctl.v1.RunnerService.SessionStoreListSessions:output_type -> tank.agentctl.v1.SessionStoreListSessionsResponse
-	113, // 237: tank.agentctl.v1.RunnerService.SessionStoreListSubkeys:output_type -> tank.agentctl.v1.SessionStoreListSubkeysResponse
-	115, // 238: tank.agentctl.v1.RunnerService.SessionStoreDelete:output_type -> tank.agentctl.v1.SessionStoreDeleteResponse
-	206, // 239: tank.agentctl.v1.ControlService.ArenaTurn:output_type -> tank.agentctl.v1.ArenaTurnResponse
-	120, // 240: tank.agentctl.v1.ControlService.StartRun:output_type -> tank.agentctl.v1.StartRunResponse
-	138, // 241: tank.agentctl.v1.ControlService.OpenThread:output_type -> tank.agentctl.v1.OpenThreadResponse
-	136, // 242: tank.agentctl.v1.ControlService.RefreshNeuralKnowledge:output_type -> tank.agentctl.v1.RefreshNeuralKnowledgeResponse
-	122, // 243: tank.agentctl.v1.ControlService.GetRun:output_type -> tank.agentctl.v1.GetRunResponse
-	126, // 244: tank.agentctl.v1.ControlService.ListRuns:output_type -> tank.agentctl.v1.ListRunsResponse
-	128, // 245: tank.agentctl.v1.ControlService.DecideGate:output_type -> tank.agentctl.v1.DecideGateResponse
-	130, // 246: tank.agentctl.v1.ControlService.SteerRun:output_type -> tank.agentctl.v1.SteerRunResponse
-	132, // 247: tank.agentctl.v1.ControlService.CancelRun:output_type -> tank.agentctl.v1.CancelRunResponse
-	134, // 248: tank.agentctl.v1.ControlService.ListRunEvents:output_type -> tank.agentctl.v1.ListRunEventsResponse
-	189, // 249: tank.agentctl.v1.ControlService.CreateProductRepo:output_type -> tank.agentctl.v1.CreateProductRepoResponse
-	191, // 250: tank.agentctl.v1.ControlService.CommitProductFiles:output_type -> tank.agentctl.v1.CommitProductFilesResponse
-	187, // 251: tank.agentctl.v1.ControlService.SetProductReplicas:output_type -> tank.agentctl.v1.SetProductReplicasResponse
-	143, // 252: tank.agentctl.v1.ControlService.RegisterDeployment:output_type -> tank.agentctl.v1.RegisterDeploymentResponse
-	185, // 253: tank.agentctl.v1.ControlService.GetDeployment:output_type -> tank.agentctl.v1.GetDeploymentResponse
-	184, // 254: tank.agentctl.v1.ControlService.GetProductState:output_type -> tank.agentctl.v1.GetProductStateResponse
-	182, // 255: tank.agentctl.v1.ControlService.CheckProductPage:output_type -> tank.agentctl.v1.CheckProductPageResponse
-	163, // 256: tank.agentctl.v1.ControlService.GetProductSpec:output_type -> tank.agentctl.v1.GetProductSpecResponse
-	166, // 257: tank.agentctl.v1.ControlService.ApproveProductBuild:output_type -> tank.agentctl.v1.ApproveProductBuildResponse
-	168, // 258: tank.agentctl.v1.ControlService.OperateProduct:output_type -> tank.agentctl.v1.OperateProductResponse
-	170, // 259: tank.agentctl.v1.ControlService.ListProductChanges:output_type -> tank.agentctl.v1.ListProductChangesResponse
-	172, // 260: tank.agentctl.v1.ControlService.RollbackProduct:output_type -> tank.agentctl.v1.RollbackProductResponse
-	178, // 261: tank.agentctl.v1.ControlService.UpdateProductSpec:output_type -> tank.agentctl.v1.UpdateProductSpecResponse
-	150, // 262: tank.agentctl.v1.ControlService.PreviewProductSpec:output_type -> tank.agentctl.v1.PreviewProductSpecResponse
-	152, // 263: tank.agentctl.v1.ControlService.ApplyProductSpec:output_type -> tank.agentctl.v1.ApplyProductSpecResponse
-	154, // 264: tank.agentctl.v1.ControlService.GetProductSpecText:output_type -> tank.agentctl.v1.GetProductSpecTextResponse
-	176, // 265: tank.agentctl.v1.ControlService.ExportProduct:output_type -> tank.agentctl.v1.ExportProductResponse
-	174, // 266: tank.agentctl.v1.ControlService.SetProductSecret:output_type -> tank.agentctl.v1.SetProductSecretResponse
-	141, // 267: tank.agentctl.v1.ControlService.SetUpPreviewWorkflow:output_type -> tank.agentctl.v1.SetUpPreviewWorkflowResponse
-	208, // 268: tank.agentctl.v1.ControlService.ReadRepo:output_type -> tank.agentctl.v1.ReadRepoResponse
-	210, // 269: tank.agentctl.v1.ControlService.BuildPreview:output_type -> tank.agentctl.v1.BuildPreviewResponse
-	212, // 270: tank.agentctl.v1.ControlService.OpenSetupPullRequest:output_type -> tank.agentctl.v1.OpenSetupPullRequestResponse
-	214, // 271: tank.agentctl.v1.ControlService.ReadElementAt:output_type -> tank.agentctl.v1.ReadElementAtResponse
-	216, // 272: tank.agentctl.v1.ControlService.MergeChange:output_type -> tank.agentctl.v1.MergeChangeResponse
-	193, // 273: tank.agentctl.v1.ControlService.BindChannelRepo:output_type -> tank.agentctl.v1.BindChannelRepoResponse
-	195, // 274: tank.agentctl.v1.ControlService.UnbindChannelRepo:output_type -> tank.agentctl.v1.UnbindChannelRepoResponse
-	198, // 275: tank.agentctl.v1.ControlService.SetChannelRepoAccess:output_type -> tank.agentctl.v1.SetChannelRepoAccessResponse
-	200, // 276: tank.agentctl.v1.ControlService.CreateGitHubConnectState:output_type -> tank.agentctl.v1.CreateGitHubConnectStateResponse
-	202, // 277: tank.agentctl.v1.ControlService.SetChannelAgentSettings:output_type -> tank.agentctl.v1.SetChannelAgentSettingsResponse
-	204, // 278: tank.agentctl.v1.ControlService.SetWorkspaceAgentPolicy:output_type -> tank.agentctl.v1.SetWorkspaceAgentPolicyResponse
-	189, // [189:279] is the sub-list for method output_type
-	99,  // [99:189] is the sub-list for method input_type
-	99,  // [99:99] is the sub-list for extension type_name
-	99,  // [99:99] is the sub-list for extension extendee
-	0,   // [0:99] is the sub-list for field type_name
+	223, // 10: tank.agentctl.v1.RunContext.tread_plan:type_name -> tank.agent.v1.TreadPlan
+	7,   // 11: tank.agentctl.v1.GetRunContextResponse.context:type_name -> tank.agentctl.v1.RunContext
+	221, // 12: tank.agentctl.v1.GetGitCredentialResponse.expires_at:type_name -> google.protobuf.Timestamp
+	222, // 13: tank.agentctl.v1.PostPlanRequest.steps:type_name -> tank.blocks.v1.PlanStep
+	3,   // 14: tank.agentctl.v1.GetAttachmentResponse.attachment:type_name -> tank.agentctl.v1.Attachment
+	224, // 15: tank.agentctl.v1.UpdateCardRequest.blocks:type_name -> tank.blocks.v1.Blocks
+	225, // 16: tank.agentctl.v1.AskForApprovalRequest.kind:type_name -> tank.blocks.v1.GateKind
+	226, // 17: tank.agentctl.v1.UpdateTreadPlanRequest.items:type_name -> tank.agent.v1.TreadPlanItem
+	223, // 18: tank.agentctl.v1.UpdateTreadPlanResponse.plan:type_name -> tank.agent.v1.TreadPlan
+	32,  // 19: tank.agentctl.v1.UpdatePlanStepsRequest.steps:type_name -> tank.agentctl.v1.PlanStepUpdate
+	227, // 20: tank.agentctl.v1.PlanStepUpdate.status:type_name -> tank.blocks.v1.StepStatus
+	181, // 21: tank.agentctl.v1.ReadProductResponse.state:type_name -> tank.agentctl.v1.ProductState
+	4,   // 22: tank.agentctl.v1.ReadThreadResponse.messages:type_name -> tank.agentctl.v1.ThreadMessage
+	43,  // 23: tank.agentctl.v1.BoardResearchResponse.hits:type_name -> tank.agentctl.v1.ResearchHit
+	45,  // 24: tank.agentctl.v1.CommitFilesRequest.files:type_name -> tank.agentctl.v1.RepoFile
+	228, // 25: tank.agentctl.v1.BooksSummaryResponse.summary:type_name -> tank.books.v1.CashSummary
+	229, // 26: tank.agentctl.v1.BooksSummaryResponse.open_invoices:type_name -> tank.books.v1.Invoice
+	230, // 27: tank.agentctl.v1.BooksSummaryResponse.customers:type_name -> tank.books.v1.Customer
+	231, // 28: tank.agentctl.v1.BooksCreateInvoiceRequest.lines:type_name -> tank.books.v1.InvoiceLine
+	229, // 29: tank.agentctl.v1.BooksCreateInvoiceResponse.invoice:type_name -> tank.books.v1.Invoice
+	232, // 30: tank.agentctl.v1.BooksRecordExpenseResponse.expense:type_name -> tank.books.v1.Expense
+	229, // 31: tank.agentctl.v1.BooksRecordPaymentResponse.invoice:type_name -> tank.books.v1.Invoice
+	233, // 32: tank.agentctl.v1.SocialAccountsResponse.accounts:type_name -> tank.social.v1.Account
+	234, // 33: tank.agentctl.v1.SocialCreatePostRequest.platform:type_name -> tank.social.v1.Platform
+	235, // 34: tank.agentctl.v1.SocialCreatePostResponse.post:type_name -> tank.social.v1.Post
+	235, // 35: tank.agentctl.v1.SocialPublishPostResponse.post:type_name -> tank.social.v1.Post
+	236, // 36: tank.agentctl.v1.ReadCanvasResponse.canvas:type_name -> tank.canvas.v1.Canvas
+	237, // 37: tank.agentctl.v1.AskCanvasResponse.answers:type_name -> tank.canvas.v1.Answer
+	238, // 38: tank.agentctl.v1.BooksReportResponse.report:type_name -> tank.books.v1.Report
+	77,  // 39: tank.agentctl.v1.ListBoardsResponse.boards:type_name -> tank.agentctl.v1.BoardListing
+	239, // 40: tank.agentctl.v1.ReadBoardResponse.board:type_name -> tank.board.v1.Board
+	82,  // 41: tank.agentctl.v1.BoardShape.app:type_name -> tank.agentctl.v1.AppFrameSpec
+	83,  // 42: tank.agentctl.v1.WorkbenchStepsRequest.steps:type_name -> tank.agentctl.v1.WorkbenchStep
+	82,  // 43: tank.agentctl.v1.WorkbenchShowRequest.app:type_name -> tank.agentctl.v1.AppFrameSpec
+	81,  // 44: tank.agentctl.v1.DrawOnBoardRequest.shapes:type_name -> tank.agentctl.v1.BoardShape
+	219, // 45: tank.agentctl.v1.DrawOnBoardRequest.base_revs:type_name -> tank.agentctl.v1.DrawOnBoardRequest.BaseRevsEntry
+	220, // 46: tank.agentctl.v1.ArrangeBoardRequest.base_revs:type_name -> tank.agentctl.v1.ArrangeBoardRequest.BaseRevsEntry
+	240, // 47: tank.agentctl.v1.GetCiFailureResponse.checks:type_name -> tank.blocks.v1.Check
+	221, // 48: tank.agentctl.v1.RunEvent.at:type_name -> google.protobuf.Timestamp
+	1,   // 49: tank.agentctl.v1.RunEvent.kind:type_name -> tank.agentctl.v1.RunEventKind
+	241, // 50: tank.agentctl.v1.RunEvent.tool_input:type_name -> google.protobuf.Struct
+	102, // 51: tank.agentctl.v1.RunEvent.usage:type_name -> tank.agentctl.v1.Usage
+	103, // 52: tank.agentctl.v1.StreamEventsRequest.event:type_name -> tank.agentctl.v1.RunEvent
+	221, // 53: tank.agentctl.v1.SessionEntry.created_at:type_name -> google.protobuf.Timestamp
+	241, // 54: tank.agentctl.v1.SessionSummary.data:type_name -> google.protobuf.Struct
+	106, // 55: tank.agentctl.v1.SessionStorePutRequest.entries:type_name -> tank.agentctl.v1.SessionEntry
+	107, // 56: tank.agentctl.v1.SessionStorePutRequest.summary:type_name -> tank.agentctl.v1.SessionSummary
+	106, // 57: tank.agentctl.v1.SessionStoreListResponse.entries:type_name -> tank.agentctl.v1.SessionEntry
+	107, // 58: tank.agentctl.v1.SessionStoreListSessionsResponse.sessions:type_name -> tank.agentctl.v1.SessionSummary
+	2,   // 59: tank.agentctl.v1.InboxItem.kind:type_name -> tank.agentctl.v1.InboxKind
+	221, // 60: tank.agentctl.v1.InboxItem.at:type_name -> google.protobuf.Timestamp
+	118, // 61: tank.agentctl.v1.PollInboxResponse.items:type_name -> tank.agentctl.v1.InboxItem
+	242, // 62: tank.agentctl.v1.StartRunResponse.run:type_name -> tank.agent.v1.Run
+	242, // 63: tank.agentctl.v1.GetRunResponse.run:type_name -> tank.agent.v1.Run
+	125, // 64: tank.agentctl.v1.GetRunResponse.gates:type_name -> tank.agentctl.v1.Gate
+	225, // 65: tank.agentctl.v1.Gate.kind:type_name -> tank.blocks.v1.GateKind
+	221, // 66: tank.agentctl.v1.Gate.expires_at:type_name -> google.protobuf.Timestamp
+	126, // 67: tank.agentctl.v1.Gate.decisions:type_name -> tank.agentctl.v1.GateDecision
+	221, // 68: tank.agentctl.v1.GateDecision.at:type_name -> google.protobuf.Timestamp
+	242, // 69: tank.agentctl.v1.ListRunsResponse.runs:type_name -> tank.agent.v1.Run
+	125, // 70: tank.agentctl.v1.DecideGateResponse.gate:type_name -> tank.agentctl.v1.Gate
+	103, // 71: tank.agentctl.v1.ListRunEventsResponse.events:type_name -> tank.agentctl.v1.RunEvent
+	142, // 72: tank.agentctl.v1.SetUpPreviewWorkflowResponse.results:type_name -> tank.agentctl.v1.PreviewWorkflowResult
+	149, // 73: tank.agentctl.v1.ProductParts.databases:type_name -> tank.agentctl.v1.ProductDatabase
+	150, // 74: tank.agentctl.v1.PreviewProductSpecRequest.change:type_name -> tank.agentctl.v1.ProductSpecChange
+	157, // 75: tank.agentctl.v1.PreviewProductSpecResponse.before:type_name -> tank.agentctl.v1.ProductCost
+	157, // 76: tank.agentctl.v1.PreviewProductSpecResponse.after:type_name -> tank.agentctl.v1.ProductCost
+	150, // 77: tank.agentctl.v1.ApplyProductSpecRequest.change:type_name -> tank.agentctl.v1.ProductSpecChange
+	157, // 78: tank.agentctl.v1.ApplyProductSpecResponse.estimate:type_name -> tank.agentctl.v1.ProductCost
+	157, // 79: tank.agentctl.v1.PendingBuild.estimate:type_name -> tank.agentctl.v1.ProductCost
+	147, // 80: tank.agentctl.v1.PendingBuild.processes:type_name -> tank.agentctl.v1.ProductProcess
+	157, // 81: tank.agentctl.v1.ValidateSpecResponse.estimate:type_name -> tank.agentctl.v1.ProductCost
+	147, // 82: tank.agentctl.v1.ValidateSpecResponse.processes:type_name -> tank.agentctl.v1.ProductProcess
+	147, // 83: tank.agentctl.v1.GetProductSpecResponse.processes:type_name -> tank.agentctl.v1.ProductProcess
+	157, // 84: tank.agentctl.v1.GetProductSpecResponse.estimate:type_name -> tank.agentctl.v1.ProductCost
+	158, // 85: tank.agentctl.v1.GetProductSpecResponse.pending:type_name -> tank.agentctl.v1.PendingBuild
+	160, // 86: tank.agentctl.v1.GetProductSpecResponse.runs:type_name -> tank.agentctl.v1.JobRun
+	166, // 87: tank.agentctl.v1.GetProductSpecResponse.previews:type_name -> tank.agentctl.v1.ProductPreview
+	148, // 88: tank.agentctl.v1.GetProductSpecResponse.parts:type_name -> tank.agentctl.v1.ProductParts
+	161, // 89: tank.agentctl.v1.ListProductChangesResponse.changes:type_name -> tank.agentctl.v1.ProductChange
+	157, // 90: tank.agentctl.v1.RollbackProductResponse.estimate:type_name -> tank.agentctl.v1.ProductCost
+	157, // 91: tank.agentctl.v1.UpdateProductSpecResponse.estimate:type_name -> tank.agentctl.v1.ProductCost
+	182, // 92: tank.agentctl.v1.ProductState.events:type_name -> tank.agentctl.v1.ProductEvent
+	159, // 93: tank.agentctl.v1.ProductState.processes:type_name -> tank.agentctl.v1.ProcessState
+	39,  // 94: tank.agentctl.v1.CheckProductPageResponse.check:type_name -> tank.agentctl.v1.CheckLiveResponse
+	181, // 95: tank.agentctl.v1.GetProductStateResponse.state:type_name -> tank.agentctl.v1.ProductState
+	45,  // 96: tank.agentctl.v1.CommitProductFilesRequest.files:type_name -> tank.agentctl.v1.RepoFile
+	198, // 97: tank.agentctl.v1.SetChannelRepoAccessRequest.entries:type_name -> tank.agentctl.v1.RepoAccessEntry
+	198, // 98: tank.agentctl.v1.SetChannelRepoAccessResponse.entries:type_name -> tank.agentctl.v1.RepoAccessEntry
+	221, // 99: tank.agentctl.v1.CreateGitHubConnectStateResponse.expires_at:type_name -> google.protobuf.Timestamp
+	243, // 100: tank.agentctl.v1.SetChannelAgentSettingsRequest.settings:type_name -> tank.agent.v1.TreadSettings
+	243, // 101: tank.agentctl.v1.SetChannelAgentSettingsResponse.settings:type_name -> tank.agent.v1.TreadSettings
+	8,   // 102: tank.agentctl.v1.RunnerService.GetRunContext:input_type -> tank.agentctl.v1.GetRunContextRequest
+	11,  // 103: tank.agentctl.v1.RunnerService.GetGitCredential:input_type -> tank.agentctl.v1.GetGitCredentialRequest
+	13,  // 104: tank.agentctl.v1.RunnerService.PostToThread:input_type -> tank.agentctl.v1.PostToThreadRequest
+	17,  // 105: tank.agentctl.v1.RunnerService.AttachArtifact:input_type -> tank.agentctl.v1.AttachArtifactRequest
+	19,  // 106: tank.agentctl.v1.RunnerService.GetAttachment:input_type -> tank.agentctl.v1.GetAttachmentRequest
+	15,  // 107: tank.agentctl.v1.RunnerService.PostPlan:input_type -> tank.agentctl.v1.PostPlanRequest
+	21,  // 108: tank.agentctl.v1.RunnerService.UpdateCard:input_type -> tank.agentctl.v1.UpdateCardRequest
+	23,  // 109: tank.agentctl.v1.RunnerService.AskForApproval:input_type -> tank.agentctl.v1.AskForApprovalRequest
+	25,  // 110: tank.agentctl.v1.RunnerService.AskQuestion:input_type -> tank.agentctl.v1.AskQuestionRequest
+	27,  // 111: tank.agentctl.v1.RunnerService.ReportStatus:input_type -> tank.agentctl.v1.ReportStatusRequest
+	31,  // 112: tank.agentctl.v1.RunnerService.UpdatePlanSteps:input_type -> tank.agentctl.v1.UpdatePlanStepsRequest
+	29,  // 113: tank.agentctl.v1.RunnerService.UpdateTreadPlan:input_type -> tank.agentctl.v1.UpdateTreadPlanRequest
+	34,  // 114: tank.agentctl.v1.RunnerService.ReportCompletion:input_type -> tank.agentctl.v1.ReportCompletionRequest
+	38,  // 115: tank.agentctl.v1.RunnerService.CheckLive:input_type -> tank.agentctl.v1.CheckLiveRequest
+	36,  // 116: tank.agentctl.v1.RunnerService.ReadProduct:input_type -> tank.agentctl.v1.ReadProductRequest
+	162, // 117: tank.agentctl.v1.RunnerService.ValidateSpec:input_type -> tank.agentctl.v1.ValidateSpecRequest
+	40,  // 118: tank.agentctl.v1.RunnerService.ReadThread:input_type -> tank.agentctl.v1.ReadThreadRequest
+	42,  // 119: tank.agentctl.v1.RunnerService.BoardResearch:input_type -> tank.agentctl.v1.BoardResearchRequest
+	46,  // 120: tank.agentctl.v1.RunnerService.CommitFiles:input_type -> tank.agentctl.v1.CommitFilesRequest
+	48,  // 121: tank.agentctl.v1.RunnerService.SetBrand:input_type -> tank.agentctl.v1.SetBrandRequest
+	50,  // 122: tank.agentctl.v1.RunnerService.SetLanding:input_type -> tank.agentctl.v1.SetLandingRequest
+	52,  // 123: tank.agentctl.v1.RunnerService.RecordFinding:input_type -> tank.agentctl.v1.RecordFindingRequest
+	54,  // 124: tank.agentctl.v1.RunnerService.BooksSummary:input_type -> tank.agentctl.v1.BooksSummaryRequest
+	56,  // 125: tank.agentctl.v1.RunnerService.BooksCreateInvoice:input_type -> tank.agentctl.v1.BooksCreateInvoiceRequest
+	58,  // 126: tank.agentctl.v1.RunnerService.BooksRecordExpense:input_type -> tank.agentctl.v1.BooksRecordExpenseRequest
+	60,  // 127: tank.agentctl.v1.RunnerService.BooksRecordPayment:input_type -> tank.agentctl.v1.BooksRecordPaymentRequest
+	62,  // 128: tank.agentctl.v1.RunnerService.BooksReport:input_type -> tank.agentctl.v1.BooksReportRequest
+	63,  // 129: tank.agentctl.v1.RunnerService.SocialAccounts:input_type -> tank.agentctl.v1.SocialAccountsRequest
+	65,  // 130: tank.agentctl.v1.RunnerService.SocialCreatePost:input_type -> tank.agentctl.v1.SocialCreatePostRequest
+	67,  // 131: tank.agentctl.v1.RunnerService.SocialPublishPost:input_type -> tank.agentctl.v1.SocialPublishPostRequest
+	69,  // 132: tank.agentctl.v1.RunnerService.WriteUpThread:input_type -> tank.agentctl.v1.WriteUpThreadRequest
+	71,  // 133: tank.agentctl.v1.RunnerService.ReadCanvas:input_type -> tank.agentctl.v1.ReadCanvasRequest
+	73,  // 134: tank.agentctl.v1.RunnerService.AskCanvas:input_type -> tank.agentctl.v1.AskCanvasRequest
+	76,  // 135: tank.agentctl.v1.RunnerService.ListBoards:input_type -> tank.agentctl.v1.ListBoardsRequest
+	79,  // 136: tank.agentctl.v1.RunnerService.ReadBoard:input_type -> tank.agentctl.v1.ReadBoardRequest
+	88,  // 137: tank.agentctl.v1.RunnerService.DrawOnBoard:input_type -> tank.agentctl.v1.DrawOnBoardRequest
+	90,  // 138: tank.agentctl.v1.RunnerService.ArrangeBoard:input_type -> tank.agentctl.v1.ArrangeBoardRequest
+	84,  // 139: tank.agentctl.v1.RunnerService.WorkbenchSteps:input_type -> tank.agentctl.v1.WorkbenchStepsRequest
+	86,  // 140: tank.agentctl.v1.RunnerService.WorkbenchShow:input_type -> tank.agentctl.v1.WorkbenchShowRequest
+	119, // 141: tank.agentctl.v1.RunnerService.PollInbox:input_type -> tank.agentctl.v1.PollInboxRequest
+	92,  // 142: tank.agentctl.v1.RunnerService.OpenPullRequest:input_type -> tank.agentctl.v1.OpenPullRequestRequest
+	94,  // 143: tank.agentctl.v1.RunnerService.RequestCiWatch:input_type -> tank.agentctl.v1.RequestCiWatchRequest
+	96,  // 144: tank.agentctl.v1.RunnerService.GetCiFailure:input_type -> tank.agentctl.v1.GetCiFailureRequest
+	98,  // 145: tank.agentctl.v1.RunnerService.RecordDecision:input_type -> tank.agentctl.v1.RecordDecisionRequest
+	100, // 146: tank.agentctl.v1.RunnerService.Remember:input_type -> tank.agentctl.v1.RememberRequest
+	104, // 147: tank.agentctl.v1.RunnerService.StreamEvents:input_type -> tank.agentctl.v1.StreamEventsRequest
+	108, // 148: tank.agentctl.v1.RunnerService.SessionStorePut:input_type -> tank.agentctl.v1.SessionStorePutRequest
+	110, // 149: tank.agentctl.v1.RunnerService.SessionStoreList:input_type -> tank.agentctl.v1.SessionStoreListRequest
+	112, // 150: tank.agentctl.v1.RunnerService.SessionStoreListSessions:input_type -> tank.agentctl.v1.SessionStoreListSessionsRequest
+	114, // 151: tank.agentctl.v1.RunnerService.SessionStoreListSubkeys:input_type -> tank.agentctl.v1.SessionStoreListSubkeysRequest
+	116, // 152: tank.agentctl.v1.RunnerService.SessionStoreDelete:input_type -> tank.agentctl.v1.SessionStoreDeleteRequest
+	207, // 153: tank.agentctl.v1.ControlService.ArenaTurn:input_type -> tank.agentctl.v1.ArenaTurnRequest
+	121, // 154: tank.agentctl.v1.ControlService.StartRun:input_type -> tank.agentctl.v1.StartRunRequest
+	139, // 155: tank.agentctl.v1.ControlService.OpenThread:input_type -> tank.agentctl.v1.OpenThreadRequest
+	137, // 156: tank.agentctl.v1.ControlService.RefreshNeuralKnowledge:input_type -> tank.agentctl.v1.RefreshNeuralKnowledgeRequest
+	123, // 157: tank.agentctl.v1.ControlService.GetRun:input_type -> tank.agentctl.v1.GetRunRequest
+	127, // 158: tank.agentctl.v1.ControlService.ListRuns:input_type -> tank.agentctl.v1.ListRunsRequest
+	129, // 159: tank.agentctl.v1.ControlService.DecideGate:input_type -> tank.agentctl.v1.DecideGateRequest
+	131, // 160: tank.agentctl.v1.ControlService.SteerRun:input_type -> tank.agentctl.v1.SteerRunRequest
+	133, // 161: tank.agentctl.v1.ControlService.CancelRun:input_type -> tank.agentctl.v1.CancelRunRequest
+	135, // 162: tank.agentctl.v1.ControlService.ListRunEvents:input_type -> tank.agentctl.v1.ListRunEventsRequest
+	190, // 163: tank.agentctl.v1.ControlService.CreateProductRepo:input_type -> tank.agentctl.v1.CreateProductRepoRequest
+	192, // 164: tank.agentctl.v1.ControlService.CommitProductFiles:input_type -> tank.agentctl.v1.CommitProductFilesRequest
+	188, // 165: tank.agentctl.v1.ControlService.SetProductReplicas:input_type -> tank.agentctl.v1.SetProductReplicasRequest
+	144, // 166: tank.agentctl.v1.ControlService.RegisterDeployment:input_type -> tank.agentctl.v1.RegisterDeploymentRequest
+	146, // 167: tank.agentctl.v1.ControlService.GetDeployment:input_type -> tank.agentctl.v1.GetDeploymentRequest
+	185, // 168: tank.agentctl.v1.ControlService.GetProductState:input_type -> tank.agentctl.v1.GetProductStateRequest
+	183, // 169: tank.agentctl.v1.ControlService.CheckProductPage:input_type -> tank.agentctl.v1.CheckProductPageRequest
+	164, // 170: tank.agentctl.v1.ControlService.GetProductSpec:input_type -> tank.agentctl.v1.GetProductSpecRequest
+	167, // 171: tank.agentctl.v1.ControlService.ApproveProductBuild:input_type -> tank.agentctl.v1.ApproveProductBuildRequest
+	169, // 172: tank.agentctl.v1.ControlService.OperateProduct:input_type -> tank.agentctl.v1.OperateProductRequest
+	171, // 173: tank.agentctl.v1.ControlService.ListProductChanges:input_type -> tank.agentctl.v1.ListProductChangesRequest
+	173, // 174: tank.agentctl.v1.ControlService.RollbackProduct:input_type -> tank.agentctl.v1.RollbackProductRequest
+	179, // 175: tank.agentctl.v1.ControlService.UpdateProductSpec:input_type -> tank.agentctl.v1.UpdateProductSpecRequest
+	151, // 176: tank.agentctl.v1.ControlService.PreviewProductSpec:input_type -> tank.agentctl.v1.PreviewProductSpecRequest
+	153, // 177: tank.agentctl.v1.ControlService.ApplyProductSpec:input_type -> tank.agentctl.v1.ApplyProductSpecRequest
+	155, // 178: tank.agentctl.v1.ControlService.GetProductSpecText:input_type -> tank.agentctl.v1.GetProductSpecTextRequest
+	177, // 179: tank.agentctl.v1.ControlService.ExportProduct:input_type -> tank.agentctl.v1.ExportProductRequest
+	175, // 180: tank.agentctl.v1.ControlService.SetProductSecret:input_type -> tank.agentctl.v1.SetProductSecretRequest
+	141, // 181: tank.agentctl.v1.ControlService.SetUpPreviewWorkflow:input_type -> tank.agentctl.v1.SetUpPreviewWorkflowRequest
+	209, // 182: tank.agentctl.v1.ControlService.ReadRepo:input_type -> tank.agentctl.v1.ReadRepoRequest
+	211, // 183: tank.agentctl.v1.ControlService.BuildPreview:input_type -> tank.agentctl.v1.BuildPreviewRequest
+	213, // 184: tank.agentctl.v1.ControlService.OpenSetupPullRequest:input_type -> tank.agentctl.v1.OpenSetupPullRequestRequest
+	215, // 185: tank.agentctl.v1.ControlService.ReadElementAt:input_type -> tank.agentctl.v1.ReadElementAtRequest
+	217, // 186: tank.agentctl.v1.ControlService.MergeChange:input_type -> tank.agentctl.v1.MergeChangeRequest
+	194, // 187: tank.agentctl.v1.ControlService.BindChannelRepo:input_type -> tank.agentctl.v1.BindChannelRepoRequest
+	196, // 188: tank.agentctl.v1.ControlService.UnbindChannelRepo:input_type -> tank.agentctl.v1.UnbindChannelRepoRequest
+	199, // 189: tank.agentctl.v1.ControlService.SetChannelRepoAccess:input_type -> tank.agentctl.v1.SetChannelRepoAccessRequest
+	201, // 190: tank.agentctl.v1.ControlService.CreateGitHubConnectState:input_type -> tank.agentctl.v1.CreateGitHubConnectStateRequest
+	203, // 191: tank.agentctl.v1.ControlService.SetChannelAgentSettings:input_type -> tank.agentctl.v1.SetChannelAgentSettingsRequest
+	205, // 192: tank.agentctl.v1.ControlService.SetWorkspaceAgentPolicy:input_type -> tank.agentctl.v1.SetWorkspaceAgentPolicyRequest
+	9,   // 193: tank.agentctl.v1.RunnerService.GetRunContext:output_type -> tank.agentctl.v1.GetRunContextResponse
+	12,  // 194: tank.agentctl.v1.RunnerService.GetGitCredential:output_type -> tank.agentctl.v1.GetGitCredentialResponse
+	14,  // 195: tank.agentctl.v1.RunnerService.PostToThread:output_type -> tank.agentctl.v1.PostToThreadResponse
+	18,  // 196: tank.agentctl.v1.RunnerService.AttachArtifact:output_type -> tank.agentctl.v1.AttachArtifactResponse
+	20,  // 197: tank.agentctl.v1.RunnerService.GetAttachment:output_type -> tank.agentctl.v1.GetAttachmentResponse
+	16,  // 198: tank.agentctl.v1.RunnerService.PostPlan:output_type -> tank.agentctl.v1.PostPlanResponse
+	22,  // 199: tank.agentctl.v1.RunnerService.UpdateCard:output_type -> tank.agentctl.v1.UpdateCardResponse
+	24,  // 200: tank.agentctl.v1.RunnerService.AskForApproval:output_type -> tank.agentctl.v1.AskForApprovalResponse
+	26,  // 201: tank.agentctl.v1.RunnerService.AskQuestion:output_type -> tank.agentctl.v1.AskQuestionResponse
+	28,  // 202: tank.agentctl.v1.RunnerService.ReportStatus:output_type -> tank.agentctl.v1.ReportStatusResponse
+	33,  // 203: tank.agentctl.v1.RunnerService.UpdatePlanSteps:output_type -> tank.agentctl.v1.UpdatePlanStepsResponse
+	30,  // 204: tank.agentctl.v1.RunnerService.UpdateTreadPlan:output_type -> tank.agentctl.v1.UpdateTreadPlanResponse
+	35,  // 205: tank.agentctl.v1.RunnerService.ReportCompletion:output_type -> tank.agentctl.v1.ReportCompletionResponse
+	39,  // 206: tank.agentctl.v1.RunnerService.CheckLive:output_type -> tank.agentctl.v1.CheckLiveResponse
+	37,  // 207: tank.agentctl.v1.RunnerService.ReadProduct:output_type -> tank.agentctl.v1.ReadProductResponse
+	163, // 208: tank.agentctl.v1.RunnerService.ValidateSpec:output_type -> tank.agentctl.v1.ValidateSpecResponse
+	41,  // 209: tank.agentctl.v1.RunnerService.ReadThread:output_type -> tank.agentctl.v1.ReadThreadResponse
+	44,  // 210: tank.agentctl.v1.RunnerService.BoardResearch:output_type -> tank.agentctl.v1.BoardResearchResponse
+	47,  // 211: tank.agentctl.v1.RunnerService.CommitFiles:output_type -> tank.agentctl.v1.CommitFilesResponse
+	49,  // 212: tank.agentctl.v1.RunnerService.SetBrand:output_type -> tank.agentctl.v1.SetBrandResponse
+	51,  // 213: tank.agentctl.v1.RunnerService.SetLanding:output_type -> tank.agentctl.v1.SetLandingResponse
+	53,  // 214: tank.agentctl.v1.RunnerService.RecordFinding:output_type -> tank.agentctl.v1.RecordFindingResponse
+	55,  // 215: tank.agentctl.v1.RunnerService.BooksSummary:output_type -> tank.agentctl.v1.BooksSummaryResponse
+	57,  // 216: tank.agentctl.v1.RunnerService.BooksCreateInvoice:output_type -> tank.agentctl.v1.BooksCreateInvoiceResponse
+	59,  // 217: tank.agentctl.v1.RunnerService.BooksRecordExpense:output_type -> tank.agentctl.v1.BooksRecordExpenseResponse
+	61,  // 218: tank.agentctl.v1.RunnerService.BooksRecordPayment:output_type -> tank.agentctl.v1.BooksRecordPaymentResponse
+	75,  // 219: tank.agentctl.v1.RunnerService.BooksReport:output_type -> tank.agentctl.v1.BooksReportResponse
+	64,  // 220: tank.agentctl.v1.RunnerService.SocialAccounts:output_type -> tank.agentctl.v1.SocialAccountsResponse
+	66,  // 221: tank.agentctl.v1.RunnerService.SocialCreatePost:output_type -> tank.agentctl.v1.SocialCreatePostResponse
+	68,  // 222: tank.agentctl.v1.RunnerService.SocialPublishPost:output_type -> tank.agentctl.v1.SocialPublishPostResponse
+	70,  // 223: tank.agentctl.v1.RunnerService.WriteUpThread:output_type -> tank.agentctl.v1.WriteUpThreadResponse
+	72,  // 224: tank.agentctl.v1.RunnerService.ReadCanvas:output_type -> tank.agentctl.v1.ReadCanvasResponse
+	74,  // 225: tank.agentctl.v1.RunnerService.AskCanvas:output_type -> tank.agentctl.v1.AskCanvasResponse
+	78,  // 226: tank.agentctl.v1.RunnerService.ListBoards:output_type -> tank.agentctl.v1.ListBoardsResponse
+	80,  // 227: tank.agentctl.v1.RunnerService.ReadBoard:output_type -> tank.agentctl.v1.ReadBoardResponse
+	89,  // 228: tank.agentctl.v1.RunnerService.DrawOnBoard:output_type -> tank.agentctl.v1.DrawOnBoardResponse
+	91,  // 229: tank.agentctl.v1.RunnerService.ArrangeBoard:output_type -> tank.agentctl.v1.ArrangeBoardResponse
+	85,  // 230: tank.agentctl.v1.RunnerService.WorkbenchSteps:output_type -> tank.agentctl.v1.WorkbenchStepsResponse
+	87,  // 231: tank.agentctl.v1.RunnerService.WorkbenchShow:output_type -> tank.agentctl.v1.WorkbenchShowResponse
+	120, // 232: tank.agentctl.v1.RunnerService.PollInbox:output_type -> tank.agentctl.v1.PollInboxResponse
+	93,  // 233: tank.agentctl.v1.RunnerService.OpenPullRequest:output_type -> tank.agentctl.v1.OpenPullRequestResponse
+	95,  // 234: tank.agentctl.v1.RunnerService.RequestCiWatch:output_type -> tank.agentctl.v1.RequestCiWatchResponse
+	97,  // 235: tank.agentctl.v1.RunnerService.GetCiFailure:output_type -> tank.agentctl.v1.GetCiFailureResponse
+	99,  // 236: tank.agentctl.v1.RunnerService.RecordDecision:output_type -> tank.agentctl.v1.RecordDecisionResponse
+	101, // 237: tank.agentctl.v1.RunnerService.Remember:output_type -> tank.agentctl.v1.RememberResponse
+	105, // 238: tank.agentctl.v1.RunnerService.StreamEvents:output_type -> tank.agentctl.v1.StreamEventsResponse
+	109, // 239: tank.agentctl.v1.RunnerService.SessionStorePut:output_type -> tank.agentctl.v1.SessionStorePutResponse
+	111, // 240: tank.agentctl.v1.RunnerService.SessionStoreList:output_type -> tank.agentctl.v1.SessionStoreListResponse
+	113, // 241: tank.agentctl.v1.RunnerService.SessionStoreListSessions:output_type -> tank.agentctl.v1.SessionStoreListSessionsResponse
+	115, // 242: tank.agentctl.v1.RunnerService.SessionStoreListSubkeys:output_type -> tank.agentctl.v1.SessionStoreListSubkeysResponse
+	117, // 243: tank.agentctl.v1.RunnerService.SessionStoreDelete:output_type -> tank.agentctl.v1.SessionStoreDeleteResponse
+	208, // 244: tank.agentctl.v1.ControlService.ArenaTurn:output_type -> tank.agentctl.v1.ArenaTurnResponse
+	122, // 245: tank.agentctl.v1.ControlService.StartRun:output_type -> tank.agentctl.v1.StartRunResponse
+	140, // 246: tank.agentctl.v1.ControlService.OpenThread:output_type -> tank.agentctl.v1.OpenThreadResponse
+	138, // 247: tank.agentctl.v1.ControlService.RefreshNeuralKnowledge:output_type -> tank.agentctl.v1.RefreshNeuralKnowledgeResponse
+	124, // 248: tank.agentctl.v1.ControlService.GetRun:output_type -> tank.agentctl.v1.GetRunResponse
+	128, // 249: tank.agentctl.v1.ControlService.ListRuns:output_type -> tank.agentctl.v1.ListRunsResponse
+	130, // 250: tank.agentctl.v1.ControlService.DecideGate:output_type -> tank.agentctl.v1.DecideGateResponse
+	132, // 251: tank.agentctl.v1.ControlService.SteerRun:output_type -> tank.agentctl.v1.SteerRunResponse
+	134, // 252: tank.agentctl.v1.ControlService.CancelRun:output_type -> tank.agentctl.v1.CancelRunResponse
+	136, // 253: tank.agentctl.v1.ControlService.ListRunEvents:output_type -> tank.agentctl.v1.ListRunEventsResponse
+	191, // 254: tank.agentctl.v1.ControlService.CreateProductRepo:output_type -> tank.agentctl.v1.CreateProductRepoResponse
+	193, // 255: tank.agentctl.v1.ControlService.CommitProductFiles:output_type -> tank.agentctl.v1.CommitProductFilesResponse
+	189, // 256: tank.agentctl.v1.ControlService.SetProductReplicas:output_type -> tank.agentctl.v1.SetProductReplicasResponse
+	145, // 257: tank.agentctl.v1.ControlService.RegisterDeployment:output_type -> tank.agentctl.v1.RegisterDeploymentResponse
+	187, // 258: tank.agentctl.v1.ControlService.GetDeployment:output_type -> tank.agentctl.v1.GetDeploymentResponse
+	186, // 259: tank.agentctl.v1.ControlService.GetProductState:output_type -> tank.agentctl.v1.GetProductStateResponse
+	184, // 260: tank.agentctl.v1.ControlService.CheckProductPage:output_type -> tank.agentctl.v1.CheckProductPageResponse
+	165, // 261: tank.agentctl.v1.ControlService.GetProductSpec:output_type -> tank.agentctl.v1.GetProductSpecResponse
+	168, // 262: tank.agentctl.v1.ControlService.ApproveProductBuild:output_type -> tank.agentctl.v1.ApproveProductBuildResponse
+	170, // 263: tank.agentctl.v1.ControlService.OperateProduct:output_type -> tank.agentctl.v1.OperateProductResponse
+	172, // 264: tank.agentctl.v1.ControlService.ListProductChanges:output_type -> tank.agentctl.v1.ListProductChangesResponse
+	174, // 265: tank.agentctl.v1.ControlService.RollbackProduct:output_type -> tank.agentctl.v1.RollbackProductResponse
+	180, // 266: tank.agentctl.v1.ControlService.UpdateProductSpec:output_type -> tank.agentctl.v1.UpdateProductSpecResponse
+	152, // 267: tank.agentctl.v1.ControlService.PreviewProductSpec:output_type -> tank.agentctl.v1.PreviewProductSpecResponse
+	154, // 268: tank.agentctl.v1.ControlService.ApplyProductSpec:output_type -> tank.agentctl.v1.ApplyProductSpecResponse
+	156, // 269: tank.agentctl.v1.ControlService.GetProductSpecText:output_type -> tank.agentctl.v1.GetProductSpecTextResponse
+	178, // 270: tank.agentctl.v1.ControlService.ExportProduct:output_type -> tank.agentctl.v1.ExportProductResponse
+	176, // 271: tank.agentctl.v1.ControlService.SetProductSecret:output_type -> tank.agentctl.v1.SetProductSecretResponse
+	143, // 272: tank.agentctl.v1.ControlService.SetUpPreviewWorkflow:output_type -> tank.agentctl.v1.SetUpPreviewWorkflowResponse
+	210, // 273: tank.agentctl.v1.ControlService.ReadRepo:output_type -> tank.agentctl.v1.ReadRepoResponse
+	212, // 274: tank.agentctl.v1.ControlService.BuildPreview:output_type -> tank.agentctl.v1.BuildPreviewResponse
+	214, // 275: tank.agentctl.v1.ControlService.OpenSetupPullRequest:output_type -> tank.agentctl.v1.OpenSetupPullRequestResponse
+	216, // 276: tank.agentctl.v1.ControlService.ReadElementAt:output_type -> tank.agentctl.v1.ReadElementAtResponse
+	218, // 277: tank.agentctl.v1.ControlService.MergeChange:output_type -> tank.agentctl.v1.MergeChangeResponse
+	195, // 278: tank.agentctl.v1.ControlService.BindChannelRepo:output_type -> tank.agentctl.v1.BindChannelRepoResponse
+	197, // 279: tank.agentctl.v1.ControlService.UnbindChannelRepo:output_type -> tank.agentctl.v1.UnbindChannelRepoResponse
+	200, // 280: tank.agentctl.v1.ControlService.SetChannelRepoAccess:output_type -> tank.agentctl.v1.SetChannelRepoAccessResponse
+	202, // 281: tank.agentctl.v1.ControlService.CreateGitHubConnectState:output_type -> tank.agentctl.v1.CreateGitHubConnectStateResponse
+	204, // 282: tank.agentctl.v1.ControlService.SetChannelAgentSettings:output_type -> tank.agentctl.v1.SetChannelAgentSettingsResponse
+	206, // 283: tank.agentctl.v1.ControlService.SetWorkspaceAgentPolicy:output_type -> tank.agentctl.v1.SetWorkspaceAgentPolicyResponse
+	193, // [193:284] is the sub-list for method output_type
+	102, // [102:193] is the sub-list for method input_type
+	102, // [102:102] is the sub-list for extension type_name
+	102, // [102:102] is the sub-list for extension extendee
+	0,   // [0:102] is the sub-list for field type_name
 }
 
 func init() { file_tank_agentctl_v1_agentctl_proto_init() }
@@ -16636,11 +16795,11 @@ func file_tank_agentctl_v1_agentctl_proto_init() {
 	if File_tank_agentctl_v1_agentctl_proto != nil {
 		return
 	}
-	file_tank_agentctl_v1_agentctl_proto_msgTypes[146].OneofWrappers = []any{
+	file_tank_agentctl_v1_agentctl_proto_msgTypes[148].OneofWrappers = []any{
 		(*PreviewProductSpecRequest_Change)(nil),
 		(*PreviewProductSpecRequest_Text)(nil),
 	}
-	file_tank_agentctl_v1_agentctl_proto_msgTypes[148].OneofWrappers = []any{
+	file_tank_agentctl_v1_agentctl_proto_msgTypes[150].OneofWrappers = []any{
 		(*ApplyProductSpecRequest_Change)(nil),
 		(*ApplyProductSpecRequest_Text)(nil),
 	}
@@ -16650,7 +16809,7 @@ func file_tank_agentctl_v1_agentctl_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tank_agentctl_v1_agentctl_proto_rawDesc), len(file_tank_agentctl_v1_agentctl_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   216,
+			NumMessages:   218,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

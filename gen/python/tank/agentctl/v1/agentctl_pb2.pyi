@@ -130,7 +130,7 @@ class ApprovedPlan(_message.Message):
     def __init__(self, plan_hash: _Optional[str] = ..., summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[_blocks_pb2.PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., approved_by: _Optional[str] = ..., approved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback: _Optional[str] = ...) -> None: ...
 
 class RunContext(_message.Message):
-    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief")
+    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -162,6 +162,7 @@ class RunContext(_message.Message):
     TASK_CLASS_FIELD_NUMBER: _ClassVar[int]
     WORKBENCH_BOARD_ID_FIELD_NUMBER: _ClassVar[int]
     TREAD_BRIEF_FIELD_NUMBER: _ClassVar[int]
+    TREAD_PLAN_FIELD_NUMBER: _ClassVar[int]
     run_id: str
     workspace_id: str
     channel_id: str
@@ -193,7 +194,8 @@ class RunContext(_message.Message):
     task_class: str
     workbench_board_id: str
     tread_brief: str
-    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ...) -> None: ...
+    tread_plan: _agent_pb2.TreadPlan
+    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ...) -> None: ...
 
 class GetRunContextRequest(_message.Message):
     __slots__ = ()
@@ -370,6 +372,24 @@ class ReportStatusRequest(_message.Message):
 class ReportStatusResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class UpdateTreadPlanRequest(_message.Message):
+    __slots__ = ("title", "source", "items", "replace_all")
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    ITEMS_FIELD_NUMBER: _ClassVar[int]
+    REPLACE_ALL_FIELD_NUMBER: _ClassVar[int]
+    title: str
+    source: str
+    items: _containers.RepeatedCompositeFieldContainer[_agent_pb2.TreadPlanItem]
+    replace_all: bool
+    def __init__(self, title: _Optional[str] = ..., source: _Optional[str] = ..., items: _Optional[_Iterable[_Union[_agent_pb2.TreadPlanItem, _Mapping]]] = ..., replace_all: bool = ...) -> None: ...
+
+class UpdateTreadPlanResponse(_message.Message):
+    __slots__ = ("plan",)
+    PLAN_FIELD_NUMBER: _ClassVar[int]
+    plan: _agent_pb2.TreadPlan
+    def __init__(self, plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ...) -> None: ...
 
 class UpdatePlanStepsRequest(_message.Message):
     __slots__ = ("steps",)

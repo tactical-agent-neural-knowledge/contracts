@@ -136,6 +136,9 @@ message RunContext {
   // Neural Vault knows about the ask. The same brief the agent's thread replies are written
   // from, so a run and a reply never disagree about the Tread.
   string tread_brief = 31;
+  // The Tread's plan ledger as it stands, so the run works against the whole plan and keeps
+  // it current with UpdateTreadPlan. Unset when the Tread has none yet.
+  tank.agent.v1.TreadPlan tread_plan = 32;
 }
 
 message GetRunContextRequest {}
@@ -260,6 +263,19 @@ message ReportStatusResponse {}
 // running when the run starts it and done when it is proven. Steps are named by the id
 // they were posted with, or by their 1-based position ("3"). A continuation run updates
 // the plan card of the thread's approved plan, whichever run posted it.
+// Keeps the Tread's plan ledger. Items are matched by key: a new key adds an item, a known
+// key updates its title, status, phase or note. replace_all sets the whole list (a new
+// version; keys left out are dropped), for creating the ledger or when the scope changes.
+message UpdateTreadPlanRequest {
+  string title = 1;
+  string source = 2;
+  repeated tank.agent.v1.TreadPlanItem items = 3;
+  bool replace_all = 4;
+}
+message UpdateTreadPlanResponse {
+  tank.agent.v1.TreadPlan plan = 1;
+}
+
 message UpdatePlanStepsRequest {
   repeated PlanStepUpdate steps = 1;
 }
@@ -781,6 +797,7 @@ service RunnerService {
   rpc AskQuestion(AskQuestionRequest) returns (AskQuestionResponse);
   rpc ReportStatus(ReportStatusRequest) returns (ReportStatusResponse);
   rpc UpdatePlanSteps(UpdatePlanStepsRequest) returns (UpdatePlanStepsResponse);
+  rpc UpdateTreadPlan(UpdateTreadPlanRequest) returns (UpdateTreadPlanResponse);
   // How far the run got against the whole ask (2026-10-23): what is done, what is left,
   // and what needs a person. Items left with nothing blocked start a continuation run.
   rpc ReportCompletion(ReportCompletionRequest) returns (ReportCompletionResponse);

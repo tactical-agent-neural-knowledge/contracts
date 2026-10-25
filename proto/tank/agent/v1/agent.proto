@@ -408,8 +408,48 @@ message SetTreadDeploymentRequest {
 }
 message SetTreadDeploymentResponse { TreadDeployment deployment = 1; }
 
+// A Tread's plan ledger: the whole of what the Tread set out to build (a document like a
+// master build plan, or the first approved plan), item by item, with where each stands.
+// Runs keep it current; people read it as one progress bar under the goal and tap for the
+// list (Robby, 2026-10-25: "I don't know where we are at"). The first version's size is kept,
+// so a plan that grew says so.
+enum PlanItemStatus {
+  PLAN_ITEM_STATUS_UNSPECIFIED = 0;
+  PLAN_ITEM_STATUS_TODO = 1;
+  PLAN_ITEM_STATUS_DOING = 2;
+  PLAN_ITEM_STATUS_DONE = 3;    // seen working by a run, never assumed
+  PLAN_ITEM_STATUS_NEEDS_PERSON = 4; // a trademark search, a domain to buy, a decision
+  PLAN_ITEM_STATUS_DROPPED = 5; // taken out of the plan on purpose
+}
+
+message TreadPlanItem {
+  string key = 1;   // stable across versions, e.g. "data.osm-places"
+  string title = 2;
+  PlanItemStatus status = 3;
+  string phase = 4; // the section or phase of the plan it belongs to
+  string note = 5;  // one line: what is left, or why it waits
+}
+
+message TreadPlan {
+  string channel_id = 1;
+  string title = 2;   // what the plan is, e.g. "Datum Master Build Plan"
+  string source = 3;  // the document it was drawn from, when there is one
+  repeated TreadPlanItem items = 4;
+  int32 version = 5;  // grows when items are added or dropped
+  int32 first_total = 6; // how many items the first version had
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message GetTreadPlanRequest {
+  string channel_id = 1;
+}
+message GetTreadPlanResponse {
+  TreadPlan plan = 1; // unset when the Tread has none
+}
+
 service AgentService {
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
+  rpc GetTreadPlan(GetTreadPlanRequest) returns (GetTreadPlanResponse);
   rpc StopRun(StopRunRequest) returns (StopRunResponse);
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
   rpc SetStatus(SetStatusRequest) returns (SetStatusResponse);

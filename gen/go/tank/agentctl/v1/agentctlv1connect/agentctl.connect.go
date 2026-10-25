@@ -67,6 +67,9 @@ const (
 	// RunnerServiceUpdatePlanStepsProcedure is the fully-qualified name of the RunnerService's
 	// UpdatePlanSteps RPC.
 	RunnerServiceUpdatePlanStepsProcedure = "/tank.agentctl.v1.RunnerService/UpdatePlanSteps"
+	// RunnerServiceUpdateTreadPlanProcedure is the fully-qualified name of the RunnerService's
+	// UpdateTreadPlan RPC.
+	RunnerServiceUpdateTreadPlanProcedure = "/tank.agentctl.v1.RunnerService/UpdateTreadPlan"
 	// RunnerServiceReportCompletionProcedure is the fully-qualified name of the RunnerService's
 	// ReportCompletion RPC.
 	RunnerServiceReportCompletionProcedure = "/tank.agentctl.v1.RunnerService/ReportCompletion"
@@ -308,6 +311,7 @@ type RunnerServiceClient interface {
 	AskQuestion(context.Context, *connect.Request[v1.AskQuestionRequest]) (*connect.Response[v1.AskQuestionResponse], error)
 	ReportStatus(context.Context, *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error)
 	UpdatePlanSteps(context.Context, *connect.Request[v1.UpdatePlanStepsRequest]) (*connect.Response[v1.UpdatePlanStepsResponse], error)
+	UpdateTreadPlan(context.Context, *connect.Request[v1.UpdateTreadPlanRequest]) (*connect.Response[v1.UpdateTreadPlanResponse], error)
 	// How far the run got against the whole ask (2026-10-23): what is done, what is left,
 	// and what needs a person. Items left with nothing blocked start a continuation run.
 	ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error)
@@ -434,6 +438,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServiceUpdatePlanStepsProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("UpdatePlanSteps")),
+			connect.WithClientOptions(opts...),
+		),
+		updateTreadPlan: connect.NewClient[v1.UpdateTreadPlanRequest, v1.UpdateTreadPlanResponse](
+			httpClient,
+			baseURL+RunnerServiceUpdateTreadPlanProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("UpdateTreadPlan")),
 			connect.WithClientOptions(opts...),
 		),
 		reportCompletion: connect.NewClient[v1.ReportCompletionRequest, v1.ReportCompletionResponse](
@@ -686,6 +696,7 @@ type runnerServiceClient struct {
 	askQuestion              *connect.Client[v1.AskQuestionRequest, v1.AskQuestionResponse]
 	reportStatus             *connect.Client[v1.ReportStatusRequest, v1.ReportStatusResponse]
 	updatePlanSteps          *connect.Client[v1.UpdatePlanStepsRequest, v1.UpdatePlanStepsResponse]
+	updateTreadPlan          *connect.Client[v1.UpdateTreadPlanRequest, v1.UpdateTreadPlanResponse]
 	reportCompletion         *connect.Client[v1.ReportCompletionRequest, v1.ReportCompletionResponse]
 	checkLive                *connect.Client[v1.CheckLiveRequest, v1.CheckLiveResponse]
 	readProduct              *connect.Client[v1.ReadProductRequest, v1.ReadProductResponse]
@@ -780,6 +791,11 @@ func (c *runnerServiceClient) ReportStatus(ctx context.Context, req *connect.Req
 // UpdatePlanSteps calls tank.agentctl.v1.RunnerService.UpdatePlanSteps.
 func (c *runnerServiceClient) UpdatePlanSteps(ctx context.Context, req *connect.Request[v1.UpdatePlanStepsRequest]) (*connect.Response[v1.UpdatePlanStepsResponse], error) {
 	return c.updatePlanSteps.CallUnary(ctx, req)
+}
+
+// UpdateTreadPlan calls tank.agentctl.v1.RunnerService.UpdateTreadPlan.
+func (c *runnerServiceClient) UpdateTreadPlan(ctx context.Context, req *connect.Request[v1.UpdateTreadPlanRequest]) (*connect.Response[v1.UpdateTreadPlanResponse], error) {
+	return c.updateTreadPlan.CallUnary(ctx, req)
 }
 
 // ReportCompletion calls tank.agentctl.v1.RunnerService.ReportCompletion.
@@ -990,6 +1006,7 @@ type RunnerServiceHandler interface {
 	AskQuestion(context.Context, *connect.Request[v1.AskQuestionRequest]) (*connect.Response[v1.AskQuestionResponse], error)
 	ReportStatus(context.Context, *connect.Request[v1.ReportStatusRequest]) (*connect.Response[v1.ReportStatusResponse], error)
 	UpdatePlanSteps(context.Context, *connect.Request[v1.UpdatePlanStepsRequest]) (*connect.Response[v1.UpdatePlanStepsResponse], error)
+	UpdateTreadPlan(context.Context, *connect.Request[v1.UpdateTreadPlanRequest]) (*connect.Response[v1.UpdateTreadPlanResponse], error)
 	// How far the run got against the whole ask (2026-10-23): what is done, what is left,
 	// and what needs a person. Items left with nothing blocked start a continuation run.
 	ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error)
@@ -1112,6 +1129,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceUpdatePlanStepsProcedure,
 		svc.UpdatePlanSteps,
 		connect.WithSchema(runnerServiceMethods.ByName("UpdatePlanSteps")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceUpdateTreadPlanHandler := connect.NewUnaryHandler(
+		RunnerServiceUpdateTreadPlanProcedure,
+		svc.UpdateTreadPlan,
+		connect.WithSchema(runnerServiceMethods.ByName("UpdateTreadPlan")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServiceReportCompletionHandler := connect.NewUnaryHandler(
@@ -1372,6 +1395,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceReportStatusHandler.ServeHTTP(w, r)
 		case RunnerServiceUpdatePlanStepsProcedure:
 			runnerServiceUpdatePlanStepsHandler.ServeHTTP(w, r)
+		case RunnerServiceUpdateTreadPlanProcedure:
+			runnerServiceUpdateTreadPlanHandler.ServeHTTP(w, r)
 		case RunnerServiceReportCompletionProcedure:
 			runnerServiceReportCompletionHandler.ServeHTTP(w, r)
 		case RunnerServiceCheckLiveProcedure:
@@ -1501,6 +1526,10 @@ func (UnimplementedRunnerServiceHandler) ReportStatus(context.Context, *connect.
 
 func (UnimplementedRunnerServiceHandler) UpdatePlanSteps(context.Context, *connect.Request[v1.UpdatePlanStepsRequest]) (*connect.Response[v1.UpdatePlanStepsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.UpdatePlanSteps is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) UpdateTreadPlan(context.Context, *connect.Request[v1.UpdateTreadPlanRequest]) (*connect.Response[v1.UpdateTreadPlanResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.UpdateTreadPlan is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error) {
