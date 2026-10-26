@@ -179,6 +179,10 @@ message UpdateCanvasRequest {
   bool set_sources = 8;
   // The version the editor last read. A mismatch is refused rather than overwritten.
   int32 base_version = 9;
+  // Attach the page to a Tread (or, empty, make it workspace-wide) when set_channel is
+  // true: the Tread then offers it beside its composer. The caller must be in that Tread.
+  string channel_id = 10;
+  bool set_channel = 11;
 }
 message UpdateCanvasResponse { Canvas canvas = 1; }
 

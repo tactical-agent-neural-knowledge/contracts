@@ -267,7 +267,7 @@ class CreateCanvasResponse(_message.Message):
     def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ...) -> None: ...
 
 class UpdateCanvasRequest(_message.Message):
-    __slots__ = ("workspace_id", "id", "title", "icon", "blocks", "set_blocks", "sources", "set_sources", "base_version")
+    __slots__ = ("workspace_id", "id", "title", "icon", "blocks", "set_blocks", "sources", "set_sources", "base_version", "channel_id", "set_channel")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
@@ -277,6 +277,8 @@ class UpdateCanvasRequest(_message.Message):
     SOURCES_FIELD_NUMBER: _ClassVar[int]
     SET_SOURCES_FIELD_NUMBER: _ClassVar[int]
     BASE_VERSION_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    SET_CHANNEL_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     id: str
     title: str
@@ -286,7 +288,9 @@ class UpdateCanvasRequest(_message.Message):
     sources: _containers.RepeatedCompositeFieldContainer[Source]
     set_sources: bool
     base_version: int
-    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., set_blocks: bool = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., set_sources: bool = ..., base_version: _Optional[int] = ...) -> None: ...
+    channel_id: str
+    set_channel: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., set_blocks: bool = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., set_sources: bool = ..., base_version: _Optional[int] = ..., channel_id: _Optional[str] = ..., set_channel: bool = ...) -> None: ...
 
 class UpdateCanvasResponse(_message.Message):
     __slots__ = ("canvas",)
