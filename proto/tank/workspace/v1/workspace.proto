@@ -254,6 +254,9 @@ message Preferences {
   string digest_voice = 11;
   // Which notification sounds play; unset means TANK's own set.
   SoundChoice sounds = 12;
+  // "Use my location": the profile's time zone follows the device's, kept in step by the
+  // client each time it opens. TANK reads the device's time-zone setting, never its position.
+  bool timezone_from_device = 13;
 }
 
 // A notification sound set, chosen from TANK's packs by a vibe. Each field names
