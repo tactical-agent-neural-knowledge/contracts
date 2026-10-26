@@ -131,6 +131,10 @@ message ListMembersRequest {
   // that set — so in a larger workspace the person you meant was simply absent
   // from the list, with nothing to say why. Typing @ should ask the server.
   string query = 4;
+  // These members only, whatever the page: a client meets an id it has never loaded (a
+  // crew agent made a minute ago, a member past the first 200) and asks for that one.
+  // Ids that are not active members of the workspace are left out. At most 100.
+  repeated string user_ids = 5;
 }
 message ListMembersResponse {
   repeated Member members = 1;
