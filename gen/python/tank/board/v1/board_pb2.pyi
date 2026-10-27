@@ -1,4 +1,5 @@
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from tank.access.v1 import access_pb2 as _access_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
@@ -177,7 +178,7 @@ class CodeFrame(_message.Message):
     def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., start_line: _Optional[int] = ..., end_line: _Optional[int] = ..., content: _Optional[str] = ..., language: _Optional[str] = ..., sha: _Optional[str] = ..., status: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
 
 class Board(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "objects", "version", "created_by", "created_at", "updated_by", "updated_at", "staleness", "staleness_note", "thread_root_id")
+    __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "objects", "version", "created_by", "created_at", "updated_by", "updated_at", "staleness", "staleness_note", "thread_root_id", "my_role")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -192,6 +193,7 @@ class Board(_message.Message):
     STALENESS_FIELD_NUMBER: _ClassVar[int]
     STALENESS_NOTE_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    MY_ROLE_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -206,10 +208,11 @@ class Board(_message.Message):
     staleness: int
     staleness_note: str
     thread_root_id: str
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., version: _Optional[int] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., thread_root_id: _Optional[str] = ...) -> None: ...
+    my_role: _access_pb2.Role
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., version: _Optional[int] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., my_role: _Optional[_Union[_access_pb2.Role, str]] = ...) -> None: ...
 
 class BoardSummary(_message.Message):
-    __slots__ = ("id", "title", "icon", "objects", "app_frames", "updated_at", "channel_id", "staleness", "staleness_note", "thread_root_id")
+    __slots__ = ("id", "title", "icon", "objects", "app_frames", "updated_at", "channel_id", "staleness", "staleness_note", "thread_root_id", "my_role")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     ICON_FIELD_NUMBER: _ClassVar[int]
@@ -220,6 +223,7 @@ class BoardSummary(_message.Message):
     STALENESS_FIELD_NUMBER: _ClassVar[int]
     STALENESS_NOTE_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    MY_ROLE_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     icon: str
@@ -230,7 +234,8 @@ class BoardSummary(_message.Message):
     staleness: int
     staleness_note: str
     thread_root_id: str
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[int] = ..., app_frames: _Optional[int] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., channel_id: _Optional[str] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., thread_root_id: _Optional[str] = ...) -> None: ...
+    my_role: _access_pb2.Role
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[int] = ..., app_frames: _Optional[int] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., channel_id: _Optional[str] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., my_role: _Optional[_Union[_access_pb2.Role, str]] = ...) -> None: ...
 
 class ListBoardsRequest(_message.Message):
     __slots__ = ("workspace_id", "channel_id", "limit", "stale_only", "thread_root_id")
@@ -267,7 +272,7 @@ class GetBoardResponse(_message.Message):
     def __init__(self, board: _Optional[_Union[Board, _Mapping]] = ...) -> None: ...
 
 class CreateBoardRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "title", "icon", "objects", "template", "thread_root_id")
+    __slots__ = ("workspace_id", "channel_id", "title", "icon", "objects", "template", "thread_root_id", "invites")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
@@ -275,6 +280,7 @@ class CreateBoardRequest(_message.Message):
     OBJECTS_FIELD_NUMBER: _ClassVar[int]
     TEMPLATE_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    INVITES_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     title: str
@@ -282,7 +288,8 @@ class CreateBoardRequest(_message.Message):
     objects: _containers.RepeatedCompositeFieldContainer[BoardObject]
     template: str
     thread_root_id: str
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., template: _Optional[str] = ..., thread_root_id: _Optional[str] = ...) -> None: ...
+    invites: _containers.RepeatedCompositeFieldContainer[_access_pb2.Invite]
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., template: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., invites: _Optional[_Iterable[_Union[_access_pb2.Invite, _Mapping]]] = ...) -> None: ...
 
 class CreateBoardResponse(_message.Message):
     __slots__ = ("board",)
@@ -1104,3 +1111,53 @@ class ConnectAppResponse(_message.Message):
     SETUP_FIELD_NUMBER: _ClassVar[int]
     setup: AppSetup
     def __init__(self, setup: _Optional[_Union[AppSetup, _Mapping]] = ...) -> None: ...
+
+class ListBoardAccessRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ...) -> None: ...
+
+class ListBoardAccessResponse(_message.Message):
+    __slots__ = ("grants", "channel_id")
+    GRANTS_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    grants: _containers.RepeatedCompositeFieldContainer[_access_pb2.Grant]
+    channel_id: str
+    def __init__(self, grants: _Optional[_Iterable[_Union[_access_pb2.Grant, _Mapping]]] = ..., channel_id: _Optional[str] = ...) -> None: ...
+
+class SetBoardAccessRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "user_id", "role")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    user_id: str
+    role: _access_pb2.Role
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., user_id: _Optional[str] = ..., role: _Optional[_Union[_access_pb2.Role, str]] = ...) -> None: ...
+
+class SetBoardAccessResponse(_message.Message):
+    __slots__ = ("grants",)
+    GRANTS_FIELD_NUMBER: _ClassVar[int]
+    grants: _containers.RepeatedCompositeFieldContainer[_access_pb2.Grant]
+    def __init__(self, grants: _Optional[_Iterable[_Union[_access_pb2.Grant, _Mapping]]] = ...) -> None: ...
+
+class RemoveBoardAccessRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "user_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    user_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
+
+class RemoveBoardAccessResponse(_message.Message):
+    __slots__ = ("grants",)
+    GRANTS_FIELD_NUMBER: _ClassVar[int]
+    grants: _containers.RepeatedCompositeFieldContainer[_access_pb2.Grant]
+    def __init__(self, grants: _Optional[_Iterable[_Union[_access_pb2.Grant, _Mapping]]] = ...) -> None: ...

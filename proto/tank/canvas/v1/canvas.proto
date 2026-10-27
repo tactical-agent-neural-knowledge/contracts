@@ -3,6 +3,7 @@ syntax = "proto3";
 package tank.canvas.v1;
 
 import "google/protobuf/timestamp.proto";
+import "tank/access/v1/access.proto";
 
 option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/canvas/v1;canvasv1";
 
@@ -119,6 +120,8 @@ message Canvas {
   string parent_id = 17;
   // Pages directly under this one, for the reader to walk down.
   repeated CanvasSummary children = 18;
+  // What the caller may do here, so a client can open it read-only.
+  tank.access.v1.Role my_role = 19;
 }
 
 // A canvas as it appears in a list: no blocks.
@@ -136,6 +139,7 @@ message CanvasSummary {
   int32 decisions = 11;         // how many decision blocks it holds
   string parent_id = 12;
   int32 child_count = 13;
+  tank.access.v1.Role my_role = 14;
 }
 
 message ListCanvasesRequest {
@@ -165,6 +169,8 @@ message CreateCanvasRequest {
   // A starting shape rather than a blank page: see ListTemplates. Ignored when
   // blocks are given.
   string template = 8;
+  // People invited with it, beyond its Tread. Each must be in the workspace.
+  repeated tank.access.v1.Invite invites = 9;
 }
 message CreateCanvasResponse { Canvas canvas = 1; }
 
@@ -303,4 +309,35 @@ service CanvasService {
   rpc UpdateBlock(UpdateBlockRequest) returns (UpdateBlockResponse);
   rpc ListTemplates(ListTemplatesRequest) returns (ListTemplatesResponse);
   rpc ListDecisions(ListDecisionsRequest) returns (ListDecisionsResponse);
+  // Who has access and why. Anyone who can open it may ask.
+  rpc ListCanvasAccess(ListCanvasAccessRequest) returns (ListCanvasAccessResponse);
+  // Invite somebody or change their role. Managers only.
+  rpc SetCanvasAccess(SetCanvasAccessRequest) returns (SetCanvasAccessResponse);
+  // Take an invited person off. The owner, admins and Tread members cannot be removed.
+  rpc RemoveCanvasAccess(RemoveCanvasAccessRequest) returns (RemoveCanvasAccessResponse);
 }
+
+message ListCanvasAccessRequest {
+  string workspace_id = 1;
+  string canvas_id = 2;
+}
+message ListCanvasAccessResponse {
+  repeated tank.access.v1.Grant grants = 1;
+  // The Tread whose members have it, for the "Everyone in #tread" line; empty when none.
+  string channel_id = 2;
+}
+
+message SetCanvasAccessRequest {
+  string workspace_id = 1;
+  string canvas_id = 2;
+  string user_id = 3;
+  tank.access.v1.Role role = 4;
+}
+message SetCanvasAccessResponse { repeated tank.access.v1.Grant grants = 1; }
+
+message RemoveCanvasAccessRequest {
+  string workspace_id = 1;
+  string canvas_id = 2;
+  string user_id = 3;
+}
+message RemoveCanvasAccessResponse { repeated tank.access.v1.Grant grants = 1; }
