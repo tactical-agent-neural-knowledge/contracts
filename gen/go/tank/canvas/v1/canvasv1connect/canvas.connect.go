@@ -61,6 +61,15 @@ const (
 	// CanvasServiceListDecisionsProcedure is the fully-qualified name of the CanvasService's
 	// ListDecisions RPC.
 	CanvasServiceListDecisionsProcedure = "/tank.canvas.v1.CanvasService/ListDecisions"
+	// CanvasServiceListCanvasAccessProcedure is the fully-qualified name of the CanvasService's
+	// ListCanvasAccess RPC.
+	CanvasServiceListCanvasAccessProcedure = "/tank.canvas.v1.CanvasService/ListCanvasAccess"
+	// CanvasServiceSetCanvasAccessProcedure is the fully-qualified name of the CanvasService's
+	// SetCanvasAccess RPC.
+	CanvasServiceSetCanvasAccessProcedure = "/tank.canvas.v1.CanvasService/SetCanvasAccess"
+	// CanvasServiceRemoveCanvasAccessProcedure is the fully-qualified name of the CanvasService's
+	// RemoveCanvasAccess RPC.
+	CanvasServiceRemoveCanvasAccessProcedure = "/tank.canvas.v1.CanvasService/RemoveCanvasAccess"
 )
 
 // CanvasServiceClient is a client for the tank.canvas.v1.CanvasService service.
@@ -75,6 +84,12 @@ type CanvasServiceClient interface {
 	UpdateBlock(context.Context, *connect.Request[v1.UpdateBlockRequest]) (*connect.Response[v1.UpdateBlockResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
 	ListDecisions(context.Context, *connect.Request[v1.ListDecisionsRequest]) (*connect.Response[v1.ListDecisionsResponse], error)
+	// Who has access and why. Anyone who can open it may ask.
+	ListCanvasAccess(context.Context, *connect.Request[v1.ListCanvasAccessRequest]) (*connect.Response[v1.ListCanvasAccessResponse], error)
+	// Invite somebody or change their role. Managers only.
+	SetCanvasAccess(context.Context, *connect.Request[v1.SetCanvasAccessRequest]) (*connect.Response[v1.SetCanvasAccessResponse], error)
+	// Take an invited person off. The owner, admins and Tread members cannot be removed.
+	RemoveCanvasAccess(context.Context, *connect.Request[v1.RemoveCanvasAccessRequest]) (*connect.Response[v1.RemoveCanvasAccessResponse], error)
 }
 
 // NewCanvasServiceClient constructs a client for the tank.canvas.v1.CanvasService service. By
@@ -148,21 +163,42 @@ func NewCanvasServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(canvasServiceMethods.ByName("ListDecisions")),
 			connect.WithClientOptions(opts...),
 		),
+		listCanvasAccess: connect.NewClient[v1.ListCanvasAccessRequest, v1.ListCanvasAccessResponse](
+			httpClient,
+			baseURL+CanvasServiceListCanvasAccessProcedure,
+			connect.WithSchema(canvasServiceMethods.ByName("ListCanvasAccess")),
+			connect.WithClientOptions(opts...),
+		),
+		setCanvasAccess: connect.NewClient[v1.SetCanvasAccessRequest, v1.SetCanvasAccessResponse](
+			httpClient,
+			baseURL+CanvasServiceSetCanvasAccessProcedure,
+			connect.WithSchema(canvasServiceMethods.ByName("SetCanvasAccess")),
+			connect.WithClientOptions(opts...),
+		),
+		removeCanvasAccess: connect.NewClient[v1.RemoveCanvasAccessRequest, v1.RemoveCanvasAccessResponse](
+			httpClient,
+			baseURL+CanvasServiceRemoveCanvasAccessProcedure,
+			connect.WithSchema(canvasServiceMethods.ByName("RemoveCanvasAccess")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // canvasServiceClient implements CanvasServiceClient.
 type canvasServiceClient struct {
-	listCanvases    *connect.Client[v1.ListCanvasesRequest, v1.ListCanvasesResponse]
-	getCanvas       *connect.Client[v1.GetCanvasRequest, v1.GetCanvasResponse]
-	createCanvas    *connect.Client[v1.CreateCanvasRequest, v1.CreateCanvasResponse]
-	updateCanvas    *connect.Client[v1.UpdateCanvasRequest, v1.UpdateCanvasResponse]
-	deleteCanvas    *connect.Client[v1.DeleteCanvasRequest, v1.DeleteCanvasResponse]
-	writeFromThread *connect.Client[v1.WriteFromThreadRequest, v1.WriteFromThreadResponse]
-	ask             *connect.Client[v1.AskRequest, v1.AskResponse]
-	updateBlock     *connect.Client[v1.UpdateBlockRequest, v1.UpdateBlockResponse]
-	listTemplates   *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
-	listDecisions   *connect.Client[v1.ListDecisionsRequest, v1.ListDecisionsResponse]
+	listCanvases       *connect.Client[v1.ListCanvasesRequest, v1.ListCanvasesResponse]
+	getCanvas          *connect.Client[v1.GetCanvasRequest, v1.GetCanvasResponse]
+	createCanvas       *connect.Client[v1.CreateCanvasRequest, v1.CreateCanvasResponse]
+	updateCanvas       *connect.Client[v1.UpdateCanvasRequest, v1.UpdateCanvasResponse]
+	deleteCanvas       *connect.Client[v1.DeleteCanvasRequest, v1.DeleteCanvasResponse]
+	writeFromThread    *connect.Client[v1.WriteFromThreadRequest, v1.WriteFromThreadResponse]
+	ask                *connect.Client[v1.AskRequest, v1.AskResponse]
+	updateBlock        *connect.Client[v1.UpdateBlockRequest, v1.UpdateBlockResponse]
+	listTemplates      *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
+	listDecisions      *connect.Client[v1.ListDecisionsRequest, v1.ListDecisionsResponse]
+	listCanvasAccess   *connect.Client[v1.ListCanvasAccessRequest, v1.ListCanvasAccessResponse]
+	setCanvasAccess    *connect.Client[v1.SetCanvasAccessRequest, v1.SetCanvasAccessResponse]
+	removeCanvasAccess *connect.Client[v1.RemoveCanvasAccessRequest, v1.RemoveCanvasAccessResponse]
 }
 
 // ListCanvases calls tank.canvas.v1.CanvasService.ListCanvases.
@@ -215,6 +251,21 @@ func (c *canvasServiceClient) ListDecisions(ctx context.Context, req *connect.Re
 	return c.listDecisions.CallUnary(ctx, req)
 }
 
+// ListCanvasAccess calls tank.canvas.v1.CanvasService.ListCanvasAccess.
+func (c *canvasServiceClient) ListCanvasAccess(ctx context.Context, req *connect.Request[v1.ListCanvasAccessRequest]) (*connect.Response[v1.ListCanvasAccessResponse], error) {
+	return c.listCanvasAccess.CallUnary(ctx, req)
+}
+
+// SetCanvasAccess calls tank.canvas.v1.CanvasService.SetCanvasAccess.
+func (c *canvasServiceClient) SetCanvasAccess(ctx context.Context, req *connect.Request[v1.SetCanvasAccessRequest]) (*connect.Response[v1.SetCanvasAccessResponse], error) {
+	return c.setCanvasAccess.CallUnary(ctx, req)
+}
+
+// RemoveCanvasAccess calls tank.canvas.v1.CanvasService.RemoveCanvasAccess.
+func (c *canvasServiceClient) RemoveCanvasAccess(ctx context.Context, req *connect.Request[v1.RemoveCanvasAccessRequest]) (*connect.Response[v1.RemoveCanvasAccessResponse], error) {
+	return c.removeCanvasAccess.CallUnary(ctx, req)
+}
+
 // CanvasServiceHandler is an implementation of the tank.canvas.v1.CanvasService service.
 type CanvasServiceHandler interface {
 	ListCanvases(context.Context, *connect.Request[v1.ListCanvasesRequest]) (*connect.Response[v1.ListCanvasesResponse], error)
@@ -227,6 +278,12 @@ type CanvasServiceHandler interface {
 	UpdateBlock(context.Context, *connect.Request[v1.UpdateBlockRequest]) (*connect.Response[v1.UpdateBlockResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
 	ListDecisions(context.Context, *connect.Request[v1.ListDecisionsRequest]) (*connect.Response[v1.ListDecisionsResponse], error)
+	// Who has access and why. Anyone who can open it may ask.
+	ListCanvasAccess(context.Context, *connect.Request[v1.ListCanvasAccessRequest]) (*connect.Response[v1.ListCanvasAccessResponse], error)
+	// Invite somebody or change their role. Managers only.
+	SetCanvasAccess(context.Context, *connect.Request[v1.SetCanvasAccessRequest]) (*connect.Response[v1.SetCanvasAccessResponse], error)
+	// Take an invited person off. The owner, admins and Tread members cannot be removed.
+	RemoveCanvasAccess(context.Context, *connect.Request[v1.RemoveCanvasAccessRequest]) (*connect.Response[v1.RemoveCanvasAccessResponse], error)
 }
 
 // NewCanvasServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -296,6 +353,24 @@ func NewCanvasServiceHandler(svc CanvasServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(canvasServiceMethods.ByName("ListDecisions")),
 		connect.WithHandlerOptions(opts...),
 	)
+	canvasServiceListCanvasAccessHandler := connect.NewUnaryHandler(
+		CanvasServiceListCanvasAccessProcedure,
+		svc.ListCanvasAccess,
+		connect.WithSchema(canvasServiceMethods.ByName("ListCanvasAccess")),
+		connect.WithHandlerOptions(opts...),
+	)
+	canvasServiceSetCanvasAccessHandler := connect.NewUnaryHandler(
+		CanvasServiceSetCanvasAccessProcedure,
+		svc.SetCanvasAccess,
+		connect.WithSchema(canvasServiceMethods.ByName("SetCanvasAccess")),
+		connect.WithHandlerOptions(opts...),
+	)
+	canvasServiceRemoveCanvasAccessHandler := connect.NewUnaryHandler(
+		CanvasServiceRemoveCanvasAccessProcedure,
+		svc.RemoveCanvasAccess,
+		connect.WithSchema(canvasServiceMethods.ByName("RemoveCanvasAccess")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.canvas.v1.CanvasService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case CanvasServiceListCanvasesProcedure:
@@ -318,6 +393,12 @@ func NewCanvasServiceHandler(svc CanvasServiceHandler, opts ...connect.HandlerOp
 			canvasServiceListTemplatesHandler.ServeHTTP(w, r)
 		case CanvasServiceListDecisionsProcedure:
 			canvasServiceListDecisionsHandler.ServeHTTP(w, r)
+		case CanvasServiceListCanvasAccessProcedure:
+			canvasServiceListCanvasAccessHandler.ServeHTTP(w, r)
+		case CanvasServiceSetCanvasAccessProcedure:
+			canvasServiceSetCanvasAccessHandler.ServeHTTP(w, r)
+		case CanvasServiceRemoveCanvasAccessProcedure:
+			canvasServiceRemoveCanvasAccessHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -365,4 +446,16 @@ func (UnimplementedCanvasServiceHandler) ListTemplates(context.Context, *connect
 
 func (UnimplementedCanvasServiceHandler) ListDecisions(context.Context, *connect.Request[v1.ListDecisionsRequest]) (*connect.Response[v1.ListDecisionsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.canvas.v1.CanvasService.ListDecisions is not implemented"))
+}
+
+func (UnimplementedCanvasServiceHandler) ListCanvasAccess(context.Context, *connect.Request[v1.ListCanvasAccessRequest]) (*connect.Response[v1.ListCanvasAccessResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.canvas.v1.CanvasService.ListCanvasAccess is not implemented"))
+}
+
+func (UnimplementedCanvasServiceHandler) SetCanvasAccess(context.Context, *connect.Request[v1.SetCanvasAccessRequest]) (*connect.Response[v1.SetCanvasAccessResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.canvas.v1.CanvasService.SetCanvasAccess is not implemented"))
+}
+
+func (UnimplementedCanvasServiceHandler) RemoveCanvasAccess(context.Context, *connect.Request[v1.RemoveCanvasAccessRequest]) (*connect.Response[v1.RemoveCanvasAccessResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.canvas.v1.CanvasService.RemoveCanvasAccess is not implemented"))
 }

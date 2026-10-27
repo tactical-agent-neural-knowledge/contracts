@@ -6,7 +6,7 @@ import "google/protobuf/timestamp.proto";
 
 // A notification is written by the core's notify worker from bus events and
 // read back here. kind: mention | dm | thread_reply | reaction |
-// channel_invite | agent_needs_input.
+// channel_invite | agent_needs_input | shared.
 message Notification {
   string id = 1;
   string workspace_id = 2;
@@ -17,6 +17,10 @@ message Notification {
   string actor_id = 7;
   google.protobuf.Timestamp read_at = 8;
   google.protobuf.Timestamp created_at = 9;
+  // kind shared: what was shared with the person. item_kind is canvas | board.
+  string item_kind = 10;
+  string item_id = 11;
+  string item_title = 12;
 }
 
 message ListNotificationsRequest {

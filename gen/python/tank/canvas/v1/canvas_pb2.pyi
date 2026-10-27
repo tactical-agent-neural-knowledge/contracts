@@ -1,4 +1,5 @@
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from tank.access.v1 import access_pb2 as _access_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
@@ -137,7 +138,7 @@ class Source(_message.Message):
     def __init__(self, kind: _Optional[str] = ..., ref: _Optional[str] = ..., label: _Optional[str] = ..., seen_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., changed: bool = ..., changed_note: _Optional[str] = ...) -> None: ...
 
 class Canvas(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "blocks", "sources", "staleness", "staleness_note", "created_by", "created_at", "updated_by", "updated_at", "version", "written_by_agent", "summary", "parent_id", "children")
+    __slots__ = ("id", "workspace_id", "channel_id", "title", "icon", "blocks", "sources", "staleness", "staleness_note", "created_by", "created_at", "updated_by", "updated_at", "version", "written_by_agent", "summary", "parent_id", "children", "my_role")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -156,6 +157,7 @@ class Canvas(_message.Message):
     SUMMARY_FIELD_NUMBER: _ClassVar[int]
     PARENT_ID_FIELD_NUMBER: _ClassVar[int]
     CHILDREN_FIELD_NUMBER: _ClassVar[int]
+    MY_ROLE_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -174,10 +176,11 @@ class Canvas(_message.Message):
     summary: str
     parent_id: str
     children: _containers.RepeatedCompositeFieldContainer[CanvasSummary]
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., version: _Optional[int] = ..., written_by_agent: bool = ..., summary: _Optional[str] = ..., parent_id: _Optional[str] = ..., children: _Optional[_Iterable[_Union[CanvasSummary, _Mapping]]] = ...) -> None: ...
+    my_role: _access_pb2.Role
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., version: _Optional[int] = ..., written_by_agent: bool = ..., summary: _Optional[str] = ..., parent_id: _Optional[str] = ..., children: _Optional[_Iterable[_Union[CanvasSummary, _Mapping]]] = ..., my_role: _Optional[_Union[_access_pb2.Role, str]] = ...) -> None: ...
 
 class CanvasSummary(_message.Message):
-    __slots__ = ("id", "title", "icon", "channel_id", "summary", "staleness", "staleness_note", "updated_at", "updated_by", "written_by_agent", "decisions", "parent_id", "child_count")
+    __slots__ = ("id", "title", "icon", "channel_id", "summary", "staleness", "staleness_note", "updated_at", "updated_by", "written_by_agent", "decisions", "parent_id", "child_count", "my_role")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     ICON_FIELD_NUMBER: _ClassVar[int]
@@ -191,6 +194,7 @@ class CanvasSummary(_message.Message):
     DECISIONS_FIELD_NUMBER: _ClassVar[int]
     PARENT_ID_FIELD_NUMBER: _ClassVar[int]
     CHILD_COUNT_FIELD_NUMBER: _ClassVar[int]
+    MY_ROLE_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     icon: str
@@ -204,7 +208,8 @@ class CanvasSummary(_message.Message):
     decisions: int
     parent_id: str
     child_count: int
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., channel_id: _Optional[str] = ..., summary: _Optional[str] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., written_by_agent: bool = ..., decisions: _Optional[int] = ..., parent_id: _Optional[str] = ..., child_count: _Optional[int] = ...) -> None: ...
+    my_role: _access_pb2.Role
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., channel_id: _Optional[str] = ..., summary: _Optional[str] = ..., staleness: _Optional[int] = ..., staleness_note: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., written_by_agent: bool = ..., decisions: _Optional[int] = ..., parent_id: _Optional[str] = ..., child_count: _Optional[int] = ..., my_role: _Optional[_Union[_access_pb2.Role, str]] = ...) -> None: ...
 
 class ListCanvasesRequest(_message.Message):
     __slots__ = ("workspace_id", "channel_id", "stale_only", "parent_id", "top_level")
@@ -241,7 +246,7 @@ class GetCanvasResponse(_message.Message):
     def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ...) -> None: ...
 
 class CreateCanvasRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "title", "icon", "blocks", "sources", "parent_id", "template")
+    __slots__ = ("workspace_id", "channel_id", "title", "icon", "blocks", "sources", "parent_id", "template", "invites")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
@@ -250,6 +255,7 @@ class CreateCanvasRequest(_message.Message):
     SOURCES_FIELD_NUMBER: _ClassVar[int]
     PARENT_ID_FIELD_NUMBER: _ClassVar[int]
     TEMPLATE_FIELD_NUMBER: _ClassVar[int]
+    INVITES_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     title: str
@@ -258,7 +264,8 @@ class CreateCanvasRequest(_message.Message):
     sources: _containers.RepeatedCompositeFieldContainer[Source]
     parent_id: str
     template: str
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., parent_id: _Optional[str] = ..., template: _Optional[str] = ...) -> None: ...
+    invites: _containers.RepeatedCompositeFieldContainer[_access_pb2.Invite]
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., parent_id: _Optional[str] = ..., template: _Optional[str] = ..., invites: _Optional[_Iterable[_Union[_access_pb2.Invite, _Mapping]]] = ...) -> None: ...
 
 class CreateCanvasResponse(_message.Message):
     __slots__ = ("canvas",)
@@ -469,3 +476,53 @@ class AskResponse(_message.Message):
     summary: str
     semantic: bool
     def __init__(self, answers: _Optional[_Iterable[_Union[Answer, _Mapping]]] = ..., summary: _Optional[str] = ..., semantic: bool = ...) -> None: ...
+
+class ListCanvasAccessRequest(_message.Message):
+    __slots__ = ("workspace_id", "canvas_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    canvas_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., canvas_id: _Optional[str] = ...) -> None: ...
+
+class ListCanvasAccessResponse(_message.Message):
+    __slots__ = ("grants", "channel_id")
+    GRANTS_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    grants: _containers.RepeatedCompositeFieldContainer[_access_pb2.Grant]
+    channel_id: str
+    def __init__(self, grants: _Optional[_Iterable[_Union[_access_pb2.Grant, _Mapping]]] = ..., channel_id: _Optional[str] = ...) -> None: ...
+
+class SetCanvasAccessRequest(_message.Message):
+    __slots__ = ("workspace_id", "canvas_id", "user_id", "role")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    canvas_id: str
+    user_id: str
+    role: _access_pb2.Role
+    def __init__(self, workspace_id: _Optional[str] = ..., canvas_id: _Optional[str] = ..., user_id: _Optional[str] = ..., role: _Optional[_Union[_access_pb2.Role, str]] = ...) -> None: ...
+
+class SetCanvasAccessResponse(_message.Message):
+    __slots__ = ("grants",)
+    GRANTS_FIELD_NUMBER: _ClassVar[int]
+    grants: _containers.RepeatedCompositeFieldContainer[_access_pb2.Grant]
+    def __init__(self, grants: _Optional[_Iterable[_Union[_access_pb2.Grant, _Mapping]]] = ...) -> None: ...
+
+class RemoveCanvasAccessRequest(_message.Message):
+    __slots__ = ("workspace_id", "canvas_id", "user_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    canvas_id: str
+    user_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., canvas_id: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
+
+class RemoveCanvasAccessResponse(_message.Message):
+    __slots__ = ("grants",)
+    GRANTS_FIELD_NUMBER: _ClassVar[int]
+    grants: _containers.RepeatedCompositeFieldContainer[_access_pb2.Grant]
+    def __init__(self, grants: _Optional[_Iterable[_Union[_access_pb2.Grant, _Mapping]]] = ...) -> None: ...

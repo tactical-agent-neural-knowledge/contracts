@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package tank.access.v1;
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/access/v1;accessv1";
+
+// Who may open an Atlas page or a Blueprint board, and what they may do there.
+//
+// The same rule for both. The owner (whoever made it) and the workspace's owners and
+// admins manage it. Everyone in its Tread has it, can edit by default, and cannot be
+// taken off it; a manager may set any of them to view only. Anybody else has it only
+// by invitation. Nobody else sees it at all, in a list, a search or the Vault.
+
+enum Role {
+  ROLE_UNSPECIFIED = 0; // no access
+  ROLE_VIEW = 1;        // read it
+  ROLE_EDIT = 2;        // change what is in it
+  ROLE_MANAGE = 3;      // and share, rename, move and delete it
+}
+
+// Why somebody has access, which decides whether they can be removed.
+enum Source {
+  SOURCE_UNSPECIFIED = 0;
+  SOURCE_OWNER = 1;     // made it; always manages
+  SOURCE_ADMIN = 2;     // a workspace owner or admin; always manages
+  SOURCE_TREAD = 3;     // in its Tread; the role can change, the access cannot go
+  SOURCE_INVITED = 4;   // invited; removable
+}
+
+message Grant {
+  string user_id = 1;
+  Role role = 2;
+  Source source = 3;
+  // False for the owner, admins and Tread members.
+  bool removable = 4;
+  // False for the owner and admins, whose role is fixed at manage.
+  bool role_editable = 5;
+  string granted_by = 6;
+}
+
+// An invitation made with the item, on create.
+message Invite {
+  string user_id = 1;
+  Role role = 2;
+}

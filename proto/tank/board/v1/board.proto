@@ -3,6 +3,7 @@ syntax = "proto3";
 package tank.board.v1;
 
 import "google/protobuf/timestamp.proto";
+import "tank/access/v1/access.proto";
 
 // Neuralboards: an infinite board inside the workspace, shared by people and the
 // agent. Its difference from every other canvas is that a frame can hold the running
@@ -153,6 +154,8 @@ message Board {
   // The thread this board is the Workbench of: the agent's live board, pinned in the
   // thread while it works. Empty for every other board. One per thread.
   string thread_root_id = 14;
+  // What the caller may do here, so a client can open it read-only.
+  tank.access.v1.Role my_role = 15;
 }
 
 message BoardSummary {
@@ -166,6 +169,7 @@ message BoardSummary {
   int32 staleness = 8;
   string staleness_note = 9;
   string thread_root_id = 10;   // set when the board is a thread's Workbench
+  tank.access.v1.Role my_role = 11;
 }
 
 message ListBoardsRequest {
@@ -198,6 +202,8 @@ message CreateBoardRequest {
   // Make this board the thread's Workbench. The caller must be a member of the thread's
   // Tread (channel_id); a thread has at most one, and a second request returns it.
   string thread_root_id = 7;
+  // People invited with it, beyond its Tread. Each must be in the workspace.
+  repeated tank.access.v1.Invite invites = 8;
 }
 message CreateBoardResponse { Board board = 1; }
 
@@ -771,5 +777,36 @@ service BoardService {
   rpc ReadElement(ReadElementRequest) returns (ReadElementResponse);
   rpc GetAppSetup(GetAppSetupRequest) returns (GetAppSetupResponse);
   rpc ConnectApp(ConnectAppRequest) returns (ConnectAppResponse);
+  // Who has access and why. Anyone who can open it may ask.
+  rpc ListBoardAccess(ListBoardAccessRequest) returns (ListBoardAccessResponse);
+  // Invite somebody or change their role. Managers only.
+  rpc SetBoardAccess(SetBoardAccessRequest) returns (SetBoardAccessResponse);
+  // Take an invited person off. The owner, admins and Tread members cannot be removed.
+  rpc RemoveBoardAccess(RemoveBoardAccessRequest) returns (RemoveBoardAccessResponse);
   rpc ApproveChange(ApproveChangeRequest) returns (ApproveChangeResponse);
 }
+
+message ListBoardAccessRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+}
+message ListBoardAccessResponse {
+  repeated tank.access.v1.Grant grants = 1;
+  // The Tread whose members have it, for the "Everyone in #tread" line; empty when none.
+  string channel_id = 2;
+}
+
+message SetBoardAccessRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  string user_id = 3;
+  tank.access.v1.Role role = 4;
+}
+message SetBoardAccessResponse { repeated tank.access.v1.Grant grants = 1; }
+
+message RemoveBoardAccessRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  string user_id = 3;
+}
+message RemoveBoardAccessResponse { repeated tank.access.v1.Grant grants = 1; }

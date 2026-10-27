@@ -121,6 +121,15 @@ const (
 	BoardServiceGetAppSetupProcedure = "/tank.board.v1.BoardService/GetAppSetup"
 	// BoardServiceConnectAppProcedure is the fully-qualified name of the BoardService's ConnectApp RPC.
 	BoardServiceConnectAppProcedure = "/tank.board.v1.BoardService/ConnectApp"
+	// BoardServiceListBoardAccessProcedure is the fully-qualified name of the BoardService's
+	// ListBoardAccess RPC.
+	BoardServiceListBoardAccessProcedure = "/tank.board.v1.BoardService/ListBoardAccess"
+	// BoardServiceSetBoardAccessProcedure is the fully-qualified name of the BoardService's
+	// SetBoardAccess RPC.
+	BoardServiceSetBoardAccessProcedure = "/tank.board.v1.BoardService/SetBoardAccess"
+	// BoardServiceRemoveBoardAccessProcedure is the fully-qualified name of the BoardService's
+	// RemoveBoardAccess RPC.
+	BoardServiceRemoveBoardAccessProcedure = "/tank.board.v1.BoardService/RemoveBoardAccess"
 	// BoardServiceApproveChangeProcedure is the fully-qualified name of the BoardService's
 	// ApproveChange RPC.
 	BoardServiceApproveChangeProcedure = "/tank.board.v1.BoardService/ApproveChange"
@@ -159,6 +168,12 @@ type BoardServiceClient interface {
 	ReadElement(context.Context, *connect.Request[v1.ReadElementRequest]) (*connect.Response[v1.ReadElementResponse], error)
 	GetAppSetup(context.Context, *connect.Request[v1.GetAppSetupRequest]) (*connect.Response[v1.GetAppSetupResponse], error)
 	ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error)
+	// Who has access and why. Anyone who can open it may ask.
+	ListBoardAccess(context.Context, *connect.Request[v1.ListBoardAccessRequest]) (*connect.Response[v1.ListBoardAccessResponse], error)
+	// Invite somebody or change their role. Managers only.
+	SetBoardAccess(context.Context, *connect.Request[v1.SetBoardAccessRequest]) (*connect.Response[v1.SetBoardAccessResponse], error)
+	// Take an invited person off. The owner, admins and Tread members cannot be removed.
+	RemoveBoardAccess(context.Context, *connect.Request[v1.RemoveBoardAccessRequest]) (*connect.Response[v1.RemoveBoardAccessResponse], error)
 	ApproveChange(context.Context, *connect.Request[v1.ApproveChangeRequest]) (*connect.Response[v1.ApproveChangeResponse], error)
 }
 
@@ -359,6 +374,24 @@ func NewBoardServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(boardServiceMethods.ByName("ConnectApp")),
 			connect.WithClientOptions(opts...),
 		),
+		listBoardAccess: connect.NewClient[v1.ListBoardAccessRequest, v1.ListBoardAccessResponse](
+			httpClient,
+			baseURL+BoardServiceListBoardAccessProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("ListBoardAccess")),
+			connect.WithClientOptions(opts...),
+		),
+		setBoardAccess: connect.NewClient[v1.SetBoardAccessRequest, v1.SetBoardAccessResponse](
+			httpClient,
+			baseURL+BoardServiceSetBoardAccessProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("SetBoardAccess")),
+			connect.WithClientOptions(opts...),
+		),
+		removeBoardAccess: connect.NewClient[v1.RemoveBoardAccessRequest, v1.RemoveBoardAccessResponse](
+			httpClient,
+			baseURL+BoardServiceRemoveBoardAccessProcedure,
+			connect.WithSchema(boardServiceMethods.ByName("RemoveBoardAccess")),
+			connect.WithClientOptions(opts...),
+		),
 		approveChange: connect.NewClient[v1.ApproveChangeRequest, v1.ApproveChangeResponse](
 			httpClient,
 			baseURL+BoardServiceApproveChangeProcedure,
@@ -401,6 +434,9 @@ type boardServiceClient struct {
 	readElement           *connect.Client[v1.ReadElementRequest, v1.ReadElementResponse]
 	getAppSetup           *connect.Client[v1.GetAppSetupRequest, v1.GetAppSetupResponse]
 	connectApp            *connect.Client[v1.ConnectAppRequest, v1.ConnectAppResponse]
+	listBoardAccess       *connect.Client[v1.ListBoardAccessRequest, v1.ListBoardAccessResponse]
+	setBoardAccess        *connect.Client[v1.SetBoardAccessRequest, v1.SetBoardAccessResponse]
+	removeBoardAccess     *connect.Client[v1.RemoveBoardAccessRequest, v1.RemoveBoardAccessResponse]
 	approveChange         *connect.Client[v1.ApproveChangeRequest, v1.ApproveChangeResponse]
 }
 
@@ -559,6 +595,21 @@ func (c *boardServiceClient) ConnectApp(ctx context.Context, req *connect.Reques
 	return c.connectApp.CallUnary(ctx, req)
 }
 
+// ListBoardAccess calls tank.board.v1.BoardService.ListBoardAccess.
+func (c *boardServiceClient) ListBoardAccess(ctx context.Context, req *connect.Request[v1.ListBoardAccessRequest]) (*connect.Response[v1.ListBoardAccessResponse], error) {
+	return c.listBoardAccess.CallUnary(ctx, req)
+}
+
+// SetBoardAccess calls tank.board.v1.BoardService.SetBoardAccess.
+func (c *boardServiceClient) SetBoardAccess(ctx context.Context, req *connect.Request[v1.SetBoardAccessRequest]) (*connect.Response[v1.SetBoardAccessResponse], error) {
+	return c.setBoardAccess.CallUnary(ctx, req)
+}
+
+// RemoveBoardAccess calls tank.board.v1.BoardService.RemoveBoardAccess.
+func (c *boardServiceClient) RemoveBoardAccess(ctx context.Context, req *connect.Request[v1.RemoveBoardAccessRequest]) (*connect.Response[v1.RemoveBoardAccessResponse], error) {
+	return c.removeBoardAccess.CallUnary(ctx, req)
+}
+
 // ApproveChange calls tank.board.v1.BoardService.ApproveChange.
 func (c *boardServiceClient) ApproveChange(ctx context.Context, req *connect.Request[v1.ApproveChangeRequest]) (*connect.Response[v1.ApproveChangeResponse], error) {
 	return c.approveChange.CallUnary(ctx, req)
@@ -597,6 +648,12 @@ type BoardServiceHandler interface {
 	ReadElement(context.Context, *connect.Request[v1.ReadElementRequest]) (*connect.Response[v1.ReadElementResponse], error)
 	GetAppSetup(context.Context, *connect.Request[v1.GetAppSetupRequest]) (*connect.Response[v1.GetAppSetupResponse], error)
 	ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error)
+	// Who has access and why. Anyone who can open it may ask.
+	ListBoardAccess(context.Context, *connect.Request[v1.ListBoardAccessRequest]) (*connect.Response[v1.ListBoardAccessResponse], error)
+	// Invite somebody or change their role. Managers only.
+	SetBoardAccess(context.Context, *connect.Request[v1.SetBoardAccessRequest]) (*connect.Response[v1.SetBoardAccessResponse], error)
+	// Take an invited person off. The owner, admins and Tread members cannot be removed.
+	RemoveBoardAccess(context.Context, *connect.Request[v1.RemoveBoardAccessRequest]) (*connect.Response[v1.RemoveBoardAccessResponse], error)
 	ApproveChange(context.Context, *connect.Request[v1.ApproveChangeRequest]) (*connect.Response[v1.ApproveChangeResponse], error)
 }
 
@@ -793,6 +850,24 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(boardServiceMethods.ByName("ConnectApp")),
 		connect.WithHandlerOptions(opts...),
 	)
+	boardServiceListBoardAccessHandler := connect.NewUnaryHandler(
+		BoardServiceListBoardAccessProcedure,
+		svc.ListBoardAccess,
+		connect.WithSchema(boardServiceMethods.ByName("ListBoardAccess")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceSetBoardAccessHandler := connect.NewUnaryHandler(
+		BoardServiceSetBoardAccessProcedure,
+		svc.SetBoardAccess,
+		connect.WithSchema(boardServiceMethods.ByName("SetBoardAccess")),
+		connect.WithHandlerOptions(opts...),
+	)
+	boardServiceRemoveBoardAccessHandler := connect.NewUnaryHandler(
+		BoardServiceRemoveBoardAccessProcedure,
+		svc.RemoveBoardAccess,
+		connect.WithSchema(boardServiceMethods.ByName("RemoveBoardAccess")),
+		connect.WithHandlerOptions(opts...),
+	)
 	boardServiceApproveChangeHandler := connect.NewUnaryHandler(
 		BoardServiceApproveChangeProcedure,
 		svc.ApproveChange,
@@ -863,6 +938,12 @@ func NewBoardServiceHandler(svc BoardServiceHandler, opts ...connect.HandlerOpti
 			boardServiceGetAppSetupHandler.ServeHTTP(w, r)
 		case BoardServiceConnectAppProcedure:
 			boardServiceConnectAppHandler.ServeHTTP(w, r)
+		case BoardServiceListBoardAccessProcedure:
+			boardServiceListBoardAccessHandler.ServeHTTP(w, r)
+		case BoardServiceSetBoardAccessProcedure:
+			boardServiceSetBoardAccessHandler.ServeHTTP(w, r)
+		case BoardServiceRemoveBoardAccessProcedure:
+			boardServiceRemoveBoardAccessHandler.ServeHTTP(w, r)
 		case BoardServiceApproveChangeProcedure:
 			boardServiceApproveChangeHandler.ServeHTTP(w, r)
 		default:
@@ -996,6 +1077,18 @@ func (UnimplementedBoardServiceHandler) GetAppSetup(context.Context, *connect.Re
 
 func (UnimplementedBoardServiceHandler) ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ConnectApp is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) ListBoardAccess(context.Context, *connect.Request[v1.ListBoardAccessRequest]) (*connect.Response[v1.ListBoardAccessResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ListBoardAccess is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) SetBoardAccess(context.Context, *connect.Request[v1.SetBoardAccessRequest]) (*connect.Response[v1.SetBoardAccessResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.SetBoardAccess is not implemented"))
+}
+
+func (UnimplementedBoardServiceHandler) RemoveBoardAccess(context.Context, *connect.Request[v1.RemoveBoardAccessRequest]) (*connect.Response[v1.RemoveBoardAccessResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.RemoveBoardAccess is not implemented"))
 }
 
 func (UnimplementedBoardServiceHandler) ApproveChange(context.Context, *connect.Request[v1.ApproveChangeRequest]) (*connect.Response[v1.ApproveChangeResponse], error) {
