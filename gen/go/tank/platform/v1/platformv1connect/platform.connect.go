@@ -53,6 +53,29 @@ const (
 	// PlatformServiceListDropCandidatesProcedure is the fully-qualified name of the PlatformService's
 	// ListDropCandidates RPC.
 	PlatformServiceListDropCandidatesProcedure = "/tank.platform.v1.PlatformService/ListDropCandidates"
+	// PlatformServiceGetOverviewProcedure is the fully-qualified name of the PlatformService's
+	// GetOverview RPC.
+	PlatformServiceGetOverviewProcedure = "/tank.platform.v1.PlatformService/GetOverview"
+	// PlatformServiceSearchUsersProcedure is the fully-qualified name of the PlatformService's
+	// SearchUsers RPC.
+	PlatformServiceSearchUsersProcedure = "/tank.platform.v1.PlatformService/SearchUsers"
+	// PlatformServiceGetUserProcedure is the fully-qualified name of the PlatformService's GetUser RPC.
+	PlatformServiceGetUserProcedure = "/tank.platform.v1.PlatformService/GetUser"
+	// PlatformServiceSearchWorkspacesProcedure is the fully-qualified name of the PlatformService's
+	// SearchWorkspaces RPC.
+	PlatformServiceSearchWorkspacesProcedure = "/tank.platform.v1.PlatformService/SearchWorkspaces"
+	// PlatformServiceGetWorkspaceProcedure is the fully-qualified name of the PlatformService's
+	// GetWorkspace RPC.
+	PlatformServiceGetWorkspaceProcedure = "/tank.platform.v1.PlatformService/GetWorkspace"
+	// PlatformServiceListSuperAdminsProcedure is the fully-qualified name of the PlatformService's
+	// ListSuperAdmins RPC.
+	PlatformServiceListSuperAdminsProcedure = "/tank.platform.v1.PlatformService/ListSuperAdmins"
+	// PlatformServiceAddSuperAdminProcedure is the fully-qualified name of the PlatformService's
+	// AddSuperAdmin RPC.
+	PlatformServiceAddSuperAdminProcedure = "/tank.platform.v1.PlatformService/AddSuperAdmin"
+	// PlatformServiceRemoveSuperAdminProcedure is the fully-qualified name of the PlatformService's
+	// RemoveSuperAdmin RPC.
+	PlatformServiceRemoveSuperAdminProcedure = "/tank.platform.v1.PlatformService/RemoveSuperAdmin"
 )
 
 // PlatformServiceClient is a client for the tank.platform.v1.PlatformService service.
@@ -64,6 +87,14 @@ type PlatformServiceClient interface {
 	ListMerges(context.Context, *connect.Request[v1.ListMergesRequest]) (*connect.Response[v1.ListMergesResponse], error)
 	DecideMerge(context.Context, *connect.Request[v1.DecideMergeRequest]) (*connect.Response[v1.DecideMergeResponse], error)
 	ListDropCandidates(context.Context, *connect.Request[v1.ListDropCandidatesRequest]) (*connect.Response[v1.ListDropCandidatesResponse], error)
+	GetOverview(context.Context, *connect.Request[v1.GetOverviewRequest]) (*connect.Response[v1.GetOverviewResponse], error)
+	SearchUsers(context.Context, *connect.Request[v1.SearchUsersRequest]) (*connect.Response[v1.SearchUsersResponse], error)
+	GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.GetUserResponse], error)
+	SearchWorkspaces(context.Context, *connect.Request[v1.SearchWorkspacesRequest]) (*connect.Response[v1.SearchWorkspacesResponse], error)
+	GetWorkspace(context.Context, *connect.Request[v1.GetWorkspaceRequest]) (*connect.Response[v1.GetWorkspaceResponse], error)
+	ListSuperAdmins(context.Context, *connect.Request[v1.ListSuperAdminsRequest]) (*connect.Response[v1.ListSuperAdminsResponse], error)
+	AddSuperAdmin(context.Context, *connect.Request[v1.AddSuperAdminRequest]) (*connect.Response[v1.AddSuperAdminResponse], error)
+	RemoveSuperAdmin(context.Context, *connect.Request[v1.RemoveSuperAdminRequest]) (*connect.Response[v1.RemoveSuperAdminResponse], error)
 }
 
 // NewPlatformServiceClient constructs a client for the tank.platform.v1.PlatformService service. By
@@ -119,6 +150,54 @@ func NewPlatformServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(platformServiceMethods.ByName("ListDropCandidates")),
 			connect.WithClientOptions(opts...),
 		),
+		getOverview: connect.NewClient[v1.GetOverviewRequest, v1.GetOverviewResponse](
+			httpClient,
+			baseURL+PlatformServiceGetOverviewProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("GetOverview")),
+			connect.WithClientOptions(opts...),
+		),
+		searchUsers: connect.NewClient[v1.SearchUsersRequest, v1.SearchUsersResponse](
+			httpClient,
+			baseURL+PlatformServiceSearchUsersProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("SearchUsers")),
+			connect.WithClientOptions(opts...),
+		),
+		getUser: connect.NewClient[v1.GetUserRequest, v1.GetUserResponse](
+			httpClient,
+			baseURL+PlatformServiceGetUserProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("GetUser")),
+			connect.WithClientOptions(opts...),
+		),
+		searchWorkspaces: connect.NewClient[v1.SearchWorkspacesRequest, v1.SearchWorkspacesResponse](
+			httpClient,
+			baseURL+PlatformServiceSearchWorkspacesProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("SearchWorkspaces")),
+			connect.WithClientOptions(opts...),
+		),
+		getWorkspace: connect.NewClient[v1.GetWorkspaceRequest, v1.GetWorkspaceResponse](
+			httpClient,
+			baseURL+PlatformServiceGetWorkspaceProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("GetWorkspace")),
+			connect.WithClientOptions(opts...),
+		),
+		listSuperAdmins: connect.NewClient[v1.ListSuperAdminsRequest, v1.ListSuperAdminsResponse](
+			httpClient,
+			baseURL+PlatformServiceListSuperAdminsProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("ListSuperAdmins")),
+			connect.WithClientOptions(opts...),
+		),
+		addSuperAdmin: connect.NewClient[v1.AddSuperAdminRequest, v1.AddSuperAdminResponse](
+			httpClient,
+			baseURL+PlatformServiceAddSuperAdminProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("AddSuperAdmin")),
+			connect.WithClientOptions(opts...),
+		),
+		removeSuperAdmin: connect.NewClient[v1.RemoveSuperAdminRequest, v1.RemoveSuperAdminResponse](
+			httpClient,
+			baseURL+PlatformServiceRemoveSuperAdminProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("RemoveSuperAdmin")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -131,6 +210,14 @@ type platformServiceClient struct {
 	listMerges         *connect.Client[v1.ListMergesRequest, v1.ListMergesResponse]
 	decideMerge        *connect.Client[v1.DecideMergeRequest, v1.DecideMergeResponse]
 	listDropCandidates *connect.Client[v1.ListDropCandidatesRequest, v1.ListDropCandidatesResponse]
+	getOverview        *connect.Client[v1.GetOverviewRequest, v1.GetOverviewResponse]
+	searchUsers        *connect.Client[v1.SearchUsersRequest, v1.SearchUsersResponse]
+	getUser            *connect.Client[v1.GetUserRequest, v1.GetUserResponse]
+	searchWorkspaces   *connect.Client[v1.SearchWorkspacesRequest, v1.SearchWorkspacesResponse]
+	getWorkspace       *connect.Client[v1.GetWorkspaceRequest, v1.GetWorkspaceResponse]
+	listSuperAdmins    *connect.Client[v1.ListSuperAdminsRequest, v1.ListSuperAdminsResponse]
+	addSuperAdmin      *connect.Client[v1.AddSuperAdminRequest, v1.AddSuperAdminResponse]
+	removeSuperAdmin   *connect.Client[v1.RemoveSuperAdminRequest, v1.RemoveSuperAdminResponse]
 }
 
 // ListAgentures calls tank.platform.v1.PlatformService.ListAgentures.
@@ -168,6 +255,46 @@ func (c *platformServiceClient) ListDropCandidates(ctx context.Context, req *con
 	return c.listDropCandidates.CallUnary(ctx, req)
 }
 
+// GetOverview calls tank.platform.v1.PlatformService.GetOverview.
+func (c *platformServiceClient) GetOverview(ctx context.Context, req *connect.Request[v1.GetOverviewRequest]) (*connect.Response[v1.GetOverviewResponse], error) {
+	return c.getOverview.CallUnary(ctx, req)
+}
+
+// SearchUsers calls tank.platform.v1.PlatformService.SearchUsers.
+func (c *platformServiceClient) SearchUsers(ctx context.Context, req *connect.Request[v1.SearchUsersRequest]) (*connect.Response[v1.SearchUsersResponse], error) {
+	return c.searchUsers.CallUnary(ctx, req)
+}
+
+// GetUser calls tank.platform.v1.PlatformService.GetUser.
+func (c *platformServiceClient) GetUser(ctx context.Context, req *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.GetUserResponse], error) {
+	return c.getUser.CallUnary(ctx, req)
+}
+
+// SearchWorkspaces calls tank.platform.v1.PlatformService.SearchWorkspaces.
+func (c *platformServiceClient) SearchWorkspaces(ctx context.Context, req *connect.Request[v1.SearchWorkspacesRequest]) (*connect.Response[v1.SearchWorkspacesResponse], error) {
+	return c.searchWorkspaces.CallUnary(ctx, req)
+}
+
+// GetWorkspace calls tank.platform.v1.PlatformService.GetWorkspace.
+func (c *platformServiceClient) GetWorkspace(ctx context.Context, req *connect.Request[v1.GetWorkspaceRequest]) (*connect.Response[v1.GetWorkspaceResponse], error) {
+	return c.getWorkspace.CallUnary(ctx, req)
+}
+
+// ListSuperAdmins calls tank.platform.v1.PlatformService.ListSuperAdmins.
+func (c *platformServiceClient) ListSuperAdmins(ctx context.Context, req *connect.Request[v1.ListSuperAdminsRequest]) (*connect.Response[v1.ListSuperAdminsResponse], error) {
+	return c.listSuperAdmins.CallUnary(ctx, req)
+}
+
+// AddSuperAdmin calls tank.platform.v1.PlatformService.AddSuperAdmin.
+func (c *platformServiceClient) AddSuperAdmin(ctx context.Context, req *connect.Request[v1.AddSuperAdminRequest]) (*connect.Response[v1.AddSuperAdminResponse], error) {
+	return c.addSuperAdmin.CallUnary(ctx, req)
+}
+
+// RemoveSuperAdmin calls tank.platform.v1.PlatformService.RemoveSuperAdmin.
+func (c *platformServiceClient) RemoveSuperAdmin(ctx context.Context, req *connect.Request[v1.RemoveSuperAdminRequest]) (*connect.Response[v1.RemoveSuperAdminResponse], error) {
+	return c.removeSuperAdmin.CallUnary(ctx, req)
+}
+
 // PlatformServiceHandler is an implementation of the tank.platform.v1.PlatformService service.
 type PlatformServiceHandler interface {
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
@@ -177,6 +304,14 @@ type PlatformServiceHandler interface {
 	ListMerges(context.Context, *connect.Request[v1.ListMergesRequest]) (*connect.Response[v1.ListMergesResponse], error)
 	DecideMerge(context.Context, *connect.Request[v1.DecideMergeRequest]) (*connect.Response[v1.DecideMergeResponse], error)
 	ListDropCandidates(context.Context, *connect.Request[v1.ListDropCandidatesRequest]) (*connect.Response[v1.ListDropCandidatesResponse], error)
+	GetOverview(context.Context, *connect.Request[v1.GetOverviewRequest]) (*connect.Response[v1.GetOverviewResponse], error)
+	SearchUsers(context.Context, *connect.Request[v1.SearchUsersRequest]) (*connect.Response[v1.SearchUsersResponse], error)
+	GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.GetUserResponse], error)
+	SearchWorkspaces(context.Context, *connect.Request[v1.SearchWorkspacesRequest]) (*connect.Response[v1.SearchWorkspacesResponse], error)
+	GetWorkspace(context.Context, *connect.Request[v1.GetWorkspaceRequest]) (*connect.Response[v1.GetWorkspaceResponse], error)
+	ListSuperAdmins(context.Context, *connect.Request[v1.ListSuperAdminsRequest]) (*connect.Response[v1.ListSuperAdminsResponse], error)
+	AddSuperAdmin(context.Context, *connect.Request[v1.AddSuperAdminRequest]) (*connect.Response[v1.AddSuperAdminResponse], error)
+	RemoveSuperAdmin(context.Context, *connect.Request[v1.RemoveSuperAdminRequest]) (*connect.Response[v1.RemoveSuperAdminResponse], error)
 }
 
 // NewPlatformServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -228,6 +363,54 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 		connect.WithSchema(platformServiceMethods.ByName("ListDropCandidates")),
 		connect.WithHandlerOptions(opts...),
 	)
+	platformServiceGetOverviewHandler := connect.NewUnaryHandler(
+		PlatformServiceGetOverviewProcedure,
+		svc.GetOverview,
+		connect.WithSchema(platformServiceMethods.ByName("GetOverview")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceSearchUsersHandler := connect.NewUnaryHandler(
+		PlatformServiceSearchUsersProcedure,
+		svc.SearchUsers,
+		connect.WithSchema(platformServiceMethods.ByName("SearchUsers")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceGetUserHandler := connect.NewUnaryHandler(
+		PlatformServiceGetUserProcedure,
+		svc.GetUser,
+		connect.WithSchema(platformServiceMethods.ByName("GetUser")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceSearchWorkspacesHandler := connect.NewUnaryHandler(
+		PlatformServiceSearchWorkspacesProcedure,
+		svc.SearchWorkspaces,
+		connect.WithSchema(platformServiceMethods.ByName("SearchWorkspaces")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceGetWorkspaceHandler := connect.NewUnaryHandler(
+		PlatformServiceGetWorkspaceProcedure,
+		svc.GetWorkspace,
+		connect.WithSchema(platformServiceMethods.ByName("GetWorkspace")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceListSuperAdminsHandler := connect.NewUnaryHandler(
+		PlatformServiceListSuperAdminsProcedure,
+		svc.ListSuperAdmins,
+		connect.WithSchema(platformServiceMethods.ByName("ListSuperAdmins")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceAddSuperAdminHandler := connect.NewUnaryHandler(
+		PlatformServiceAddSuperAdminProcedure,
+		svc.AddSuperAdmin,
+		connect.WithSchema(platformServiceMethods.ByName("AddSuperAdmin")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceRemoveSuperAdminHandler := connect.NewUnaryHandler(
+		PlatformServiceRemoveSuperAdminProcedure,
+		svc.RemoveSuperAdmin,
+		connect.WithSchema(platformServiceMethods.ByName("RemoveSuperAdmin")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.platform.v1.PlatformService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PlatformServiceListAgenturesProcedure:
@@ -244,6 +427,22 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 			platformServiceDecideMergeHandler.ServeHTTP(w, r)
 		case PlatformServiceListDropCandidatesProcedure:
 			platformServiceListDropCandidatesHandler.ServeHTTP(w, r)
+		case PlatformServiceGetOverviewProcedure:
+			platformServiceGetOverviewHandler.ServeHTTP(w, r)
+		case PlatformServiceSearchUsersProcedure:
+			platformServiceSearchUsersHandler.ServeHTTP(w, r)
+		case PlatformServiceGetUserProcedure:
+			platformServiceGetUserHandler.ServeHTTP(w, r)
+		case PlatformServiceSearchWorkspacesProcedure:
+			platformServiceSearchWorkspacesHandler.ServeHTTP(w, r)
+		case PlatformServiceGetWorkspaceProcedure:
+			platformServiceGetWorkspaceHandler.ServeHTTP(w, r)
+		case PlatformServiceListSuperAdminsProcedure:
+			platformServiceListSuperAdminsHandler.ServeHTTP(w, r)
+		case PlatformServiceAddSuperAdminProcedure:
+			platformServiceAddSuperAdminHandler.ServeHTTP(w, r)
+		case PlatformServiceRemoveSuperAdminProcedure:
+			platformServiceRemoveSuperAdminHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -279,4 +478,36 @@ func (UnimplementedPlatformServiceHandler) DecideMerge(context.Context, *connect
 
 func (UnimplementedPlatformServiceHandler) ListDropCandidates(context.Context, *connect.Request[v1.ListDropCandidatesRequest]) (*connect.Response[v1.ListDropCandidatesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.ListDropCandidates is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) GetOverview(context.Context, *connect.Request[v1.GetOverviewRequest]) (*connect.Response[v1.GetOverviewResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.GetOverview is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) SearchUsers(context.Context, *connect.Request[v1.SearchUsersRequest]) (*connect.Response[v1.SearchUsersResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.SearchUsers is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.GetUserResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.GetUser is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) SearchWorkspaces(context.Context, *connect.Request[v1.SearchWorkspacesRequest]) (*connect.Response[v1.SearchWorkspacesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.SearchWorkspaces is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) GetWorkspace(context.Context, *connect.Request[v1.GetWorkspaceRequest]) (*connect.Response[v1.GetWorkspaceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.GetWorkspace is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) ListSuperAdmins(context.Context, *connect.Request[v1.ListSuperAdminsRequest]) (*connect.Response[v1.ListSuperAdminsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.ListSuperAdmins is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) AddSuperAdmin(context.Context, *connect.Request[v1.AddSuperAdminRequest]) (*connect.Response[v1.AddSuperAdminResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.AddSuperAdmin is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) RemoveSuperAdmin(context.Context, *connect.Request[v1.RemoveSuperAdminRequest]) (*connect.Response[v1.RemoveSuperAdminResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.RemoveSuperAdmin is not implemented"))
 }
