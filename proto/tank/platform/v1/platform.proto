@@ -9,9 +9,9 @@ option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go
 // PlatformService is the console above every workspace: what the board's own agents
 // are doing, and the controls to change it.
 //
-// Every RPC requires a super admin — an address named in the deployment, not a role
-// in the database. This is the only identity in TANK that reads and stops work inside
-// workspaces it is not a member of, so it is not something a stray UPDATE can grant.
+// Every RPC requires a super admin. The root super admins are named in the deployment
+// and cannot be removed from the console; a root may name others (AddSuperAdmin), and
+// each change is written to the audit log and mailed to every super admin.
 
 // AgentureRow is one product on the board as the console sees it.
 message AgentureRow {
@@ -158,6 +158,227 @@ message ListDropCandidatesResponse {
   string day = 2;                              // YYYY-MM-DD the list is for
 }
 
+// The directory: every person and workspace in the deployment, for a super admin.
+// It carries timestamps, counts and settings, never message text, file contents or
+// what an agent was asked; opening one workspace writes a record that workspace's
+// admins can read.
+
+// UserRow is one account as the directory lists it.
+message UserRow {
+  string id = 1;
+  string display_name = 2;
+  string email = 3;
+  string kind = 4;                             // user | bot | agent
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp last_login_at = 6; // the last time a session was opened
+  google.protobuf.Timestamp last_active_at = 7;// latest across the workspaces they are in
+  int32 workspaces = 8;
+  bool super_admin = 9;
+}
+
+message SearchUsersRequest {
+  string query = 1;                            // name or email
+  int32 limit = 2;
+  int32 offset = 3;
+  bool include_machines = 4;                   // bots and agents as well as people
+  string sort = 5;                             // newest (default) | active | login | name
+}
+message SearchUsersResponse {
+  repeated UserRow users = 1;
+  int32 total = 2;
+}
+
+// Membership is one workspace somebody is in, and how recently they used it.
+message Membership {
+  string workspace_id = 1;
+  string slug = 2;
+  string name = 3;
+  string role = 4;
+  google.protobuf.Timestamp joined_at = 5;
+  google.protobuf.Timestamp last_active_at = 6;
+  bool deactivated = 7;
+  string plan = 8;
+}
+
+// LoginRow is one session: when it was opened and from what.
+message LoginRow {
+  google.protobuf.Timestamp at = 1;
+  string kind = 2;                             // web | mobile_refresh
+  string client = 3;                           // the user agent, shortened
+  bool live = 4;                               // not yet expired
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+message GetUserResponse {
+  UserRow user = 1;
+  repeated Membership memberships = 2;
+  repeated LoginRow logins = 3;                // newest first
+}
+
+// WorkspaceRow is one workspace as the directory lists it.
+message WorkspaceRow {
+  string id = 1;
+  string slug = 2;
+  string name = 3;
+  string kind = 4;                             // venture | agenture | service | environment
+  string plan = 5;
+  repeated string addons = 6;
+  int32 people = 7;                            // active human members
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp last_active_at = 9;// the latest of its members
+  string owner_email = 10;
+  int32 agent_runs_30d = 11;
+  double agent_cost_usd_30d = 12;              // what its agents cost us
+  int64 agent_billed_cents_month = 13;         // what it is charged this month
+}
+
+message SearchWorkspacesRequest {
+  string query = 1;                            // name, slug or a member's email
+  int32 limit = 2;
+  int32 offset = 3;
+  string sort = 4;                             // newest (default) | active | usage | name
+  string kind = 5;                             // empty is every kind
+  string plan = 6;                             // empty is every plan
+}
+message SearchWorkspacesResponse {
+  repeated WorkspaceRow workspaces = 1;
+  int32 total = 2;
+}
+
+// MemberRow is one person in a workspace.
+message MemberRow {
+  string user_id = 1;
+  string display_name = 2;
+  string email = 3;
+  string kind = 4;
+  string role = 5;
+  google.protobuf.Timestamp joined_at = 6;
+  google.protobuf.Timestamp last_login_at = 7;
+  google.protobuf.Timestamp last_active_at = 8;
+  bool deactivated = 9;
+}
+
+// Feature is one thing a workspace can use, and whether it can.
+message Feature {
+  string key = 1;                              // premium | agent | shield | books | blueprint | atlas
+  string label = 2;
+  bool on = 3;
+  google.protobuf.Timestamp since = 4;
+}
+
+message Subscription {
+  string product = 1;
+  string provider = 2;
+  string status = 3;
+  int32 seats = 4;
+  string period_end = 5;
+}
+
+// DailyCount is one day of activity. Counts only.
+message DailyCount {
+  string day = 1;                              // YYYY-MM-DD, UTC
+  int32 messages = 2;
+  int32 active_people = 3;                     // distinct people who posted
+  int32 agent_runs = 4;
+  double agent_cost_usd = 5;
+  int32 new_people = 6;                        // overview only
+  int32 new_workspaces = 7;                    // overview only
+}
+
+// AgentRunRow is one run without its ask: what an agent was asked is the
+// workspace's content and stays in the workspace.
+message AgentRunRow {
+  string id = 1;
+  string agent_name = 2;
+  string state = 3;
+  google.protobuf.Timestamp started_at = 4;
+  google.protobuf.Timestamp ended_at = 5;
+  int64 minutes = 6;
+  double cost_usd = 7;
+}
+
+message AgentUsage {
+  int32 runs_30d = 1;
+  int32 failed_30d = 2;
+  int64 minutes_30d = 3;
+  double cost_usd_30d = 4;
+  double cost_usd_month = 5;
+  int64 billed_cents_month = 6;
+  int64 cap_cents = 7;                         // 0 is no cap
+  repeated AgentRunRow recent = 8;
+  repeated string agents = 9;                  // the agents it has, by name
+}
+
+message WorkspaceCounts {
+  int32 treads = 1;
+  int64 messages = 2;
+  int32 files = 3;
+  int32 boards = 4;
+  int32 pages = 5;
+}
+
+message GetWorkspaceRequest {
+  string workspace_id = 1;                     // or
+  string slug = 2;
+}
+message GetWorkspaceResponse {
+  WorkspaceRow workspace = 1;
+  repeated MemberRow members = 2;
+  repeated Feature features = 3;
+  repeated Subscription subscriptions = 4;
+  AgentUsage agent_usage = 5;
+  repeated DailyCount days = 6;                // the last 30, oldest first
+  WorkspaceCounts counts = 7;
+}
+
+message GetOverviewRequest {}
+message GetOverviewResponse {
+  int32 people = 1;
+  int32 people_new_7d = 2;
+  int32 people_active_1d = 3;
+  int32 people_active_7d = 4;
+  int32 workspaces = 5;
+  int32 workspaces_new_7d = 6;
+  int32 premium = 7;
+  double agent_cost_usd_month = 8;
+  int32 agent_runs_30d = 9;
+  repeated DailyCount days = 10;               // the last 30, oldest first
+  bool caller_is_root = 11;                    // may add and remove super admins
+  repeated WorkspaceRow most_active = 12;      // the top few by last 7 days of messages
+}
+
+// SuperAdminRow is one person who may use this console.
+message SuperAdminRow {
+  string user_id = 1;
+  string email = 2;
+  string display_name = 3;
+  bool root = 4;                               // named in the deployment; not removable here
+  string added_by_email = 5;
+  google.protobuf.Timestamp added_at = 6;
+}
+
+message ListSuperAdminsRequest {}
+message ListSuperAdminsResponse {
+  repeated SuperAdminRow admins = 1;
+  bool caller_is_root = 2;
+}
+// AddSuperAdmin names an existing account. Root only.
+message AddSuperAdminRequest {
+  string email = 1;
+}
+message AddSuperAdminResponse {
+  repeated SuperAdminRow admins = 1;
+}
+// RemoveSuperAdmin removes one added in the console. Root only; a root is not removable.
+message RemoveSuperAdminRequest {
+  string user_id = 1;
+}
+message RemoveSuperAdminResponse {
+  repeated SuperAdminRow admins = 1;
+}
+
 service PlatformService {
   rpc ListAgentures(ListAgenturesRequest) returns (ListAgenturesResponse);
   rpc SetAllocation(SetAllocationRequest) returns (SetAllocationResponse);
@@ -166,4 +387,13 @@ service PlatformService {
   rpc ListMerges(ListMergesRequest) returns (ListMergesResponse);
   rpc DecideMerge(DecideMergeRequest) returns (DecideMergeResponse);
   rpc ListDropCandidates(ListDropCandidatesRequest) returns (ListDropCandidatesResponse);
+
+  rpc GetOverview(GetOverviewRequest) returns (GetOverviewResponse);
+  rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc SearchWorkspaces(SearchWorkspacesRequest) returns (SearchWorkspacesResponse);
+  rpc GetWorkspace(GetWorkspaceRequest) returns (GetWorkspaceResponse);
+  rpc ListSuperAdmins(ListSuperAdminsRequest) returns (ListSuperAdminsResponse);
+  rpc AddSuperAdmin(AddSuperAdminRequest) returns (AddSuperAdminResponse);
+  rpc RemoveSuperAdmin(RemoveSuperAdminRequest) returns (RemoveSuperAdminResponse);
 }
