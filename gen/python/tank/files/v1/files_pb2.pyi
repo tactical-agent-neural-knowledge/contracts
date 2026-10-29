@@ -104,12 +104,14 @@ class CompleteUploadResponse(_message.Message):
     def __init__(self, file: _Optional[_Union[File, _Mapping]] = ...) -> None: ...
 
 class GetDownloadUrlRequest(_message.Message):
-    __slots__ = ("file_id", "inline")
+    __slots__ = ("file_id", "inline", "page")
     FILE_ID_FIELD_NUMBER: _ClassVar[int]
     INLINE_FIELD_NUMBER: _ClassVar[int]
+    PAGE_FIELD_NUMBER: _ClassVar[int]
     file_id: str
     inline: bool
-    def __init__(self, file_id: _Optional[str] = ..., inline: bool = ...) -> None: ...
+    page: bool
+    def __init__(self, file_id: _Optional[str] = ..., inline: bool = ..., page: bool = ...) -> None: ...
 
 class GetDownloadUrlResponse(_message.Message):
     __slots__ = ("url", "expires_at")
