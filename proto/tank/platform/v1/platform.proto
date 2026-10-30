@@ -379,6 +379,127 @@ message RemoveSuperAdminResponse {
   repeated SuperAdminRow admins = 1;
 }
 
+// ---------------------------------------------------------------- Neural
+//
+// GetNeural is the console's view of TANK Neural: every Neuron the registry holds and
+// what answers each field, the web index the model reads from, and what the model is
+// being used for. Nothing in it is a workspace's content.
+
+// NeuronRow is one Neuron as the registry holds it: a LoRA adapter on the base model.
+message NeuronRow {
+  string name = 1;                             // code | environments | books | chat | ws-<workspace id>
+  string version = 2;                          // the training job that made it
+  string kind = 3;                             // specialist | workspace
+  string workspace_id = 4;                     // workspace Neurons only
+  string workspace_slug = 5;
+  string field = 6;                            // the sorter's field a specialist answers
+  string state = 7;                            // candidate | approved | retired
+  double eval_score = 8;                       // held-out improvement over the base; 0 when unscored
+  string eval_note = 9;
+  google.protobuf.Timestamp trained_at = 10;
+  google.protobuf.Timestamp approved_at = 11;
+  bool loaded = 12;                            // on the model server now
+  int32 answers_30d = 13;                      // /ai replies it gave
+  google.protobuf.Timestamp last_answered_at = 14;
+}
+
+// NeuronWorkspace is a workspace with the Private Neuron add-on and how close it is to
+// its first Neuron: the nightly trainer needs `floor` dialogs before it trains one.
+message NeuronWorkspace {
+  string workspace_id = 1;
+  string slug = 2;
+  string name = 3;
+  int32 dialogs = 4;
+  int32 floor = 5;
+  string neuron_state = 6;                     // none | candidate | approved
+}
+
+// FieldRow is one field the /ai sorter names and which Neuron answers it.
+message FieldRow {
+  string field = 1;
+  int32 questions_30d = 2;
+  string neuron = 3;                           // the approved specialist; "" when the base answers
+}
+
+message FeedRow {
+  string url = 1;
+  string kind = 2;                             // rss | sitemap
+  int64 found = 3;
+  google.protobuf.Timestamp last_fetched_at = 4;
+  string last_error = 5;
+}
+
+message HostRow {
+  string host = 1;
+  int64 fetched = 2;
+  int64 refused = 3;
+  int32 robots_status = 4;
+  int32 crawl_delay_ms = 5;
+}
+
+message SourceCount {
+  string source = 1;                           // wikipedia | news | asked | list
+  int64 pages = 2;
+  int64 pages_24h = 3;
+}
+
+// WebIndex is the crawl as it stands: what is held, what is queued, what is flowing.
+message WebIndex {
+  int64 pages = 1;
+  int32 hosts = 2;
+  int32 feeds = 3;
+  int64 queued = 4;
+  int64 queued_due = 5;                        // due now and not claimed
+  google.protobuf.Timestamp oldest_due = 6;
+  int64 pages_1h = 7;                          // fetched or re-read
+  int64 pages_24h = 8;
+  repeated SourceCount sources = 9;
+  repeated FeedRow feed_rows = 10;
+  repeated HostRow host_rows = 11;             // the busiest
+}
+
+message NeuralDay {
+  string day = 1;                              // YYYY-MM-DD, UTC
+  int32 answers = 2;                           // /ai replies
+  int32 people = 3;                            // distinct people asking
+  int32 lookups = 4;
+  int32 lookups_with_sources = 5;
+  int64 input_tokens = 6;
+  int64 output_tokens = 7;
+  double cost_usd = 8;
+  int64 pages_read = 9;                        // pages the index fetched or re-read
+  int64 agent_tokens = 10;                     // tokens agents spent on TANK Neural
+}
+
+message NeuralUsage {
+  int32 answers_30d = 1;
+  int32 people_30d = 2;
+  int32 lookups_30d = 3;
+  int32 lookups_with_sources_30d = 4;
+  int32 changed_30d = 5;                       // follow-ups that found the answer out of date
+  int64 lookup_ms_avg = 6;
+  int64 input_tokens_30d = 7;
+  int64 output_tokens_30d = 8;
+  double cost_usd_30d = 9;
+  int32 agent_runs_30d = 10;                   // runs that used TANK Neural
+  int64 agent_tokens_30d = 11;
+  int32 thumbs_up_30d = 12;
+  int32 thumbs_down_30d = 13;
+}
+
+message GetNeuralRequest {}
+message GetNeuralResponse {
+  string base_model = 1;                       // what the server calls the base
+  bool server_up = 2;
+  repeated string loaded = 3;                  // adapters the server holds now, by served name
+  repeated NeuronRow neurons = 4;
+  repeated NeuronWorkspace neuron_workspaces = 5;
+  repeated FieldRow fields = 6;
+  WebIndex web = 7;
+  NeuralUsage usage = 8;
+  repeated NeuralDay days = 9;                 // the last 30, oldest first
+}
+
 service PlatformService {
   rpc ListAgentures(ListAgenturesRequest) returns (ListAgenturesResponse);
   rpc SetAllocation(SetAllocationRequest) returns (SetAllocationResponse);
@@ -396,4 +517,6 @@ service PlatformService {
   rpc ListSuperAdmins(ListSuperAdminsRequest) returns (ListSuperAdminsResponse);
   rpc AddSuperAdmin(AddSuperAdminRequest) returns (AddSuperAdminResponse);
   rpc RemoveSuperAdmin(RemoveSuperAdminRequest) returns (RemoveSuperAdminResponse);
+
+  rpc GetNeural(GetNeuralRequest) returns (GetNeuralResponse);
 }

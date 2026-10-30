@@ -611,3 +611,205 @@ class RemoveSuperAdminResponse(_message.Message):
     ADMINS_FIELD_NUMBER: _ClassVar[int]
     admins: _containers.RepeatedCompositeFieldContainer[SuperAdminRow]
     def __init__(self, admins: _Optional[_Iterable[_Union[SuperAdminRow, _Mapping]]] = ...) -> None: ...
+
+class NeuronRow(_message.Message):
+    __slots__ = ("name", "version", "kind", "workspace_id", "workspace_slug", "field", "state", "eval_score", "eval_note", "trained_at", "approved_at", "loaded", "answers_30d", "last_answered_at")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_SLUG_FIELD_NUMBER: _ClassVar[int]
+    FIELD_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    EVAL_SCORE_FIELD_NUMBER: _ClassVar[int]
+    EVAL_NOTE_FIELD_NUMBER: _ClassVar[int]
+    TRAINED_AT_FIELD_NUMBER: _ClassVar[int]
+    APPROVED_AT_FIELD_NUMBER: _ClassVar[int]
+    LOADED_FIELD_NUMBER: _ClassVar[int]
+    ANSWERS_30D_FIELD_NUMBER: _ClassVar[int]
+    LAST_ANSWERED_AT_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    version: str
+    kind: str
+    workspace_id: str
+    workspace_slug: str
+    field: str
+    state: str
+    eval_score: float
+    eval_note: str
+    trained_at: _timestamp_pb2.Timestamp
+    approved_at: _timestamp_pb2.Timestamp
+    loaded: bool
+    answers_30d: int
+    last_answered_at: _timestamp_pb2.Timestamp
+    def __init__(self, name: _Optional[str] = ..., version: _Optional[str] = ..., kind: _Optional[str] = ..., workspace_id: _Optional[str] = ..., workspace_slug: _Optional[str] = ..., field: _Optional[str] = ..., state: _Optional[str] = ..., eval_score: _Optional[float] = ..., eval_note: _Optional[str] = ..., trained_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., approved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., loaded: bool = ..., answers_30d: _Optional[int] = ..., last_answered_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class NeuronWorkspace(_message.Message):
+    __slots__ = ("workspace_id", "slug", "name", "dialogs", "floor", "neuron_state")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    DIALOGS_FIELD_NUMBER: _ClassVar[int]
+    FLOOR_FIELD_NUMBER: _ClassVar[int]
+    NEURON_STATE_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    slug: str
+    name: str
+    dialogs: int
+    floor: int
+    neuron_state: str
+    def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., dialogs: _Optional[int] = ..., floor: _Optional[int] = ..., neuron_state: _Optional[str] = ...) -> None: ...
+
+class FieldRow(_message.Message):
+    __slots__ = ("field", "questions_30d", "neuron")
+    FIELD_FIELD_NUMBER: _ClassVar[int]
+    QUESTIONS_30D_FIELD_NUMBER: _ClassVar[int]
+    NEURON_FIELD_NUMBER: _ClassVar[int]
+    field: str
+    questions_30d: int
+    neuron: str
+    def __init__(self, field: _Optional[str] = ..., questions_30d: _Optional[int] = ..., neuron: _Optional[str] = ...) -> None: ...
+
+class FeedRow(_message.Message):
+    __slots__ = ("url", "kind", "found", "last_fetched_at", "last_error")
+    URL_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    FOUND_FIELD_NUMBER: _ClassVar[int]
+    LAST_FETCHED_AT_FIELD_NUMBER: _ClassVar[int]
+    LAST_ERROR_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    kind: str
+    found: int
+    last_fetched_at: _timestamp_pb2.Timestamp
+    last_error: str
+    def __init__(self, url: _Optional[str] = ..., kind: _Optional[str] = ..., found: _Optional[int] = ..., last_fetched_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_error: _Optional[str] = ...) -> None: ...
+
+class HostRow(_message.Message):
+    __slots__ = ("host", "fetched", "refused", "robots_status", "crawl_delay_ms")
+    HOST_FIELD_NUMBER: _ClassVar[int]
+    FETCHED_FIELD_NUMBER: _ClassVar[int]
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
+    ROBOTS_STATUS_FIELD_NUMBER: _ClassVar[int]
+    CRAWL_DELAY_MS_FIELD_NUMBER: _ClassVar[int]
+    host: str
+    fetched: int
+    refused: int
+    robots_status: int
+    crawl_delay_ms: int
+    def __init__(self, host: _Optional[str] = ..., fetched: _Optional[int] = ..., refused: _Optional[int] = ..., robots_status: _Optional[int] = ..., crawl_delay_ms: _Optional[int] = ...) -> None: ...
+
+class SourceCount(_message.Message):
+    __slots__ = ("source", "pages", "pages_24h")
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    PAGES_FIELD_NUMBER: _ClassVar[int]
+    PAGES_24H_FIELD_NUMBER: _ClassVar[int]
+    source: str
+    pages: int
+    pages_24h: int
+    def __init__(self, source: _Optional[str] = ..., pages: _Optional[int] = ..., pages_24h: _Optional[int] = ...) -> None: ...
+
+class WebIndex(_message.Message):
+    __slots__ = ("pages", "hosts", "feeds", "queued", "queued_due", "oldest_due", "pages_1h", "pages_24h", "sources", "feed_rows", "host_rows")
+    PAGES_FIELD_NUMBER: _ClassVar[int]
+    HOSTS_FIELD_NUMBER: _ClassVar[int]
+    FEEDS_FIELD_NUMBER: _ClassVar[int]
+    QUEUED_FIELD_NUMBER: _ClassVar[int]
+    QUEUED_DUE_FIELD_NUMBER: _ClassVar[int]
+    OLDEST_DUE_FIELD_NUMBER: _ClassVar[int]
+    PAGES_1H_FIELD_NUMBER: _ClassVar[int]
+    PAGES_24H_FIELD_NUMBER: _ClassVar[int]
+    SOURCES_FIELD_NUMBER: _ClassVar[int]
+    FEED_ROWS_FIELD_NUMBER: _ClassVar[int]
+    HOST_ROWS_FIELD_NUMBER: _ClassVar[int]
+    pages: int
+    hosts: int
+    feeds: int
+    queued: int
+    queued_due: int
+    oldest_due: _timestamp_pb2.Timestamp
+    pages_1h: int
+    pages_24h: int
+    sources: _containers.RepeatedCompositeFieldContainer[SourceCount]
+    feed_rows: _containers.RepeatedCompositeFieldContainer[FeedRow]
+    host_rows: _containers.RepeatedCompositeFieldContainer[HostRow]
+    def __init__(self, pages: _Optional[int] = ..., hosts: _Optional[int] = ..., feeds: _Optional[int] = ..., queued: _Optional[int] = ..., queued_due: _Optional[int] = ..., oldest_due: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., pages_1h: _Optional[int] = ..., pages_24h: _Optional[int] = ..., sources: _Optional[_Iterable[_Union[SourceCount, _Mapping]]] = ..., feed_rows: _Optional[_Iterable[_Union[FeedRow, _Mapping]]] = ..., host_rows: _Optional[_Iterable[_Union[HostRow, _Mapping]]] = ...) -> None: ...
+
+class NeuralDay(_message.Message):
+    __slots__ = ("day", "answers", "people", "lookups", "lookups_with_sources", "input_tokens", "output_tokens", "cost_usd", "pages_read", "agent_tokens")
+    DAY_FIELD_NUMBER: _ClassVar[int]
+    ANSWERS_FIELD_NUMBER: _ClassVar[int]
+    PEOPLE_FIELD_NUMBER: _ClassVar[int]
+    LOOKUPS_FIELD_NUMBER: _ClassVar[int]
+    LOOKUPS_WITH_SOURCES_FIELD_NUMBER: _ClassVar[int]
+    INPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    OUTPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    COST_USD_FIELD_NUMBER: _ClassVar[int]
+    PAGES_READ_FIELD_NUMBER: _ClassVar[int]
+    AGENT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    day: str
+    answers: int
+    people: int
+    lookups: int
+    lookups_with_sources: int
+    input_tokens: int
+    output_tokens: int
+    cost_usd: float
+    pages_read: int
+    agent_tokens: int
+    def __init__(self, day: _Optional[str] = ..., answers: _Optional[int] = ..., people: _Optional[int] = ..., lookups: _Optional[int] = ..., lookups_with_sources: _Optional[int] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., cost_usd: _Optional[float] = ..., pages_read: _Optional[int] = ..., agent_tokens: _Optional[int] = ...) -> None: ...
+
+class NeuralUsage(_message.Message):
+    __slots__ = ("answers_30d", "people_30d", "lookups_30d", "lookups_with_sources_30d", "changed_30d", "lookup_ms_avg", "input_tokens_30d", "output_tokens_30d", "cost_usd_30d", "agent_runs_30d", "agent_tokens_30d", "thumbs_up_30d", "thumbs_down_30d")
+    ANSWERS_30D_FIELD_NUMBER: _ClassVar[int]
+    PEOPLE_30D_FIELD_NUMBER: _ClassVar[int]
+    LOOKUPS_30D_FIELD_NUMBER: _ClassVar[int]
+    LOOKUPS_WITH_SOURCES_30D_FIELD_NUMBER: _ClassVar[int]
+    CHANGED_30D_FIELD_NUMBER: _ClassVar[int]
+    LOOKUP_MS_AVG_FIELD_NUMBER: _ClassVar[int]
+    INPUT_TOKENS_30D_FIELD_NUMBER: _ClassVar[int]
+    OUTPUT_TOKENS_30D_FIELD_NUMBER: _ClassVar[int]
+    COST_USD_30D_FIELD_NUMBER: _ClassVar[int]
+    AGENT_RUNS_30D_FIELD_NUMBER: _ClassVar[int]
+    AGENT_TOKENS_30D_FIELD_NUMBER: _ClassVar[int]
+    THUMBS_UP_30D_FIELD_NUMBER: _ClassVar[int]
+    THUMBS_DOWN_30D_FIELD_NUMBER: _ClassVar[int]
+    answers_30d: int
+    people_30d: int
+    lookups_30d: int
+    lookups_with_sources_30d: int
+    changed_30d: int
+    lookup_ms_avg: int
+    input_tokens_30d: int
+    output_tokens_30d: int
+    cost_usd_30d: float
+    agent_runs_30d: int
+    agent_tokens_30d: int
+    thumbs_up_30d: int
+    thumbs_down_30d: int
+    def __init__(self, answers_30d: _Optional[int] = ..., people_30d: _Optional[int] = ..., lookups_30d: _Optional[int] = ..., lookups_with_sources_30d: _Optional[int] = ..., changed_30d: _Optional[int] = ..., lookup_ms_avg: _Optional[int] = ..., input_tokens_30d: _Optional[int] = ..., output_tokens_30d: _Optional[int] = ..., cost_usd_30d: _Optional[float] = ..., agent_runs_30d: _Optional[int] = ..., agent_tokens_30d: _Optional[int] = ..., thumbs_up_30d: _Optional[int] = ..., thumbs_down_30d: _Optional[int] = ...) -> None: ...
+
+class GetNeuralRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class GetNeuralResponse(_message.Message):
+    __slots__ = ("base_model", "server_up", "loaded", "neurons", "neuron_workspaces", "fields", "web", "usage", "days")
+    BASE_MODEL_FIELD_NUMBER: _ClassVar[int]
+    SERVER_UP_FIELD_NUMBER: _ClassVar[int]
+    LOADED_FIELD_NUMBER: _ClassVar[int]
+    NEURONS_FIELD_NUMBER: _ClassVar[int]
+    NEURON_WORKSPACES_FIELD_NUMBER: _ClassVar[int]
+    FIELDS_FIELD_NUMBER: _ClassVar[int]
+    WEB_FIELD_NUMBER: _ClassVar[int]
+    USAGE_FIELD_NUMBER: _ClassVar[int]
+    DAYS_FIELD_NUMBER: _ClassVar[int]
+    base_model: str
+    server_up: bool
+    loaded: _containers.RepeatedScalarFieldContainer[str]
+    neurons: _containers.RepeatedCompositeFieldContainer[NeuronRow]
+    neuron_workspaces: _containers.RepeatedCompositeFieldContainer[NeuronWorkspace]
+    fields: _containers.RepeatedCompositeFieldContainer[FieldRow]
+    web: WebIndex
+    usage: NeuralUsage
+    days: _containers.RepeatedCompositeFieldContainer[NeuralDay]
+    def __init__(self, base_model: _Optional[str] = ..., server_up: bool = ..., loaded: _Optional[_Iterable[str]] = ..., neurons: _Optional[_Iterable[_Union[NeuronRow, _Mapping]]] = ..., neuron_workspaces: _Optional[_Iterable[_Union[NeuronWorkspace, _Mapping]]] = ..., fields: _Optional[_Iterable[_Union[FieldRow, _Mapping]]] = ..., web: _Optional[_Union[WebIndex, _Mapping]] = ..., usage: _Optional[_Union[NeuralUsage, _Mapping]] = ..., days: _Optional[_Iterable[_Union[NeuralDay, _Mapping]]] = ...) -> None: ...
