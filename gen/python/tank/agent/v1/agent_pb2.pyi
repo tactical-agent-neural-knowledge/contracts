@@ -442,7 +442,7 @@ class HourBucket(_message.Message):
     def __init__(self, hour: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., runs: _Optional[int] = ..., spend_usd: _Optional[float] = ..., neural_saved_usd: _Optional[float] = ...) -> None: ...
 
 class TreadMetrics(_message.Message):
-    __slots__ = ("spend_today_usd", "spend_month_usd", "runs_today", "runs_month", "success_rate_30d", "hours", "workspace_spend_today_usd", "workspace_spend_month_usd", "running_now", "avg_run_minutes_30d", "neural_saved_month_usd", "neural_measured")
+    __slots__ = ("spend_today_usd", "spend_month_usd", "runs_today", "runs_month", "success_rate_30d", "hours", "workspace_spend_today_usd", "workspace_spend_month_usd", "running_now", "avg_run_minutes_30d", "neural_saved_month_usd", "neural_measured", "people", "treads")
     SPEND_TODAY_USD_FIELD_NUMBER: _ClassVar[int]
     SPEND_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
     RUNS_TODAY_FIELD_NUMBER: _ClassVar[int]
@@ -455,6 +455,8 @@ class TreadMetrics(_message.Message):
     AVG_RUN_MINUTES_30D_FIELD_NUMBER: _ClassVar[int]
     NEURAL_SAVED_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
     NEURAL_MEASURED_FIELD_NUMBER: _ClassVar[int]
+    PEOPLE_FIELD_NUMBER: _ClassVar[int]
+    TREADS_FIELD_NUMBER: _ClassVar[int]
     spend_today_usd: float
     spend_month_usd: float
     runs_today: int
@@ -467,7 +469,43 @@ class TreadMetrics(_message.Message):
     avg_run_minutes_30d: float
     neural_saved_month_usd: float
     neural_measured: bool
-    def __init__(self, spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., runs_month: _Optional[int] = ..., success_rate_30d: _Optional[float] = ..., hours: _Optional[_Iterable[_Union[HourBucket, _Mapping]]] = ..., workspace_spend_today_usd: _Optional[float] = ..., workspace_spend_month_usd: _Optional[float] = ..., running_now: _Optional[int] = ..., avg_run_minutes_30d: _Optional[float] = ..., neural_saved_month_usd: _Optional[float] = ..., neural_measured: bool = ...) -> None: ...
+    people: _containers.RepeatedCompositeFieldContainer[SpendByPerson]
+    treads: _containers.RepeatedCompositeFieldContainer[SpendByTread]
+    def __init__(self, spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., runs_month: _Optional[int] = ..., success_rate_30d: _Optional[float] = ..., hours: _Optional[_Iterable[_Union[HourBucket, _Mapping]]] = ..., workspace_spend_today_usd: _Optional[float] = ..., workspace_spend_month_usd: _Optional[float] = ..., running_now: _Optional[int] = ..., avg_run_minutes_30d: _Optional[float] = ..., neural_saved_month_usd: _Optional[float] = ..., neural_measured: bool = ..., people: _Optional[_Iterable[_Union[SpendByPerson, _Mapping]]] = ..., treads: _Optional[_Iterable[_Union[SpendByTread, _Mapping]]] = ...) -> None: ...
+
+class SpendByPerson(_message.Message):
+    __slots__ = ("user_id", "display_name", "runs_month", "spend_month_usd", "runs_today", "spend_today_usd")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
+    RUNS_MONTH_FIELD_NUMBER: _ClassVar[int]
+    SPEND_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
+    RUNS_TODAY_FIELD_NUMBER: _ClassVar[int]
+    SPEND_TODAY_USD_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    display_name: str
+    runs_month: int
+    spend_month_usd: float
+    runs_today: int
+    spend_today_usd: float
+    def __init__(self, user_id: _Optional[str] = ..., display_name: _Optional[str] = ..., runs_month: _Optional[int] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., spend_today_usd: _Optional[float] = ...) -> None: ...
+
+class SpendByTread(_message.Message):
+    __slots__ = ("channel_id", "name", "runs_month", "spend_month_usd", "runs_today", "spend_today_usd", "people")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    RUNS_MONTH_FIELD_NUMBER: _ClassVar[int]
+    SPEND_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
+    RUNS_TODAY_FIELD_NUMBER: _ClassVar[int]
+    SPEND_TODAY_USD_FIELD_NUMBER: _ClassVar[int]
+    PEOPLE_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    name: str
+    runs_month: int
+    spend_month_usd: float
+    runs_today: int
+    spend_today_usd: float
+    people: _containers.RepeatedCompositeFieldContainer[SpendByPerson]
+    def __init__(self, channel_id: _Optional[str] = ..., name: _Optional[str] = ..., runs_month: _Optional[int] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., spend_today_usd: _Optional[float] = ..., people: _Optional[_Iterable[_Union[SpendByPerson, _Mapping]]] = ...) -> None: ...
 
 class GetTreadSwitchboardRequest(_message.Message):
     __slots__ = ("channel_id",)

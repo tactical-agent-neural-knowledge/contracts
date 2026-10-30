@@ -319,6 +319,33 @@ message TreadMetrics {
   // Whether any of this month's runs had a baseline to compare against. False reads
   // "measuring", never zero saved: after a model change nothing is comparable for a while.
   bool neural_measured = 12;
+  // Who asked for this Tread's runs this month, most spend first.
+  repeated SpendByPerson people = 13;
+  // Every Tread in the workspace with a run this month, most spend first, each with the
+  // people who asked for its runs. A member sees the Treads they belong to and the
+  // public ones; a workspace admin sees them all. The workspace totals above count
+  // every Tread either way.
+  repeated SpendByTread treads = 14;
+}
+// What one person's asks cost: the runs they requested, this month and today. Dollars
+// are marked up like everything else on the switchboard.
+message SpendByPerson {
+  string user_id = 1;
+  string display_name = 2;
+  int32 runs_month = 3;
+  double spend_month_usd = 4;
+  int32 runs_today = 5;
+  double spend_today_usd = 6;
+}
+// What one Tread's runs cost, and who asked for them.
+message SpendByTread {
+  string channel_id = 1;
+  string name = 2;
+  int32 runs_month = 3;
+  double spend_month_usd = 4;
+  int32 runs_today = 5;
+  double spend_today_usd = 6;
+  repeated SpendByPerson people = 7;
 }
 message GetTreadSwitchboardRequest { string channel_id = 1; }
 message GetTreadSwitchboardResponse {
