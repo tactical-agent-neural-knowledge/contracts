@@ -17,20 +17,22 @@ ROLE_USER: Role
 ROLE_ASSISTANT: Role
 
 class Conversation(_message.Message):
-    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned")
+    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
     PREVIEW_FIELD_NUMBER: _ClassVar[int]
     PINNED_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     created_at: _timestamp_pb2.Timestamp
     updated_at: _timestamp_pb2.Timestamp
     preview: str
     pinned: bool
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ...) -> None: ...
+    workspace_id: str
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ...) -> None: ...
 
 class Attachment(_message.Message):
     __slots__ = ("id", "name", "mime", "data", "size")
@@ -99,8 +101,10 @@ class GetConversationResponse(_message.Message):
     def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ..., messages: _Optional[_Iterable[_Union[Message, _Mapping]]] = ...) -> None: ...
 
 class CreateConversationRequest(_message.Message):
-    __slots__ = ()
-    def __init__(self) -> None: ...
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
 
 class CreateConversationResponse(_message.Message):
     __slots__ = ("conversation",)
@@ -139,18 +143,20 @@ class DeleteConversationResponse(_message.Message):
     def __init__(self) -> None: ...
 
 class SendMessageRequest(_message.Message):
-    __slots__ = ("conversation_id", "text", "attachments", "regenerate_message_id", "replace_message_id")
+    __slots__ = ("conversation_id", "text", "attachments", "regenerate_message_id", "replace_message_id", "workspace_id")
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
     ATTACHMENTS_FIELD_NUMBER: _ClassVar[int]
     REGENERATE_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     REPLACE_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     conversation_id: str
     text: str
     attachments: _containers.RepeatedCompositeFieldContainer[Attachment]
     regenerate_message_id: str
     replace_message_id: str
-    def __init__(self, conversation_id: _Optional[str] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., regenerate_message_id: _Optional[str] = ..., replace_message_id: _Optional[str] = ...) -> None: ...
+    workspace_id: str
+    def __init__(self, conversation_id: _Optional[str] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., regenerate_message_id: _Optional[str] = ..., replace_message_id: _Optional[str] = ..., workspace_id: _Optional[str] = ...) -> None: ...
 
 class SendMessageResponse(_message.Message):
     __slots__ = ("started", "delta", "done", "title", "warming")

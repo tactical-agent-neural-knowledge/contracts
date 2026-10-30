@@ -18,6 +18,10 @@ message Conversation {
   // The first words of the first message, for the list when there is no title yet.
   string preview = 5;
   bool pinned = 6;
+  // The workspace this conversation acts in, or empty for a personal one. In a
+  // workspace, the person's own Neuron for it and its Vault join the answer; the
+  // person must be a member, and a conversation keeps its workspace for life.
+  string workspace_id = 7;
 }
 
 // An attachment a person sends with a message: an image the model can see or a text file
@@ -70,7 +74,10 @@ message GetConversationResponse {
   repeated Message messages = 2;
 }
 
-message CreateConversationRequest {}
+message CreateConversationRequest {
+  // Empty for a personal conversation (see Conversation.workspace_id).
+  string workspace_id = 1;
+}
 message CreateConversationResponse {
   Conversation conversation = 1;
 }
@@ -104,6 +111,9 @@ message SendMessageRequest {
   string regenerate_message_id = 4;
   // Edit and resend: this user message and everything after it are replaced by text.
   string replace_message_id = 5;
+  // For a message that creates the conversation (empty conversation_id): the
+  // workspace it acts in, or empty for a personal one. Ignored otherwise.
+  string workspace_id = 6;
 }
 message SendMessageResponse {
   oneof event {
