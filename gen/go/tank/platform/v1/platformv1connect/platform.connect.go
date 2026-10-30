@@ -76,6 +76,9 @@ const (
 	// PlatformServiceRemoveSuperAdminProcedure is the fully-qualified name of the PlatformService's
 	// RemoveSuperAdmin RPC.
 	PlatformServiceRemoveSuperAdminProcedure = "/tank.platform.v1.PlatformService/RemoveSuperAdmin"
+	// PlatformServiceGetNeuralProcedure is the fully-qualified name of the PlatformService's GetNeural
+	// RPC.
+	PlatformServiceGetNeuralProcedure = "/tank.platform.v1.PlatformService/GetNeural"
 )
 
 // PlatformServiceClient is a client for the tank.platform.v1.PlatformService service.
@@ -95,6 +98,7 @@ type PlatformServiceClient interface {
 	ListSuperAdmins(context.Context, *connect.Request[v1.ListSuperAdminsRequest]) (*connect.Response[v1.ListSuperAdminsResponse], error)
 	AddSuperAdmin(context.Context, *connect.Request[v1.AddSuperAdminRequest]) (*connect.Response[v1.AddSuperAdminResponse], error)
 	RemoveSuperAdmin(context.Context, *connect.Request[v1.RemoveSuperAdminRequest]) (*connect.Response[v1.RemoveSuperAdminResponse], error)
+	GetNeural(context.Context, *connect.Request[v1.GetNeuralRequest]) (*connect.Response[v1.GetNeuralResponse], error)
 }
 
 // NewPlatformServiceClient constructs a client for the tank.platform.v1.PlatformService service. By
@@ -198,6 +202,12 @@ func NewPlatformServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(platformServiceMethods.ByName("RemoveSuperAdmin")),
 			connect.WithClientOptions(opts...),
 		),
+		getNeural: connect.NewClient[v1.GetNeuralRequest, v1.GetNeuralResponse](
+			httpClient,
+			baseURL+PlatformServiceGetNeuralProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("GetNeural")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -218,6 +228,7 @@ type platformServiceClient struct {
 	listSuperAdmins    *connect.Client[v1.ListSuperAdminsRequest, v1.ListSuperAdminsResponse]
 	addSuperAdmin      *connect.Client[v1.AddSuperAdminRequest, v1.AddSuperAdminResponse]
 	removeSuperAdmin   *connect.Client[v1.RemoveSuperAdminRequest, v1.RemoveSuperAdminResponse]
+	getNeural          *connect.Client[v1.GetNeuralRequest, v1.GetNeuralResponse]
 }
 
 // ListAgentures calls tank.platform.v1.PlatformService.ListAgentures.
@@ -295,6 +306,11 @@ func (c *platformServiceClient) RemoveSuperAdmin(ctx context.Context, req *conne
 	return c.removeSuperAdmin.CallUnary(ctx, req)
 }
 
+// GetNeural calls tank.platform.v1.PlatformService.GetNeural.
+func (c *platformServiceClient) GetNeural(ctx context.Context, req *connect.Request[v1.GetNeuralRequest]) (*connect.Response[v1.GetNeuralResponse], error) {
+	return c.getNeural.CallUnary(ctx, req)
+}
+
 // PlatformServiceHandler is an implementation of the tank.platform.v1.PlatformService service.
 type PlatformServiceHandler interface {
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
@@ -312,6 +328,7 @@ type PlatformServiceHandler interface {
 	ListSuperAdmins(context.Context, *connect.Request[v1.ListSuperAdminsRequest]) (*connect.Response[v1.ListSuperAdminsResponse], error)
 	AddSuperAdmin(context.Context, *connect.Request[v1.AddSuperAdminRequest]) (*connect.Response[v1.AddSuperAdminResponse], error)
 	RemoveSuperAdmin(context.Context, *connect.Request[v1.RemoveSuperAdminRequest]) (*connect.Response[v1.RemoveSuperAdminResponse], error)
+	GetNeural(context.Context, *connect.Request[v1.GetNeuralRequest]) (*connect.Response[v1.GetNeuralResponse], error)
 }
 
 // NewPlatformServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -411,6 +428,12 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 		connect.WithSchema(platformServiceMethods.ByName("RemoveSuperAdmin")),
 		connect.WithHandlerOptions(opts...),
 	)
+	platformServiceGetNeuralHandler := connect.NewUnaryHandler(
+		PlatformServiceGetNeuralProcedure,
+		svc.GetNeural,
+		connect.WithSchema(platformServiceMethods.ByName("GetNeural")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.platform.v1.PlatformService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PlatformServiceListAgenturesProcedure:
@@ -443,6 +466,8 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 			platformServiceAddSuperAdminHandler.ServeHTTP(w, r)
 		case PlatformServiceRemoveSuperAdminProcedure:
 			platformServiceRemoveSuperAdminHandler.ServeHTTP(w, r)
+		case PlatformServiceGetNeuralProcedure:
+			platformServiceGetNeuralHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -510,4 +535,8 @@ func (UnimplementedPlatformServiceHandler) AddSuperAdmin(context.Context, *conne
 
 func (UnimplementedPlatformServiceHandler) RemoveSuperAdmin(context.Context, *connect.Request[v1.RemoveSuperAdminRequest]) (*connect.Response[v1.RemoveSuperAdminResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.RemoveSuperAdmin is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) GetNeural(context.Context, *connect.Request[v1.GetNeuralRequest]) (*connect.Response[v1.GetNeuralResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.GetNeural is not implemented"))
 }
