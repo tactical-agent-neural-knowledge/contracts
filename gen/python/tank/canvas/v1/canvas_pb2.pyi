@@ -245,6 +245,22 @@ class GetCanvasResponse(_message.Message):
     canvas: Canvas
     def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ...) -> None: ...
 
+class CreateCanvasFromFileRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "file_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    file_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., file_id: _Optional[str] = ...) -> None: ...
+
+class CreateCanvasFromFileResponse(_message.Message):
+    __slots__ = ("canvas",)
+    CANVAS_FIELD_NUMBER: _ClassVar[int]
+    canvas: Canvas
+    def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ...) -> None: ...
+
 class CreateCanvasRequest(_message.Message):
     __slots__ = ("workspace_id", "channel_id", "title", "icon", "blocks", "sources", "parent_id", "template", "invites")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
