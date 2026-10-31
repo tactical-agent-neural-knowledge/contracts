@@ -35,6 +35,8 @@ const (
 const (
 	// AgentServiceStartRunProcedure is the fully-qualified name of the AgentService's StartRun RPC.
 	AgentServiceStartRunProcedure = "/tank.agent.v1.AgentService/StartRun"
+	// AgentServiceOpenThreadProcedure is the fully-qualified name of the AgentService's OpenThread RPC.
+	AgentServiceOpenThreadProcedure = "/tank.agent.v1.AgentService/OpenThread"
 	// AgentServiceGetTreadPlanProcedure is the fully-qualified name of the AgentService's GetTreadPlan
 	// RPC.
 	AgentServiceGetTreadPlanProcedure = "/tank.agent.v1.AgentService/GetTreadPlan"
@@ -104,6 +106,7 @@ const (
 // AgentServiceClient is a client for the tank.agent.v1.AgentService service.
 type AgentServiceClient interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
+	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error)
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
 	Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error)
@@ -156,6 +159,12 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			httpClient,
 			baseURL+AgentServiceStartRunProcedure,
 			connect.WithSchema(agentServiceMethods.ByName("StartRun")),
+			connect.WithClientOptions(opts...),
+		),
+		openThread: connect.NewClient[v1.OpenThreadRequest, v1.OpenThreadResponse](
+			httpClient,
+			baseURL+AgentServiceOpenThreadProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("OpenThread")),
 			connect.WithClientOptions(opts...),
 		),
 		getTreadPlan: connect.NewClient[v1.GetTreadPlanRequest, v1.GetTreadPlanResponse](
@@ -308,6 +317,7 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 // agentServiceClient implements AgentServiceClient.
 type agentServiceClient struct {
 	startRun                 *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	openThread               *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
 	getTreadPlan             *connect.Client[v1.GetTreadPlanRequest, v1.GetTreadPlanResponse]
 	stopRun                  *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
 	heartbeat                *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
@@ -337,6 +347,11 @@ type agentServiceClient struct {
 // StartRun calls tank.agent.v1.AgentService.StartRun.
 func (c *agentServiceClient) StartRun(ctx context.Context, req *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error) {
 	return c.startRun.CallUnary(ctx, req)
+}
+
+// OpenThread calls tank.agent.v1.AgentService.OpenThread.
+func (c *agentServiceClient) OpenThread(ctx context.Context, req *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error) {
+	return c.openThread.CallUnary(ctx, req)
 }
 
 // GetTreadPlan calls tank.agent.v1.AgentService.GetTreadPlan.
@@ -462,6 +477,7 @@ func (c *agentServiceClient) ListWorkspaceDeployments(ctx context.Context, req *
 // AgentServiceHandler is an implementation of the tank.agent.v1.AgentService service.
 type AgentServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
+	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error)
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
 	Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error)
@@ -510,6 +526,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		AgentServiceStartRunProcedure,
 		svc.StartRun,
 		connect.WithSchema(agentServiceMethods.ByName("StartRun")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceOpenThreadHandler := connect.NewUnaryHandler(
+		AgentServiceOpenThreadProcedure,
+		svc.OpenThread,
+		connect.WithSchema(agentServiceMethods.ByName("OpenThread")),
 		connect.WithHandlerOptions(opts...),
 	)
 	agentServiceGetTreadPlanHandler := connect.NewUnaryHandler(
@@ -660,6 +682,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		switch r.URL.Path {
 		case AgentServiceStartRunProcedure:
 			agentServiceStartRunHandler.ServeHTTP(w, r)
+		case AgentServiceOpenThreadProcedure:
+			agentServiceOpenThreadHandler.ServeHTTP(w, r)
 		case AgentServiceGetTreadPlanProcedure:
 			agentServiceGetTreadPlanHandler.ServeHTTP(w, r)
 		case AgentServiceStopRunProcedure:
@@ -719,6 +743,10 @@ type UnimplementedAgentServiceHandler struct{}
 
 func (UnimplementedAgentServiceHandler) StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.StartRun is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.OpenThread is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error) {
