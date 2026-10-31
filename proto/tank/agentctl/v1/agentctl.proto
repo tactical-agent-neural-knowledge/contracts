@@ -171,6 +171,9 @@ message TeamContext {
   bool paused = 9;
   // Set near the daily cap: finish, do not start.
   string cap_note = 10;
+  // What the team learned, newest last, from its hand-offs' reports and what members
+  // chose to remember.
+  repeated string memory = 11;
 }
 
 // Claims: a run holds files, tables, routes or Treads for its duration, so two
@@ -1053,6 +1056,8 @@ message StartRunRequest {
   // Run without reading or writing the repository's Neural Knowledge. For measuring
   // the layer: the same task with and without it.
   bool skip_neural_knowledge = 9;
+  // For a run the platform starts on a team's behalf (a shift): the envelope in dollars.
+  double envelope_usd = 10;
 }
 message StartRunResponse {
   tank.agent.v1.Run run = 1;
