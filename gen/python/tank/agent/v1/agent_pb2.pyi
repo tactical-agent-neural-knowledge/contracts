@@ -161,6 +161,40 @@ class OpenThreadResponse(_message.Message):
     thread_root_id: str
     def __init__(self, thread_root_id: _Optional[str] = ...) -> None: ...
 
+class WorkspaceAgentSettings(_message.Message):
+    __slots__ = ("org_access_everywhere",)
+    ORG_ACCESS_EVERYWHERE_FIELD_NUMBER: _ClassVar[int]
+    org_access_everywhere: bool
+    def __init__(self, org_access_everywhere: bool = ...) -> None: ...
+
+class GetWorkspaceAgentSettingsRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class GetWorkspaceAgentSettingsResponse(_message.Message):
+    __slots__ = ("settings", "can_manage")
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
+    settings: WorkspaceAgentSettings
+    can_manage: bool
+    def __init__(self, settings: _Optional[_Union[WorkspaceAgentSettings, _Mapping]] = ..., can_manage: bool = ...) -> None: ...
+
+class SetWorkspaceAgentSettingsRequest(_message.Message):
+    __slots__ = ("workspace_id", "settings")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    settings: WorkspaceAgentSettings
+    def __init__(self, workspace_id: _Optional[str] = ..., settings: _Optional[_Union[WorkspaceAgentSettings, _Mapping]] = ...) -> None: ...
+
+class SetWorkspaceAgentSettingsResponse(_message.Message):
+    __slots__ = ("settings",)
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    settings: WorkspaceAgentSettings
+    def __init__(self, settings: _Optional[_Union[WorkspaceAgentSettings, _Mapping]] = ...) -> None: ...
+
 class StopRunRequest(_message.Message):
     __slots__ = ("run_id", "reason")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]

@@ -37,6 +37,12 @@ const (
 	AgentServiceStartRunProcedure = "/tank.agent.v1.AgentService/StartRun"
 	// AgentServiceOpenThreadProcedure is the fully-qualified name of the AgentService's OpenThread RPC.
 	AgentServiceOpenThreadProcedure = "/tank.agent.v1.AgentService/OpenThread"
+	// AgentServiceGetWorkspaceAgentSettingsProcedure is the fully-qualified name of the AgentService's
+	// GetWorkspaceAgentSettings RPC.
+	AgentServiceGetWorkspaceAgentSettingsProcedure = "/tank.agent.v1.AgentService/GetWorkspaceAgentSettings"
+	// AgentServiceSetWorkspaceAgentSettingsProcedure is the fully-qualified name of the AgentService's
+	// SetWorkspaceAgentSettings RPC.
+	AgentServiceSetWorkspaceAgentSettingsProcedure = "/tank.agent.v1.AgentService/SetWorkspaceAgentSettings"
 	// AgentServiceGetTreadPlanProcedure is the fully-qualified name of the AgentService's GetTreadPlan
 	// RPC.
 	AgentServiceGetTreadPlanProcedure = "/tank.agent.v1.AgentService/GetTreadPlan"
@@ -107,6 +113,8 @@ const (
 type AgentServiceClient interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
+	GetWorkspaceAgentSettings(context.Context, *connect.Request[v1.GetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.GetWorkspaceAgentSettingsResponse], error)
+	SetWorkspaceAgentSettings(context.Context, *connect.Request[v1.SetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.SetWorkspaceAgentSettingsResponse], error)
 	GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error)
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
 	Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error)
@@ -165,6 +173,18 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			httpClient,
 			baseURL+AgentServiceOpenThreadProcedure,
 			connect.WithSchema(agentServiceMethods.ByName("OpenThread")),
+			connect.WithClientOptions(opts...),
+		),
+		getWorkspaceAgentSettings: connect.NewClient[v1.GetWorkspaceAgentSettingsRequest, v1.GetWorkspaceAgentSettingsResponse](
+			httpClient,
+			baseURL+AgentServiceGetWorkspaceAgentSettingsProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("GetWorkspaceAgentSettings")),
+			connect.WithClientOptions(opts...),
+		),
+		setWorkspaceAgentSettings: connect.NewClient[v1.SetWorkspaceAgentSettingsRequest, v1.SetWorkspaceAgentSettingsResponse](
+			httpClient,
+			baseURL+AgentServiceSetWorkspaceAgentSettingsProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("SetWorkspaceAgentSettings")),
 			connect.WithClientOptions(opts...),
 		),
 		getTreadPlan: connect.NewClient[v1.GetTreadPlanRequest, v1.GetTreadPlanResponse](
@@ -316,32 +336,34 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 
 // agentServiceClient implements AgentServiceClient.
 type agentServiceClient struct {
-	startRun                 *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
-	openThread               *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
-	getTreadPlan             *connect.Client[v1.GetTreadPlanRequest, v1.GetTreadPlanResponse]
-	stopRun                  *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
-	heartbeat                *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
-	setStatus                *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
-	setProductBrand          *connect.Client[v1.SetProductBrandRequest, v1.SetProductBrandResponse]
-	setProductLanding        *connect.Client[v1.SetProductLandingRequest, v1.SetProductLandingResponse]
-	recordProductFinding     *connect.Client[v1.RecordProductFindingRequest, v1.RecordProductFindingResponse]
-	getRun                   *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
-	listRuns                 *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
-	listAgents               *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
-	getRepoConnection        *connect.Client[v1.GetRepoConnectionRequest, v1.GetRepoConnectionResponse]
-	startGitHubConnect       *connect.Client[v1.StartGitHubConnectRequest, v1.StartGitHubConnectResponse]
-	bindRepo                 *connect.Client[v1.BindRepoRequest, v1.BindRepoResponse]
-	unbindRepo               *connect.Client[v1.UnbindRepoRequest, v1.UnbindRepoResponse]
-	setRepoAccess            *connect.Client[v1.SetRepoAccessRequest, v1.SetRepoAccessResponse]
-	createTreadRepo          *connect.Client[v1.CreateTreadRepoRequest, v1.CreateTreadRepoResponse]
-	setTreadDeployment       *connect.Client[v1.SetTreadDeploymentRequest, v1.SetTreadDeploymentResponse]
-	setUpRepoPreviews        *connect.Client[v1.SetUpRepoPreviewsRequest, v1.SetUpRepoPreviewsResponse]
-	listRepoPreviewSetups    *connect.Client[v1.ListRepoPreviewSetupsRequest, v1.ListRepoPreviewSetupsResponse]
-	getTreadSwitchboard      *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
-	setTreadSettings         *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
-	getWorkspaceSpend        *connect.Client[v1.GetWorkspaceSpendRequest, v1.GetWorkspaceSpendResponse]
-	listTreadSecurity        *connect.Client[v1.ListTreadSecurityRequest, v1.ListTreadSecurityResponse]
-	listWorkspaceDeployments *connect.Client[v1.ListWorkspaceDeploymentsRequest, v1.ListWorkspaceDeploymentsResponse]
+	startRun                  *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	openThread                *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
+	getWorkspaceAgentSettings *connect.Client[v1.GetWorkspaceAgentSettingsRequest, v1.GetWorkspaceAgentSettingsResponse]
+	setWorkspaceAgentSettings *connect.Client[v1.SetWorkspaceAgentSettingsRequest, v1.SetWorkspaceAgentSettingsResponse]
+	getTreadPlan              *connect.Client[v1.GetTreadPlanRequest, v1.GetTreadPlanResponse]
+	stopRun                   *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
+	heartbeat                 *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
+	setStatus                 *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
+	setProductBrand           *connect.Client[v1.SetProductBrandRequest, v1.SetProductBrandResponse]
+	setProductLanding         *connect.Client[v1.SetProductLandingRequest, v1.SetProductLandingResponse]
+	recordProductFinding      *connect.Client[v1.RecordProductFindingRequest, v1.RecordProductFindingResponse]
+	getRun                    *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	listRuns                  *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
+	listAgents                *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
+	getRepoConnection         *connect.Client[v1.GetRepoConnectionRequest, v1.GetRepoConnectionResponse]
+	startGitHubConnect        *connect.Client[v1.StartGitHubConnectRequest, v1.StartGitHubConnectResponse]
+	bindRepo                  *connect.Client[v1.BindRepoRequest, v1.BindRepoResponse]
+	unbindRepo                *connect.Client[v1.UnbindRepoRequest, v1.UnbindRepoResponse]
+	setRepoAccess             *connect.Client[v1.SetRepoAccessRequest, v1.SetRepoAccessResponse]
+	createTreadRepo           *connect.Client[v1.CreateTreadRepoRequest, v1.CreateTreadRepoResponse]
+	setTreadDeployment        *connect.Client[v1.SetTreadDeploymentRequest, v1.SetTreadDeploymentResponse]
+	setUpRepoPreviews         *connect.Client[v1.SetUpRepoPreviewsRequest, v1.SetUpRepoPreviewsResponse]
+	listRepoPreviewSetups     *connect.Client[v1.ListRepoPreviewSetupsRequest, v1.ListRepoPreviewSetupsResponse]
+	getTreadSwitchboard       *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
+	setTreadSettings          *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
+	getWorkspaceSpend         *connect.Client[v1.GetWorkspaceSpendRequest, v1.GetWorkspaceSpendResponse]
+	listTreadSecurity         *connect.Client[v1.ListTreadSecurityRequest, v1.ListTreadSecurityResponse]
+	listWorkspaceDeployments  *connect.Client[v1.ListWorkspaceDeploymentsRequest, v1.ListWorkspaceDeploymentsResponse]
 }
 
 // StartRun calls tank.agent.v1.AgentService.StartRun.
@@ -352,6 +374,16 @@ func (c *agentServiceClient) StartRun(ctx context.Context, req *connect.Request[
 // OpenThread calls tank.agent.v1.AgentService.OpenThread.
 func (c *agentServiceClient) OpenThread(ctx context.Context, req *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error) {
 	return c.openThread.CallUnary(ctx, req)
+}
+
+// GetWorkspaceAgentSettings calls tank.agent.v1.AgentService.GetWorkspaceAgentSettings.
+func (c *agentServiceClient) GetWorkspaceAgentSettings(ctx context.Context, req *connect.Request[v1.GetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.GetWorkspaceAgentSettingsResponse], error) {
+	return c.getWorkspaceAgentSettings.CallUnary(ctx, req)
+}
+
+// SetWorkspaceAgentSettings calls tank.agent.v1.AgentService.SetWorkspaceAgentSettings.
+func (c *agentServiceClient) SetWorkspaceAgentSettings(ctx context.Context, req *connect.Request[v1.SetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.SetWorkspaceAgentSettingsResponse], error) {
+	return c.setWorkspaceAgentSettings.CallUnary(ctx, req)
 }
 
 // GetTreadPlan calls tank.agent.v1.AgentService.GetTreadPlan.
@@ -478,6 +510,8 @@ func (c *agentServiceClient) ListWorkspaceDeployments(ctx context.Context, req *
 type AgentServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
+	GetWorkspaceAgentSettings(context.Context, *connect.Request[v1.GetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.GetWorkspaceAgentSettingsResponse], error)
+	SetWorkspaceAgentSettings(context.Context, *connect.Request[v1.SetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.SetWorkspaceAgentSettingsResponse], error)
 	GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error)
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
 	Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error)
@@ -532,6 +566,18 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		AgentServiceOpenThreadProcedure,
 		svc.OpenThread,
 		connect.WithSchema(agentServiceMethods.ByName("OpenThread")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceGetWorkspaceAgentSettingsHandler := connect.NewUnaryHandler(
+		AgentServiceGetWorkspaceAgentSettingsProcedure,
+		svc.GetWorkspaceAgentSettings,
+		connect.WithSchema(agentServiceMethods.ByName("GetWorkspaceAgentSettings")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceSetWorkspaceAgentSettingsHandler := connect.NewUnaryHandler(
+		AgentServiceSetWorkspaceAgentSettingsProcedure,
+		svc.SetWorkspaceAgentSettings,
+		connect.WithSchema(agentServiceMethods.ByName("SetWorkspaceAgentSettings")),
 		connect.WithHandlerOptions(opts...),
 	)
 	agentServiceGetTreadPlanHandler := connect.NewUnaryHandler(
@@ -684,6 +730,10 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceStartRunHandler.ServeHTTP(w, r)
 		case AgentServiceOpenThreadProcedure:
 			agentServiceOpenThreadHandler.ServeHTTP(w, r)
+		case AgentServiceGetWorkspaceAgentSettingsProcedure:
+			agentServiceGetWorkspaceAgentSettingsHandler.ServeHTTP(w, r)
+		case AgentServiceSetWorkspaceAgentSettingsProcedure:
+			agentServiceSetWorkspaceAgentSettingsHandler.ServeHTTP(w, r)
 		case AgentServiceGetTreadPlanProcedure:
 			agentServiceGetTreadPlanHandler.ServeHTTP(w, r)
 		case AgentServiceStopRunProcedure:
@@ -747,6 +797,14 @@ func (UnimplementedAgentServiceHandler) StartRun(context.Context, *connect.Reque
 
 func (UnimplementedAgentServiceHandler) OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.OpenThread is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) GetWorkspaceAgentSettings(context.Context, *connect.Request[v1.GetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.GetWorkspaceAgentSettingsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.GetWorkspaceAgentSettings is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) SetWorkspaceAgentSettings(context.Context, *connect.Request[v1.SetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.SetWorkspaceAgentSettingsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetWorkspaceAgentSettings is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error) {
