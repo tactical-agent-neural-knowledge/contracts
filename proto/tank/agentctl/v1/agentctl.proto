@@ -767,6 +767,12 @@ message OpenPullRequestRequest {
   string body = 2;
   string head_sha = 3;
   bool draft = 4;
+  // A Tread works in more than one repository (Robby, 2026-10-31): the pull request
+  // may be opened in any repository the run may write to. Empty: the run's primary
+  // repository and branch. base_branch empty: that repository's default branch.
+  string repo = 5;         // owner/name
+  string branch = 6;       // the head branch the runner pushed there
+  string base_branch = 7;
 }
 message OpenPullRequestResponse {
   string pr_url = 1;

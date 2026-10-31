@@ -1244,16 +1244,22 @@ class ArrangeBoardResponse(_message.Message):
     def __init__(self, moved: _Optional[int] = ..., note: _Optional[str] = ..., conflict_ids: _Optional[_Iterable[str]] = ..., conflict_note: _Optional[str] = ...) -> None: ...
 
 class OpenPullRequestRequest(_message.Message):
-    __slots__ = ("title", "body", "head_sha", "draft")
+    __slots__ = ("title", "body", "head_sha", "draft", "repo", "branch", "base_branch")
     TITLE_FIELD_NUMBER: _ClassVar[int]
     BODY_FIELD_NUMBER: _ClassVar[int]
     HEAD_SHA_FIELD_NUMBER: _ClassVar[int]
     DRAFT_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    BRANCH_FIELD_NUMBER: _ClassVar[int]
+    BASE_BRANCH_FIELD_NUMBER: _ClassVar[int]
     title: str
     body: str
     head_sha: str
     draft: bool
-    def __init__(self, title: _Optional[str] = ..., body: _Optional[str] = ..., head_sha: _Optional[str] = ..., draft: bool = ...) -> None: ...
+    repo: str
+    branch: str
+    base_branch: str
+    def __init__(self, title: _Optional[str] = ..., body: _Optional[str] = ..., head_sha: _Optional[str] = ..., draft: bool = ..., repo: _Optional[str] = ..., branch: _Optional[str] = ..., base_branch: _Optional[str] = ...) -> None: ...
 
 class OpenPullRequestResponse(_message.Message):
     __slots__ = ("pr_url", "pr_number")
