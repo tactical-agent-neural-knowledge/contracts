@@ -75,7 +75,7 @@ class Member(_message.Message):
     def __init__(self, id: _Optional[str] = ..., agent_id: _Optional[str] = ..., principal_id: _Optional[str] = ..., seat: _Optional[_Union[Seat, str]] = ..., title: _Optional[str] = ..., handle: _Optional[str] = ..., prompt: _Optional[str] = ..., models: _Optional[_Iterable[str]] = ..., tools: _Optional[_Union[ToolPolicy, _Mapping]] = ..., delegate: bool = ..., delegate_to: _Optional[_Iterable[str]] = ..., triggers: _Optional[_Iterable[str]] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., enabled: bool = ..., spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., running_now: _Optional[int] = ...) -> None: ...
 
 class Team(_message.Message):
-    __slots__ = ("id", "workspace_id", "name", "handle", "purpose", "members", "channel_ids", "daily_cap_usd", "concurrent_cap", "envelope", "spend_today_usd", "spend_month_usd", "runs_today", "running_now", "created_at", "updated_at", "created_by")
+    __slots__ = ("id", "workspace_id", "name", "handle", "purpose", "members", "channel_ids", "daily_cap_usd", "concurrent_cap", "envelope", "spend_today_usd", "spend_month_usd", "runs_today", "running_now", "created_at", "updated_at", "created_by", "board_id", "paused", "claims", "slo")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -93,6 +93,10 @@ class Team(_message.Message):
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
     CREATED_BY_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    PAUSED_FIELD_NUMBER: _ClassVar[int]
+    CLAIMS_FIELD_NUMBER: _ClassVar[int]
+    SLO_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     name: str
@@ -110,7 +114,79 @@ class Team(_message.Message):
     created_at: _timestamp_pb2.Timestamp
     updated_at: _timestamp_pb2.Timestamp
     created_by: str
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., handle: _Optional[str] = ..., purpose: _Optional[str] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., channel_ids: _Optional[_Iterable[str]] = ..., daily_cap_usd: _Optional[float] = ..., concurrent_cap: _Optional[int] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., running_now: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_by: _Optional[str] = ...) -> None: ...
+    board_id: str
+    paused: bool
+    claims: _containers.RepeatedCompositeFieldContainer[Claim]
+    slo: TeamSlo
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., handle: _Optional[str] = ..., purpose: _Optional[str] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., channel_ids: _Optional[_Iterable[str]] = ..., daily_cap_usd: _Optional[float] = ..., concurrent_cap: _Optional[int] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., running_now: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_by: _Optional[str] = ..., board_id: _Optional[str] = ..., paused: bool = ..., claims: _Optional[_Iterable[_Union[Claim, _Mapping]]] = ..., slo: _Optional[_Union[TeamSlo, _Mapping]] = ...) -> None: ...
+
+class Claim(_message.Message):
+    __slots__ = ("kind", "key", "run_id", "title", "ask", "since")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    KEY_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    ASK_FIELD_NUMBER: _ClassVar[int]
+    SINCE_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    key: str
+    run_id: str
+    title: str
+    ask: str
+    since: _timestamp_pb2.Timestamp
+    def __init__(self, kind: _Optional[str] = ..., key: _Optional[str] = ..., run_id: _Optional[str] = ..., title: _Optional[str] = ..., ask: _Optional[str] = ..., since: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class TeamSlo(_message.Message):
+    __slots__ = ("first_result_minutes_p50", "run_minutes_p95", "finished_30d", "failed_30d", "stalled_now", "accepted_rate_30d", "near_cap")
+    FIRST_RESULT_MINUTES_P50_FIELD_NUMBER: _ClassVar[int]
+    RUN_MINUTES_P95_FIELD_NUMBER: _ClassVar[int]
+    FINISHED_30D_FIELD_NUMBER: _ClassVar[int]
+    FAILED_30D_FIELD_NUMBER: _ClassVar[int]
+    STALLED_NOW_FIELD_NUMBER: _ClassVar[int]
+    ACCEPTED_RATE_30D_FIELD_NUMBER: _ClassVar[int]
+    NEAR_CAP_FIELD_NUMBER: _ClassVar[int]
+    first_result_minutes_p50: float
+    run_minutes_p95: float
+    finished_30d: int
+    failed_30d: int
+    stalled_now: int
+    accepted_rate_30d: float
+    near_cap: bool
+    def __init__(self, first_result_minutes_p50: _Optional[float] = ..., run_minutes_p95: _Optional[float] = ..., finished_30d: _Optional[int] = ..., failed_30d: _Optional[int] = ..., stalled_now: _Optional[int] = ..., accepted_rate_30d: _Optional[float] = ..., near_cap: bool = ...) -> None: ...
+
+class SetTeamPauseRequest(_message.Message):
+    __slots__ = ("workspace_id", "team_id", "paused")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    TEAM_ID_FIELD_NUMBER: _ClassVar[int]
+    PAUSED_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    team_id: str
+    paused: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., team_id: _Optional[str] = ..., paused: bool = ...) -> None: ...
+
+class SetTeamPauseResponse(_message.Message):
+    __slots__ = ("team",)
+    TEAM_FIELD_NUMBER: _ClassVar[int]
+    team: Team
+    def __init__(self, team: _Optional[_Union[Team, _Mapping]] = ...) -> None: ...
+
+class StopTeamRequest(_message.Message):
+    __slots__ = ("workspace_id", "team_id", "reason")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    TEAM_ID_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    team_id: str
+    reason: str
+    def __init__(self, workspace_id: _Optional[str] = ..., team_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+
+class StopTeamResponse(_message.Message):
+    __slots__ = ("team", "stopped")
+    TEAM_FIELD_NUMBER: _ClassVar[int]
+    STOPPED_FIELD_NUMBER: _ClassVar[int]
+    team: Team
+    stopped: int
+    def __init__(self, team: _Optional[_Union[Team, _Mapping]] = ..., stopped: _Optional[int] = ...) -> None: ...
 
 class Template(_message.Message):
     __slots__ = ("key", "name", "summary", "team")

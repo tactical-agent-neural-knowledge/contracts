@@ -165,6 +165,51 @@ message TeamContext {
   // This run's own seat on the team.
   string member_id = 6;
   bool coordinator = 7;
+  // The team's formation board, which the run draws its lane and edges on.
+  string board_id = 8;
+  // Draining: make no new hand-off; finish what is in hand.
+  bool paused = 9;
+  // Set near the daily cap: finish, do not start.
+  string cap_note = 10;
+}
+
+// Claims: a run holds files, tables, routes or Treads for its duration, so two
+// members of a team never work the same thing at once. Held means another run has
+// it; the caller waits for it to end or works on something else.
+message ClaimItem {
+  string kind = 1;  // path | table | route | tread
+  string key = 2;
+}
+message HeldClaim {
+  ClaimItem item = 1;
+  string run_id = 2;
+  string title = 3;   // who holds it
+  string ask = 4;     // what for
+  google.protobuf.Timestamp since = 5;
+}
+message ClaimRequest {
+  repeated ClaimItem items = 1;
+  string note = 2;  // what for, shown to whoever is refused
+}
+message ClaimResponse {
+  repeated ClaimItem granted = 1;
+  repeated HeldClaim held = 2;
+}
+message ReleaseClaimsRequest {
+  repeated ClaimItem items = 1;  // empty = everything this run holds
+}
+message ReleaseClaimsResponse {}
+// A single file about to be edited: held by somebody else, or claimed for this run
+// now if it was free.
+message CheckClaimRequest { ClaimItem item = 1; }
+message CheckClaimResponse {
+  bool ok = 1;
+  HeldClaim held = 2;
+}
+message ListClaimsRequest {}
+message ListClaimsResponse {
+  repeated HeldClaim mine = 1;
+  repeated HeldClaim others = 2;  // held by other runs of the team
 }
 message TeamMember {
   string member_id = 1;
@@ -911,6 +956,10 @@ service RunnerService {
   rpc Delegate(DelegateRequest) returns (DelegateResponse);
   rpc AcceptHandoff(AcceptHandoffRequest) returns (AcceptHandoffResponse);
   rpc ListHandoffs(ListHandoffsRequest) returns (ListHandoffsResponse);
+  rpc Claim(ClaimRequest) returns (ClaimResponse);
+  rpc ReleaseClaims(ReleaseClaimsRequest) returns (ReleaseClaimsResponse);
+  rpc CheckClaim(CheckClaimRequest) returns (CheckClaimResponse);
+  rpc ListClaims(ListClaimsRequest) returns (ListClaimsResponse);
   // Opens a page of the product TANK hosts for this run's repository, as a visitor would,
   // once it serves the expected build: status, errors, how much it shows, a screenshot.
   rpc CheckLive(CheckLiveRequest) returns (CheckLiveResponse);

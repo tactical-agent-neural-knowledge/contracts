@@ -81,6 +81,17 @@ const (
 	// RunnerServiceListHandoffsProcedure is the fully-qualified name of the RunnerService's
 	// ListHandoffs RPC.
 	RunnerServiceListHandoffsProcedure = "/tank.agentctl.v1.RunnerService/ListHandoffs"
+	// RunnerServiceClaimProcedure is the fully-qualified name of the RunnerService's Claim RPC.
+	RunnerServiceClaimProcedure = "/tank.agentctl.v1.RunnerService/Claim"
+	// RunnerServiceReleaseClaimsProcedure is the fully-qualified name of the RunnerService's
+	// ReleaseClaims RPC.
+	RunnerServiceReleaseClaimsProcedure = "/tank.agentctl.v1.RunnerService/ReleaseClaims"
+	// RunnerServiceCheckClaimProcedure is the fully-qualified name of the RunnerService's CheckClaim
+	// RPC.
+	RunnerServiceCheckClaimProcedure = "/tank.agentctl.v1.RunnerService/CheckClaim"
+	// RunnerServiceListClaimsProcedure is the fully-qualified name of the RunnerService's ListClaims
+	// RPC.
+	RunnerServiceListClaimsProcedure = "/tank.agentctl.v1.RunnerService/ListClaims"
 	// RunnerServiceCheckLiveProcedure is the fully-qualified name of the RunnerService's CheckLive RPC.
 	RunnerServiceCheckLiveProcedure = "/tank.agentctl.v1.RunnerService/CheckLive"
 	// RunnerServiceReadProductProcedure is the fully-qualified name of the RunnerService's ReadProduct
@@ -328,6 +339,10 @@ type RunnerServiceClient interface {
 	Delegate(context.Context, *connect.Request[v1.DelegateRequest]) (*connect.Response[v1.DelegateResponse], error)
 	AcceptHandoff(context.Context, *connect.Request[v1.AcceptHandoffRequest]) (*connect.Response[v1.AcceptHandoffResponse], error)
 	ListHandoffs(context.Context, *connect.Request[v1.ListHandoffsRequest]) (*connect.Response[v1.ListHandoffsResponse], error)
+	Claim(context.Context, *connect.Request[v1.ClaimRequest]) (*connect.Response[v1.ClaimResponse], error)
+	ReleaseClaims(context.Context, *connect.Request[v1.ReleaseClaimsRequest]) (*connect.Response[v1.ReleaseClaimsResponse], error)
+	CheckClaim(context.Context, *connect.Request[v1.CheckClaimRequest]) (*connect.Response[v1.CheckClaimResponse], error)
+	ListClaims(context.Context, *connect.Request[v1.ListClaimsRequest]) (*connect.Response[v1.ListClaimsResponse], error)
 	// Opens a page of the product TANK hosts for this run's repository, as a visitor would,
 	// once it serves the expected build: status, errors, how much it shows, a screenshot.
 	CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error)
@@ -481,6 +496,30 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServiceListHandoffsProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("ListHandoffs")),
+			connect.WithClientOptions(opts...),
+		),
+		claim: connect.NewClient[v1.ClaimRequest, v1.ClaimResponse](
+			httpClient,
+			baseURL+RunnerServiceClaimProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("Claim")),
+			connect.WithClientOptions(opts...),
+		),
+		releaseClaims: connect.NewClient[v1.ReleaseClaimsRequest, v1.ReleaseClaimsResponse](
+			httpClient,
+			baseURL+RunnerServiceReleaseClaimsProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ReleaseClaims")),
+			connect.WithClientOptions(opts...),
+		),
+		checkClaim: connect.NewClient[v1.CheckClaimRequest, v1.CheckClaimResponse](
+			httpClient,
+			baseURL+RunnerServiceCheckClaimProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("CheckClaim")),
+			connect.WithClientOptions(opts...),
+		),
+		listClaims: connect.NewClient[v1.ListClaimsRequest, v1.ListClaimsResponse](
+			httpClient,
+			baseURL+RunnerServiceListClaimsProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ListClaims")),
 			connect.WithClientOptions(opts...),
 		),
 		checkLive: connect.NewClient[v1.CheckLiveRequest, v1.CheckLiveResponse](
@@ -732,6 +771,10 @@ type runnerServiceClient struct {
 	delegate                 *connect.Client[v1.DelegateRequest, v1.DelegateResponse]
 	acceptHandoff            *connect.Client[v1.AcceptHandoffRequest, v1.AcceptHandoffResponse]
 	listHandoffs             *connect.Client[v1.ListHandoffsRequest, v1.ListHandoffsResponse]
+	claim                    *connect.Client[v1.ClaimRequest, v1.ClaimResponse]
+	releaseClaims            *connect.Client[v1.ReleaseClaimsRequest, v1.ReleaseClaimsResponse]
+	checkClaim               *connect.Client[v1.CheckClaimRequest, v1.CheckClaimResponse]
+	listClaims               *connect.Client[v1.ListClaimsRequest, v1.ListClaimsResponse]
 	checkLive                *connect.Client[v1.CheckLiveRequest, v1.CheckLiveResponse]
 	readProduct              *connect.Client[v1.ReadProductRequest, v1.ReadProductResponse]
 	validateSpec             *connect.Client[v1.ValidateSpecRequest, v1.ValidateSpecResponse]
@@ -850,6 +893,26 @@ func (c *runnerServiceClient) AcceptHandoff(ctx context.Context, req *connect.Re
 // ListHandoffs calls tank.agentctl.v1.RunnerService.ListHandoffs.
 func (c *runnerServiceClient) ListHandoffs(ctx context.Context, req *connect.Request[v1.ListHandoffsRequest]) (*connect.Response[v1.ListHandoffsResponse], error) {
 	return c.listHandoffs.CallUnary(ctx, req)
+}
+
+// Claim calls tank.agentctl.v1.RunnerService.Claim.
+func (c *runnerServiceClient) Claim(ctx context.Context, req *connect.Request[v1.ClaimRequest]) (*connect.Response[v1.ClaimResponse], error) {
+	return c.claim.CallUnary(ctx, req)
+}
+
+// ReleaseClaims calls tank.agentctl.v1.RunnerService.ReleaseClaims.
+func (c *runnerServiceClient) ReleaseClaims(ctx context.Context, req *connect.Request[v1.ReleaseClaimsRequest]) (*connect.Response[v1.ReleaseClaimsResponse], error) {
+	return c.releaseClaims.CallUnary(ctx, req)
+}
+
+// CheckClaim calls tank.agentctl.v1.RunnerService.CheckClaim.
+func (c *runnerServiceClient) CheckClaim(ctx context.Context, req *connect.Request[v1.CheckClaimRequest]) (*connect.Response[v1.CheckClaimResponse], error) {
+	return c.checkClaim.CallUnary(ctx, req)
+}
+
+// ListClaims calls tank.agentctl.v1.RunnerService.ListClaims.
+func (c *runnerServiceClient) ListClaims(ctx context.Context, req *connect.Request[v1.ListClaimsRequest]) (*connect.Response[v1.ListClaimsResponse], error) {
+	return c.listClaims.CallUnary(ctx, req)
 }
 
 // CheckLive calls tank.agentctl.v1.RunnerService.CheckLive.
@@ -1064,6 +1127,10 @@ type RunnerServiceHandler interface {
 	Delegate(context.Context, *connect.Request[v1.DelegateRequest]) (*connect.Response[v1.DelegateResponse], error)
 	AcceptHandoff(context.Context, *connect.Request[v1.AcceptHandoffRequest]) (*connect.Response[v1.AcceptHandoffResponse], error)
 	ListHandoffs(context.Context, *connect.Request[v1.ListHandoffsRequest]) (*connect.Response[v1.ListHandoffsResponse], error)
+	Claim(context.Context, *connect.Request[v1.ClaimRequest]) (*connect.Response[v1.ClaimResponse], error)
+	ReleaseClaims(context.Context, *connect.Request[v1.ReleaseClaimsRequest]) (*connect.Response[v1.ReleaseClaimsResponse], error)
+	CheckClaim(context.Context, *connect.Request[v1.CheckClaimRequest]) (*connect.Response[v1.CheckClaimResponse], error)
+	ListClaims(context.Context, *connect.Request[v1.ListClaimsRequest]) (*connect.Response[v1.ListClaimsResponse], error)
 	// Opens a page of the product TANK hosts for this run's repository, as a visitor would,
 	// once it serves the expected build: status, errors, how much it shows, a screenshot.
 	CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error)
@@ -1213,6 +1280,30 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceListHandoffsProcedure,
 		svc.ListHandoffs,
 		connect.WithSchema(runnerServiceMethods.ByName("ListHandoffs")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceClaimHandler := connect.NewUnaryHandler(
+		RunnerServiceClaimProcedure,
+		svc.Claim,
+		connect.WithSchema(runnerServiceMethods.ByName("Claim")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceReleaseClaimsHandler := connect.NewUnaryHandler(
+		RunnerServiceReleaseClaimsProcedure,
+		svc.ReleaseClaims,
+		connect.WithSchema(runnerServiceMethods.ByName("ReleaseClaims")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceCheckClaimHandler := connect.NewUnaryHandler(
+		RunnerServiceCheckClaimProcedure,
+		svc.CheckClaim,
+		connect.WithSchema(runnerServiceMethods.ByName("CheckClaim")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceListClaimsHandler := connect.NewUnaryHandler(
+		RunnerServiceListClaimsProcedure,
+		svc.ListClaims,
+		connect.WithSchema(runnerServiceMethods.ByName("ListClaims")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServiceCheckLiveHandler := connect.NewUnaryHandler(
@@ -1477,6 +1568,14 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceAcceptHandoffHandler.ServeHTTP(w, r)
 		case RunnerServiceListHandoffsProcedure:
 			runnerServiceListHandoffsHandler.ServeHTTP(w, r)
+		case RunnerServiceClaimProcedure:
+			runnerServiceClaimHandler.ServeHTTP(w, r)
+		case RunnerServiceReleaseClaimsProcedure:
+			runnerServiceReleaseClaimsHandler.ServeHTTP(w, r)
+		case RunnerServiceCheckClaimProcedure:
+			runnerServiceCheckClaimHandler.ServeHTTP(w, r)
+		case RunnerServiceListClaimsProcedure:
+			runnerServiceListClaimsHandler.ServeHTTP(w, r)
 		case RunnerServiceCheckLiveProcedure:
 			runnerServiceCheckLiveHandler.ServeHTTP(w, r)
 		case RunnerServiceReadProductProcedure:
@@ -1624,6 +1723,22 @@ func (UnimplementedRunnerServiceHandler) AcceptHandoff(context.Context, *connect
 
 func (UnimplementedRunnerServiceHandler) ListHandoffs(context.Context, *connect.Request[v1.ListHandoffsRequest]) (*connect.Response[v1.ListHandoffsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ListHandoffs is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) Claim(context.Context, *connect.Request[v1.ClaimRequest]) (*connect.Response[v1.ClaimResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.Claim is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ReleaseClaims(context.Context, *connect.Request[v1.ReleaseClaimsRequest]) (*connect.Response[v1.ReleaseClaimsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReleaseClaims is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) CheckClaim(context.Context, *connect.Request[v1.CheckClaimRequest]) (*connect.Response[v1.CheckClaimResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.CheckClaim is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ListClaims(context.Context, *connect.Request[v1.ListClaimsRequest]) (*connect.Response[v1.ListClaimsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ListClaims is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error) {

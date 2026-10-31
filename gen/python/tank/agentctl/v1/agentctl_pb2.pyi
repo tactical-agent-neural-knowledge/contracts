@@ -210,7 +210,7 @@ class RunContext(_message.Message):
     def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ...) -> None: ...
 
 class TeamContext(_message.Message):
-    __slots__ = ("team_id", "name", "handle", "purpose", "members", "member_id", "coordinator")
+    __slots__ = ("team_id", "name", "handle", "purpose", "members", "member_id", "coordinator", "board_id", "paused", "cap_note")
     TEAM_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     HANDLE_FIELD_NUMBER: _ClassVar[int]
@@ -218,6 +218,9 @@ class TeamContext(_message.Message):
     MEMBERS_FIELD_NUMBER: _ClassVar[int]
     MEMBER_ID_FIELD_NUMBER: _ClassVar[int]
     COORDINATOR_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    PAUSED_FIELD_NUMBER: _ClassVar[int]
+    CAP_NOTE_FIELD_NUMBER: _ClassVar[int]
     team_id: str
     name: str
     handle: str
@@ -225,7 +228,84 @@ class TeamContext(_message.Message):
     members: _containers.RepeatedCompositeFieldContainer[TeamMember]
     member_id: str
     coordinator: bool
-    def __init__(self, team_id: _Optional[str] = ..., name: _Optional[str] = ..., handle: _Optional[str] = ..., purpose: _Optional[str] = ..., members: _Optional[_Iterable[_Union[TeamMember, _Mapping]]] = ..., member_id: _Optional[str] = ..., coordinator: bool = ...) -> None: ...
+    board_id: str
+    paused: bool
+    cap_note: str
+    def __init__(self, team_id: _Optional[str] = ..., name: _Optional[str] = ..., handle: _Optional[str] = ..., purpose: _Optional[str] = ..., members: _Optional[_Iterable[_Union[TeamMember, _Mapping]]] = ..., member_id: _Optional[str] = ..., coordinator: bool = ..., board_id: _Optional[str] = ..., paused: bool = ..., cap_note: _Optional[str] = ...) -> None: ...
+
+class ClaimItem(_message.Message):
+    __slots__ = ("kind", "key")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    KEY_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    key: str
+    def __init__(self, kind: _Optional[str] = ..., key: _Optional[str] = ...) -> None: ...
+
+class HeldClaim(_message.Message):
+    __slots__ = ("item", "run_id", "title", "ask", "since")
+    ITEM_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    ASK_FIELD_NUMBER: _ClassVar[int]
+    SINCE_FIELD_NUMBER: _ClassVar[int]
+    item: ClaimItem
+    run_id: str
+    title: str
+    ask: str
+    since: _timestamp_pb2.Timestamp
+    def __init__(self, item: _Optional[_Union[ClaimItem, _Mapping]] = ..., run_id: _Optional[str] = ..., title: _Optional[str] = ..., ask: _Optional[str] = ..., since: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ClaimRequest(_message.Message):
+    __slots__ = ("items", "note")
+    ITEMS_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    items: _containers.RepeatedCompositeFieldContainer[ClaimItem]
+    note: str
+    def __init__(self, items: _Optional[_Iterable[_Union[ClaimItem, _Mapping]]] = ..., note: _Optional[str] = ...) -> None: ...
+
+class ClaimResponse(_message.Message):
+    __slots__ = ("granted", "held")
+    GRANTED_FIELD_NUMBER: _ClassVar[int]
+    HELD_FIELD_NUMBER: _ClassVar[int]
+    granted: _containers.RepeatedCompositeFieldContainer[ClaimItem]
+    held: _containers.RepeatedCompositeFieldContainer[HeldClaim]
+    def __init__(self, granted: _Optional[_Iterable[_Union[ClaimItem, _Mapping]]] = ..., held: _Optional[_Iterable[_Union[HeldClaim, _Mapping]]] = ...) -> None: ...
+
+class ReleaseClaimsRequest(_message.Message):
+    __slots__ = ("items",)
+    ITEMS_FIELD_NUMBER: _ClassVar[int]
+    items: _containers.RepeatedCompositeFieldContainer[ClaimItem]
+    def __init__(self, items: _Optional[_Iterable[_Union[ClaimItem, _Mapping]]] = ...) -> None: ...
+
+class ReleaseClaimsResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class CheckClaimRequest(_message.Message):
+    __slots__ = ("item",)
+    ITEM_FIELD_NUMBER: _ClassVar[int]
+    item: ClaimItem
+    def __init__(self, item: _Optional[_Union[ClaimItem, _Mapping]] = ...) -> None: ...
+
+class CheckClaimResponse(_message.Message):
+    __slots__ = ("ok", "held")
+    OK_FIELD_NUMBER: _ClassVar[int]
+    HELD_FIELD_NUMBER: _ClassVar[int]
+    ok: bool
+    held: HeldClaim
+    def __init__(self, ok: bool = ..., held: _Optional[_Union[HeldClaim, _Mapping]] = ...) -> None: ...
+
+class ListClaimsRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListClaimsResponse(_message.Message):
+    __slots__ = ("mine", "others")
+    MINE_FIELD_NUMBER: _ClassVar[int]
+    OTHERS_FIELD_NUMBER: _ClassVar[int]
+    mine: _containers.RepeatedCompositeFieldContainer[HeldClaim]
+    others: _containers.RepeatedCompositeFieldContainer[HeldClaim]
+    def __init__(self, mine: _Optional[_Iterable[_Union[HeldClaim, _Mapping]]] = ..., others: _Optional[_Iterable[_Union[HeldClaim, _Mapping]]] = ...) -> None: ...
 
 class TeamMember(_message.Message):
     __slots__ = ("member_id", "agent_id", "title", "handle", "coordinator", "triggers", "delegate", "delegate_to", "envelope", "enabled", "is_me")
