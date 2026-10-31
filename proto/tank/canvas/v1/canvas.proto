@@ -158,6 +158,15 @@ message GetCanvasRequest {
 }
 message GetCanvasResponse { Canvas canvas = 1; }
 
+message CreateCanvasFromFileRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string file_id = 3;
+}
+message CreateCanvasFromFileResponse {
+  Canvas canvas = 1;
+}
+
 message CreateCanvasRequest {
   string workspace_id = 1;
   string channel_id = 2;
@@ -302,6 +311,11 @@ service CanvasService {
   rpc ListCanvases(ListCanvasesRequest) returns (ListCanvasesResponse);
   rpc GetCanvas(GetCanvasRequest) returns (GetCanvasResponse);
   rpc CreateCanvas(CreateCanvasRequest) returns (CreateCanvasResponse);
+  // A page made from a markdown file somebody sent to the Tread (Robby, 2026-10-31:
+  // "when someone uploads a markdown it should offer to add to Atlas for this Tread").
+  // The caller must be in the Tread and able to read the file; the page is attached
+  // to the Tread and titled from the file's first heading, else its name.
+  rpc CreateCanvasFromFile(CreateCanvasFromFileRequest) returns (CreateCanvasFromFileResponse);
   rpc UpdateCanvas(UpdateCanvasRequest) returns (UpdateCanvasResponse);
   rpc DeleteCanvas(DeleteCanvasRequest) returns (DeleteCanvasResponse);
   rpc WriteFromThread(WriteFromThreadRequest) returns (WriteFromThreadResponse);

@@ -41,6 +41,9 @@ const (
 	// CanvasServiceCreateCanvasProcedure is the fully-qualified name of the CanvasService's
 	// CreateCanvas RPC.
 	CanvasServiceCreateCanvasProcedure = "/tank.canvas.v1.CanvasService/CreateCanvas"
+	// CanvasServiceCreateCanvasFromFileProcedure is the fully-qualified name of the CanvasService's
+	// CreateCanvasFromFile RPC.
+	CanvasServiceCreateCanvasFromFileProcedure = "/tank.canvas.v1.CanvasService/CreateCanvasFromFile"
 	// CanvasServiceUpdateCanvasProcedure is the fully-qualified name of the CanvasService's
 	// UpdateCanvas RPC.
 	CanvasServiceUpdateCanvasProcedure = "/tank.canvas.v1.CanvasService/UpdateCanvas"
@@ -77,6 +80,11 @@ type CanvasServiceClient interface {
 	ListCanvases(context.Context, *connect.Request[v1.ListCanvasesRequest]) (*connect.Response[v1.ListCanvasesResponse], error)
 	GetCanvas(context.Context, *connect.Request[v1.GetCanvasRequest]) (*connect.Response[v1.GetCanvasResponse], error)
 	CreateCanvas(context.Context, *connect.Request[v1.CreateCanvasRequest]) (*connect.Response[v1.CreateCanvasResponse], error)
+	// A page made from a markdown file somebody sent to the Tread (Robby, 2026-10-31:
+	// "when someone uploads a markdown it should offer to add to Atlas for this Tread").
+	// The caller must be in the Tread and able to read the file; the page is attached
+	// to the Tread and titled from the file's first heading, else its name.
+	CreateCanvasFromFile(context.Context, *connect.Request[v1.CreateCanvasFromFileRequest]) (*connect.Response[v1.CreateCanvasFromFileResponse], error)
 	UpdateCanvas(context.Context, *connect.Request[v1.UpdateCanvasRequest]) (*connect.Response[v1.UpdateCanvasResponse], error)
 	DeleteCanvas(context.Context, *connect.Request[v1.DeleteCanvasRequest]) (*connect.Response[v1.DeleteCanvasResponse], error)
 	WriteFromThread(context.Context, *connect.Request[v1.WriteFromThreadRequest]) (*connect.Response[v1.WriteFromThreadResponse], error)
@@ -119,6 +127,12 @@ func NewCanvasServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+CanvasServiceCreateCanvasProcedure,
 			connect.WithSchema(canvasServiceMethods.ByName("CreateCanvas")),
+			connect.WithClientOptions(opts...),
+		),
+		createCanvasFromFile: connect.NewClient[v1.CreateCanvasFromFileRequest, v1.CreateCanvasFromFileResponse](
+			httpClient,
+			baseURL+CanvasServiceCreateCanvasFromFileProcedure,
+			connect.WithSchema(canvasServiceMethods.ByName("CreateCanvasFromFile")),
 			connect.WithClientOptions(opts...),
 		),
 		updateCanvas: connect.NewClient[v1.UpdateCanvasRequest, v1.UpdateCanvasResponse](
@@ -186,19 +200,20 @@ func NewCanvasServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 
 // canvasServiceClient implements CanvasServiceClient.
 type canvasServiceClient struct {
-	listCanvases       *connect.Client[v1.ListCanvasesRequest, v1.ListCanvasesResponse]
-	getCanvas          *connect.Client[v1.GetCanvasRequest, v1.GetCanvasResponse]
-	createCanvas       *connect.Client[v1.CreateCanvasRequest, v1.CreateCanvasResponse]
-	updateCanvas       *connect.Client[v1.UpdateCanvasRequest, v1.UpdateCanvasResponse]
-	deleteCanvas       *connect.Client[v1.DeleteCanvasRequest, v1.DeleteCanvasResponse]
-	writeFromThread    *connect.Client[v1.WriteFromThreadRequest, v1.WriteFromThreadResponse]
-	ask                *connect.Client[v1.AskRequest, v1.AskResponse]
-	updateBlock        *connect.Client[v1.UpdateBlockRequest, v1.UpdateBlockResponse]
-	listTemplates      *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
-	listDecisions      *connect.Client[v1.ListDecisionsRequest, v1.ListDecisionsResponse]
-	listCanvasAccess   *connect.Client[v1.ListCanvasAccessRequest, v1.ListCanvasAccessResponse]
-	setCanvasAccess    *connect.Client[v1.SetCanvasAccessRequest, v1.SetCanvasAccessResponse]
-	removeCanvasAccess *connect.Client[v1.RemoveCanvasAccessRequest, v1.RemoveCanvasAccessResponse]
+	listCanvases         *connect.Client[v1.ListCanvasesRequest, v1.ListCanvasesResponse]
+	getCanvas            *connect.Client[v1.GetCanvasRequest, v1.GetCanvasResponse]
+	createCanvas         *connect.Client[v1.CreateCanvasRequest, v1.CreateCanvasResponse]
+	createCanvasFromFile *connect.Client[v1.CreateCanvasFromFileRequest, v1.CreateCanvasFromFileResponse]
+	updateCanvas         *connect.Client[v1.UpdateCanvasRequest, v1.UpdateCanvasResponse]
+	deleteCanvas         *connect.Client[v1.DeleteCanvasRequest, v1.DeleteCanvasResponse]
+	writeFromThread      *connect.Client[v1.WriteFromThreadRequest, v1.WriteFromThreadResponse]
+	ask                  *connect.Client[v1.AskRequest, v1.AskResponse]
+	updateBlock          *connect.Client[v1.UpdateBlockRequest, v1.UpdateBlockResponse]
+	listTemplates        *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
+	listDecisions        *connect.Client[v1.ListDecisionsRequest, v1.ListDecisionsResponse]
+	listCanvasAccess     *connect.Client[v1.ListCanvasAccessRequest, v1.ListCanvasAccessResponse]
+	setCanvasAccess      *connect.Client[v1.SetCanvasAccessRequest, v1.SetCanvasAccessResponse]
+	removeCanvasAccess   *connect.Client[v1.RemoveCanvasAccessRequest, v1.RemoveCanvasAccessResponse]
 }
 
 // ListCanvases calls tank.canvas.v1.CanvasService.ListCanvases.
@@ -214,6 +229,11 @@ func (c *canvasServiceClient) GetCanvas(ctx context.Context, req *connect.Reques
 // CreateCanvas calls tank.canvas.v1.CanvasService.CreateCanvas.
 func (c *canvasServiceClient) CreateCanvas(ctx context.Context, req *connect.Request[v1.CreateCanvasRequest]) (*connect.Response[v1.CreateCanvasResponse], error) {
 	return c.createCanvas.CallUnary(ctx, req)
+}
+
+// CreateCanvasFromFile calls tank.canvas.v1.CanvasService.CreateCanvasFromFile.
+func (c *canvasServiceClient) CreateCanvasFromFile(ctx context.Context, req *connect.Request[v1.CreateCanvasFromFileRequest]) (*connect.Response[v1.CreateCanvasFromFileResponse], error) {
+	return c.createCanvasFromFile.CallUnary(ctx, req)
 }
 
 // UpdateCanvas calls tank.canvas.v1.CanvasService.UpdateCanvas.
@@ -271,6 +291,11 @@ type CanvasServiceHandler interface {
 	ListCanvases(context.Context, *connect.Request[v1.ListCanvasesRequest]) (*connect.Response[v1.ListCanvasesResponse], error)
 	GetCanvas(context.Context, *connect.Request[v1.GetCanvasRequest]) (*connect.Response[v1.GetCanvasResponse], error)
 	CreateCanvas(context.Context, *connect.Request[v1.CreateCanvasRequest]) (*connect.Response[v1.CreateCanvasResponse], error)
+	// A page made from a markdown file somebody sent to the Tread (Robby, 2026-10-31:
+	// "when someone uploads a markdown it should offer to add to Atlas for this Tread").
+	// The caller must be in the Tread and able to read the file; the page is attached
+	// to the Tread and titled from the file's first heading, else its name.
+	CreateCanvasFromFile(context.Context, *connect.Request[v1.CreateCanvasFromFileRequest]) (*connect.Response[v1.CreateCanvasFromFileResponse], error)
 	UpdateCanvas(context.Context, *connect.Request[v1.UpdateCanvasRequest]) (*connect.Response[v1.UpdateCanvasResponse], error)
 	DeleteCanvas(context.Context, *connect.Request[v1.DeleteCanvasRequest]) (*connect.Response[v1.DeleteCanvasResponse], error)
 	WriteFromThread(context.Context, *connect.Request[v1.WriteFromThreadRequest]) (*connect.Response[v1.WriteFromThreadResponse], error)
@@ -309,6 +334,12 @@ func NewCanvasServiceHandler(svc CanvasServiceHandler, opts ...connect.HandlerOp
 		CanvasServiceCreateCanvasProcedure,
 		svc.CreateCanvas,
 		connect.WithSchema(canvasServiceMethods.ByName("CreateCanvas")),
+		connect.WithHandlerOptions(opts...),
+	)
+	canvasServiceCreateCanvasFromFileHandler := connect.NewUnaryHandler(
+		CanvasServiceCreateCanvasFromFileProcedure,
+		svc.CreateCanvasFromFile,
+		connect.WithSchema(canvasServiceMethods.ByName("CreateCanvasFromFile")),
 		connect.WithHandlerOptions(opts...),
 	)
 	canvasServiceUpdateCanvasHandler := connect.NewUnaryHandler(
@@ -379,6 +410,8 @@ func NewCanvasServiceHandler(svc CanvasServiceHandler, opts ...connect.HandlerOp
 			canvasServiceGetCanvasHandler.ServeHTTP(w, r)
 		case CanvasServiceCreateCanvasProcedure:
 			canvasServiceCreateCanvasHandler.ServeHTTP(w, r)
+		case CanvasServiceCreateCanvasFromFileProcedure:
+			canvasServiceCreateCanvasFromFileHandler.ServeHTTP(w, r)
 		case CanvasServiceUpdateCanvasProcedure:
 			canvasServiceUpdateCanvasHandler.ServeHTTP(w, r)
 		case CanvasServiceDeleteCanvasProcedure:
@@ -418,6 +451,10 @@ func (UnimplementedCanvasServiceHandler) GetCanvas(context.Context, *connect.Req
 
 func (UnimplementedCanvasServiceHandler) CreateCanvas(context.Context, *connect.Request[v1.CreateCanvasRequest]) (*connect.Response[v1.CreateCanvasResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.canvas.v1.CanvasService.CreateCanvas is not implemented"))
+}
+
+func (UnimplementedCanvasServiceHandler) CreateCanvasFromFile(context.Context, *connect.Request[v1.CreateCanvasFromFileRequest]) (*connect.Response[v1.CreateCanvasFromFileResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.canvas.v1.CanvasService.CreateCanvasFromFile is not implemented"))
 }
 
 func (UnimplementedCanvasServiceHandler) UpdateCanvas(context.Context, *connect.Request[v1.UpdateCanvasRequest]) (*connect.Response[v1.UpdateCanvasResponse], error) {
