@@ -90,6 +90,9 @@ const (
 	// AgentServiceSetTreadSettingsProcedure is the fully-qualified name of the AgentService's
 	// SetTreadSettings RPC.
 	AgentServiceSetTreadSettingsProcedure = "/tank.agent.v1.AgentService/SetTreadSettings"
+	// AgentServiceGetWorkspaceSpendProcedure is the fully-qualified name of the AgentService's
+	// GetWorkspaceSpend RPC.
+	AgentServiceGetWorkspaceSpendProcedure = "/tank.agent.v1.AgentService/GetWorkspaceSpend"
 	// AgentServiceListTreadSecurityProcedure is the fully-qualified name of the AgentService's
 	// ListTreadSecurity RPC.
 	AgentServiceListTreadSecurityProcedure = "/tank.agent.v1.AgentService/ListTreadSecurity"
@@ -130,6 +133,8 @@ type AgentServiceClient interface {
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
+	// Spend: the workspace's agent money by Tread, person, team, kind and day.
+	GetWorkspaceSpend(context.Context, *connect.Request[v1.GetWorkspaceSpendRequest]) (*connect.Response[v1.GetWorkspaceSpendResponse], error)
 	// The security state of every Tread in the workspace that is connected to a repository.
 	ListTreadSecurity(context.Context, *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error)
 	// Every app the workspace hosts on TANK, for the Treads the caller is in.
@@ -279,6 +284,12 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("SetTreadSettings")),
 			connect.WithClientOptions(opts...),
 		),
+		getWorkspaceSpend: connect.NewClient[v1.GetWorkspaceSpendRequest, v1.GetWorkspaceSpendResponse](
+			httpClient,
+			baseURL+AgentServiceGetWorkspaceSpendProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("GetWorkspaceSpend")),
+			connect.WithClientOptions(opts...),
+		),
 		listTreadSecurity: connect.NewClient[v1.ListTreadSecurityRequest, v1.ListTreadSecurityResponse](
 			httpClient,
 			baseURL+AgentServiceListTreadSecurityProcedure,
@@ -318,6 +329,7 @@ type agentServiceClient struct {
 	listRepoPreviewSetups    *connect.Client[v1.ListRepoPreviewSetupsRequest, v1.ListRepoPreviewSetupsResponse]
 	getTreadSwitchboard      *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
 	setTreadSettings         *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
+	getWorkspaceSpend        *connect.Client[v1.GetWorkspaceSpendRequest, v1.GetWorkspaceSpendResponse]
 	listTreadSecurity        *connect.Client[v1.ListTreadSecurityRequest, v1.ListTreadSecurityResponse]
 	listWorkspaceDeployments *connect.Client[v1.ListWorkspaceDeploymentsRequest, v1.ListWorkspaceDeploymentsResponse]
 }
@@ -432,6 +444,11 @@ func (c *agentServiceClient) SetTreadSettings(ctx context.Context, req *connect.
 	return c.setTreadSettings.CallUnary(ctx, req)
 }
 
+// GetWorkspaceSpend calls tank.agent.v1.AgentService.GetWorkspaceSpend.
+func (c *agentServiceClient) GetWorkspaceSpend(ctx context.Context, req *connect.Request[v1.GetWorkspaceSpendRequest]) (*connect.Response[v1.GetWorkspaceSpendResponse], error) {
+	return c.getWorkspaceSpend.CallUnary(ctx, req)
+}
+
 // ListTreadSecurity calls tank.agent.v1.AgentService.ListTreadSecurity.
 func (c *agentServiceClient) ListTreadSecurity(ctx context.Context, req *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error) {
 	return c.listTreadSecurity.CallUnary(ctx, req)
@@ -474,6 +491,8 @@ type AgentServiceHandler interface {
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
+	// Spend: the workspace's agent money by Tread, person, team, kind and day.
+	GetWorkspaceSpend(context.Context, *connect.Request[v1.GetWorkspaceSpendRequest]) (*connect.Response[v1.GetWorkspaceSpendResponse], error)
 	// The security state of every Tread in the workspace that is connected to a repository.
 	ListTreadSecurity(context.Context, *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error)
 	// Every app the workspace hosts on TANK, for the Treads the caller is in.
@@ -619,6 +638,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("SetTreadSettings")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceGetWorkspaceSpendHandler := connect.NewUnaryHandler(
+		AgentServiceGetWorkspaceSpendProcedure,
+		svc.GetWorkspaceSpend,
+		connect.WithSchema(agentServiceMethods.ByName("GetWorkspaceSpend")),
+		connect.WithHandlerOptions(opts...),
+	)
 	agentServiceListTreadSecurityHandler := connect.NewUnaryHandler(
 		AgentServiceListTreadSecurityProcedure,
 		svc.ListTreadSecurity,
@@ -677,6 +702,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceGetTreadSwitchboardHandler.ServeHTTP(w, r)
 		case AgentServiceSetTreadSettingsProcedure:
 			agentServiceSetTreadSettingsHandler.ServeHTTP(w, r)
+		case AgentServiceGetWorkspaceSpendProcedure:
+			agentServiceGetWorkspaceSpendHandler.ServeHTTP(w, r)
 		case AgentServiceListTreadSecurityProcedure:
 			agentServiceListTreadSecurityHandler.ServeHTTP(w, r)
 		case AgentServiceListWorkspaceDeploymentsProcedure:
@@ -776,6 +803,10 @@ func (UnimplementedAgentServiceHandler) GetTreadSwitchboard(context.Context, *co
 
 func (UnimplementedAgentServiceHandler) SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetTreadSettings is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) GetWorkspaceSpend(context.Context, *connect.Request[v1.GetWorkspaceSpendRequest]) (*connect.Response[v1.GetWorkspaceSpendResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.GetWorkspaceSpend is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) ListTreadSecurity(context.Context, *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error) {

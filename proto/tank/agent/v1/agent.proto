@@ -347,6 +347,52 @@ message SpendByTread {
   double spend_today_usd = 6;
   repeated SpendByPerson people = 7;
 }
+// What one Ops team's runs cost, and who asked for them.
+message SpendByTeam {
+  string team_id = 1;
+  string name = 2;
+  int32 runs_month = 3;
+  double spend_month_usd = 4;
+  int32 runs_today = 5;
+  double spend_today_usd = 6;
+  repeated SpendByPerson people = 7;
+}
+// One UTC day of the workspace's agent spend.
+message SpendByDay {
+  string day = 1;  // YYYY-MM-DD, UTC
+  int32 runs = 2;
+  double spend_usd = 3;
+}
+// Who ran it: the Tread's own agents, Crew members, or an Ops team.
+message SpendByKind {
+  string kind = 1;  // tread | crew | ops
+  int32 runs_month = 2;
+  double spend_month_usd = 3;
+  int32 runs_today = 4;
+  double spend_today_usd = 5;
+}
+// Spend: the whole picture of the workspace's agent money. Dollars are at the Tread rate,
+// the number Books books. A member sees the Treads they belong to and the public ones; a
+// workspace admin sees them all. The totals count every Tread either way.
+message WorkspaceSpend {
+  double spend_today_usd = 1;
+  double spend_month_usd = 2;
+  int32 runs_today = 3;
+  int32 runs_month = 4;
+  int32 running_now = 5;
+  double cap_month_usd = 6;         // the workspace's monthly cap; 0 = none
+  double booked_month_usd = 7;      // what Books holds for this month so far
+  repeated SpendByPerson people = 8;
+  repeated SpendByTread treads = 9;
+  repeated SpendByTeam teams = 10;
+  repeated SpendByKind kinds = 11;
+  repeated SpendByDay days = 12;    // the last thirty-one days, oldest first
+}
+message GetWorkspaceSpendRequest { string workspace_id = 1; }
+message GetWorkspaceSpendResponse {
+  WorkspaceSpend spend = 1;
+  bool can_manage = 2;
+}
 message GetTreadSwitchboardRequest { string channel_id = 1; }
 message GetTreadSwitchboardResponse {
   TreadMetrics metrics = 1;
@@ -506,6 +552,8 @@ service AgentService {
   // The Tread's switchboard: metrics for members, settings for admins.
   rpc GetTreadSwitchboard(GetTreadSwitchboardRequest) returns (GetTreadSwitchboardResponse);
   rpc SetTreadSettings(SetTreadSettingsRequest) returns (SetTreadSettingsResponse);
+  // Spend: the workspace's agent money by Tread, person, team, kind and day.
+  rpc GetWorkspaceSpend(GetWorkspaceSpendRequest) returns (GetWorkspaceSpendResponse);
   // The security state of every Tread in the workspace that is connected to a repository.
   rpc ListTreadSecurity(ListTreadSecurityRequest) returns (ListTreadSecurityResponse);
   // Every app the workspace hosts on TANK, for the Treads the caller is in.
