@@ -210,7 +210,7 @@ class RunContext(_message.Message):
     def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ...) -> None: ...
 
 class TeamContext(_message.Message):
-    __slots__ = ("team_id", "name", "handle", "purpose", "members", "member_id", "coordinator", "board_id", "paused", "cap_note")
+    __slots__ = ("team_id", "name", "handle", "purpose", "members", "member_id", "coordinator", "board_id", "paused", "cap_note", "memory")
     TEAM_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     HANDLE_FIELD_NUMBER: _ClassVar[int]
@@ -221,6 +221,7 @@ class TeamContext(_message.Message):
     BOARD_ID_FIELD_NUMBER: _ClassVar[int]
     PAUSED_FIELD_NUMBER: _ClassVar[int]
     CAP_NOTE_FIELD_NUMBER: _ClassVar[int]
+    MEMORY_FIELD_NUMBER: _ClassVar[int]
     team_id: str
     name: str
     handle: str
@@ -231,7 +232,8 @@ class TeamContext(_message.Message):
     board_id: str
     paused: bool
     cap_note: str
-    def __init__(self, team_id: _Optional[str] = ..., name: _Optional[str] = ..., handle: _Optional[str] = ..., purpose: _Optional[str] = ..., members: _Optional[_Iterable[_Union[TeamMember, _Mapping]]] = ..., member_id: _Optional[str] = ..., coordinator: bool = ..., board_id: _Optional[str] = ..., paused: bool = ..., cap_note: _Optional[str] = ...) -> None: ...
+    memory: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, team_id: _Optional[str] = ..., name: _Optional[str] = ..., handle: _Optional[str] = ..., purpose: _Optional[str] = ..., members: _Optional[_Iterable[_Union[TeamMember, _Mapping]]] = ..., member_id: _Optional[str] = ..., coordinator: bool = ..., board_id: _Optional[str] = ..., paused: bool = ..., cap_note: _Optional[str] = ..., memory: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class ClaimItem(_message.Message):
     __slots__ = ("kind", "key")
@@ -1528,7 +1530,7 @@ class PollInboxResponse(_message.Message):
     def __init__(self, items: _Optional[_Iterable[_Union[InboxItem, _Mapping]]] = ...) -> None: ...
 
 class StartRunRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "instructions", "mode", "repo", "skip_neural_knowledge")
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "instructions", "mode", "repo", "skip_neural_knowledge", "envelope_usd")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
@@ -1538,6 +1540,7 @@ class StartRunRequest(_message.Message):
     MODE_FIELD_NUMBER: _ClassVar[int]
     REPO_FIELD_NUMBER: _ClassVar[int]
     SKIP_NEURAL_KNOWLEDGE_FIELD_NUMBER: _ClassVar[int]
+    ENVELOPE_USD_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     thread_root_id: str
@@ -1547,7 +1550,8 @@ class StartRunRequest(_message.Message):
     mode: str
     repo: str
     skip_neural_knowledge: bool
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., instructions: _Optional[str] = ..., mode: _Optional[str] = ..., repo: _Optional[str] = ..., skip_neural_knowledge: bool = ...) -> None: ...
+    envelope_usd: float
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., instructions: _Optional[str] = ..., mode: _Optional[str] = ..., repo: _Optional[str] = ..., skip_neural_knowledge: bool = ..., envelope_usd: _Optional[float] = ...) -> None: ...
 
 class StartRunResponse(_message.Message):
     __slots__ = ("run",)

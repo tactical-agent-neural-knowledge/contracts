@@ -55,6 +55,14 @@ const (
 	OpsServiceSetTeamPauseProcedure = "/tank.agentops.v1.OpsService/SetTeamPause"
 	// OpsServiceStopTeamProcedure is the fully-qualified name of the OpsService's StopTeam RPC.
 	OpsServiceStopTeamProcedure = "/tank.agentops.v1.OpsService/StopTeam"
+	// OpsServiceSetTeamShiftProcedure is the fully-qualified name of the OpsService's SetTeamShift RPC.
+	OpsServiceSetTeamShiftProcedure = "/tank.agentops.v1.OpsService/SetTeamShift"
+	// OpsServiceGetTeamReplayProcedure is the fully-qualified name of the OpsService's GetTeamReplay
+	// RPC.
+	OpsServiceGetTeamReplayProcedure = "/tank.agentops.v1.OpsService/GetTeamReplay"
+	// OpsServicePublishTemplateProcedure is the fully-qualified name of the OpsService's
+	// PublishTemplate RPC.
+	OpsServicePublishTemplateProcedure = "/tank.agentops.v1.OpsService/PublishTemplate"
 )
 
 // OpsServiceClient is a client for the tank.agentops.v1.OpsService service.
@@ -70,6 +78,9 @@ type OpsServiceClient interface {
 	ImportTeam(context.Context, *connect.Request[v1.ImportTeamRequest]) (*connect.Response[v1.ImportTeamResponse], error)
 	SetTeamPause(context.Context, *connect.Request[v1.SetTeamPauseRequest]) (*connect.Response[v1.SetTeamPauseResponse], error)
 	StopTeam(context.Context, *connect.Request[v1.StopTeamRequest]) (*connect.Response[v1.StopTeamResponse], error)
+	SetTeamShift(context.Context, *connect.Request[v1.SetTeamShiftRequest]) (*connect.Response[v1.SetTeamShiftResponse], error)
+	GetTeamReplay(context.Context, *connect.Request[v1.GetTeamReplayRequest]) (*connect.Response[v1.GetTeamReplayResponse], error)
+	PublishTemplate(context.Context, *connect.Request[v1.PublishTemplateRequest]) (*connect.Response[v1.PublishTemplateResponse], error)
 }
 
 // NewOpsServiceClient constructs a client for the tank.agentops.v1.OpsService service. By default,
@@ -149,22 +160,43 @@ func NewOpsServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...
 			connect.WithSchema(opsServiceMethods.ByName("StopTeam")),
 			connect.WithClientOptions(opts...),
 		),
+		setTeamShift: connect.NewClient[v1.SetTeamShiftRequest, v1.SetTeamShiftResponse](
+			httpClient,
+			baseURL+OpsServiceSetTeamShiftProcedure,
+			connect.WithSchema(opsServiceMethods.ByName("SetTeamShift")),
+			connect.WithClientOptions(opts...),
+		),
+		getTeamReplay: connect.NewClient[v1.GetTeamReplayRequest, v1.GetTeamReplayResponse](
+			httpClient,
+			baseURL+OpsServiceGetTeamReplayProcedure,
+			connect.WithSchema(opsServiceMethods.ByName("GetTeamReplay")),
+			connect.WithClientOptions(opts...),
+		),
+		publishTemplate: connect.NewClient[v1.PublishTemplateRequest, v1.PublishTemplateResponse](
+			httpClient,
+			baseURL+OpsServicePublishTemplateProcedure,
+			connect.WithSchema(opsServiceMethods.ByName("PublishTemplate")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // opsServiceClient implements OpsServiceClient.
 type opsServiceClient struct {
-	listTeams    *connect.Client[v1.ListTeamsRequest, v1.ListTeamsResponse]
-	getTeam      *connect.Client[v1.GetTeamRequest, v1.GetTeamResponse]
-	createTeam   *connect.Client[v1.CreateTeamRequest, v1.CreateTeamResponse]
-	updateTeam   *connect.Client[v1.UpdateTeamRequest, v1.UpdateTeamResponse]
-	deleteTeam   *connect.Client[v1.DeleteTeamRequest, v1.DeleteTeamResponse]
-	attachTeam   *connect.Client[v1.AttachTeamRequest, v1.AttachTeamResponse]
-	detachTeam   *connect.Client[v1.DetachTeamRequest, v1.DetachTeamResponse]
-	exportTeam   *connect.Client[v1.ExportTeamRequest, v1.ExportTeamResponse]
-	importTeam   *connect.Client[v1.ImportTeamRequest, v1.ImportTeamResponse]
-	setTeamPause *connect.Client[v1.SetTeamPauseRequest, v1.SetTeamPauseResponse]
-	stopTeam     *connect.Client[v1.StopTeamRequest, v1.StopTeamResponse]
+	listTeams       *connect.Client[v1.ListTeamsRequest, v1.ListTeamsResponse]
+	getTeam         *connect.Client[v1.GetTeamRequest, v1.GetTeamResponse]
+	createTeam      *connect.Client[v1.CreateTeamRequest, v1.CreateTeamResponse]
+	updateTeam      *connect.Client[v1.UpdateTeamRequest, v1.UpdateTeamResponse]
+	deleteTeam      *connect.Client[v1.DeleteTeamRequest, v1.DeleteTeamResponse]
+	attachTeam      *connect.Client[v1.AttachTeamRequest, v1.AttachTeamResponse]
+	detachTeam      *connect.Client[v1.DetachTeamRequest, v1.DetachTeamResponse]
+	exportTeam      *connect.Client[v1.ExportTeamRequest, v1.ExportTeamResponse]
+	importTeam      *connect.Client[v1.ImportTeamRequest, v1.ImportTeamResponse]
+	setTeamPause    *connect.Client[v1.SetTeamPauseRequest, v1.SetTeamPauseResponse]
+	stopTeam        *connect.Client[v1.StopTeamRequest, v1.StopTeamResponse]
+	setTeamShift    *connect.Client[v1.SetTeamShiftRequest, v1.SetTeamShiftResponse]
+	getTeamReplay   *connect.Client[v1.GetTeamReplayRequest, v1.GetTeamReplayResponse]
+	publishTemplate *connect.Client[v1.PublishTemplateRequest, v1.PublishTemplateResponse]
 }
 
 // ListTeams calls tank.agentops.v1.OpsService.ListTeams.
@@ -222,6 +254,21 @@ func (c *opsServiceClient) StopTeam(ctx context.Context, req *connect.Request[v1
 	return c.stopTeam.CallUnary(ctx, req)
 }
 
+// SetTeamShift calls tank.agentops.v1.OpsService.SetTeamShift.
+func (c *opsServiceClient) SetTeamShift(ctx context.Context, req *connect.Request[v1.SetTeamShiftRequest]) (*connect.Response[v1.SetTeamShiftResponse], error) {
+	return c.setTeamShift.CallUnary(ctx, req)
+}
+
+// GetTeamReplay calls tank.agentops.v1.OpsService.GetTeamReplay.
+func (c *opsServiceClient) GetTeamReplay(ctx context.Context, req *connect.Request[v1.GetTeamReplayRequest]) (*connect.Response[v1.GetTeamReplayResponse], error) {
+	return c.getTeamReplay.CallUnary(ctx, req)
+}
+
+// PublishTemplate calls tank.agentops.v1.OpsService.PublishTemplate.
+func (c *opsServiceClient) PublishTemplate(ctx context.Context, req *connect.Request[v1.PublishTemplateRequest]) (*connect.Response[v1.PublishTemplateResponse], error) {
+	return c.publishTemplate.CallUnary(ctx, req)
+}
+
 // OpsServiceHandler is an implementation of the tank.agentops.v1.OpsService service.
 type OpsServiceHandler interface {
 	ListTeams(context.Context, *connect.Request[v1.ListTeamsRequest]) (*connect.Response[v1.ListTeamsResponse], error)
@@ -235,6 +282,9 @@ type OpsServiceHandler interface {
 	ImportTeam(context.Context, *connect.Request[v1.ImportTeamRequest]) (*connect.Response[v1.ImportTeamResponse], error)
 	SetTeamPause(context.Context, *connect.Request[v1.SetTeamPauseRequest]) (*connect.Response[v1.SetTeamPauseResponse], error)
 	StopTeam(context.Context, *connect.Request[v1.StopTeamRequest]) (*connect.Response[v1.StopTeamResponse], error)
+	SetTeamShift(context.Context, *connect.Request[v1.SetTeamShiftRequest]) (*connect.Response[v1.SetTeamShiftResponse], error)
+	GetTeamReplay(context.Context, *connect.Request[v1.GetTeamReplayRequest]) (*connect.Response[v1.GetTeamReplayResponse], error)
+	PublishTemplate(context.Context, *connect.Request[v1.PublishTemplateRequest]) (*connect.Response[v1.PublishTemplateResponse], error)
 }
 
 // NewOpsServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -310,6 +360,24 @@ func NewOpsServiceHandler(svc OpsServiceHandler, opts ...connect.HandlerOption) 
 		connect.WithSchema(opsServiceMethods.ByName("StopTeam")),
 		connect.WithHandlerOptions(opts...),
 	)
+	opsServiceSetTeamShiftHandler := connect.NewUnaryHandler(
+		OpsServiceSetTeamShiftProcedure,
+		svc.SetTeamShift,
+		connect.WithSchema(opsServiceMethods.ByName("SetTeamShift")),
+		connect.WithHandlerOptions(opts...),
+	)
+	opsServiceGetTeamReplayHandler := connect.NewUnaryHandler(
+		OpsServiceGetTeamReplayProcedure,
+		svc.GetTeamReplay,
+		connect.WithSchema(opsServiceMethods.ByName("GetTeamReplay")),
+		connect.WithHandlerOptions(opts...),
+	)
+	opsServicePublishTemplateHandler := connect.NewUnaryHandler(
+		OpsServicePublishTemplateProcedure,
+		svc.PublishTemplate,
+		connect.WithSchema(opsServiceMethods.ByName("PublishTemplate")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agentops.v1.OpsService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case OpsServiceListTeamsProcedure:
@@ -334,6 +402,12 @@ func NewOpsServiceHandler(svc OpsServiceHandler, opts ...connect.HandlerOption) 
 			opsServiceSetTeamPauseHandler.ServeHTTP(w, r)
 		case OpsServiceStopTeamProcedure:
 			opsServiceStopTeamHandler.ServeHTTP(w, r)
+		case OpsServiceSetTeamShiftProcedure:
+			opsServiceSetTeamShiftHandler.ServeHTTP(w, r)
+		case OpsServiceGetTeamReplayProcedure:
+			opsServiceGetTeamReplayHandler.ServeHTTP(w, r)
+		case OpsServicePublishTemplateProcedure:
+			opsServicePublishTemplateHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -385,4 +459,16 @@ func (UnimplementedOpsServiceHandler) SetTeamPause(context.Context, *connect.Req
 
 func (UnimplementedOpsServiceHandler) StopTeam(context.Context, *connect.Request[v1.StopTeamRequest]) (*connect.Response[v1.StopTeamResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentops.v1.OpsService.StopTeam is not implemented"))
+}
+
+func (UnimplementedOpsServiceHandler) SetTeamShift(context.Context, *connect.Request[v1.SetTeamShiftRequest]) (*connect.Response[v1.SetTeamShiftResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentops.v1.OpsService.SetTeamShift is not implemented"))
+}
+
+func (UnimplementedOpsServiceHandler) GetTeamReplay(context.Context, *connect.Request[v1.GetTeamReplayRequest]) (*connect.Response[v1.GetTeamReplayResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentops.v1.OpsService.GetTeamReplay is not implemented"))
+}
+
+func (UnimplementedOpsServiceHandler) PublishTemplate(context.Context, *connect.Request[v1.PublishTemplateRequest]) (*connect.Response[v1.PublishTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentops.v1.OpsService.PublishTemplate is not implemented"))
 }

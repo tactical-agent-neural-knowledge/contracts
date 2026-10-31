@@ -112,7 +112,74 @@ message Team {
   // agents never work the same thing at once.
   repeated Claim claims = 20;
   TeamSlo slo = 21;
+  // A shift: the team works a backlog on its own at a time of day, inside an envelope,
+  // and posts a brief when the shift ends.
+  Shift shift = 22;
+  // What the team learned, newest last: lines its hand-offs reported done and what
+  // members chose to remember. Every member's run reads them.
+  repeated string memory = 23;
 }
+
+message Shift {
+  bool enabled = 1;
+  int32 start_hour_utc = 2;   // 0..23
+  int32 hours = 3;            // how long the shift runs; the brief posts at the end
+  double usd = 4;             // the shift's envelope
+  string ask = 5;             // what to work on: "the backlog in #eng", a list, a goal
+  string channel_id = 6;      // the Tread the shift runs in (one the team is attached to)
+  google.protobuf.Timestamp last_started_at = 7;
+  google.protobuf.Timestamp last_brief_at = 8;
+}
+
+message SetTeamShiftRequest {
+  string workspace_id = 1;
+  string team_id = 2;
+  Shift shift = 3;
+}
+message SetTeamShiftResponse { Team team = 1; }
+
+// Replay: the team's runs and hand-offs over a window, as a tree with cost on every
+// node, so "why did this cost $40" has an answer per branch.
+message ReplayRun {
+  string run_id = 1;
+  string parent_run_id = 2;
+  string member_id = 3;
+  string title = 4;            // who ran it
+  string handle = 5;
+  string ask = 6;
+  string state = 7;
+  google.protobuf.Timestamp started_at = 8;
+  google.protobuf.Timestamp ended_at = 9;
+  double cost_usd = 10;        // this run alone, at the Tread rate
+  double tree_cost_usd = 11;   // this run and every hand-off under it
+  string verdict = 12;         // accepted | rejected | "" for a hand-off
+  string channel_id = 13;
+  string thread_root_id = 14;
+  string pr_url = 15;
+  int32 depth = 16;
+  bool person = 17;            // a hand-off to a person (state waiting | done | timed_out)
+  string requested_by = 18;
+}
+message GetTeamReplayRequest {
+  string workspace_id = 1;
+  string team_id = 2;
+  google.protobuf.Timestamp since = 3;  // default: seven days
+  google.protobuf.Timestamp until = 4;
+}
+message GetTeamReplayResponse {
+  repeated ReplayRun runs = 1;  // oldest first, parents before their hand-offs
+  double total_usd = 2;
+}
+
+// Publish the team as a template others start from: the workspace's own, or everyone's.
+message PublishTemplateRequest {
+  string workspace_id = 1;
+  string team_id = 2;
+  string name = 3;
+  string summary = 4;
+  bool everyone = 5;  // share across every workspace; false keeps it in this one
+}
+message PublishTemplateResponse { Template template = 1; }
 
 // A claim: one run holds one thing for its duration. A second run wanting it waits
 // or is told who has it.
@@ -162,6 +229,10 @@ message Template {
   string name = 2;
   string summary = 3;  // one line for the picker
   Team team = 4;       // name, handle, purpose, members, envelope filled; no ids
+  // Who shared it: "" for one TANK ships, the workspace's name for its own, or the
+  // sharing workspace's name for one shared with everyone.
+  string shared_by = 5;
+  bool mine = 6;       // this workspace published it (so it can be withdrawn)
 }
 
 message ListTeamsRequest {
@@ -251,4 +322,7 @@ service OpsService {
   rpc ImportTeam(ImportTeamRequest) returns (ImportTeamResponse);
   rpc SetTeamPause(SetTeamPauseRequest) returns (SetTeamPauseResponse);
   rpc StopTeam(StopTeamRequest) returns (StopTeamResponse);
+  rpc SetTeamShift(SetTeamShiftRequest) returns (SetTeamShiftResponse);
+  rpc GetTeamReplay(GetTeamReplayRequest) returns (GetTeamReplayResponse);
+  rpc PublishTemplate(PublishTemplateRequest) returns (PublishTemplateResponse);
 }
