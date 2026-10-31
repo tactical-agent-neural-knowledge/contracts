@@ -12,9 +12,11 @@ class Seat(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     SEAT_UNSPECIFIED: _ClassVar[Seat]
     SEAT_COORDINATOR: _ClassVar[Seat]
     SEAT_SPECIALIST: _ClassVar[Seat]
+    SEAT_PERSON: _ClassVar[Seat]
 SEAT_UNSPECIFIED: Seat
 SEAT_COORDINATOR: Seat
 SEAT_SPECIALIST: Seat
+SEAT_PERSON: Seat
 
 class ToolPolicy(_message.Message):
     __slots__ = ("allow", "deny")
@@ -35,7 +37,7 @@ class Envelope(_message.Message):
     def __init__(self, usd: _Optional[float] = ..., turns: _Optional[int] = ..., minutes: _Optional[int] = ...) -> None: ...
 
 class Member(_message.Message):
-    __slots__ = ("id", "agent_id", "principal_id", "seat", "title", "handle", "prompt", "models", "tools", "delegate", "delegate_to", "triggers", "envelope", "enabled", "spend_today_usd", "spend_month_usd", "runs_today", "running_now")
+    __slots__ = ("id", "agent_id", "principal_id", "seat", "title", "handle", "prompt", "models", "tools", "delegate", "delegate_to", "triggers", "envelope", "enabled", "spend_today_usd", "spend_month_usd", "runs_today", "running_now", "user_id", "record")
     ID_FIELD_NUMBER: _ClassVar[int]
     AGENT_ID_FIELD_NUMBER: _ClassVar[int]
     PRINCIPAL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -54,6 +56,8 @@ class Member(_message.Message):
     SPEND_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
     RUNS_TODAY_FIELD_NUMBER: _ClassVar[int]
     RUNNING_NOW_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    RECORD_FIELD_NUMBER: _ClassVar[int]
     id: str
     agent_id: str
     principal_id: str
@@ -72,7 +76,41 @@ class Member(_message.Message):
     spend_month_usd: float
     runs_today: int
     running_now: int
-    def __init__(self, id: _Optional[str] = ..., agent_id: _Optional[str] = ..., principal_id: _Optional[str] = ..., seat: _Optional[_Union[Seat, str]] = ..., title: _Optional[str] = ..., handle: _Optional[str] = ..., prompt: _Optional[str] = ..., models: _Optional[_Iterable[str]] = ..., tools: _Optional[_Union[ToolPolicy, _Mapping]] = ..., delegate: bool = ..., delegate_to: _Optional[_Iterable[str]] = ..., triggers: _Optional[_Iterable[str]] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., enabled: bool = ..., spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., running_now: _Optional[int] = ...) -> None: ...
+    user_id: str
+    record: MemberRecord
+    def __init__(self, id: _Optional[str] = ..., agent_id: _Optional[str] = ..., principal_id: _Optional[str] = ..., seat: _Optional[_Union[Seat, str]] = ..., title: _Optional[str] = ..., handle: _Optional[str] = ..., prompt: _Optional[str] = ..., models: _Optional[_Iterable[str]] = ..., tools: _Optional[_Union[ToolPolicy, _Mapping]] = ..., delegate: bool = ..., delegate_to: _Optional[_Iterable[str]] = ..., triggers: _Optional[_Iterable[str]] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., enabled: bool = ..., spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., running_now: _Optional[int] = ..., user_id: _Optional[str] = ..., record: _Optional[_Union[MemberRecord, _Mapping]] = ...) -> None: ...
+
+class MemberRecord(_message.Message):
+    __slots__ = ("finished", "failed", "accepted", "rejected", "avg_cost_usd", "avg_minutes", "kinds")
+    FINISHED_FIELD_NUMBER: _ClassVar[int]
+    FAILED_FIELD_NUMBER: _ClassVar[int]
+    ACCEPTED_FIELD_NUMBER: _ClassVar[int]
+    REJECTED_FIELD_NUMBER: _ClassVar[int]
+    AVG_COST_USD_FIELD_NUMBER: _ClassVar[int]
+    AVG_MINUTES_FIELD_NUMBER: _ClassVar[int]
+    KINDS_FIELD_NUMBER: _ClassVar[int]
+    finished: int
+    failed: int
+    accepted: int
+    rejected: int
+    avg_cost_usd: float
+    avg_minutes: float
+    kinds: _containers.RepeatedCompositeFieldContainer[KindRecord]
+    def __init__(self, finished: _Optional[int] = ..., failed: _Optional[int] = ..., accepted: _Optional[int] = ..., rejected: _Optional[int] = ..., avg_cost_usd: _Optional[float] = ..., avg_minutes: _Optional[float] = ..., kinds: _Optional[_Iterable[_Union[KindRecord, _Mapping]]] = ...) -> None: ...
+
+class KindRecord(_message.Message):
+    __slots__ = ("kind", "finished", "failed", "accepted", "rejected")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    FINISHED_FIELD_NUMBER: _ClassVar[int]
+    FAILED_FIELD_NUMBER: _ClassVar[int]
+    ACCEPTED_FIELD_NUMBER: _ClassVar[int]
+    REJECTED_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    finished: int
+    failed: int
+    accepted: int
+    rejected: int
+    def __init__(self, kind: _Optional[str] = ..., finished: _Optional[int] = ..., failed: _Optional[int] = ..., accepted: _Optional[int] = ..., rejected: _Optional[int] = ...) -> None: ...
 
 class Team(_message.Message):
     __slots__ = ("id", "workspace_id", "name", "handle", "purpose", "members", "channel_ids", "daily_cap_usd", "concurrent_cap", "envelope", "spend_today_usd", "spend_month_usd", "runs_today", "running_now", "created_at", "updated_at", "created_by", "board_id", "paused", "claims", "slo")

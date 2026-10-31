@@ -21,6 +21,7 @@ enum Seat {
   SEAT_UNSPECIFIED = 0;
   SEAT_COORDINATOR = 1;  // receives the team's asks; decides what to hand to whom
   SEAT_SPECIALIST = 2;   // does bounded work and reports back
+  SEAT_PERSON = 3;       // a person on the team: a hand-off to them is a question with a deadline
 }
 
 // Which tools a member may use, by tool name as the runner knows them (Bash, Edit,
@@ -59,6 +60,29 @@ message Member {
   double spend_month_usd = 16;
   int32 runs_today = 17;
   int32 running_now = 18;
+  // A person's seat: their user id; the handle is theirs; no agent, no prompt.
+  string user_id = 19;
+  // The evidence: what this member actually finished, by kind of ask, so the
+  // coordinator routes by record rather than by the roster's claims.
+  MemberRecord record = 20;
+}
+
+// What a member has actually done over thirty days.
+message MemberRecord {
+  int32 finished = 1;
+  int32 failed = 2;
+  int32 accepted = 3;        // hand-offs the coordinator accepted
+  int32 rejected = 4;
+  double avg_cost_usd = 5;
+  double avg_minutes = 6;
+  repeated KindRecord kinds = 7;
+}
+message KindRecord {
+  string kind = 1;           // the trigger the ask matched, else the run's task class
+  int32 finished = 2;
+  int32 failed = 3;
+  int32 accepted = 4;
+  int32 rejected = 5;
 }
 
 message Team {
