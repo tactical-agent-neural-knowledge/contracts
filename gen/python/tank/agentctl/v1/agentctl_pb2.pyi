@@ -39,6 +39,7 @@ class InboxKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     INBOX_KIND_APPROVAL: _ClassVar[InboxKind]
     INBOX_KIND_ANSWER: _ClassVar[InboxKind]
     INBOX_KIND_CANCEL: _ClassVar[InboxKind]
+    INBOX_KIND_HANDOFF: _ClassVar[InboxKind]
 RUN_PHASE_UNSPECIFIED: RunPhase
 RUN_PHASE_PLANNING: RunPhase
 RUN_PHASE_IMPLEMENTING: RunPhase
@@ -56,6 +57,7 @@ INBOX_KIND_STEER: InboxKind
 INBOX_KIND_APPROVAL: InboxKind
 INBOX_KIND_ANSWER: InboxKind
 INBOX_KIND_CANCEL: InboxKind
+INBOX_KIND_HANDOFF: InboxKind
 
 class Attachment(_message.Message):
     __slots__ = ("file_id", "name", "mime", "size", "message_id")
@@ -130,7 +132,7 @@ class ApprovedPlan(_message.Message):
     def __init__(self, plan_hash: _Optional[str] = ..., summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[_blocks_pb2.PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., approved_by: _Optional[str] = ..., approved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback: _Optional[str] = ...) -> None: ...
 
 class RunContext(_message.Message):
-    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan")
+    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan", "mode", "team", "parent_run_id", "handoff", "envelope_left")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -163,6 +165,11 @@ class RunContext(_message.Message):
     WORKBENCH_BOARD_ID_FIELD_NUMBER: _ClassVar[int]
     TREAD_BRIEF_FIELD_NUMBER: _ClassVar[int]
     TREAD_PLAN_FIELD_NUMBER: _ClassVar[int]
+    MODE_FIELD_NUMBER: _ClassVar[int]
+    TEAM_FIELD_NUMBER: _ClassVar[int]
+    PARENT_RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    HANDOFF_FIELD_NUMBER: _ClassVar[int]
+    ENVELOPE_LEFT_FIELD_NUMBER: _ClassVar[int]
     run_id: str
     workspace_id: str
     channel_id: str
@@ -195,7 +202,162 @@ class RunContext(_message.Message):
     workbench_board_id: str
     tread_brief: str
     tread_plan: _agent_pb2.TreadPlan
-    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ...) -> None: ...
+    mode: str
+    team: TeamContext
+    parent_run_id: str
+    handoff: Handoff
+    envelope_left: Envelope
+    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ...) -> None: ...
+
+class TeamContext(_message.Message):
+    __slots__ = ("team_id", "name", "handle", "purpose", "members", "member_id", "coordinator")
+    TEAM_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    HANDLE_FIELD_NUMBER: _ClassVar[int]
+    PURPOSE_FIELD_NUMBER: _ClassVar[int]
+    MEMBERS_FIELD_NUMBER: _ClassVar[int]
+    MEMBER_ID_FIELD_NUMBER: _ClassVar[int]
+    COORDINATOR_FIELD_NUMBER: _ClassVar[int]
+    team_id: str
+    name: str
+    handle: str
+    purpose: str
+    members: _containers.RepeatedCompositeFieldContainer[TeamMember]
+    member_id: str
+    coordinator: bool
+    def __init__(self, team_id: _Optional[str] = ..., name: _Optional[str] = ..., handle: _Optional[str] = ..., purpose: _Optional[str] = ..., members: _Optional[_Iterable[_Union[TeamMember, _Mapping]]] = ..., member_id: _Optional[str] = ..., coordinator: bool = ...) -> None: ...
+
+class TeamMember(_message.Message):
+    __slots__ = ("member_id", "agent_id", "title", "handle", "coordinator", "triggers", "delegate", "delegate_to", "envelope", "enabled", "is_me")
+    MEMBER_ID_FIELD_NUMBER: _ClassVar[int]
+    AGENT_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    HANDLE_FIELD_NUMBER: _ClassVar[int]
+    COORDINATOR_FIELD_NUMBER: _ClassVar[int]
+    TRIGGERS_FIELD_NUMBER: _ClassVar[int]
+    DELEGATE_FIELD_NUMBER: _ClassVar[int]
+    DELEGATE_TO_FIELD_NUMBER: _ClassVar[int]
+    ENVELOPE_FIELD_NUMBER: _ClassVar[int]
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    IS_ME_FIELD_NUMBER: _ClassVar[int]
+    member_id: str
+    agent_id: str
+    title: str
+    handle: str
+    coordinator: bool
+    triggers: _containers.RepeatedScalarFieldContainer[str]
+    delegate: bool
+    delegate_to: _containers.RepeatedScalarFieldContainer[str]
+    envelope: Envelope
+    enabled: bool
+    is_me: bool
+    def __init__(self, member_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., title: _Optional[str] = ..., handle: _Optional[str] = ..., coordinator: bool = ..., triggers: _Optional[_Iterable[str]] = ..., delegate: bool = ..., delegate_to: _Optional[_Iterable[str]] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., enabled: bool = ..., is_me: bool = ...) -> None: ...
+
+class Envelope(_message.Message):
+    __slots__ = ("usd", "turns", "minutes")
+    USD_FIELD_NUMBER: _ClassVar[int]
+    TURNS_FIELD_NUMBER: _ClassVar[int]
+    MINUTES_FIELD_NUMBER: _ClassVar[int]
+    usd: float
+    turns: int
+    minutes: int
+    def __init__(self, usd: _Optional[float] = ..., turns: _Optional[int] = ..., minutes: _Optional[int] = ...) -> None: ...
+
+class Handoff(_message.Message):
+    __slots__ = ("ask", "return_shape", "acceptance_check", "envelope", "from_title", "to_title")
+    ASK_FIELD_NUMBER: _ClassVar[int]
+    RETURN_SHAPE_FIELD_NUMBER: _ClassVar[int]
+    ACCEPTANCE_CHECK_FIELD_NUMBER: _ClassVar[int]
+    ENVELOPE_FIELD_NUMBER: _ClassVar[int]
+    FROM_TITLE_FIELD_NUMBER: _ClassVar[int]
+    TO_TITLE_FIELD_NUMBER: _ClassVar[int]
+    ask: str
+    return_shape: str
+    acceptance_check: str
+    envelope: Envelope
+    from_title: str
+    to_title: str
+    def __init__(self, ask: _Optional[str] = ..., return_shape: _Optional[str] = ..., acceptance_check: _Optional[str] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., from_title: _Optional[str] = ..., to_title: _Optional[str] = ...) -> None: ...
+
+class HandoffStatus(_message.Message):
+    __slots__ = ("child_run_id", "member_id", "title", "handle", "state", "cost_usd", "envelope", "handoff", "result", "thread_root_id", "verdict", "verdict_note")
+    CHILD_RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    MEMBER_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    HANDLE_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    COST_USD_FIELD_NUMBER: _ClassVar[int]
+    ENVELOPE_FIELD_NUMBER: _ClassVar[int]
+    HANDOFF_FIELD_NUMBER: _ClassVar[int]
+    RESULT_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    VERDICT_FIELD_NUMBER: _ClassVar[int]
+    VERDICT_NOTE_FIELD_NUMBER: _ClassVar[int]
+    child_run_id: str
+    member_id: str
+    title: str
+    handle: str
+    state: str
+    cost_usd: float
+    envelope: Envelope
+    handoff: Handoff
+    result: str
+    thread_root_id: str
+    verdict: str
+    verdict_note: str
+    def __init__(self, child_run_id: _Optional[str] = ..., member_id: _Optional[str] = ..., title: _Optional[str] = ..., handle: _Optional[str] = ..., state: _Optional[str] = ..., cost_usd: _Optional[float] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., result: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., verdict: _Optional[str] = ..., verdict_note: _Optional[str] = ...) -> None: ...
+
+class DelegateRequest(_message.Message):
+    __slots__ = ("member_handle", "ask", "return_shape", "acceptance_check", "envelope")
+    MEMBER_HANDLE_FIELD_NUMBER: _ClassVar[int]
+    ASK_FIELD_NUMBER: _ClassVar[int]
+    RETURN_SHAPE_FIELD_NUMBER: _ClassVar[int]
+    ACCEPTANCE_CHECK_FIELD_NUMBER: _ClassVar[int]
+    ENVELOPE_FIELD_NUMBER: _ClassVar[int]
+    member_handle: str
+    ask: str
+    return_shape: str
+    acceptance_check: str
+    envelope: Envelope
+    def __init__(self, member_handle: _Optional[str] = ..., ask: _Optional[str] = ..., return_shape: _Optional[str] = ..., acceptance_check: _Optional[str] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ...) -> None: ...
+
+class DelegateResponse(_message.Message):
+    __slots__ = ("child_run_id", "thread_root_id", "envelope", "envelope_left")
+    CHILD_RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    ENVELOPE_FIELD_NUMBER: _ClassVar[int]
+    ENVELOPE_LEFT_FIELD_NUMBER: _ClassVar[int]
+    child_run_id: str
+    thread_root_id: str
+    envelope: Envelope
+    envelope_left: Envelope
+    def __init__(self, child_run_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ...) -> None: ...
+
+class AcceptHandoffRequest(_message.Message):
+    __slots__ = ("child_run_id", "accepted", "note")
+    CHILD_RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    ACCEPTED_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    child_run_id: str
+    accepted: bool
+    note: str
+    def __init__(self, child_run_id: _Optional[str] = ..., accepted: bool = ..., note: _Optional[str] = ...) -> None: ...
+
+class AcceptHandoffResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListHandoffsRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListHandoffsResponse(_message.Message):
+    __slots__ = ("handoffs", "envelope_left")
+    HANDOFFS_FIELD_NUMBER: _ClassVar[int]
+    ENVELOPE_LEFT_FIELD_NUMBER: _ClassVar[int]
+    handoffs: _containers.RepeatedCompositeFieldContainer[HandoffStatus]
+    envelope_left: Envelope
+    def __init__(self, handoffs: _Optional[_Iterable[_Union[HandoffStatus, _Mapping]]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ...) -> None: ...
 
 class GetRunContextRequest(_message.Message):
     __slots__ = ()
@@ -1228,7 +1390,7 @@ class SessionStoreDeleteResponse(_message.Message):
     def __init__(self) -> None: ...
 
 class InboxItem(_message.Message):
-    __slots__ = ("seq", "kind", "user_id", "user_name", "text", "gate_id", "decision", "card_id", "at")
+    __slots__ = ("seq", "kind", "user_id", "user_name", "text", "gate_id", "decision", "card_id", "at", "handoff")
     SEQ_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
@@ -1238,6 +1400,7 @@ class InboxItem(_message.Message):
     DECISION_FIELD_NUMBER: _ClassVar[int]
     CARD_ID_FIELD_NUMBER: _ClassVar[int]
     AT_FIELD_NUMBER: _ClassVar[int]
+    HANDOFF_FIELD_NUMBER: _ClassVar[int]
     seq: int
     kind: InboxKind
     user_id: str
@@ -1247,7 +1410,8 @@ class InboxItem(_message.Message):
     decision: str
     card_id: str
     at: _timestamp_pb2.Timestamp
-    def __init__(self, seq: _Optional[int] = ..., kind: _Optional[_Union[InboxKind, str]] = ..., user_id: _Optional[str] = ..., user_name: _Optional[str] = ..., text: _Optional[str] = ..., gate_id: _Optional[str] = ..., decision: _Optional[str] = ..., card_id: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    handoff: HandoffStatus
+    def __init__(self, seq: _Optional[int] = ..., kind: _Optional[_Union[InboxKind, str]] = ..., user_id: _Optional[str] = ..., user_name: _Optional[str] = ..., text: _Optional[str] = ..., gate_id: _Optional[str] = ..., decision: _Optional[str] = ..., card_id: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., handoff: _Optional[_Union[HandoffStatus, _Mapping]] = ...) -> None: ...
 
 class PollInboxRequest(_message.Message):
     __slots__ = ("after_seq", "wait_ms")

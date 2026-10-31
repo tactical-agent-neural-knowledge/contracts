@@ -73,6 +73,14 @@ const (
 	// RunnerServiceReportCompletionProcedure is the fully-qualified name of the RunnerService's
 	// ReportCompletion RPC.
 	RunnerServiceReportCompletionProcedure = "/tank.agentctl.v1.RunnerService/ReportCompletion"
+	// RunnerServiceDelegateProcedure is the fully-qualified name of the RunnerService's Delegate RPC.
+	RunnerServiceDelegateProcedure = "/tank.agentctl.v1.RunnerService/Delegate"
+	// RunnerServiceAcceptHandoffProcedure is the fully-qualified name of the RunnerService's
+	// AcceptHandoff RPC.
+	RunnerServiceAcceptHandoffProcedure = "/tank.agentctl.v1.RunnerService/AcceptHandoff"
+	// RunnerServiceListHandoffsProcedure is the fully-qualified name of the RunnerService's
+	// ListHandoffs RPC.
+	RunnerServiceListHandoffsProcedure = "/tank.agentctl.v1.RunnerService/ListHandoffs"
 	// RunnerServiceCheckLiveProcedure is the fully-qualified name of the RunnerService's CheckLive RPC.
 	RunnerServiceCheckLiveProcedure = "/tank.agentctl.v1.RunnerService/CheckLive"
 	// RunnerServiceReadProductProcedure is the fully-qualified name of the RunnerService's ReadProduct
@@ -315,6 +323,11 @@ type RunnerServiceClient interface {
 	// How far the run got against the whole ask (2026-10-23): what is done, what is left,
 	// and what needs a person. Items left with nothing blocked start a continuation run.
 	ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error)
+	// Ops teams: hand work to a member as a child run, judge what came back, see where
+	// every hand-off stands.
+	Delegate(context.Context, *connect.Request[v1.DelegateRequest]) (*connect.Response[v1.DelegateResponse], error)
+	AcceptHandoff(context.Context, *connect.Request[v1.AcceptHandoffRequest]) (*connect.Response[v1.AcceptHandoffResponse], error)
+	ListHandoffs(context.Context, *connect.Request[v1.ListHandoffsRequest]) (*connect.Response[v1.ListHandoffsResponse], error)
 	// Opens a page of the product TANK hosts for this run's repository, as a visitor would,
 	// once it serves the expected build: status, errors, how much it shows, a screenshot.
 	CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error)
@@ -450,6 +463,24 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServiceReportCompletionProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("ReportCompletion")),
+			connect.WithClientOptions(opts...),
+		),
+		delegate: connect.NewClient[v1.DelegateRequest, v1.DelegateResponse](
+			httpClient,
+			baseURL+RunnerServiceDelegateProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("Delegate")),
+			connect.WithClientOptions(opts...),
+		),
+		acceptHandoff: connect.NewClient[v1.AcceptHandoffRequest, v1.AcceptHandoffResponse](
+			httpClient,
+			baseURL+RunnerServiceAcceptHandoffProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("AcceptHandoff")),
+			connect.WithClientOptions(opts...),
+		),
+		listHandoffs: connect.NewClient[v1.ListHandoffsRequest, v1.ListHandoffsResponse](
+			httpClient,
+			baseURL+RunnerServiceListHandoffsProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ListHandoffs")),
 			connect.WithClientOptions(opts...),
 		),
 		checkLive: connect.NewClient[v1.CheckLiveRequest, v1.CheckLiveResponse](
@@ -698,6 +729,9 @@ type runnerServiceClient struct {
 	updatePlanSteps          *connect.Client[v1.UpdatePlanStepsRequest, v1.UpdatePlanStepsResponse]
 	updateTreadPlan          *connect.Client[v1.UpdateTreadPlanRequest, v1.UpdateTreadPlanResponse]
 	reportCompletion         *connect.Client[v1.ReportCompletionRequest, v1.ReportCompletionResponse]
+	delegate                 *connect.Client[v1.DelegateRequest, v1.DelegateResponse]
+	acceptHandoff            *connect.Client[v1.AcceptHandoffRequest, v1.AcceptHandoffResponse]
+	listHandoffs             *connect.Client[v1.ListHandoffsRequest, v1.ListHandoffsResponse]
 	checkLive                *connect.Client[v1.CheckLiveRequest, v1.CheckLiveResponse]
 	readProduct              *connect.Client[v1.ReadProductRequest, v1.ReadProductResponse]
 	validateSpec             *connect.Client[v1.ValidateSpecRequest, v1.ValidateSpecResponse]
@@ -801,6 +835,21 @@ func (c *runnerServiceClient) UpdateTreadPlan(ctx context.Context, req *connect.
 // ReportCompletion calls tank.agentctl.v1.RunnerService.ReportCompletion.
 func (c *runnerServiceClient) ReportCompletion(ctx context.Context, req *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error) {
 	return c.reportCompletion.CallUnary(ctx, req)
+}
+
+// Delegate calls tank.agentctl.v1.RunnerService.Delegate.
+func (c *runnerServiceClient) Delegate(ctx context.Context, req *connect.Request[v1.DelegateRequest]) (*connect.Response[v1.DelegateResponse], error) {
+	return c.delegate.CallUnary(ctx, req)
+}
+
+// AcceptHandoff calls tank.agentctl.v1.RunnerService.AcceptHandoff.
+func (c *runnerServiceClient) AcceptHandoff(ctx context.Context, req *connect.Request[v1.AcceptHandoffRequest]) (*connect.Response[v1.AcceptHandoffResponse], error) {
+	return c.acceptHandoff.CallUnary(ctx, req)
+}
+
+// ListHandoffs calls tank.agentctl.v1.RunnerService.ListHandoffs.
+func (c *runnerServiceClient) ListHandoffs(ctx context.Context, req *connect.Request[v1.ListHandoffsRequest]) (*connect.Response[v1.ListHandoffsResponse], error) {
+	return c.listHandoffs.CallUnary(ctx, req)
 }
 
 // CheckLive calls tank.agentctl.v1.RunnerService.CheckLive.
@@ -1010,6 +1059,11 @@ type RunnerServiceHandler interface {
 	// How far the run got against the whole ask (2026-10-23): what is done, what is left,
 	// and what needs a person. Items left with nothing blocked start a continuation run.
 	ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error)
+	// Ops teams: hand work to a member as a child run, judge what came back, see where
+	// every hand-off stands.
+	Delegate(context.Context, *connect.Request[v1.DelegateRequest]) (*connect.Response[v1.DelegateResponse], error)
+	AcceptHandoff(context.Context, *connect.Request[v1.AcceptHandoffRequest]) (*connect.Response[v1.AcceptHandoffResponse], error)
+	ListHandoffs(context.Context, *connect.Request[v1.ListHandoffsRequest]) (*connect.Response[v1.ListHandoffsResponse], error)
 	// Opens a page of the product TANK hosts for this run's repository, as a visitor would,
 	// once it serves the expected build: status, errors, how much it shows, a screenshot.
 	CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error)
@@ -1141,6 +1195,24 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceReportCompletionProcedure,
 		svc.ReportCompletion,
 		connect.WithSchema(runnerServiceMethods.ByName("ReportCompletion")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceDelegateHandler := connect.NewUnaryHandler(
+		RunnerServiceDelegateProcedure,
+		svc.Delegate,
+		connect.WithSchema(runnerServiceMethods.ByName("Delegate")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceAcceptHandoffHandler := connect.NewUnaryHandler(
+		RunnerServiceAcceptHandoffProcedure,
+		svc.AcceptHandoff,
+		connect.WithSchema(runnerServiceMethods.ByName("AcceptHandoff")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceListHandoffsHandler := connect.NewUnaryHandler(
+		RunnerServiceListHandoffsProcedure,
+		svc.ListHandoffs,
+		connect.WithSchema(runnerServiceMethods.ByName("ListHandoffs")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServiceCheckLiveHandler := connect.NewUnaryHandler(
@@ -1399,6 +1471,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceUpdateTreadPlanHandler.ServeHTTP(w, r)
 		case RunnerServiceReportCompletionProcedure:
 			runnerServiceReportCompletionHandler.ServeHTTP(w, r)
+		case RunnerServiceDelegateProcedure:
+			runnerServiceDelegateHandler.ServeHTTP(w, r)
+		case RunnerServiceAcceptHandoffProcedure:
+			runnerServiceAcceptHandoffHandler.ServeHTTP(w, r)
+		case RunnerServiceListHandoffsProcedure:
+			runnerServiceListHandoffsHandler.ServeHTTP(w, r)
 		case RunnerServiceCheckLiveProcedure:
 			runnerServiceCheckLiveHandler.ServeHTTP(w, r)
 		case RunnerServiceReadProductProcedure:
@@ -1534,6 +1612,18 @@ func (UnimplementedRunnerServiceHandler) UpdateTreadPlan(context.Context, *conne
 
 func (UnimplementedRunnerServiceHandler) ReportCompletion(context.Context, *connect.Request[v1.ReportCompletionRequest]) (*connect.Response[v1.ReportCompletionResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReportCompletion is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) Delegate(context.Context, *connect.Request[v1.DelegateRequest]) (*connect.Response[v1.DelegateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.Delegate is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) AcceptHandoff(context.Context, *connect.Request[v1.AcceptHandoffRequest]) (*connect.Response[v1.AcceptHandoffResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.AcceptHandoff is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ListHandoffs(context.Context, *connect.Request[v1.ListHandoffsRequest]) (*connect.Response[v1.ListHandoffsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ListHandoffs is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error) {
