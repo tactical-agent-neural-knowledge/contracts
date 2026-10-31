@@ -51,6 +51,10 @@ const (
 	OpsServiceExportTeamProcedure = "/tank.agentops.v1.OpsService/ExportTeam"
 	// OpsServiceImportTeamProcedure is the fully-qualified name of the OpsService's ImportTeam RPC.
 	OpsServiceImportTeamProcedure = "/tank.agentops.v1.OpsService/ImportTeam"
+	// OpsServiceSetTeamPauseProcedure is the fully-qualified name of the OpsService's SetTeamPause RPC.
+	OpsServiceSetTeamPauseProcedure = "/tank.agentops.v1.OpsService/SetTeamPause"
+	// OpsServiceStopTeamProcedure is the fully-qualified name of the OpsService's StopTeam RPC.
+	OpsServiceStopTeamProcedure = "/tank.agentops.v1.OpsService/StopTeam"
 )
 
 // OpsServiceClient is a client for the tank.agentops.v1.OpsService service.
@@ -64,6 +68,8 @@ type OpsServiceClient interface {
 	DetachTeam(context.Context, *connect.Request[v1.DetachTeamRequest]) (*connect.Response[v1.DetachTeamResponse], error)
 	ExportTeam(context.Context, *connect.Request[v1.ExportTeamRequest]) (*connect.Response[v1.ExportTeamResponse], error)
 	ImportTeam(context.Context, *connect.Request[v1.ImportTeamRequest]) (*connect.Response[v1.ImportTeamResponse], error)
+	SetTeamPause(context.Context, *connect.Request[v1.SetTeamPauseRequest]) (*connect.Response[v1.SetTeamPauseResponse], error)
+	StopTeam(context.Context, *connect.Request[v1.StopTeamRequest]) (*connect.Response[v1.StopTeamResponse], error)
 }
 
 // NewOpsServiceClient constructs a client for the tank.agentops.v1.OpsService service. By default,
@@ -131,20 +137,34 @@ func NewOpsServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...
 			connect.WithSchema(opsServiceMethods.ByName("ImportTeam")),
 			connect.WithClientOptions(opts...),
 		),
+		setTeamPause: connect.NewClient[v1.SetTeamPauseRequest, v1.SetTeamPauseResponse](
+			httpClient,
+			baseURL+OpsServiceSetTeamPauseProcedure,
+			connect.WithSchema(opsServiceMethods.ByName("SetTeamPause")),
+			connect.WithClientOptions(opts...),
+		),
+		stopTeam: connect.NewClient[v1.StopTeamRequest, v1.StopTeamResponse](
+			httpClient,
+			baseURL+OpsServiceStopTeamProcedure,
+			connect.WithSchema(opsServiceMethods.ByName("StopTeam")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // opsServiceClient implements OpsServiceClient.
 type opsServiceClient struct {
-	listTeams  *connect.Client[v1.ListTeamsRequest, v1.ListTeamsResponse]
-	getTeam    *connect.Client[v1.GetTeamRequest, v1.GetTeamResponse]
-	createTeam *connect.Client[v1.CreateTeamRequest, v1.CreateTeamResponse]
-	updateTeam *connect.Client[v1.UpdateTeamRequest, v1.UpdateTeamResponse]
-	deleteTeam *connect.Client[v1.DeleteTeamRequest, v1.DeleteTeamResponse]
-	attachTeam *connect.Client[v1.AttachTeamRequest, v1.AttachTeamResponse]
-	detachTeam *connect.Client[v1.DetachTeamRequest, v1.DetachTeamResponse]
-	exportTeam *connect.Client[v1.ExportTeamRequest, v1.ExportTeamResponse]
-	importTeam *connect.Client[v1.ImportTeamRequest, v1.ImportTeamResponse]
+	listTeams    *connect.Client[v1.ListTeamsRequest, v1.ListTeamsResponse]
+	getTeam      *connect.Client[v1.GetTeamRequest, v1.GetTeamResponse]
+	createTeam   *connect.Client[v1.CreateTeamRequest, v1.CreateTeamResponse]
+	updateTeam   *connect.Client[v1.UpdateTeamRequest, v1.UpdateTeamResponse]
+	deleteTeam   *connect.Client[v1.DeleteTeamRequest, v1.DeleteTeamResponse]
+	attachTeam   *connect.Client[v1.AttachTeamRequest, v1.AttachTeamResponse]
+	detachTeam   *connect.Client[v1.DetachTeamRequest, v1.DetachTeamResponse]
+	exportTeam   *connect.Client[v1.ExportTeamRequest, v1.ExportTeamResponse]
+	importTeam   *connect.Client[v1.ImportTeamRequest, v1.ImportTeamResponse]
+	setTeamPause *connect.Client[v1.SetTeamPauseRequest, v1.SetTeamPauseResponse]
+	stopTeam     *connect.Client[v1.StopTeamRequest, v1.StopTeamResponse]
 }
 
 // ListTeams calls tank.agentops.v1.OpsService.ListTeams.
@@ -192,6 +212,16 @@ func (c *opsServiceClient) ImportTeam(ctx context.Context, req *connect.Request[
 	return c.importTeam.CallUnary(ctx, req)
 }
 
+// SetTeamPause calls tank.agentops.v1.OpsService.SetTeamPause.
+func (c *opsServiceClient) SetTeamPause(ctx context.Context, req *connect.Request[v1.SetTeamPauseRequest]) (*connect.Response[v1.SetTeamPauseResponse], error) {
+	return c.setTeamPause.CallUnary(ctx, req)
+}
+
+// StopTeam calls tank.agentops.v1.OpsService.StopTeam.
+func (c *opsServiceClient) StopTeam(ctx context.Context, req *connect.Request[v1.StopTeamRequest]) (*connect.Response[v1.StopTeamResponse], error) {
+	return c.stopTeam.CallUnary(ctx, req)
+}
+
 // OpsServiceHandler is an implementation of the tank.agentops.v1.OpsService service.
 type OpsServiceHandler interface {
 	ListTeams(context.Context, *connect.Request[v1.ListTeamsRequest]) (*connect.Response[v1.ListTeamsResponse], error)
@@ -203,6 +233,8 @@ type OpsServiceHandler interface {
 	DetachTeam(context.Context, *connect.Request[v1.DetachTeamRequest]) (*connect.Response[v1.DetachTeamResponse], error)
 	ExportTeam(context.Context, *connect.Request[v1.ExportTeamRequest]) (*connect.Response[v1.ExportTeamResponse], error)
 	ImportTeam(context.Context, *connect.Request[v1.ImportTeamRequest]) (*connect.Response[v1.ImportTeamResponse], error)
+	SetTeamPause(context.Context, *connect.Request[v1.SetTeamPauseRequest]) (*connect.Response[v1.SetTeamPauseResponse], error)
+	StopTeam(context.Context, *connect.Request[v1.StopTeamRequest]) (*connect.Response[v1.StopTeamResponse], error)
 }
 
 // NewOpsServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -266,6 +298,18 @@ func NewOpsServiceHandler(svc OpsServiceHandler, opts ...connect.HandlerOption) 
 		connect.WithSchema(opsServiceMethods.ByName("ImportTeam")),
 		connect.WithHandlerOptions(opts...),
 	)
+	opsServiceSetTeamPauseHandler := connect.NewUnaryHandler(
+		OpsServiceSetTeamPauseProcedure,
+		svc.SetTeamPause,
+		connect.WithSchema(opsServiceMethods.ByName("SetTeamPause")),
+		connect.WithHandlerOptions(opts...),
+	)
+	opsServiceStopTeamHandler := connect.NewUnaryHandler(
+		OpsServiceStopTeamProcedure,
+		svc.StopTeam,
+		connect.WithSchema(opsServiceMethods.ByName("StopTeam")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agentops.v1.OpsService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case OpsServiceListTeamsProcedure:
@@ -286,6 +330,10 @@ func NewOpsServiceHandler(svc OpsServiceHandler, opts ...connect.HandlerOption) 
 			opsServiceExportTeamHandler.ServeHTTP(w, r)
 		case OpsServiceImportTeamProcedure:
 			opsServiceImportTeamHandler.ServeHTTP(w, r)
+		case OpsServiceSetTeamPauseProcedure:
+			opsServiceSetTeamPauseHandler.ServeHTTP(w, r)
+		case OpsServiceStopTeamProcedure:
+			opsServiceStopTeamHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -329,4 +377,12 @@ func (UnimplementedOpsServiceHandler) ExportTeam(context.Context, *connect.Reque
 
 func (UnimplementedOpsServiceHandler) ImportTeam(context.Context, *connect.Request[v1.ImportTeamRequest]) (*connect.Response[v1.ImportTeamResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentops.v1.OpsService.ImportTeam is not implemented"))
+}
+
+func (UnimplementedOpsServiceHandler) SetTeamPause(context.Context, *connect.Request[v1.SetTeamPauseRequest]) (*connect.Response[v1.SetTeamPauseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentops.v1.OpsService.SetTeamPause is not implemented"))
+}
+
+func (UnimplementedOpsServiceHandler) StopTeam(context.Context, *connect.Request[v1.StopTeamRequest]) (*connect.Response[v1.StopTeamResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentops.v1.OpsService.StopTeam is not implemented"))
 }

@@ -79,6 +79,57 @@ message Team {
   google.protobuf.Timestamp created_at = 15;
   google.protobuf.Timestamp updated_at = 16;
   string created_by = 17;
+  // The formation board: one lane per member, hand-off edges drawn as they happen, a
+  // note dropped in a lane steers that member's run. Made with the team.
+  string board_id = 18;
+  // Draining: no new run starts and no new hand-off is made; what runs finishes.
+  bool paused = 19;
+  // What the team's runs hold right now (files, tables, routes, Treads), so two
+  // agents never work the same thing at once.
+  repeated Claim claims = 20;
+  TeamSlo slo = 21;
+}
+
+// A claim: one run holds one thing for its duration. A second run wanting it waits
+// or is told who has it.
+message Claim {
+  string kind = 1;      // path | table | route | tread
+  string key = 2;
+  string run_id = 3;
+  string title = 4;     // the member holding it
+  string ask = 5;       // what for
+  google.protobuf.Timestamp since = 6;
+}
+
+// How the team is doing, over the last thirty days and right now.
+message TeamSlo {
+  double first_result_minutes_p50 = 1;  // from a run's start to its first message in the thread
+  double run_minutes_p95 = 2;
+  int32 finished_30d = 3;
+  int32 failed_30d = 4;
+  int32 stalled_now = 5;                // running with no sign of life for ten minutes
+  double accepted_rate_30d = 6;         // hand-offs accepted over hand-offs judged
+  // Near the daily cap (80%): the coordinator is told to finish, not start.
+  bool near_cap = 7;
+}
+
+// Drain (paused = true): nothing new starts, what runs finishes. Resume with false.
+message SetTeamPauseRequest {
+  string workspace_id = 1;
+  string team_id = 2;
+  bool paused = 3;
+}
+message SetTeamPauseResponse { Team team = 1; }
+
+// Stop everything the team is doing now, hand-offs included, and drain.
+message StopTeamRequest {
+  string workspace_id = 1;
+  string team_id = 2;
+  string reason = 3;
+}
+message StopTeamResponse {
+  Team team = 1;
+  int32 stopped = 2;  // runs cancelled
 }
 
 // A roster ready to start from; the members are a starting point, editable.
@@ -174,4 +225,6 @@ service OpsService {
   rpc DetachTeam(DetachTeamRequest) returns (DetachTeamResponse);
   rpc ExportTeam(ExportTeamRequest) returns (ExportTeamResponse);
   rpc ImportTeam(ImportTeamRequest) returns (ImportTeamResponse);
+  rpc SetTeamPause(SetTeamPauseRequest) returns (SetTeamPauseResponse);
+  rpc StopTeam(StopTeamRequest) returns (StopTeamResponse);
 }
