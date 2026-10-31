@@ -1,0 +1,177 @@
+syntax = "proto3";
+
+package tank.agentops.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/agentops/v1;agentopsv1";
+
+// AgentOps: Ops teams, the workspace's swarms of agents. A team is a coordinator and
+// its specialists, each a real agent principal with an @handle, a role prompt, an
+// ordered model ladder, a tool policy, who it may hand work to, and the asks that
+// route to it. A team is attached to any number of Treads; in each it is addressed by
+// the team's handle, and every hand-off between its members is a child run in a
+// sub-thread of that Tread, readable and steerable by the people there.
+//
+// The add-on is per workspace ("agentops"); every RPC here refuses when it is off.
+// Ids are Snowflake ids as strings.
+
+// Where a member sits in the team.
+enum Seat {
+  SEAT_UNSPECIFIED = 0;
+  SEAT_COORDINATOR = 1;  // receives the team's asks; decides what to hand to whom
+  SEAT_SPECIALIST = 2;   // does bounded work and reports back
+}
+
+// Which tools a member may use, by tool name as the runner knows them (Bash, Edit,
+// open_pull_request, ...). An empty allow list means everything the Tread's policy
+// permits; deny always wins. Neither can widen what the policy permits.
+message ToolPolicy {
+  repeated string allow = 1;
+  repeated string deny = 2;
+}
+
+// What one hand-off may spend. Zero means the team's default, and a hand-off can
+// never exceed what its parent has left.
+message Envelope {
+  double usd = 1;
+  int32 turns = 2;
+  int32 minutes = 3;
+}
+
+message Member {
+  string id = 1;
+  string agent_id = 2;
+  string principal_id = 3;       // the agent's user row, for @mentions
+  Seat seat = 4;
+  string title = 5;              // "Reviewer"
+  string handle = 6;             // "reviewer": what @ resolves inside an attached Tread
+  string prompt = 7;             // who this member is here and what it does
+  repeated string models = 8;    // the ladder, preferred first; each must be allowed by policy
+  ToolPolicy tools = 9;
+  bool delegate = 10;            // may hand work to other members
+  repeated string delegate_to = 11;  // member ids it may hand to; empty with delegate = any specialist
+  repeated string triggers = 12; // kinds of ask that route here ("tests", "migration", "review")
+  Envelope envelope = 13;        // default for a hand-off to this member
+  bool enabled = 14;
+  // What it did, at the Tread rate.
+  double spend_today_usd = 15;
+  double spend_month_usd = 16;
+  int32 runs_today = 17;
+  int32 running_now = 18;
+}
+
+message Team {
+  string id = 1;
+  string workspace_id = 2;
+  string name = 3;               // "Release team"
+  string handle = 4;             // "release": @release in an attached Tread
+  string purpose = 5;            // one or two lines the coordinator reads first
+  repeated Member members = 6;
+  repeated string channel_ids = 7;  // the Treads it works in
+  double daily_cap_usd = 8;      // 0 = no cap
+  int32 concurrent_cap = 9;      // 0 = the workspace's
+  Envelope envelope = 10;        // the team's default hand-off envelope
+  double spend_today_usd = 11;
+  double spend_month_usd = 12;
+  int32 runs_today = 13;
+  int32 running_now = 14;
+  google.protobuf.Timestamp created_at = 15;
+  google.protobuf.Timestamp updated_at = 16;
+  string created_by = 17;
+}
+
+// A roster ready to start from; the members are a starting point, editable.
+message Template {
+  string key = 1;
+  string name = 2;
+  string summary = 3;  // one line for the picker
+  Team team = 4;       // name, handle, purpose, members, envelope filled; no ids
+}
+
+message ListTeamsRequest {
+  string workspace_id = 1;
+  string channel_id = 2;  // only teams attached to this Tread; empty = every team
+}
+message ListTeamsResponse {
+  repeated Team teams = 1;
+  repeated Template templates = 2;
+  bool can_manage = 3;
+}
+
+message GetTeamRequest {
+  string workspace_id = 1;
+  string team_id = 2;
+}
+message GetTeamResponse { Team team = 1; }
+
+// Makes a team and provisions an agent principal per member. A template key brings
+// its roster; members given here replace the template's. channel_id attaches it to
+// that Tread at once.
+message CreateTeamRequest {
+  string workspace_id = 1;
+  string name = 2;
+  string handle = 3;
+  string purpose = 4;
+  string template_key = 5;
+  repeated Member members = 6;
+  string channel_id = 7;
+}
+message CreateTeamResponse { Team team = 1; }
+
+// Replaces the team's name, handle, purpose, caps, envelope and roster. A member
+// without an id is added (its principal provisioned); a member missing from the
+// list is removed (its runs stop being started; what it said stays).
+message UpdateTeamRequest {
+  string workspace_id = 1;
+  Team team = 2;
+}
+message UpdateTeamResponse { Team team = 1; }
+
+message DeleteTeamRequest {
+  string workspace_id = 1;
+  string team_id = 2;
+}
+message DeleteTeamResponse {}
+
+// Puts the team to work in a Tread: its members are seated there and its handle
+// resolves. A team may be in any number of Treads.
+message AttachTeamRequest {
+  string workspace_id = 1;
+  string team_id = 2;
+  string channel_id = 3;
+}
+message AttachTeamResponse { Team team = 1; }
+
+message DetachTeamRequest {
+  string workspace_id = 1;
+  string team_id = 2;
+  string channel_id = 3;
+}
+message DetachTeamResponse { Team team = 1; }
+
+// The team as a file (team.yaml), portable between workspaces.
+message ExportTeamRequest {
+  string workspace_id = 1;
+  string team_id = 2;
+}
+message ExportTeamResponse { string yaml = 1; }
+
+message ImportTeamRequest {
+  string workspace_id = 1;
+  string yaml = 2;
+  string channel_id = 3;  // attach at once, optional
+}
+message ImportTeamResponse { Team team = 1; }
+
+service OpsService {
+  rpc ListTeams(ListTeamsRequest) returns (ListTeamsResponse);
+  rpc GetTeam(GetTeamRequest) returns (GetTeamResponse);
+  rpc CreateTeam(CreateTeamRequest) returns (CreateTeamResponse);
+  rpc UpdateTeam(UpdateTeamRequest) returns (UpdateTeamResponse);
+  rpc DeleteTeam(DeleteTeamRequest) returns (DeleteTeamResponse);
+  rpc AttachTeam(AttachTeamRequest) returns (AttachTeamResponse);
+  rpc DetachTeam(DetachTeamRequest) returns (DetachTeamResponse);
+  rpc ExportTeam(ExportTeamRequest) returns (ExportTeamResponse);
+  rpc ImportTeam(ImportTeamRequest) returns (ImportTeamResponse);
+}

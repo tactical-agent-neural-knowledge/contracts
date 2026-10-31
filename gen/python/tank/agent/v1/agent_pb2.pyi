@@ -507,6 +507,90 @@ class SpendByTread(_message.Message):
     people: _containers.RepeatedCompositeFieldContainer[SpendByPerson]
     def __init__(self, channel_id: _Optional[str] = ..., name: _Optional[str] = ..., runs_month: _Optional[int] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., spend_today_usd: _Optional[float] = ..., people: _Optional[_Iterable[_Union[SpendByPerson, _Mapping]]] = ...) -> None: ...
 
+class SpendByTeam(_message.Message):
+    __slots__ = ("team_id", "name", "runs_month", "spend_month_usd", "runs_today", "spend_today_usd", "people")
+    TEAM_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    RUNS_MONTH_FIELD_NUMBER: _ClassVar[int]
+    SPEND_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
+    RUNS_TODAY_FIELD_NUMBER: _ClassVar[int]
+    SPEND_TODAY_USD_FIELD_NUMBER: _ClassVar[int]
+    PEOPLE_FIELD_NUMBER: _ClassVar[int]
+    team_id: str
+    name: str
+    runs_month: int
+    spend_month_usd: float
+    runs_today: int
+    spend_today_usd: float
+    people: _containers.RepeatedCompositeFieldContainer[SpendByPerson]
+    def __init__(self, team_id: _Optional[str] = ..., name: _Optional[str] = ..., runs_month: _Optional[int] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., spend_today_usd: _Optional[float] = ..., people: _Optional[_Iterable[_Union[SpendByPerson, _Mapping]]] = ...) -> None: ...
+
+class SpendByDay(_message.Message):
+    __slots__ = ("day", "runs", "spend_usd")
+    DAY_FIELD_NUMBER: _ClassVar[int]
+    RUNS_FIELD_NUMBER: _ClassVar[int]
+    SPEND_USD_FIELD_NUMBER: _ClassVar[int]
+    day: str
+    runs: int
+    spend_usd: float
+    def __init__(self, day: _Optional[str] = ..., runs: _Optional[int] = ..., spend_usd: _Optional[float] = ...) -> None: ...
+
+class SpendByKind(_message.Message):
+    __slots__ = ("kind", "runs_month", "spend_month_usd", "runs_today", "spend_today_usd")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    RUNS_MONTH_FIELD_NUMBER: _ClassVar[int]
+    SPEND_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
+    RUNS_TODAY_FIELD_NUMBER: _ClassVar[int]
+    SPEND_TODAY_USD_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    runs_month: int
+    spend_month_usd: float
+    runs_today: int
+    spend_today_usd: float
+    def __init__(self, kind: _Optional[str] = ..., runs_month: _Optional[int] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., spend_today_usd: _Optional[float] = ...) -> None: ...
+
+class WorkspaceSpend(_message.Message):
+    __slots__ = ("spend_today_usd", "spend_month_usd", "runs_today", "runs_month", "running_now", "cap_month_usd", "booked_month_usd", "people", "treads", "teams", "kinds", "days")
+    SPEND_TODAY_USD_FIELD_NUMBER: _ClassVar[int]
+    SPEND_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
+    RUNS_TODAY_FIELD_NUMBER: _ClassVar[int]
+    RUNS_MONTH_FIELD_NUMBER: _ClassVar[int]
+    RUNNING_NOW_FIELD_NUMBER: _ClassVar[int]
+    CAP_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
+    BOOKED_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
+    PEOPLE_FIELD_NUMBER: _ClassVar[int]
+    TREADS_FIELD_NUMBER: _ClassVar[int]
+    TEAMS_FIELD_NUMBER: _ClassVar[int]
+    KINDS_FIELD_NUMBER: _ClassVar[int]
+    DAYS_FIELD_NUMBER: _ClassVar[int]
+    spend_today_usd: float
+    spend_month_usd: float
+    runs_today: int
+    runs_month: int
+    running_now: int
+    cap_month_usd: float
+    booked_month_usd: float
+    people: _containers.RepeatedCompositeFieldContainer[SpendByPerson]
+    treads: _containers.RepeatedCompositeFieldContainer[SpendByTread]
+    teams: _containers.RepeatedCompositeFieldContainer[SpendByTeam]
+    kinds: _containers.RepeatedCompositeFieldContainer[SpendByKind]
+    days: _containers.RepeatedCompositeFieldContainer[SpendByDay]
+    def __init__(self, spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., runs_month: _Optional[int] = ..., running_now: _Optional[int] = ..., cap_month_usd: _Optional[float] = ..., booked_month_usd: _Optional[float] = ..., people: _Optional[_Iterable[_Union[SpendByPerson, _Mapping]]] = ..., treads: _Optional[_Iterable[_Union[SpendByTread, _Mapping]]] = ..., teams: _Optional[_Iterable[_Union[SpendByTeam, _Mapping]]] = ..., kinds: _Optional[_Iterable[_Union[SpendByKind, _Mapping]]] = ..., days: _Optional[_Iterable[_Union[SpendByDay, _Mapping]]] = ...) -> None: ...
+
+class GetWorkspaceSpendRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class GetWorkspaceSpendResponse(_message.Message):
+    __slots__ = ("spend", "can_manage")
+    SPEND_FIELD_NUMBER: _ClassVar[int]
+    CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
+    spend: WorkspaceSpend
+    can_manage: bool
+    def __init__(self, spend: _Optional[_Union[WorkspaceSpend, _Mapping]] = ..., can_manage: bool = ...) -> None: ...
+
 class GetTreadSwitchboardRequest(_message.Message):
     __slots__ = ("channel_id",)
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
