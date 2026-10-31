@@ -139,6 +139,28 @@ class StartRunResponse(_message.Message):
     token_expires_at: _timestamp_pb2.Timestamp
     def __init__(self, run: _Optional[_Union[Run, _Mapping]] = ..., agent_session_token: _Optional[str] = ..., token_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
+class OpenThreadRequest(_message.Message):
+    __slots__ = ("channel_id", "agent_id", "requested_by", "text", "parent_run_id", "kind")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    AGENT_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    PARENT_RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    agent_id: str
+    requested_by: str
+    text: str
+    parent_run_id: str
+    kind: str
+    def __init__(self, channel_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., text: _Optional[str] = ..., parent_run_id: _Optional[str] = ..., kind: _Optional[str] = ...) -> None: ...
+
+class OpenThreadResponse(_message.Message):
+    __slots__ = ("thread_root_id",)
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    thread_root_id: str
+    def __init__(self, thread_root_id: _Optional[str] = ...) -> None: ...
+
 class StopRunRequest(_message.Message):
     __slots__ = ("run_id", "reason")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]

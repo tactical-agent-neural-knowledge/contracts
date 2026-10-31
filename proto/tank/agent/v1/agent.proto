@@ -77,6 +77,25 @@ message StartRunResponse {
   google.protobuf.Timestamp token_expires_at = 3;
 }
 
+// Open a new thread in a Tread as one of the workspace's agents: the root of an Ops
+// hand-off or of a shift. Only a bot (the control plane) may call it; the person named
+// in requested_by must be a member of the Tread, as for StartRun, and the agent is
+// seated there if it is not yet. A run's own token cannot open a thread: it is bound to
+// the one it works in, which is the point of it.
+message OpenThreadRequest {
+  string channel_id = 1;
+  string agent_id = 2;
+  string requested_by = 3;
+  string text = 4;
+  // The run this thread is opened for (a hand-off's parent), recorded on the root.
+  string parent_run_id = 5;
+  // What the thread is: "handoff" | "shift" | "" (a plain thread).
+  string kind = 6;
+}
+message OpenThreadResponse {
+  string thread_root_id = 1;
+}
+
 message StopRunRequest {
   string run_id = 1;
   string reason = 2;
@@ -526,6 +545,7 @@ message GetTreadPlanResponse {
 
 service AgentService {
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
+  rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
   rpc GetTreadPlan(GetTreadPlanRequest) returns (GetTreadPlanResponse);
   rpc StopRun(StopRunRequest) returns (StopRunResponse);
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
