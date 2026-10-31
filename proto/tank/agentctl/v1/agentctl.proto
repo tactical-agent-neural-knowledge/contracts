@@ -139,6 +139,108 @@ message RunContext {
   // The Tread's plan ledger as it stands, so the run works against the whole plan and keeps
   // it current with UpdateTreadPlan. Unset when the Tread has none yet.
   tank.agent.v1.TreadPlan tread_plan = 32;
+  // How the run was started: "" (a summon), recon, neural, remediation, continue,
+  // verify, crew, or ops (an Ops team member at work).
+  string mode = 33;
+  // The Ops team this run's agent is on, when it is on one: the roster, who may hand
+  // work to whom, and the triggers that route an ask.
+  TeamContext team = 34;
+  // The run that handed this one its work, for a hand-off; empty otherwise.
+  string parent_run_id = 35;
+  // The hand-off this run is: what was asked, what to return, how it will be checked,
+  // and what it may spend. Empty for a run a person started.
+  Handoff handoff = 36;
+  // What this run may still hand out: its own envelope less what its hand-offs have
+  // taken. Zero means no envelope (the policy's budget applies).
+  Envelope envelope_left = 37;
+}
+
+// An Ops team as a run sees it (tank.agentops.v1 holds the full record).
+message TeamContext {
+  string team_id = 1;
+  string name = 2;
+  string handle = 3;
+  string purpose = 4;
+  repeated TeamMember members = 5;
+  // This run's own seat on the team.
+  string member_id = 6;
+  bool coordinator = 7;
+}
+message TeamMember {
+  string member_id = 1;
+  string agent_id = 2;
+  string title = 3;
+  string handle = 4;
+  bool coordinator = 5;
+  repeated string triggers = 6;
+  bool delegate = 7;
+  repeated string delegate_to = 8;  // member ids; empty with delegate = any specialist
+  Envelope envelope = 9;            // the default for a hand-off to this member
+  bool enabled = 10;
+  bool is_me = 11;
+}
+message Envelope {
+  double usd = 1;
+  int32 turns = 2;
+  int32 minutes = 3;
+}
+// A hand-off contract: a delegation carries what is asked, the shape of what comes
+// back, and how the result will be checked. The coordinator cannot mark it done until
+// the check passes (proof, not claims, between agents).
+message Handoff {
+  string ask = 1;
+  string return_shape = 2;
+  string acceptance_check = 3;
+  Envelope envelope = 4;
+  string from_title = 5;  // who handed it
+  string to_title = 6;    // who took it
+}
+// Where a hand-off stands, for the run that made it.
+message HandoffStatus {
+  string child_run_id = 1;
+  string member_id = 2;
+  string title = 3;
+  string handle = 4;
+  string state = 5;         // running | done | failed | budget_exhausted | timed_out | cancelled
+  double cost_usd = 6;
+  Envelope envelope = 7;
+  Handoff handoff = 8;
+  string result = 9;        // the child's completion, as text, once it ended
+  string thread_root_id = 10;
+  // accepted: the coordinator checked the result against the acceptance check.
+  // "" until it decides; "accepted" or "rejected" after.
+  string verdict = 11;
+  string verdict_note = 12;
+}
+
+// Hand a bounded piece of work to a team member: a child run in a new sub-thread of
+// this Tread, with an envelope carved from this run's. Refused when this run may not
+// delegate, the member is not one it may hand to, or the envelope is more than it has left.
+message DelegateRequest {
+  string member_handle = 1;
+  string ask = 2;
+  string return_shape = 3;
+  string acceptance_check = 4;
+  Envelope envelope = 5;  // zero fields take the member's default, bounded by what is left
+}
+message DelegateResponse {
+  string child_run_id = 1;
+  string thread_root_id = 2;
+  Envelope envelope = 3;      // what the child actually got
+  Envelope envelope_left = 4; // what this run has left to hand out
+}
+// The coordinator's verdict on a hand-off, after checking the result against the
+// acceptance check. A rejected hand-off may be handed again.
+message AcceptHandoffRequest {
+  string child_run_id = 1;
+  bool accepted = 2;
+  string note = 3;
+}
+message AcceptHandoffResponse {}
+message ListHandoffsRequest {}
+message ListHandoffsResponse {
+  repeated HandoffStatus handoffs = 1;
+  Envelope envelope_left = 2;
 }
 
 message GetRunContextRequest {}
@@ -758,6 +860,8 @@ enum InboxKind {
   INBOX_KIND_APPROVAL = 2;
   INBOX_KIND_ANSWER = 3;
   INBOX_KIND_CANCEL = 4;
+  // A hand-off this run made has ended: text carries the child's result, handoff the rest.
+  INBOX_KIND_HANDOFF = 5;
 }
 
 message InboxItem {
@@ -770,6 +874,7 @@ message InboxItem {
   string decision = 7;  // approved | rejected
   string card_id = 8;   // answer
   google.protobuf.Timestamp at = 9;
+  HandoffStatus handoff = 10;  // INBOX_KIND_HANDOFF
 }
 
 // Long-poll: returns as soon as an item with seq > after_seq exists, or after
@@ -801,6 +906,11 @@ service RunnerService {
   // How far the run got against the whole ask (2026-10-23): what is done, what is left,
   // and what needs a person. Items left with nothing blocked start a continuation run.
   rpc ReportCompletion(ReportCompletionRequest) returns (ReportCompletionResponse);
+  // Ops teams: hand work to a member as a child run, judge what came back, see where
+  // every hand-off stands.
+  rpc Delegate(DelegateRequest) returns (DelegateResponse);
+  rpc AcceptHandoff(AcceptHandoffRequest) returns (AcceptHandoffResponse);
+  rpc ListHandoffs(ListHandoffsRequest) returns (ListHandoffsResponse);
   // Opens a page of the product TANK hosts for this run's repository, as a visitor would,
   // once it serves the expected build: status, errors, how much it shows, a screenshot.
   rpc CheckLive(CheckLiveRequest) returns (CheckLiveResponse);
