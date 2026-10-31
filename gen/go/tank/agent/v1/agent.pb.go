@@ -711,6 +711,245 @@ func (x *OpenThreadResponse) GetThreadRootId() string {
 	return ""
 }
 
+// Workspace-level agent settings, admins only. Off by default.
+type WorkspaceAgentSettings struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// An organization grant ('*') made in any Tread counts for every Tread in the
+	// workspace, present and future. Off: access is per Tread, as granted.
+	OrgAccessEverywhere bool `protobuf:"varint,1,opt,name=org_access_everywhere,json=orgAccessEverywhere,proto3" json:"org_access_everywhere,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *WorkspaceAgentSettings) Reset() {
+	*x = WorkspaceAgentSettings{}
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WorkspaceAgentSettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WorkspaceAgentSettings) ProtoMessage() {}
+
+func (x *WorkspaceAgentSettings) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WorkspaceAgentSettings.ProtoReflect.Descriptor instead.
+func (*WorkspaceAgentSettings) Descriptor() ([]byte, []int) {
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *WorkspaceAgentSettings) GetOrgAccessEverywhere() bool {
+	if x != nil {
+		return x.OrgAccessEverywhere
+	}
+	return false
+}
+
+type GetWorkspaceAgentSettingsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	WorkspaceId   string                 `protobuf:"bytes,1,opt,name=workspace_id,json=workspaceId,proto3" json:"workspace_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetWorkspaceAgentSettingsRequest) Reset() {
+	*x = GetWorkspaceAgentSettingsRequest{}
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetWorkspaceAgentSettingsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetWorkspaceAgentSettingsRequest) ProtoMessage() {}
+
+func (x *GetWorkspaceAgentSettingsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetWorkspaceAgentSettingsRequest.ProtoReflect.Descriptor instead.
+func (*GetWorkspaceAgentSettingsRequest) Descriptor() ([]byte, []int) {
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GetWorkspaceAgentSettingsRequest) GetWorkspaceId() string {
+	if x != nil {
+		return x.WorkspaceId
+	}
+	return ""
+}
+
+type GetWorkspaceAgentSettingsResponse struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Settings      *WorkspaceAgentSettings `protobuf:"bytes,1,opt,name=settings,proto3" json:"settings,omitempty"`
+	CanManage     bool                    `protobuf:"varint,2,opt,name=can_manage,json=canManage,proto3" json:"can_manage,omitempty"` // the caller is an admin or owner
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetWorkspaceAgentSettingsResponse) Reset() {
+	*x = GetWorkspaceAgentSettingsResponse{}
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetWorkspaceAgentSettingsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetWorkspaceAgentSettingsResponse) ProtoMessage() {}
+
+func (x *GetWorkspaceAgentSettingsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetWorkspaceAgentSettingsResponse.ProtoReflect.Descriptor instead.
+func (*GetWorkspaceAgentSettingsResponse) Descriptor() ([]byte, []int) {
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GetWorkspaceAgentSettingsResponse) GetSettings() *WorkspaceAgentSettings {
+	if x != nil {
+		return x.Settings
+	}
+	return nil
+}
+
+func (x *GetWorkspaceAgentSettingsResponse) GetCanManage() bool {
+	if x != nil {
+		return x.CanManage
+	}
+	return false
+}
+
+type SetWorkspaceAgentSettingsRequest struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	WorkspaceId   string                  `protobuf:"bytes,1,opt,name=workspace_id,json=workspaceId,proto3" json:"workspace_id,omitempty"`
+	Settings      *WorkspaceAgentSettings `protobuf:"bytes,2,opt,name=settings,proto3" json:"settings,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetWorkspaceAgentSettingsRequest) Reset() {
+	*x = SetWorkspaceAgentSettingsRequest{}
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetWorkspaceAgentSettingsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetWorkspaceAgentSettingsRequest) ProtoMessage() {}
+
+func (x *SetWorkspaceAgentSettingsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetWorkspaceAgentSettingsRequest.ProtoReflect.Descriptor instead.
+func (*SetWorkspaceAgentSettingsRequest) Descriptor() ([]byte, []int) {
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *SetWorkspaceAgentSettingsRequest) GetWorkspaceId() string {
+	if x != nil {
+		return x.WorkspaceId
+	}
+	return ""
+}
+
+func (x *SetWorkspaceAgentSettingsRequest) GetSettings() *WorkspaceAgentSettings {
+	if x != nil {
+		return x.Settings
+	}
+	return nil
+}
+
+type SetWorkspaceAgentSettingsResponse struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Settings      *WorkspaceAgentSettings `protobuf:"bytes,1,opt,name=settings,proto3" json:"settings,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetWorkspaceAgentSettingsResponse) Reset() {
+	*x = SetWorkspaceAgentSettingsResponse{}
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetWorkspaceAgentSettingsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetWorkspaceAgentSettingsResponse) ProtoMessage() {}
+
+func (x *SetWorkspaceAgentSettingsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetWorkspaceAgentSettingsResponse.ProtoReflect.Descriptor instead.
+func (*SetWorkspaceAgentSettingsResponse) Descriptor() ([]byte, []int) {
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *SetWorkspaceAgentSettingsResponse) GetSettings() *WorkspaceAgentSettings {
+	if x != nil {
+		return x.Settings
+	}
+	return nil
+}
+
 type StopRunRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RunId         string                 `protobuf:"bytes,1,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
@@ -721,7 +960,7 @@ type StopRunRequest struct {
 
 func (x *StopRunRequest) Reset() {
 	*x = StopRunRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[6]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -733,7 +972,7 @@ func (x *StopRunRequest) String() string {
 func (*StopRunRequest) ProtoMessage() {}
 
 func (x *StopRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[6]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -746,7 +985,7 @@ func (x *StopRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StopRunRequest.ProtoReflect.Descriptor instead.
 func (*StopRunRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{6}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *StopRunRequest) GetRunId() string {
@@ -772,7 +1011,7 @@ type StopRunResponse struct {
 
 func (x *StopRunResponse) Reset() {
 	*x = StopRunResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[7]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -784,7 +1023,7 @@ func (x *StopRunResponse) String() string {
 func (*StopRunResponse) ProtoMessage() {}
 
 func (x *StopRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[7]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -797,7 +1036,7 @@ func (x *StopRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StopRunResponse.ProtoReflect.Descriptor instead.
 func (*StopRunResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{7}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *StopRunResponse) GetRun() *Run {
@@ -816,7 +1055,7 @@ type HeartbeatRequest struct {
 
 func (x *HeartbeatRequest) Reset() {
 	*x = HeartbeatRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[8]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -828,7 +1067,7 @@ func (x *HeartbeatRequest) String() string {
 func (*HeartbeatRequest) ProtoMessage() {}
 
 func (x *HeartbeatRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[8]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -841,7 +1080,7 @@ func (x *HeartbeatRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HeartbeatRequest.ProtoReflect.Descriptor instead.
 func (*HeartbeatRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{8}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *HeartbeatRequest) GetRunId() string {
@@ -859,7 +1098,7 @@ type HeartbeatResponse struct {
 
 func (x *HeartbeatResponse) Reset() {
 	*x = HeartbeatResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[9]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -871,7 +1110,7 @@ func (x *HeartbeatResponse) String() string {
 func (*HeartbeatResponse) ProtoMessage() {}
 
 func (x *HeartbeatResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[9]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -884,7 +1123,7 @@ func (x *HeartbeatResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HeartbeatResponse.ProtoReflect.Descriptor instead.
 func (*HeartbeatResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{9}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{14}
 }
 
 type SetStatusRequest struct {
@@ -901,7 +1140,7 @@ type SetStatusRequest struct {
 
 func (x *SetStatusRequest) Reset() {
 	*x = SetStatusRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[10]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -913,7 +1152,7 @@ func (x *SetStatusRequest) String() string {
 func (*SetStatusRequest) ProtoMessage() {}
 
 func (x *SetStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[10]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -926,7 +1165,7 @@ func (x *SetStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetStatusRequest.ProtoReflect.Descriptor instead.
 func (*SetStatusRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{10}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *SetStatusRequest) GetRunId() string {
@@ -980,7 +1219,7 @@ type SetStatusResponse struct {
 
 func (x *SetStatusResponse) Reset() {
 	*x = SetStatusResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[11]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -992,7 +1231,7 @@ func (x *SetStatusResponse) String() string {
 func (*SetStatusResponse) ProtoMessage() {}
 
 func (x *SetStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[11]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1005,7 +1244,7 @@ func (x *SetStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetStatusResponse.ProtoReflect.Descriptor instead.
 func (*SetStatusResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{11}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *SetStatusResponse) GetRun() *Run {
@@ -1031,7 +1270,7 @@ type SetProductBrandRequest struct {
 
 func (x *SetProductBrandRequest) Reset() {
 	*x = SetProductBrandRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[12]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1043,7 +1282,7 @@ func (x *SetProductBrandRequest) String() string {
 func (*SetProductBrandRequest) ProtoMessage() {}
 
 func (x *SetProductBrandRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[12]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1056,7 +1295,7 @@ func (x *SetProductBrandRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetProductBrandRequest.ProtoReflect.Descriptor instead.
 func (*SetProductBrandRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{12}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *SetProductBrandRequest) GetRunId() string {
@@ -1117,7 +1356,7 @@ type SetProductBrandResponse struct {
 
 func (x *SetProductBrandResponse) Reset() {
 	*x = SetProductBrandResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[13]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1129,7 +1368,7 @@ func (x *SetProductBrandResponse) String() string {
 func (*SetProductBrandResponse) ProtoMessage() {}
 
 func (x *SetProductBrandResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[13]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1142,7 +1381,7 @@ func (x *SetProductBrandResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetProductBrandResponse.ProtoReflect.Descriptor instead.
 func (*SetProductBrandResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{13}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *SetProductBrandResponse) GetIconUrl() string {
@@ -1163,7 +1402,7 @@ type SetProductLandingRequest struct {
 
 func (x *SetProductLandingRequest) Reset() {
 	*x = SetProductLandingRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[14]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1175,7 +1414,7 @@ func (x *SetProductLandingRequest) String() string {
 func (*SetProductLandingRequest) ProtoMessage() {}
 
 func (x *SetProductLandingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[14]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1188,7 +1427,7 @@ func (x *SetProductLandingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetProductLandingRequest.ProtoReflect.Descriptor instead.
 func (*SetProductLandingRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{14}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *SetProductLandingRequest) GetRunId() string {
@@ -1213,7 +1452,7 @@ type SetProductLandingResponse struct {
 
 func (x *SetProductLandingResponse) Reset() {
 	*x = SetProductLandingResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[15]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1225,7 +1464,7 @@ func (x *SetProductLandingResponse) String() string {
 func (*SetProductLandingResponse) ProtoMessage() {}
 
 func (x *SetProductLandingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[15]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1238,7 +1477,7 @@ func (x *SetProductLandingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetProductLandingResponse.ProtoReflect.Descriptor instead.
 func (*SetProductLandingResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{15}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{20}
 }
 
 // RecordProductFinding stores one structured research fact about an existing tool,
@@ -1259,7 +1498,7 @@ type RecordProductFindingRequest struct {
 
 func (x *RecordProductFindingRequest) Reset() {
 	*x = RecordProductFindingRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[16]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1271,7 +1510,7 @@ func (x *RecordProductFindingRequest) String() string {
 func (*RecordProductFindingRequest) ProtoMessage() {}
 
 func (x *RecordProductFindingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[16]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1284,7 +1523,7 @@ func (x *RecordProductFindingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordProductFindingRequest.ProtoReflect.Descriptor instead.
 func (*RecordProductFindingRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{16}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *RecordProductFindingRequest) GetRunId() string {
@@ -1351,7 +1590,7 @@ type RecordProductFindingResponse struct {
 
 func (x *RecordProductFindingResponse) Reset() {
 	*x = RecordProductFindingResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[17]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1363,7 +1602,7 @@ func (x *RecordProductFindingResponse) String() string {
 func (*RecordProductFindingResponse) ProtoMessage() {}
 
 func (x *RecordProductFindingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[17]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1376,7 +1615,7 @@ func (x *RecordProductFindingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordProductFindingResponse.ProtoReflect.Descriptor instead.
 func (*RecordProductFindingResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{17}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{22}
 }
 
 type GetRunRequest struct {
@@ -1388,7 +1627,7 @@ type GetRunRequest struct {
 
 func (x *GetRunRequest) Reset() {
 	*x = GetRunRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[18]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1400,7 +1639,7 @@ func (x *GetRunRequest) String() string {
 func (*GetRunRequest) ProtoMessage() {}
 
 func (x *GetRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[18]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1413,7 +1652,7 @@ func (x *GetRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunRequest.ProtoReflect.Descriptor instead.
 func (*GetRunRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{18}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *GetRunRequest) GetRunId() string {
@@ -1432,7 +1671,7 @@ type GetRunResponse struct {
 
 func (x *GetRunResponse) Reset() {
 	*x = GetRunResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[19]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1444,7 +1683,7 @@ func (x *GetRunResponse) String() string {
 func (*GetRunResponse) ProtoMessage() {}
 
 func (x *GetRunResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[19]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1457,7 +1696,7 @@ func (x *GetRunResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunResponse.ProtoReflect.Descriptor instead.
 func (*GetRunResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{19}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *GetRunResponse) GetRun() *Run {
@@ -1480,7 +1719,7 @@ type ListRunsRequest struct {
 
 func (x *ListRunsRequest) Reset() {
 	*x = ListRunsRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[20]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1492,7 +1731,7 @@ func (x *ListRunsRequest) String() string {
 func (*ListRunsRequest) ProtoMessage() {}
 
 func (x *ListRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[20]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1505,7 +1744,7 @@ func (x *ListRunsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRunsRequest.ProtoReflect.Descriptor instead.
 func (*ListRunsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{20}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ListRunsRequest) GetWorkspaceId() string {
@@ -1553,7 +1792,7 @@ type ListRunsResponse struct {
 
 func (x *ListRunsResponse) Reset() {
 	*x = ListRunsResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[21]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1565,7 +1804,7 @@ func (x *ListRunsResponse) String() string {
 func (*ListRunsResponse) ProtoMessage() {}
 
 func (x *ListRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[21]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1578,7 +1817,7 @@ func (x *ListRunsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRunsResponse.ProtoReflect.Descriptor instead.
 func (*ListRunsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{21}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ListRunsResponse) GetRuns() []*Run {
@@ -1604,7 +1843,7 @@ type ListAgentsRequest struct {
 
 func (x *ListAgentsRequest) Reset() {
 	*x = ListAgentsRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[22]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1616,7 +1855,7 @@ func (x *ListAgentsRequest) String() string {
 func (*ListAgentsRequest) ProtoMessage() {}
 
 func (x *ListAgentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[22]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1629,7 +1868,7 @@ func (x *ListAgentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAgentsRequest.ProtoReflect.Descriptor instead.
 func (*ListAgentsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{22}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ListAgentsRequest) GetWorkspaceId() string {
@@ -1648,7 +1887,7 @@ type ListAgentsResponse struct {
 
 func (x *ListAgentsResponse) Reset() {
 	*x = ListAgentsResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[23]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1660,7 +1899,7 @@ func (x *ListAgentsResponse) String() string {
 func (*ListAgentsResponse) ProtoMessage() {}
 
 func (x *ListAgentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[23]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1673,7 +1912,7 @@ func (x *ListAgentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAgentsResponse.ProtoReflect.Descriptor instead.
 func (*ListAgentsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{23}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ListAgentsResponse) GetAgents() []*Agent {
@@ -1696,7 +1935,7 @@ type RepoBinding struct {
 
 func (x *RepoBinding) Reset() {
 	*x = RepoBinding{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[24]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1708,7 +1947,7 @@ func (x *RepoBinding) String() string {
 func (*RepoBinding) ProtoMessage() {}
 
 func (x *RepoBinding) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[24]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1721,7 +1960,7 @@ func (x *RepoBinding) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepoBinding.ProtoReflect.Descriptor instead.
 func (*RepoBinding) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{24}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *RepoBinding) GetRepo() string {
@@ -1759,7 +1998,7 @@ type RepoAccess struct {
 
 func (x *RepoAccess) Reset() {
 	*x = RepoAccess{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[25]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1771,7 +2010,7 @@ func (x *RepoAccess) String() string {
 func (*RepoAccess) ProtoMessage() {}
 
 func (x *RepoAccess) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[25]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1784,7 +2023,7 @@ func (x *RepoAccess) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepoAccess.ProtoReflect.Descriptor instead.
 func (*RepoAccess) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{25}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *RepoAccess) GetRepo() string {
@@ -1820,7 +2059,7 @@ type RepoConnection struct {
 
 func (x *RepoConnection) Reset() {
 	*x = RepoConnection{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[26]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1832,7 +2071,7 @@ func (x *RepoConnection) String() string {
 func (*RepoConnection) ProtoMessage() {}
 
 func (x *RepoConnection) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[26]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1845,7 +2084,7 @@ func (x *RepoConnection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepoConnection.ProtoReflect.Descriptor instead.
 func (*RepoConnection) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{26}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *RepoConnection) GetConnected() bool {
@@ -1924,7 +2163,7 @@ type SetRepoAccessRequest struct {
 
 func (x *SetRepoAccessRequest) Reset() {
 	*x = SetRepoAccessRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[27]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1936,7 +2175,7 @@ func (x *SetRepoAccessRequest) String() string {
 func (*SetRepoAccessRequest) ProtoMessage() {}
 
 func (x *SetRepoAccessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[27]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1949,7 +2188,7 @@ func (x *SetRepoAccessRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetRepoAccessRequest.ProtoReflect.Descriptor instead.
 func (*SetRepoAccessRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{27}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *SetRepoAccessRequest) GetChannelId() string {
@@ -1975,7 +2214,7 @@ type SetRepoAccessResponse struct {
 
 func (x *SetRepoAccessResponse) Reset() {
 	*x = SetRepoAccessResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[28]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1987,7 +2226,7 @@ func (x *SetRepoAccessResponse) String() string {
 func (*SetRepoAccessResponse) ProtoMessage() {}
 
 func (x *SetRepoAccessResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[28]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2000,7 +2239,7 @@ func (x *SetRepoAccessResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetRepoAccessResponse.ProtoReflect.Descriptor instead.
 func (*SetRepoAccessResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{28}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *SetRepoAccessResponse) GetAccess() []*RepoAccess {
@@ -2037,7 +2276,7 @@ type SetUpRepoPreviewsRequest struct {
 
 func (x *SetUpRepoPreviewsRequest) Reset() {
 	*x = SetUpRepoPreviewsRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[29]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2049,7 +2288,7 @@ func (x *SetUpRepoPreviewsRequest) String() string {
 func (*SetUpRepoPreviewsRequest) ProtoMessage() {}
 
 func (x *SetUpRepoPreviewsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[29]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2062,7 +2301,7 @@ func (x *SetUpRepoPreviewsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetUpRepoPreviewsRequest.ProtoReflect.Descriptor instead.
 func (*SetUpRepoPreviewsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{29}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *SetUpRepoPreviewsRequest) GetWorkspaceId() string {
@@ -2112,7 +2351,7 @@ type RepoPreviewSetup struct {
 
 func (x *RepoPreviewSetup) Reset() {
 	*x = RepoPreviewSetup{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[30]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2124,7 +2363,7 @@ func (x *RepoPreviewSetup) String() string {
 func (*RepoPreviewSetup) ProtoMessage() {}
 
 func (x *RepoPreviewSetup) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[30]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2137,7 +2376,7 @@ func (x *RepoPreviewSetup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepoPreviewSetup.ProtoReflect.Descriptor instead.
 func (*RepoPreviewSetup) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{30}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *RepoPreviewSetup) GetRepo() string {
@@ -2208,7 +2447,7 @@ type SetUpRepoPreviewsResponse struct {
 
 func (x *SetUpRepoPreviewsResponse) Reset() {
 	*x = SetUpRepoPreviewsResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[31]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2220,7 +2459,7 @@ func (x *SetUpRepoPreviewsResponse) String() string {
 func (*SetUpRepoPreviewsResponse) ProtoMessage() {}
 
 func (x *SetUpRepoPreviewsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[31]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2233,7 +2472,7 @@ func (x *SetUpRepoPreviewsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetUpRepoPreviewsResponse.ProtoReflect.Descriptor instead.
 func (*SetUpRepoPreviewsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{31}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *SetUpRepoPreviewsResponse) GetResults() []*RepoPreviewSetup {
@@ -2282,7 +2521,7 @@ type ListRepoPreviewSetupsRequest struct {
 
 func (x *ListRepoPreviewSetupsRequest) Reset() {
 	*x = ListRepoPreviewSetupsRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[32]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2294,7 +2533,7 @@ func (x *ListRepoPreviewSetupsRequest) String() string {
 func (*ListRepoPreviewSetupsRequest) ProtoMessage() {}
 
 func (x *ListRepoPreviewSetupsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[32]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2307,7 +2546,7 @@ func (x *ListRepoPreviewSetupsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRepoPreviewSetupsRequest.ProtoReflect.Descriptor instead.
 func (*ListRepoPreviewSetupsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{32}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *ListRepoPreviewSetupsRequest) GetWorkspaceId() string {
@@ -2328,7 +2567,7 @@ type ListRepoPreviewSetupsResponse struct {
 
 func (x *ListRepoPreviewSetupsResponse) Reset() {
 	*x = ListRepoPreviewSetupsResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[33]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2340,7 +2579,7 @@ func (x *ListRepoPreviewSetupsResponse) String() string {
 func (*ListRepoPreviewSetupsResponse) ProtoMessage() {}
 
 func (x *ListRepoPreviewSetupsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[33]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2353,7 +2592,7 @@ func (x *ListRepoPreviewSetupsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRepoPreviewSetupsResponse.ProtoReflect.Descriptor instead.
 func (*ListRepoPreviewSetupsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{33}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *ListRepoPreviewSetupsResponse) GetSetups() []*RepoPreviewSetup {
@@ -2419,7 +2658,7 @@ type TreadSettings struct {
 
 func (x *TreadSettings) Reset() {
 	*x = TreadSettings{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[34]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2431,7 +2670,7 @@ func (x *TreadSettings) String() string {
 func (*TreadSettings) ProtoMessage() {}
 
 func (x *TreadSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[34]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2444,7 +2683,7 @@ func (x *TreadSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TreadSettings.ProtoReflect.Descriptor instead.
 func (*TreadSettings) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{34}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *TreadSettings) GetConcurrentRuns() int32 {
@@ -2540,7 +2779,7 @@ type HourBucket struct {
 
 func (x *HourBucket) Reset() {
 	*x = HourBucket{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[35]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2552,7 +2791,7 @@ func (x *HourBucket) String() string {
 func (*HourBucket) ProtoMessage() {}
 
 func (x *HourBucket) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[35]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2565,7 +2804,7 @@ func (x *HourBucket) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HourBucket.ProtoReflect.Descriptor instead.
 func (*HourBucket) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{35}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *HourBucket) GetHour() *timestamppb.Timestamp {
@@ -2625,7 +2864,7 @@ type TreadMetrics struct {
 
 func (x *TreadMetrics) Reset() {
 	*x = TreadMetrics{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[36]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2637,7 +2876,7 @@ func (x *TreadMetrics) String() string {
 func (*TreadMetrics) ProtoMessage() {}
 
 func (x *TreadMetrics) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[36]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2650,7 +2889,7 @@ func (x *TreadMetrics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TreadMetrics.ProtoReflect.Descriptor instead.
 func (*TreadMetrics) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{36}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *TreadMetrics) GetSpendTodayUsd() float64 {
@@ -2767,7 +3006,7 @@ type SpendByPerson struct {
 
 func (x *SpendByPerson) Reset() {
 	*x = SpendByPerson{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[37]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2779,7 +3018,7 @@ func (x *SpendByPerson) String() string {
 func (*SpendByPerson) ProtoMessage() {}
 
 func (x *SpendByPerson) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[37]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2792,7 +3031,7 @@ func (x *SpendByPerson) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SpendByPerson.ProtoReflect.Descriptor instead.
 func (*SpendByPerson) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{37}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *SpendByPerson) GetUserId() string {
@@ -2853,7 +3092,7 @@ type SpendByTread struct {
 
 func (x *SpendByTread) Reset() {
 	*x = SpendByTread{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[38]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2865,7 +3104,7 @@ func (x *SpendByTread) String() string {
 func (*SpendByTread) ProtoMessage() {}
 
 func (x *SpendByTread) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[38]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2878,7 +3117,7 @@ func (x *SpendByTread) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SpendByTread.ProtoReflect.Descriptor instead.
 func (*SpendByTread) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{38}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *SpendByTread) GetChannelId() string {
@@ -2946,7 +3185,7 @@ type SpendByTeam struct {
 
 func (x *SpendByTeam) Reset() {
 	*x = SpendByTeam{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[39]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2958,7 +3197,7 @@ func (x *SpendByTeam) String() string {
 func (*SpendByTeam) ProtoMessage() {}
 
 func (x *SpendByTeam) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[39]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2971,7 +3210,7 @@ func (x *SpendByTeam) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SpendByTeam.ProtoReflect.Descriptor instead.
 func (*SpendByTeam) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{39}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *SpendByTeam) GetTeamId() string {
@@ -3035,7 +3274,7 @@ type SpendByDay struct {
 
 func (x *SpendByDay) Reset() {
 	*x = SpendByDay{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[40]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3047,7 +3286,7 @@ func (x *SpendByDay) String() string {
 func (*SpendByDay) ProtoMessage() {}
 
 func (x *SpendByDay) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[40]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3060,7 +3299,7 @@ func (x *SpendByDay) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SpendByDay.ProtoReflect.Descriptor instead.
 func (*SpendByDay) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{40}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *SpendByDay) GetDay() string {
@@ -3098,7 +3337,7 @@ type SpendByKind struct {
 
 func (x *SpendByKind) Reset() {
 	*x = SpendByKind{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[41]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3110,7 +3349,7 @@ func (x *SpendByKind) String() string {
 func (*SpendByKind) ProtoMessage() {}
 
 func (x *SpendByKind) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[41]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3123,7 +3362,7 @@ func (x *SpendByKind) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SpendByKind.ProtoReflect.Descriptor instead.
 func (*SpendByKind) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{41}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *SpendByKind) GetKind() string {
@@ -3184,7 +3423,7 @@ type WorkspaceSpend struct {
 
 func (x *WorkspaceSpend) Reset() {
 	*x = WorkspaceSpend{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[42]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3196,7 +3435,7 @@ func (x *WorkspaceSpend) String() string {
 func (*WorkspaceSpend) ProtoMessage() {}
 
 func (x *WorkspaceSpend) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[42]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3209,7 +3448,7 @@ func (x *WorkspaceSpend) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkspaceSpend.ProtoReflect.Descriptor instead.
 func (*WorkspaceSpend) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{42}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *WorkspaceSpend) GetSpendTodayUsd() float64 {
@@ -3305,7 +3544,7 @@ type GetWorkspaceSpendRequest struct {
 
 func (x *GetWorkspaceSpendRequest) Reset() {
 	*x = GetWorkspaceSpendRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[43]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3317,7 +3556,7 @@ func (x *GetWorkspaceSpendRequest) String() string {
 func (*GetWorkspaceSpendRequest) ProtoMessage() {}
 
 func (x *GetWorkspaceSpendRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[43]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3330,7 +3569,7 @@ func (x *GetWorkspaceSpendRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWorkspaceSpendRequest.ProtoReflect.Descriptor instead.
 func (*GetWorkspaceSpendRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{43}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *GetWorkspaceSpendRequest) GetWorkspaceId() string {
@@ -3350,7 +3589,7 @@ type GetWorkspaceSpendResponse struct {
 
 func (x *GetWorkspaceSpendResponse) Reset() {
 	*x = GetWorkspaceSpendResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[44]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3362,7 +3601,7 @@ func (x *GetWorkspaceSpendResponse) String() string {
 func (*GetWorkspaceSpendResponse) ProtoMessage() {}
 
 func (x *GetWorkspaceSpendResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[44]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3375,7 +3614,7 @@ func (x *GetWorkspaceSpendResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWorkspaceSpendResponse.ProtoReflect.Descriptor instead.
 func (*GetWorkspaceSpendResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{44}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *GetWorkspaceSpendResponse) GetSpend() *WorkspaceSpend {
@@ -3401,7 +3640,7 @@ type GetTreadSwitchboardRequest struct {
 
 func (x *GetTreadSwitchboardRequest) Reset() {
 	*x = GetTreadSwitchboardRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[45]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3413,7 +3652,7 @@ func (x *GetTreadSwitchboardRequest) String() string {
 func (*GetTreadSwitchboardRequest) ProtoMessage() {}
 
 func (x *GetTreadSwitchboardRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[45]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3426,7 +3665,7 @@ func (x *GetTreadSwitchboardRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTreadSwitchboardRequest.ProtoReflect.Descriptor instead.
 func (*GetTreadSwitchboardRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{45}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *GetTreadSwitchboardRequest) GetChannelId() string {
@@ -3447,7 +3686,7 @@ type GetTreadSwitchboardResponse struct {
 
 func (x *GetTreadSwitchboardResponse) Reset() {
 	*x = GetTreadSwitchboardResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[46]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3459,7 +3698,7 @@ func (x *GetTreadSwitchboardResponse) String() string {
 func (*GetTreadSwitchboardResponse) ProtoMessage() {}
 
 func (x *GetTreadSwitchboardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[46]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3472,7 +3711,7 @@ func (x *GetTreadSwitchboardResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTreadSwitchboardResponse.ProtoReflect.Descriptor instead.
 func (*GetTreadSwitchboardResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{46}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *GetTreadSwitchboardResponse) GetMetrics() *TreadMetrics {
@@ -3506,7 +3745,7 @@ type SetTreadSettingsRequest struct {
 
 func (x *SetTreadSettingsRequest) Reset() {
 	*x = SetTreadSettingsRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[47]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3518,7 +3757,7 @@ func (x *SetTreadSettingsRequest) String() string {
 func (*SetTreadSettingsRequest) ProtoMessage() {}
 
 func (x *SetTreadSettingsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[47]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3531,7 +3770,7 @@ func (x *SetTreadSettingsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetTreadSettingsRequest.ProtoReflect.Descriptor instead.
 func (*SetTreadSettingsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{47}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *SetTreadSettingsRequest) GetChannelId() string {
@@ -3557,7 +3796,7 @@ type SetTreadSettingsResponse struct {
 
 func (x *SetTreadSettingsResponse) Reset() {
 	*x = SetTreadSettingsResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[48]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3569,7 +3808,7 @@ func (x *SetTreadSettingsResponse) String() string {
 func (*SetTreadSettingsResponse) ProtoMessage() {}
 
 func (x *SetTreadSettingsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[48]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3582,7 +3821,7 @@ func (x *SetTreadSettingsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetTreadSettingsResponse.ProtoReflect.Descriptor instead.
 func (*SetTreadSettingsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{48}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *SetTreadSettingsResponse) GetSettings() *TreadSettings {
@@ -3601,7 +3840,7 @@ type GetRepoConnectionRequest struct {
 
 func (x *GetRepoConnectionRequest) Reset() {
 	*x = GetRepoConnectionRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[49]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3613,7 +3852,7 @@ func (x *GetRepoConnectionRequest) String() string {
 func (*GetRepoConnectionRequest) ProtoMessage() {}
 
 func (x *GetRepoConnectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[49]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3626,7 +3865,7 @@ func (x *GetRepoConnectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRepoConnectionRequest.ProtoReflect.Descriptor instead.
 func (*GetRepoConnectionRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{49}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *GetRepoConnectionRequest) GetChannelId() string {
@@ -3645,7 +3884,7 @@ type GetRepoConnectionResponse struct {
 
 func (x *GetRepoConnectionResponse) Reset() {
 	*x = GetRepoConnectionResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[50]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3657,7 +3896,7 @@ func (x *GetRepoConnectionResponse) String() string {
 func (*GetRepoConnectionResponse) ProtoMessage() {}
 
 func (x *GetRepoConnectionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[50]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3670,7 +3909,7 @@ func (x *GetRepoConnectionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRepoConnectionResponse.ProtoReflect.Descriptor instead.
 func (*GetRepoConnectionResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{50}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *GetRepoConnectionResponse) GetConnection() *RepoConnection {
@@ -3691,7 +3930,7 @@ type StartGitHubConnectRequest struct {
 
 func (x *StartGitHubConnectRequest) Reset() {
 	*x = StartGitHubConnectRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[51]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3703,7 +3942,7 @@ func (x *StartGitHubConnectRequest) String() string {
 func (*StartGitHubConnectRequest) ProtoMessage() {}
 
 func (x *StartGitHubConnectRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[51]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3716,7 +3955,7 @@ func (x *StartGitHubConnectRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartGitHubConnectRequest.ProtoReflect.Descriptor instead.
 func (*StartGitHubConnectRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{51}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *StartGitHubConnectRequest) GetWorkspaceId() string {
@@ -3735,7 +3974,7 @@ type StartGitHubConnectResponse struct {
 
 func (x *StartGitHubConnectResponse) Reset() {
 	*x = StartGitHubConnectResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[52]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3747,7 +3986,7 @@ func (x *StartGitHubConnectResponse) String() string {
 func (*StartGitHubConnectResponse) ProtoMessage() {}
 
 func (x *StartGitHubConnectResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[52]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3760,7 +3999,7 @@ func (x *StartGitHubConnectResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartGitHubConnectResponse.ProtoReflect.Descriptor instead.
 func (*StartGitHubConnectResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{52}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *StartGitHubConnectResponse) GetInstallUrl() string {
@@ -3782,7 +4021,7 @@ type BindRepoRequest struct {
 
 func (x *BindRepoRequest) Reset() {
 	*x = BindRepoRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[53]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3794,7 +4033,7 @@ func (x *BindRepoRequest) String() string {
 func (*BindRepoRequest) ProtoMessage() {}
 
 func (x *BindRepoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[53]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3807,7 +4046,7 @@ func (x *BindRepoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BindRepoRequest.ProtoReflect.Descriptor instead.
 func (*BindRepoRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{53}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *BindRepoRequest) GetChannelId() string {
@@ -3847,7 +4086,7 @@ type BindRepoResponse struct {
 
 func (x *BindRepoResponse) Reset() {
 	*x = BindRepoResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[54]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3859,7 +4098,7 @@ func (x *BindRepoResponse) String() string {
 func (*BindRepoResponse) ProtoMessage() {}
 
 func (x *BindRepoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[54]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3872,7 +4111,7 @@ func (x *BindRepoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BindRepoResponse.ProtoReflect.Descriptor instead.
 func (*BindRepoResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{54}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *BindRepoResponse) GetBinding() *RepoBinding {
@@ -3891,7 +4130,7 @@ type UnbindRepoRequest struct {
 
 func (x *UnbindRepoRequest) Reset() {
 	*x = UnbindRepoRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[55]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3903,7 +4142,7 @@ func (x *UnbindRepoRequest) String() string {
 func (*UnbindRepoRequest) ProtoMessage() {}
 
 func (x *UnbindRepoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[55]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3916,7 +4155,7 @@ func (x *UnbindRepoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnbindRepoRequest.ProtoReflect.Descriptor instead.
 func (*UnbindRepoRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{55}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *UnbindRepoRequest) GetChannelId() string {
@@ -3934,7 +4173,7 @@ type UnbindRepoResponse struct {
 
 func (x *UnbindRepoResponse) Reset() {
 	*x = UnbindRepoResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[56]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3946,7 +4185,7 @@ func (x *UnbindRepoResponse) String() string {
 func (*UnbindRepoResponse) ProtoMessage() {}
 
 func (x *UnbindRepoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[56]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3959,7 +4198,7 @@ func (x *UnbindRepoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnbindRepoResponse.ProtoReflect.Descriptor instead.
 func (*UnbindRepoResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{56}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{61}
 }
 
 // What neuralsecurity last found on the code a Tread is connected to: the newest finished
@@ -3986,7 +4225,7 @@ type TreadSecurity struct {
 
 func (x *TreadSecurity) Reset() {
 	*x = TreadSecurity{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[57]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3998,7 +4237,7 @@ func (x *TreadSecurity) String() string {
 func (*TreadSecurity) ProtoMessage() {}
 
 func (x *TreadSecurity) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[57]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4011,7 +4250,7 @@ func (x *TreadSecurity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TreadSecurity.ProtoReflect.Descriptor instead.
 func (*TreadSecurity) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{57}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *TreadSecurity) GetChannelId() string {
@@ -4083,7 +4322,7 @@ type WorkspaceDeployment struct {
 
 func (x *WorkspaceDeployment) Reset() {
 	*x = WorkspaceDeployment{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[58]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4095,7 +4334,7 @@ func (x *WorkspaceDeployment) String() string {
 func (*WorkspaceDeployment) ProtoMessage() {}
 
 func (x *WorkspaceDeployment) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[58]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4108,7 +4347,7 @@ func (x *WorkspaceDeployment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkspaceDeployment.ProtoReflect.Descriptor instead.
 func (*WorkspaceDeployment) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{58}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *WorkspaceDeployment) GetChannelId() string {
@@ -4141,7 +4380,7 @@ type ListWorkspaceDeploymentsRequest struct {
 
 func (x *ListWorkspaceDeploymentsRequest) Reset() {
 	*x = ListWorkspaceDeploymentsRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[59]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4153,7 +4392,7 @@ func (x *ListWorkspaceDeploymentsRequest) String() string {
 func (*ListWorkspaceDeploymentsRequest) ProtoMessage() {}
 
 func (x *ListWorkspaceDeploymentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[59]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4166,7 +4405,7 @@ func (x *ListWorkspaceDeploymentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWorkspaceDeploymentsRequest.ProtoReflect.Descriptor instead.
 func (*ListWorkspaceDeploymentsRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{59}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *ListWorkspaceDeploymentsRequest) GetWorkspaceId() string {
@@ -4185,7 +4424,7 @@ type ListWorkspaceDeploymentsResponse struct {
 
 func (x *ListWorkspaceDeploymentsResponse) Reset() {
 	*x = ListWorkspaceDeploymentsResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[60]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4197,7 +4436,7 @@ func (x *ListWorkspaceDeploymentsResponse) String() string {
 func (*ListWorkspaceDeploymentsResponse) ProtoMessage() {}
 
 func (x *ListWorkspaceDeploymentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[60]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4210,7 +4449,7 @@ func (x *ListWorkspaceDeploymentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWorkspaceDeploymentsResponse.ProtoReflect.Descriptor instead.
 func (*ListWorkspaceDeploymentsResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{60}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *ListWorkspaceDeploymentsResponse) GetDeployments() []*WorkspaceDeployment {
@@ -4229,7 +4468,7 @@ type ListTreadSecurityRequest struct {
 
 func (x *ListTreadSecurityRequest) Reset() {
 	*x = ListTreadSecurityRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[61]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4241,7 +4480,7 @@ func (x *ListTreadSecurityRequest) String() string {
 func (*ListTreadSecurityRequest) ProtoMessage() {}
 
 func (x *ListTreadSecurityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[61]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4254,7 +4493,7 @@ func (x *ListTreadSecurityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTreadSecurityRequest.ProtoReflect.Descriptor instead.
 func (*ListTreadSecurityRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{61}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *ListTreadSecurityRequest) GetWorkspaceId() string {
@@ -4273,7 +4512,7 @@ type ListTreadSecurityResponse struct {
 
 func (x *ListTreadSecurityResponse) Reset() {
 	*x = ListTreadSecurityResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[62]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4285,7 +4524,7 @@ func (x *ListTreadSecurityResponse) String() string {
 func (*ListTreadSecurityResponse) ProtoMessage() {}
 
 func (x *ListTreadSecurityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[62]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4298,7 +4537,7 @@ func (x *ListTreadSecurityResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTreadSecurityResponse.ProtoReflect.Descriptor instead.
 func (*ListTreadSecurityResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{62}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *ListTreadSecurityResponse) GetTreads() []*TreadSecurity {
@@ -4327,7 +4566,7 @@ type TreadDeployment struct {
 
 func (x *TreadDeployment) Reset() {
 	*x = TreadDeployment{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[63]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4339,7 +4578,7 @@ func (x *TreadDeployment) String() string {
 func (*TreadDeployment) ProtoMessage() {}
 
 func (x *TreadDeployment) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[63]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4352,7 +4591,7 @@ func (x *TreadDeployment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TreadDeployment.ProtoReflect.Descriptor instead.
 func (*TreadDeployment) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{63}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *TreadDeployment) GetSlug() string {
@@ -4429,7 +4668,7 @@ type CreateTreadRepoRequest struct {
 
 func (x *CreateTreadRepoRequest) Reset() {
 	*x = CreateTreadRepoRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[64]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4441,7 +4680,7 @@ func (x *CreateTreadRepoRequest) String() string {
 func (*CreateTreadRepoRequest) ProtoMessage() {}
 
 func (x *CreateTreadRepoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[64]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4454,7 +4693,7 @@ func (x *CreateTreadRepoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTreadRepoRequest.ProtoReflect.Descriptor instead.
 func (*CreateTreadRepoRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{64}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *CreateTreadRepoRequest) GetChannelId() string {
@@ -4474,7 +4713,7 @@ type CreateTreadRepoResponse struct {
 
 func (x *CreateTreadRepoResponse) Reset() {
 	*x = CreateTreadRepoResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[65]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4486,7 +4725,7 @@ func (x *CreateTreadRepoResponse) String() string {
 func (*CreateTreadRepoResponse) ProtoMessage() {}
 
 func (x *CreateTreadRepoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[65]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4499,7 +4738,7 @@ func (x *CreateTreadRepoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTreadRepoResponse.ProtoReflect.Descriptor instead.
 func (*CreateTreadRepoResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{65}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *CreateTreadRepoResponse) GetBinding() *RepoBinding {
@@ -4527,7 +4766,7 @@ type SetTreadDeploymentRequest struct {
 
 func (x *SetTreadDeploymentRequest) Reset() {
 	*x = SetTreadDeploymentRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[66]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4539,7 +4778,7 @@ func (x *SetTreadDeploymentRequest) String() string {
 func (*SetTreadDeploymentRequest) ProtoMessage() {}
 
 func (x *SetTreadDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[66]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4552,7 +4791,7 @@ func (x *SetTreadDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetTreadDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*SetTreadDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{66}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *SetTreadDeploymentRequest) GetChannelId() string {
@@ -4578,7 +4817,7 @@ type SetTreadDeploymentResponse struct {
 
 func (x *SetTreadDeploymentResponse) Reset() {
 	*x = SetTreadDeploymentResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[67]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4590,7 +4829,7 @@ func (x *SetTreadDeploymentResponse) String() string {
 func (*SetTreadDeploymentResponse) ProtoMessage() {}
 
 func (x *SetTreadDeploymentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[67]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4603,7 +4842,7 @@ func (x *SetTreadDeploymentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetTreadDeploymentResponse.ProtoReflect.Descriptor instead.
 func (*SetTreadDeploymentResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{67}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *SetTreadDeploymentResponse) GetDeployment() *TreadDeployment {
@@ -4626,7 +4865,7 @@ type TreadPlanItem struct {
 
 func (x *TreadPlanItem) Reset() {
 	*x = TreadPlanItem{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[68]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4638,7 +4877,7 @@ func (x *TreadPlanItem) String() string {
 func (*TreadPlanItem) ProtoMessage() {}
 
 func (x *TreadPlanItem) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[68]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4651,7 +4890,7 @@ func (x *TreadPlanItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TreadPlanItem.ProtoReflect.Descriptor instead.
 func (*TreadPlanItem) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{68}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *TreadPlanItem) GetKey() string {
@@ -4704,7 +4943,7 @@ type TreadPlan struct {
 
 func (x *TreadPlan) Reset() {
 	*x = TreadPlan{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[69]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4716,7 +4955,7 @@ func (x *TreadPlan) String() string {
 func (*TreadPlan) ProtoMessage() {}
 
 func (x *TreadPlan) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[69]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4729,7 +4968,7 @@ func (x *TreadPlan) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TreadPlan.ProtoReflect.Descriptor instead.
 func (*TreadPlan) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{69}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *TreadPlan) GetChannelId() string {
@@ -4790,7 +5029,7 @@ type GetTreadPlanRequest struct {
 
 func (x *GetTreadPlanRequest) Reset() {
 	*x = GetTreadPlanRequest{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[70]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4802,7 +5041,7 @@ func (x *GetTreadPlanRequest) String() string {
 func (*GetTreadPlanRequest) ProtoMessage() {}
 
 func (x *GetTreadPlanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[70]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4815,7 +5054,7 @@ func (x *GetTreadPlanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTreadPlanRequest.ProtoReflect.Descriptor instead.
 func (*GetTreadPlanRequest) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{70}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *GetTreadPlanRequest) GetChannelId() string {
@@ -4834,7 +5073,7 @@ type GetTreadPlanResponse struct {
 
 func (x *GetTreadPlanResponse) Reset() {
 	*x = GetTreadPlanResponse{}
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[71]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4846,7 +5085,7 @@ func (x *GetTreadPlanResponse) String() string {
 func (*GetTreadPlanResponse) ProtoMessage() {}
 
 func (x *GetTreadPlanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_agent_v1_agent_proto_msgTypes[71]
+	mi := &file_tank_agent_v1_agent_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4859,7 +5098,7 @@ func (x *GetTreadPlanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTreadPlanResponse.ProtoReflect.Descriptor instead.
 func (*GetTreadPlanResponse) Descriptor() ([]byte, []int) {
-	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{71}
+	return file_tank_agent_v1_agent_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *GetTreadPlanResponse) GetPlan() *TreadPlan {
@@ -4960,7 +5199,40 @@ var file_tank_agent_v1_agent_proto_rawDesc = string([]byte{
 	0x12, 0x4f, 0x70, 0x65, 0x6e, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f,
 	0x6e, 0x73, 0x65, 0x12, 0x24, 0x0a, 0x0e, 0x74, 0x68, 0x72, 0x65, 0x61, 0x64, 0x5f, 0x72, 0x6f,
 	0x6f, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x74, 0x68, 0x72,
-	0x65, 0x61, 0x64, 0x52, 0x6f, 0x6f, 0x74, 0x49, 0x64, 0x22, 0x3f, 0x0a, 0x0e, 0x53, 0x74, 0x6f,
+	0x65, 0x61, 0x64, 0x52, 0x6f, 0x6f, 0x74, 0x49, 0x64, 0x22, 0x4c, 0x0a, 0x16, 0x57, 0x6f, 0x72,
+	0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69,
+	0x6e, 0x67, 0x73, 0x12, 0x32, 0x0a, 0x15, 0x6f, 0x72, 0x67, 0x5f, 0x61, 0x63, 0x63, 0x65, 0x73,
+	0x73, 0x5f, 0x65, 0x76, 0x65, 0x72, 0x79, 0x77, 0x68, 0x65, 0x72, 0x65, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x13, 0x6f, 0x72, 0x67, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x45, 0x76, 0x65,
+	0x72, 0x79, 0x77, 0x68, 0x65, 0x72, 0x65, 0x22, 0x45, 0x0a, 0x20, 0x47, 0x65, 0x74, 0x57, 0x6f,
+	0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74,
+	0x69, 0x6e, 0x67, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x77,
+	0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0b, 0x77, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x49, 0x64, 0x22, 0x85,
+	0x01, 0x0a, 0x21, 0x47, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x41,
+	0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x41, 0x0a, 0x08, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
+	0x65, 0x6e, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65,
+	0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x08, 0x73,
+	0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x61, 0x6e, 0x5f, 0x6d,
+	0x61, 0x6e, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x63, 0x61, 0x6e,
+	0x4d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x22, 0x88, 0x01, 0x0a, 0x20, 0x53, 0x65, 0x74, 0x57, 0x6f,
+	0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74,
+	0x69, 0x6e, 0x67, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x77,
+	0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0b, 0x77, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x49, 0x64, 0x12, 0x41,
+	0x0a, 0x08, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x76, 0x31,
+	0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53,
+	0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x08, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67,
+	0x73, 0x22, 0x66, 0x0a, 0x21, 0x53, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63,
+	0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x41, 0x0a, 0x08, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e,
+	0x67, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e,
+	0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61,
+	0x63, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52,
+	0x08, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x22, 0x3f, 0x0a, 0x0e, 0x53, 0x74, 0x6f,
 	0x70, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x15, 0x0a, 0x06, 0x72,
 	0x75, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x72, 0x75, 0x6e,
 	0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
@@ -5567,7 +5839,7 @@ var file_tank_agent_v1_agent_proto_rawDesc = string([]byte{
 	0x4d, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x4e, 0x45, 0x45, 0x44, 0x53, 0x5f, 0x50,
 	0x45, 0x52, 0x53, 0x4f, 0x4e, 0x10, 0x04, 0x12, 0x1c, 0x0a, 0x18, 0x50, 0x4c, 0x41, 0x4e, 0x5f,
 	0x49, 0x54, 0x45, 0x4d, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x44, 0x52, 0x4f, 0x50,
-	0x50, 0x45, 0x44, 0x10, 0x05, 0x32, 0xab, 0x13, 0x0a, 0x0c, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53,
+	0x50, 0x45, 0x44, 0x10, 0x05, 0x32, 0xab, 0x15, 0x0a, 0x0c, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53,
 	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x4b, 0x0a, 0x08, 0x53, 0x74, 0x61, 0x72, 0x74, 0x52,
 	0x75, 0x6e, 0x12, 0x1e, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2e,
 	0x76, 0x31, 0x2e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
@@ -5578,6 +5850,22 @@ var file_tank_agent_v1_agent_proto_rawDesc = string([]byte{
 	0x31, 0x2e, 0x4f, 0x70, 0x65, 0x6e, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75,
 	0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
 	0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x6e, 0x54, 0x68, 0x72, 0x65, 0x61, 0x64, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7e, 0x0a, 0x19, 0x47, 0x65, 0x74, 0x57, 0x6f, 0x72,
+	0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69,
+	0x6e, 0x67, 0x73, 0x12, 0x2f, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
+	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65,
+	0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x30, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63,
+	0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7e, 0x0a, 0x19, 0x53, 0x65, 0x74, 0x57, 0x6f, 0x72,
+	0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69,
+	0x6e, 0x67, 0x73, 0x12, 0x2f, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e, 0x74,
+	0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65,
+	0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x30, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63,
+	0x65, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x52, 0x65,
 	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x0c, 0x47, 0x65, 0x74, 0x54, 0x72, 0x65,
 	0x61, 0x64, 0x50, 0x6c, 0x61, 0x6e, 0x12, 0x22, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x67,
 	0x65, 0x6e, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x54, 0x72, 0x65, 0x61, 0x64, 0x50,
@@ -5751,191 +6039,203 @@ func file_tank_agent_v1_agent_proto_rawDescGZIP() []byte {
 }
 
 var file_tank_agent_v1_agent_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_tank_agent_v1_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 72)
+var file_tank_agent_v1_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 77)
 var file_tank_agent_v1_agent_proto_goTypes = []any{
-	(RunState)(0),                            // 0: tank.agent.v1.RunState
-	(PlanItemStatus)(0),                      // 1: tank.agent.v1.PlanItemStatus
-	(*Agent)(nil),                            // 2: tank.agent.v1.Agent
-	(*Run)(nil),                              // 3: tank.agent.v1.Run
-	(*StartRunRequest)(nil),                  // 4: tank.agent.v1.StartRunRequest
-	(*StartRunResponse)(nil),                 // 5: tank.agent.v1.StartRunResponse
-	(*OpenThreadRequest)(nil),                // 6: tank.agent.v1.OpenThreadRequest
-	(*OpenThreadResponse)(nil),               // 7: tank.agent.v1.OpenThreadResponse
-	(*StopRunRequest)(nil),                   // 8: tank.agent.v1.StopRunRequest
-	(*StopRunResponse)(nil),                  // 9: tank.agent.v1.StopRunResponse
-	(*HeartbeatRequest)(nil),                 // 10: tank.agent.v1.HeartbeatRequest
-	(*HeartbeatResponse)(nil),                // 11: tank.agent.v1.HeartbeatResponse
-	(*SetStatusRequest)(nil),                 // 12: tank.agent.v1.SetStatusRequest
-	(*SetStatusResponse)(nil),                // 13: tank.agent.v1.SetStatusResponse
-	(*SetProductBrandRequest)(nil),           // 14: tank.agent.v1.SetProductBrandRequest
-	(*SetProductBrandResponse)(nil),          // 15: tank.agent.v1.SetProductBrandResponse
-	(*SetProductLandingRequest)(nil),         // 16: tank.agent.v1.SetProductLandingRequest
-	(*SetProductLandingResponse)(nil),        // 17: tank.agent.v1.SetProductLandingResponse
-	(*RecordProductFindingRequest)(nil),      // 18: tank.agent.v1.RecordProductFindingRequest
-	(*RecordProductFindingResponse)(nil),     // 19: tank.agent.v1.RecordProductFindingResponse
-	(*GetRunRequest)(nil),                    // 20: tank.agent.v1.GetRunRequest
-	(*GetRunResponse)(nil),                   // 21: tank.agent.v1.GetRunResponse
-	(*ListRunsRequest)(nil),                  // 22: tank.agent.v1.ListRunsRequest
-	(*ListRunsResponse)(nil),                 // 23: tank.agent.v1.ListRunsResponse
-	(*ListAgentsRequest)(nil),                // 24: tank.agent.v1.ListAgentsRequest
-	(*ListAgentsResponse)(nil),               // 25: tank.agent.v1.ListAgentsResponse
-	(*RepoBinding)(nil),                      // 26: tank.agent.v1.RepoBinding
-	(*RepoAccess)(nil),                       // 27: tank.agent.v1.RepoAccess
-	(*RepoConnection)(nil),                   // 28: tank.agent.v1.RepoConnection
-	(*SetRepoAccessRequest)(nil),             // 29: tank.agent.v1.SetRepoAccessRequest
-	(*SetRepoAccessResponse)(nil),            // 30: tank.agent.v1.SetRepoAccessResponse
-	(*SetUpRepoPreviewsRequest)(nil),         // 31: tank.agent.v1.SetUpRepoPreviewsRequest
-	(*RepoPreviewSetup)(nil),                 // 32: tank.agent.v1.RepoPreviewSetup
-	(*SetUpRepoPreviewsResponse)(nil),        // 33: tank.agent.v1.SetUpRepoPreviewsResponse
-	(*ListRepoPreviewSetupsRequest)(nil),     // 34: tank.agent.v1.ListRepoPreviewSetupsRequest
-	(*ListRepoPreviewSetupsResponse)(nil),    // 35: tank.agent.v1.ListRepoPreviewSetupsResponse
-	(*TreadSettings)(nil),                    // 36: tank.agent.v1.TreadSettings
-	(*HourBucket)(nil),                       // 37: tank.agent.v1.HourBucket
-	(*TreadMetrics)(nil),                     // 38: tank.agent.v1.TreadMetrics
-	(*SpendByPerson)(nil),                    // 39: tank.agent.v1.SpendByPerson
-	(*SpendByTread)(nil),                     // 40: tank.agent.v1.SpendByTread
-	(*SpendByTeam)(nil),                      // 41: tank.agent.v1.SpendByTeam
-	(*SpendByDay)(nil),                       // 42: tank.agent.v1.SpendByDay
-	(*SpendByKind)(nil),                      // 43: tank.agent.v1.SpendByKind
-	(*WorkspaceSpend)(nil),                   // 44: tank.agent.v1.WorkspaceSpend
-	(*GetWorkspaceSpendRequest)(nil),         // 45: tank.agent.v1.GetWorkspaceSpendRequest
-	(*GetWorkspaceSpendResponse)(nil),        // 46: tank.agent.v1.GetWorkspaceSpendResponse
-	(*GetTreadSwitchboardRequest)(nil),       // 47: tank.agent.v1.GetTreadSwitchboardRequest
-	(*GetTreadSwitchboardResponse)(nil),      // 48: tank.agent.v1.GetTreadSwitchboardResponse
-	(*SetTreadSettingsRequest)(nil),          // 49: tank.agent.v1.SetTreadSettingsRequest
-	(*SetTreadSettingsResponse)(nil),         // 50: tank.agent.v1.SetTreadSettingsResponse
-	(*GetRepoConnectionRequest)(nil),         // 51: tank.agent.v1.GetRepoConnectionRequest
-	(*GetRepoConnectionResponse)(nil),        // 52: tank.agent.v1.GetRepoConnectionResponse
-	(*StartGitHubConnectRequest)(nil),        // 53: tank.agent.v1.StartGitHubConnectRequest
-	(*StartGitHubConnectResponse)(nil),       // 54: tank.agent.v1.StartGitHubConnectResponse
-	(*BindRepoRequest)(nil),                  // 55: tank.agent.v1.BindRepoRequest
-	(*BindRepoResponse)(nil),                 // 56: tank.agent.v1.BindRepoResponse
-	(*UnbindRepoRequest)(nil),                // 57: tank.agent.v1.UnbindRepoRequest
-	(*UnbindRepoResponse)(nil),               // 58: tank.agent.v1.UnbindRepoResponse
-	(*TreadSecurity)(nil),                    // 59: tank.agent.v1.TreadSecurity
-	(*WorkspaceDeployment)(nil),              // 60: tank.agent.v1.WorkspaceDeployment
-	(*ListWorkspaceDeploymentsRequest)(nil),  // 61: tank.agent.v1.ListWorkspaceDeploymentsRequest
-	(*ListWorkspaceDeploymentsResponse)(nil), // 62: tank.agent.v1.ListWorkspaceDeploymentsResponse
-	(*ListTreadSecurityRequest)(nil),         // 63: tank.agent.v1.ListTreadSecurityRequest
-	(*ListTreadSecurityResponse)(nil),        // 64: tank.agent.v1.ListTreadSecurityResponse
-	(*TreadDeployment)(nil),                  // 65: tank.agent.v1.TreadDeployment
-	(*CreateTreadRepoRequest)(nil),           // 66: tank.agent.v1.CreateTreadRepoRequest
-	(*CreateTreadRepoResponse)(nil),          // 67: tank.agent.v1.CreateTreadRepoResponse
-	(*SetTreadDeploymentRequest)(nil),        // 68: tank.agent.v1.SetTreadDeploymentRequest
-	(*SetTreadDeploymentResponse)(nil),       // 69: tank.agent.v1.SetTreadDeploymentResponse
-	(*TreadPlanItem)(nil),                    // 70: tank.agent.v1.TreadPlanItem
-	(*TreadPlan)(nil),                        // 71: tank.agent.v1.TreadPlan
-	(*GetTreadPlanRequest)(nil),              // 72: tank.agent.v1.GetTreadPlanRequest
-	(*GetTreadPlanResponse)(nil),             // 73: tank.agent.v1.GetTreadPlanResponse
-	(*timestamppb.Timestamp)(nil),            // 74: google.protobuf.Timestamp
+	(RunState)(0),                             // 0: tank.agent.v1.RunState
+	(PlanItemStatus)(0),                       // 1: tank.agent.v1.PlanItemStatus
+	(*Agent)(nil),                             // 2: tank.agent.v1.Agent
+	(*Run)(nil),                               // 3: tank.agent.v1.Run
+	(*StartRunRequest)(nil),                   // 4: tank.agent.v1.StartRunRequest
+	(*StartRunResponse)(nil),                  // 5: tank.agent.v1.StartRunResponse
+	(*OpenThreadRequest)(nil),                 // 6: tank.agent.v1.OpenThreadRequest
+	(*OpenThreadResponse)(nil),                // 7: tank.agent.v1.OpenThreadResponse
+	(*WorkspaceAgentSettings)(nil),            // 8: tank.agent.v1.WorkspaceAgentSettings
+	(*GetWorkspaceAgentSettingsRequest)(nil),  // 9: tank.agent.v1.GetWorkspaceAgentSettingsRequest
+	(*GetWorkspaceAgentSettingsResponse)(nil), // 10: tank.agent.v1.GetWorkspaceAgentSettingsResponse
+	(*SetWorkspaceAgentSettingsRequest)(nil),  // 11: tank.agent.v1.SetWorkspaceAgentSettingsRequest
+	(*SetWorkspaceAgentSettingsResponse)(nil), // 12: tank.agent.v1.SetWorkspaceAgentSettingsResponse
+	(*StopRunRequest)(nil),                    // 13: tank.agent.v1.StopRunRequest
+	(*StopRunResponse)(nil),                   // 14: tank.agent.v1.StopRunResponse
+	(*HeartbeatRequest)(nil),                  // 15: tank.agent.v1.HeartbeatRequest
+	(*HeartbeatResponse)(nil),                 // 16: tank.agent.v1.HeartbeatResponse
+	(*SetStatusRequest)(nil),                  // 17: tank.agent.v1.SetStatusRequest
+	(*SetStatusResponse)(nil),                 // 18: tank.agent.v1.SetStatusResponse
+	(*SetProductBrandRequest)(nil),            // 19: tank.agent.v1.SetProductBrandRequest
+	(*SetProductBrandResponse)(nil),           // 20: tank.agent.v1.SetProductBrandResponse
+	(*SetProductLandingRequest)(nil),          // 21: tank.agent.v1.SetProductLandingRequest
+	(*SetProductLandingResponse)(nil),         // 22: tank.agent.v1.SetProductLandingResponse
+	(*RecordProductFindingRequest)(nil),       // 23: tank.agent.v1.RecordProductFindingRequest
+	(*RecordProductFindingResponse)(nil),      // 24: tank.agent.v1.RecordProductFindingResponse
+	(*GetRunRequest)(nil),                     // 25: tank.agent.v1.GetRunRequest
+	(*GetRunResponse)(nil),                    // 26: tank.agent.v1.GetRunResponse
+	(*ListRunsRequest)(nil),                   // 27: tank.agent.v1.ListRunsRequest
+	(*ListRunsResponse)(nil),                  // 28: tank.agent.v1.ListRunsResponse
+	(*ListAgentsRequest)(nil),                 // 29: tank.agent.v1.ListAgentsRequest
+	(*ListAgentsResponse)(nil),                // 30: tank.agent.v1.ListAgentsResponse
+	(*RepoBinding)(nil),                       // 31: tank.agent.v1.RepoBinding
+	(*RepoAccess)(nil),                        // 32: tank.agent.v1.RepoAccess
+	(*RepoConnection)(nil),                    // 33: tank.agent.v1.RepoConnection
+	(*SetRepoAccessRequest)(nil),              // 34: tank.agent.v1.SetRepoAccessRequest
+	(*SetRepoAccessResponse)(nil),             // 35: tank.agent.v1.SetRepoAccessResponse
+	(*SetUpRepoPreviewsRequest)(nil),          // 36: tank.agent.v1.SetUpRepoPreviewsRequest
+	(*RepoPreviewSetup)(nil),                  // 37: tank.agent.v1.RepoPreviewSetup
+	(*SetUpRepoPreviewsResponse)(nil),         // 38: tank.agent.v1.SetUpRepoPreviewsResponse
+	(*ListRepoPreviewSetupsRequest)(nil),      // 39: tank.agent.v1.ListRepoPreviewSetupsRequest
+	(*ListRepoPreviewSetupsResponse)(nil),     // 40: tank.agent.v1.ListRepoPreviewSetupsResponse
+	(*TreadSettings)(nil),                     // 41: tank.agent.v1.TreadSettings
+	(*HourBucket)(nil),                        // 42: tank.agent.v1.HourBucket
+	(*TreadMetrics)(nil),                      // 43: tank.agent.v1.TreadMetrics
+	(*SpendByPerson)(nil),                     // 44: tank.agent.v1.SpendByPerson
+	(*SpendByTread)(nil),                      // 45: tank.agent.v1.SpendByTread
+	(*SpendByTeam)(nil),                       // 46: tank.agent.v1.SpendByTeam
+	(*SpendByDay)(nil),                        // 47: tank.agent.v1.SpendByDay
+	(*SpendByKind)(nil),                       // 48: tank.agent.v1.SpendByKind
+	(*WorkspaceSpend)(nil),                    // 49: tank.agent.v1.WorkspaceSpend
+	(*GetWorkspaceSpendRequest)(nil),          // 50: tank.agent.v1.GetWorkspaceSpendRequest
+	(*GetWorkspaceSpendResponse)(nil),         // 51: tank.agent.v1.GetWorkspaceSpendResponse
+	(*GetTreadSwitchboardRequest)(nil),        // 52: tank.agent.v1.GetTreadSwitchboardRequest
+	(*GetTreadSwitchboardResponse)(nil),       // 53: tank.agent.v1.GetTreadSwitchboardResponse
+	(*SetTreadSettingsRequest)(nil),           // 54: tank.agent.v1.SetTreadSettingsRequest
+	(*SetTreadSettingsResponse)(nil),          // 55: tank.agent.v1.SetTreadSettingsResponse
+	(*GetRepoConnectionRequest)(nil),          // 56: tank.agent.v1.GetRepoConnectionRequest
+	(*GetRepoConnectionResponse)(nil),         // 57: tank.agent.v1.GetRepoConnectionResponse
+	(*StartGitHubConnectRequest)(nil),         // 58: tank.agent.v1.StartGitHubConnectRequest
+	(*StartGitHubConnectResponse)(nil),        // 59: tank.agent.v1.StartGitHubConnectResponse
+	(*BindRepoRequest)(nil),                   // 60: tank.agent.v1.BindRepoRequest
+	(*BindRepoResponse)(nil),                  // 61: tank.agent.v1.BindRepoResponse
+	(*UnbindRepoRequest)(nil),                 // 62: tank.agent.v1.UnbindRepoRequest
+	(*UnbindRepoResponse)(nil),                // 63: tank.agent.v1.UnbindRepoResponse
+	(*TreadSecurity)(nil),                     // 64: tank.agent.v1.TreadSecurity
+	(*WorkspaceDeployment)(nil),               // 65: tank.agent.v1.WorkspaceDeployment
+	(*ListWorkspaceDeploymentsRequest)(nil),   // 66: tank.agent.v1.ListWorkspaceDeploymentsRequest
+	(*ListWorkspaceDeploymentsResponse)(nil),  // 67: tank.agent.v1.ListWorkspaceDeploymentsResponse
+	(*ListTreadSecurityRequest)(nil),          // 68: tank.agent.v1.ListTreadSecurityRequest
+	(*ListTreadSecurityResponse)(nil),         // 69: tank.agent.v1.ListTreadSecurityResponse
+	(*TreadDeployment)(nil),                   // 70: tank.agent.v1.TreadDeployment
+	(*CreateTreadRepoRequest)(nil),            // 71: tank.agent.v1.CreateTreadRepoRequest
+	(*CreateTreadRepoResponse)(nil),           // 72: tank.agent.v1.CreateTreadRepoResponse
+	(*SetTreadDeploymentRequest)(nil),         // 73: tank.agent.v1.SetTreadDeploymentRequest
+	(*SetTreadDeploymentResponse)(nil),        // 74: tank.agent.v1.SetTreadDeploymentResponse
+	(*TreadPlanItem)(nil),                     // 75: tank.agent.v1.TreadPlanItem
+	(*TreadPlan)(nil),                         // 76: tank.agent.v1.TreadPlan
+	(*GetTreadPlanRequest)(nil),               // 77: tank.agent.v1.GetTreadPlanRequest
+	(*GetTreadPlanResponse)(nil),              // 78: tank.agent.v1.GetTreadPlanResponse
+	(*timestamppb.Timestamp)(nil),             // 79: google.protobuf.Timestamp
 }
 var file_tank_agent_v1_agent_proto_depIdxs = []int32{
 	0,  // 0: tank.agent.v1.Run.state:type_name -> tank.agent.v1.RunState
-	74, // 1: tank.agent.v1.Run.started_at:type_name -> google.protobuf.Timestamp
-	74, // 2: tank.agent.v1.Run.ended_at:type_name -> google.protobuf.Timestamp
+	79, // 1: tank.agent.v1.Run.started_at:type_name -> google.protobuf.Timestamp
+	79, // 2: tank.agent.v1.Run.ended_at:type_name -> google.protobuf.Timestamp
 	3,  // 3: tank.agent.v1.StartRunResponse.run:type_name -> tank.agent.v1.Run
-	74, // 4: tank.agent.v1.StartRunResponse.token_expires_at:type_name -> google.protobuf.Timestamp
-	3,  // 5: tank.agent.v1.StopRunResponse.run:type_name -> tank.agent.v1.Run
-	0,  // 6: tank.agent.v1.SetStatusRequest.state:type_name -> tank.agent.v1.RunState
-	3,  // 7: tank.agent.v1.SetStatusResponse.run:type_name -> tank.agent.v1.Run
-	3,  // 8: tank.agent.v1.GetRunResponse.run:type_name -> tank.agent.v1.Run
-	3,  // 9: tank.agent.v1.ListRunsResponse.runs:type_name -> tank.agent.v1.Run
-	2,  // 10: tank.agent.v1.ListAgentsResponse.agents:type_name -> tank.agent.v1.Agent
-	26, // 11: tank.agent.v1.RepoConnection.binding:type_name -> tank.agent.v1.RepoBinding
-	27, // 12: tank.agent.v1.RepoConnection.access:type_name -> tank.agent.v1.RepoAccess
-	65, // 13: tank.agent.v1.RepoConnection.deployment:type_name -> tank.agent.v1.TreadDeployment
-	27, // 14: tank.agent.v1.SetRepoAccessRequest.access:type_name -> tank.agent.v1.RepoAccess
-	27, // 15: tank.agent.v1.SetRepoAccessResponse.access:type_name -> tank.agent.v1.RepoAccess
-	74, // 16: tank.agent.v1.RepoPreviewSetup.requested_at:type_name -> google.protobuf.Timestamp
-	32, // 17: tank.agent.v1.SetUpRepoPreviewsResponse.results:type_name -> tank.agent.v1.RepoPreviewSetup
-	32, // 18: tank.agent.v1.ListRepoPreviewSetupsResponse.setups:type_name -> tank.agent.v1.RepoPreviewSetup
-	74, // 19: tank.agent.v1.HourBucket.hour:type_name -> google.protobuf.Timestamp
-	37, // 20: tank.agent.v1.TreadMetrics.hours:type_name -> tank.agent.v1.HourBucket
-	39, // 21: tank.agent.v1.TreadMetrics.people:type_name -> tank.agent.v1.SpendByPerson
-	40, // 22: tank.agent.v1.TreadMetrics.treads:type_name -> tank.agent.v1.SpendByTread
-	39, // 23: tank.agent.v1.SpendByTread.people:type_name -> tank.agent.v1.SpendByPerson
-	39, // 24: tank.agent.v1.SpendByTeam.people:type_name -> tank.agent.v1.SpendByPerson
-	39, // 25: tank.agent.v1.WorkspaceSpend.people:type_name -> tank.agent.v1.SpendByPerson
-	40, // 26: tank.agent.v1.WorkspaceSpend.treads:type_name -> tank.agent.v1.SpendByTread
-	41, // 27: tank.agent.v1.WorkspaceSpend.teams:type_name -> tank.agent.v1.SpendByTeam
-	43, // 28: tank.agent.v1.WorkspaceSpend.kinds:type_name -> tank.agent.v1.SpendByKind
-	42, // 29: tank.agent.v1.WorkspaceSpend.days:type_name -> tank.agent.v1.SpendByDay
-	44, // 30: tank.agent.v1.GetWorkspaceSpendResponse.spend:type_name -> tank.agent.v1.WorkspaceSpend
-	38, // 31: tank.agent.v1.GetTreadSwitchboardResponse.metrics:type_name -> tank.agent.v1.TreadMetrics
-	36, // 32: tank.agent.v1.GetTreadSwitchboardResponse.settings:type_name -> tank.agent.v1.TreadSettings
-	36, // 33: tank.agent.v1.SetTreadSettingsRequest.settings:type_name -> tank.agent.v1.TreadSettings
-	36, // 34: tank.agent.v1.SetTreadSettingsResponse.settings:type_name -> tank.agent.v1.TreadSettings
-	28, // 35: tank.agent.v1.GetRepoConnectionResponse.connection:type_name -> tank.agent.v1.RepoConnection
-	26, // 36: tank.agent.v1.BindRepoResponse.binding:type_name -> tank.agent.v1.RepoBinding
-	74, // 37: tank.agent.v1.TreadSecurity.scanned_at:type_name -> google.protobuf.Timestamp
-	65, // 38: tank.agent.v1.WorkspaceDeployment.deployment:type_name -> tank.agent.v1.TreadDeployment
-	60, // 39: tank.agent.v1.ListWorkspaceDeploymentsResponse.deployments:type_name -> tank.agent.v1.WorkspaceDeployment
-	59, // 40: tank.agent.v1.ListTreadSecurityResponse.treads:type_name -> tank.agent.v1.TreadSecurity
-	74, // 41: tank.agent.v1.TreadDeployment.updated_at:type_name -> google.protobuf.Timestamp
-	26, // 42: tank.agent.v1.CreateTreadRepoResponse.binding:type_name -> tank.agent.v1.RepoBinding
-	65, // 43: tank.agent.v1.CreateTreadRepoResponse.deployment:type_name -> tank.agent.v1.TreadDeployment
-	65, // 44: tank.agent.v1.SetTreadDeploymentResponse.deployment:type_name -> tank.agent.v1.TreadDeployment
-	1,  // 45: tank.agent.v1.TreadPlanItem.status:type_name -> tank.agent.v1.PlanItemStatus
-	70, // 46: tank.agent.v1.TreadPlan.items:type_name -> tank.agent.v1.TreadPlanItem
-	74, // 47: tank.agent.v1.TreadPlan.updated_at:type_name -> google.protobuf.Timestamp
-	71, // 48: tank.agent.v1.GetTreadPlanResponse.plan:type_name -> tank.agent.v1.TreadPlan
-	4,  // 49: tank.agent.v1.AgentService.StartRun:input_type -> tank.agent.v1.StartRunRequest
-	6,  // 50: tank.agent.v1.AgentService.OpenThread:input_type -> tank.agent.v1.OpenThreadRequest
-	72, // 51: tank.agent.v1.AgentService.GetTreadPlan:input_type -> tank.agent.v1.GetTreadPlanRequest
-	8,  // 52: tank.agent.v1.AgentService.StopRun:input_type -> tank.agent.v1.StopRunRequest
-	10, // 53: tank.agent.v1.AgentService.Heartbeat:input_type -> tank.agent.v1.HeartbeatRequest
-	12, // 54: tank.agent.v1.AgentService.SetStatus:input_type -> tank.agent.v1.SetStatusRequest
-	14, // 55: tank.agent.v1.AgentService.SetProductBrand:input_type -> tank.agent.v1.SetProductBrandRequest
-	16, // 56: tank.agent.v1.AgentService.SetProductLanding:input_type -> tank.agent.v1.SetProductLandingRequest
-	18, // 57: tank.agent.v1.AgentService.RecordProductFinding:input_type -> tank.agent.v1.RecordProductFindingRequest
-	20, // 58: tank.agent.v1.AgentService.GetRun:input_type -> tank.agent.v1.GetRunRequest
-	22, // 59: tank.agent.v1.AgentService.ListRuns:input_type -> tank.agent.v1.ListRunsRequest
-	24, // 60: tank.agent.v1.AgentService.ListAgents:input_type -> tank.agent.v1.ListAgentsRequest
-	51, // 61: tank.agent.v1.AgentService.GetRepoConnection:input_type -> tank.agent.v1.GetRepoConnectionRequest
-	53, // 62: tank.agent.v1.AgentService.StartGitHubConnect:input_type -> tank.agent.v1.StartGitHubConnectRequest
-	55, // 63: tank.agent.v1.AgentService.BindRepo:input_type -> tank.agent.v1.BindRepoRequest
-	57, // 64: tank.agent.v1.AgentService.UnbindRepo:input_type -> tank.agent.v1.UnbindRepoRequest
-	29, // 65: tank.agent.v1.AgentService.SetRepoAccess:input_type -> tank.agent.v1.SetRepoAccessRequest
-	66, // 66: tank.agent.v1.AgentService.CreateTreadRepo:input_type -> tank.agent.v1.CreateTreadRepoRequest
-	68, // 67: tank.agent.v1.AgentService.SetTreadDeployment:input_type -> tank.agent.v1.SetTreadDeploymentRequest
-	31, // 68: tank.agent.v1.AgentService.SetUpRepoPreviews:input_type -> tank.agent.v1.SetUpRepoPreviewsRequest
-	34, // 69: tank.agent.v1.AgentService.ListRepoPreviewSetups:input_type -> tank.agent.v1.ListRepoPreviewSetupsRequest
-	47, // 70: tank.agent.v1.AgentService.GetTreadSwitchboard:input_type -> tank.agent.v1.GetTreadSwitchboardRequest
-	49, // 71: tank.agent.v1.AgentService.SetTreadSettings:input_type -> tank.agent.v1.SetTreadSettingsRequest
-	45, // 72: tank.agent.v1.AgentService.GetWorkspaceSpend:input_type -> tank.agent.v1.GetWorkspaceSpendRequest
-	63, // 73: tank.agent.v1.AgentService.ListTreadSecurity:input_type -> tank.agent.v1.ListTreadSecurityRequest
-	61, // 74: tank.agent.v1.AgentService.ListWorkspaceDeployments:input_type -> tank.agent.v1.ListWorkspaceDeploymentsRequest
-	5,  // 75: tank.agent.v1.AgentService.StartRun:output_type -> tank.agent.v1.StartRunResponse
-	7,  // 76: tank.agent.v1.AgentService.OpenThread:output_type -> tank.agent.v1.OpenThreadResponse
-	73, // 77: tank.agent.v1.AgentService.GetTreadPlan:output_type -> tank.agent.v1.GetTreadPlanResponse
-	9,  // 78: tank.agent.v1.AgentService.StopRun:output_type -> tank.agent.v1.StopRunResponse
-	11, // 79: tank.agent.v1.AgentService.Heartbeat:output_type -> tank.agent.v1.HeartbeatResponse
-	13, // 80: tank.agent.v1.AgentService.SetStatus:output_type -> tank.agent.v1.SetStatusResponse
-	15, // 81: tank.agent.v1.AgentService.SetProductBrand:output_type -> tank.agent.v1.SetProductBrandResponse
-	17, // 82: tank.agent.v1.AgentService.SetProductLanding:output_type -> tank.agent.v1.SetProductLandingResponse
-	19, // 83: tank.agent.v1.AgentService.RecordProductFinding:output_type -> tank.agent.v1.RecordProductFindingResponse
-	21, // 84: tank.agent.v1.AgentService.GetRun:output_type -> tank.agent.v1.GetRunResponse
-	23, // 85: tank.agent.v1.AgentService.ListRuns:output_type -> tank.agent.v1.ListRunsResponse
-	25, // 86: tank.agent.v1.AgentService.ListAgents:output_type -> tank.agent.v1.ListAgentsResponse
-	52, // 87: tank.agent.v1.AgentService.GetRepoConnection:output_type -> tank.agent.v1.GetRepoConnectionResponse
-	54, // 88: tank.agent.v1.AgentService.StartGitHubConnect:output_type -> tank.agent.v1.StartGitHubConnectResponse
-	56, // 89: tank.agent.v1.AgentService.BindRepo:output_type -> tank.agent.v1.BindRepoResponse
-	58, // 90: tank.agent.v1.AgentService.UnbindRepo:output_type -> tank.agent.v1.UnbindRepoResponse
-	30, // 91: tank.agent.v1.AgentService.SetRepoAccess:output_type -> tank.agent.v1.SetRepoAccessResponse
-	67, // 92: tank.agent.v1.AgentService.CreateTreadRepo:output_type -> tank.agent.v1.CreateTreadRepoResponse
-	69, // 93: tank.agent.v1.AgentService.SetTreadDeployment:output_type -> tank.agent.v1.SetTreadDeploymentResponse
-	33, // 94: tank.agent.v1.AgentService.SetUpRepoPreviews:output_type -> tank.agent.v1.SetUpRepoPreviewsResponse
-	35, // 95: tank.agent.v1.AgentService.ListRepoPreviewSetups:output_type -> tank.agent.v1.ListRepoPreviewSetupsResponse
-	48, // 96: tank.agent.v1.AgentService.GetTreadSwitchboard:output_type -> tank.agent.v1.GetTreadSwitchboardResponse
-	50, // 97: tank.agent.v1.AgentService.SetTreadSettings:output_type -> tank.agent.v1.SetTreadSettingsResponse
-	46, // 98: tank.agent.v1.AgentService.GetWorkspaceSpend:output_type -> tank.agent.v1.GetWorkspaceSpendResponse
-	64, // 99: tank.agent.v1.AgentService.ListTreadSecurity:output_type -> tank.agent.v1.ListTreadSecurityResponse
-	62, // 100: tank.agent.v1.AgentService.ListWorkspaceDeployments:output_type -> tank.agent.v1.ListWorkspaceDeploymentsResponse
-	75, // [75:101] is the sub-list for method output_type
-	49, // [49:75] is the sub-list for method input_type
-	49, // [49:49] is the sub-list for extension type_name
-	49, // [49:49] is the sub-list for extension extendee
-	0,  // [0:49] is the sub-list for field type_name
+	79, // 4: tank.agent.v1.StartRunResponse.token_expires_at:type_name -> google.protobuf.Timestamp
+	8,  // 5: tank.agent.v1.GetWorkspaceAgentSettingsResponse.settings:type_name -> tank.agent.v1.WorkspaceAgentSettings
+	8,  // 6: tank.agent.v1.SetWorkspaceAgentSettingsRequest.settings:type_name -> tank.agent.v1.WorkspaceAgentSettings
+	8,  // 7: tank.agent.v1.SetWorkspaceAgentSettingsResponse.settings:type_name -> tank.agent.v1.WorkspaceAgentSettings
+	3,  // 8: tank.agent.v1.StopRunResponse.run:type_name -> tank.agent.v1.Run
+	0,  // 9: tank.agent.v1.SetStatusRequest.state:type_name -> tank.agent.v1.RunState
+	3,  // 10: tank.agent.v1.SetStatusResponse.run:type_name -> tank.agent.v1.Run
+	3,  // 11: tank.agent.v1.GetRunResponse.run:type_name -> tank.agent.v1.Run
+	3,  // 12: tank.agent.v1.ListRunsResponse.runs:type_name -> tank.agent.v1.Run
+	2,  // 13: tank.agent.v1.ListAgentsResponse.agents:type_name -> tank.agent.v1.Agent
+	31, // 14: tank.agent.v1.RepoConnection.binding:type_name -> tank.agent.v1.RepoBinding
+	32, // 15: tank.agent.v1.RepoConnection.access:type_name -> tank.agent.v1.RepoAccess
+	70, // 16: tank.agent.v1.RepoConnection.deployment:type_name -> tank.agent.v1.TreadDeployment
+	32, // 17: tank.agent.v1.SetRepoAccessRequest.access:type_name -> tank.agent.v1.RepoAccess
+	32, // 18: tank.agent.v1.SetRepoAccessResponse.access:type_name -> tank.agent.v1.RepoAccess
+	79, // 19: tank.agent.v1.RepoPreviewSetup.requested_at:type_name -> google.protobuf.Timestamp
+	37, // 20: tank.agent.v1.SetUpRepoPreviewsResponse.results:type_name -> tank.agent.v1.RepoPreviewSetup
+	37, // 21: tank.agent.v1.ListRepoPreviewSetupsResponse.setups:type_name -> tank.agent.v1.RepoPreviewSetup
+	79, // 22: tank.agent.v1.HourBucket.hour:type_name -> google.protobuf.Timestamp
+	42, // 23: tank.agent.v1.TreadMetrics.hours:type_name -> tank.agent.v1.HourBucket
+	44, // 24: tank.agent.v1.TreadMetrics.people:type_name -> tank.agent.v1.SpendByPerson
+	45, // 25: tank.agent.v1.TreadMetrics.treads:type_name -> tank.agent.v1.SpendByTread
+	44, // 26: tank.agent.v1.SpendByTread.people:type_name -> tank.agent.v1.SpendByPerson
+	44, // 27: tank.agent.v1.SpendByTeam.people:type_name -> tank.agent.v1.SpendByPerson
+	44, // 28: tank.agent.v1.WorkspaceSpend.people:type_name -> tank.agent.v1.SpendByPerson
+	45, // 29: tank.agent.v1.WorkspaceSpend.treads:type_name -> tank.agent.v1.SpendByTread
+	46, // 30: tank.agent.v1.WorkspaceSpend.teams:type_name -> tank.agent.v1.SpendByTeam
+	48, // 31: tank.agent.v1.WorkspaceSpend.kinds:type_name -> tank.agent.v1.SpendByKind
+	47, // 32: tank.agent.v1.WorkspaceSpend.days:type_name -> tank.agent.v1.SpendByDay
+	49, // 33: tank.agent.v1.GetWorkspaceSpendResponse.spend:type_name -> tank.agent.v1.WorkspaceSpend
+	43, // 34: tank.agent.v1.GetTreadSwitchboardResponse.metrics:type_name -> tank.agent.v1.TreadMetrics
+	41, // 35: tank.agent.v1.GetTreadSwitchboardResponse.settings:type_name -> tank.agent.v1.TreadSettings
+	41, // 36: tank.agent.v1.SetTreadSettingsRequest.settings:type_name -> tank.agent.v1.TreadSettings
+	41, // 37: tank.agent.v1.SetTreadSettingsResponse.settings:type_name -> tank.agent.v1.TreadSettings
+	33, // 38: tank.agent.v1.GetRepoConnectionResponse.connection:type_name -> tank.agent.v1.RepoConnection
+	31, // 39: tank.agent.v1.BindRepoResponse.binding:type_name -> tank.agent.v1.RepoBinding
+	79, // 40: tank.agent.v1.TreadSecurity.scanned_at:type_name -> google.protobuf.Timestamp
+	70, // 41: tank.agent.v1.WorkspaceDeployment.deployment:type_name -> tank.agent.v1.TreadDeployment
+	65, // 42: tank.agent.v1.ListWorkspaceDeploymentsResponse.deployments:type_name -> tank.agent.v1.WorkspaceDeployment
+	64, // 43: tank.agent.v1.ListTreadSecurityResponse.treads:type_name -> tank.agent.v1.TreadSecurity
+	79, // 44: tank.agent.v1.TreadDeployment.updated_at:type_name -> google.protobuf.Timestamp
+	31, // 45: tank.agent.v1.CreateTreadRepoResponse.binding:type_name -> tank.agent.v1.RepoBinding
+	70, // 46: tank.agent.v1.CreateTreadRepoResponse.deployment:type_name -> tank.agent.v1.TreadDeployment
+	70, // 47: tank.agent.v1.SetTreadDeploymentResponse.deployment:type_name -> tank.agent.v1.TreadDeployment
+	1,  // 48: tank.agent.v1.TreadPlanItem.status:type_name -> tank.agent.v1.PlanItemStatus
+	75, // 49: tank.agent.v1.TreadPlan.items:type_name -> tank.agent.v1.TreadPlanItem
+	79, // 50: tank.agent.v1.TreadPlan.updated_at:type_name -> google.protobuf.Timestamp
+	76, // 51: tank.agent.v1.GetTreadPlanResponse.plan:type_name -> tank.agent.v1.TreadPlan
+	4,  // 52: tank.agent.v1.AgentService.StartRun:input_type -> tank.agent.v1.StartRunRequest
+	6,  // 53: tank.agent.v1.AgentService.OpenThread:input_type -> tank.agent.v1.OpenThreadRequest
+	9,  // 54: tank.agent.v1.AgentService.GetWorkspaceAgentSettings:input_type -> tank.agent.v1.GetWorkspaceAgentSettingsRequest
+	11, // 55: tank.agent.v1.AgentService.SetWorkspaceAgentSettings:input_type -> tank.agent.v1.SetWorkspaceAgentSettingsRequest
+	77, // 56: tank.agent.v1.AgentService.GetTreadPlan:input_type -> tank.agent.v1.GetTreadPlanRequest
+	13, // 57: tank.agent.v1.AgentService.StopRun:input_type -> tank.agent.v1.StopRunRequest
+	15, // 58: tank.agent.v1.AgentService.Heartbeat:input_type -> tank.agent.v1.HeartbeatRequest
+	17, // 59: tank.agent.v1.AgentService.SetStatus:input_type -> tank.agent.v1.SetStatusRequest
+	19, // 60: tank.agent.v1.AgentService.SetProductBrand:input_type -> tank.agent.v1.SetProductBrandRequest
+	21, // 61: tank.agent.v1.AgentService.SetProductLanding:input_type -> tank.agent.v1.SetProductLandingRequest
+	23, // 62: tank.agent.v1.AgentService.RecordProductFinding:input_type -> tank.agent.v1.RecordProductFindingRequest
+	25, // 63: tank.agent.v1.AgentService.GetRun:input_type -> tank.agent.v1.GetRunRequest
+	27, // 64: tank.agent.v1.AgentService.ListRuns:input_type -> tank.agent.v1.ListRunsRequest
+	29, // 65: tank.agent.v1.AgentService.ListAgents:input_type -> tank.agent.v1.ListAgentsRequest
+	56, // 66: tank.agent.v1.AgentService.GetRepoConnection:input_type -> tank.agent.v1.GetRepoConnectionRequest
+	58, // 67: tank.agent.v1.AgentService.StartGitHubConnect:input_type -> tank.agent.v1.StartGitHubConnectRequest
+	60, // 68: tank.agent.v1.AgentService.BindRepo:input_type -> tank.agent.v1.BindRepoRequest
+	62, // 69: tank.agent.v1.AgentService.UnbindRepo:input_type -> tank.agent.v1.UnbindRepoRequest
+	34, // 70: tank.agent.v1.AgentService.SetRepoAccess:input_type -> tank.agent.v1.SetRepoAccessRequest
+	71, // 71: tank.agent.v1.AgentService.CreateTreadRepo:input_type -> tank.agent.v1.CreateTreadRepoRequest
+	73, // 72: tank.agent.v1.AgentService.SetTreadDeployment:input_type -> tank.agent.v1.SetTreadDeploymentRequest
+	36, // 73: tank.agent.v1.AgentService.SetUpRepoPreviews:input_type -> tank.agent.v1.SetUpRepoPreviewsRequest
+	39, // 74: tank.agent.v1.AgentService.ListRepoPreviewSetups:input_type -> tank.agent.v1.ListRepoPreviewSetupsRequest
+	52, // 75: tank.agent.v1.AgentService.GetTreadSwitchboard:input_type -> tank.agent.v1.GetTreadSwitchboardRequest
+	54, // 76: tank.agent.v1.AgentService.SetTreadSettings:input_type -> tank.agent.v1.SetTreadSettingsRequest
+	50, // 77: tank.agent.v1.AgentService.GetWorkspaceSpend:input_type -> tank.agent.v1.GetWorkspaceSpendRequest
+	68, // 78: tank.agent.v1.AgentService.ListTreadSecurity:input_type -> tank.agent.v1.ListTreadSecurityRequest
+	66, // 79: tank.agent.v1.AgentService.ListWorkspaceDeployments:input_type -> tank.agent.v1.ListWorkspaceDeploymentsRequest
+	5,  // 80: tank.agent.v1.AgentService.StartRun:output_type -> tank.agent.v1.StartRunResponse
+	7,  // 81: tank.agent.v1.AgentService.OpenThread:output_type -> tank.agent.v1.OpenThreadResponse
+	10, // 82: tank.agent.v1.AgentService.GetWorkspaceAgentSettings:output_type -> tank.agent.v1.GetWorkspaceAgentSettingsResponse
+	12, // 83: tank.agent.v1.AgentService.SetWorkspaceAgentSettings:output_type -> tank.agent.v1.SetWorkspaceAgentSettingsResponse
+	78, // 84: tank.agent.v1.AgentService.GetTreadPlan:output_type -> tank.agent.v1.GetTreadPlanResponse
+	14, // 85: tank.agent.v1.AgentService.StopRun:output_type -> tank.agent.v1.StopRunResponse
+	16, // 86: tank.agent.v1.AgentService.Heartbeat:output_type -> tank.agent.v1.HeartbeatResponse
+	18, // 87: tank.agent.v1.AgentService.SetStatus:output_type -> tank.agent.v1.SetStatusResponse
+	20, // 88: tank.agent.v1.AgentService.SetProductBrand:output_type -> tank.agent.v1.SetProductBrandResponse
+	22, // 89: tank.agent.v1.AgentService.SetProductLanding:output_type -> tank.agent.v1.SetProductLandingResponse
+	24, // 90: tank.agent.v1.AgentService.RecordProductFinding:output_type -> tank.agent.v1.RecordProductFindingResponse
+	26, // 91: tank.agent.v1.AgentService.GetRun:output_type -> tank.agent.v1.GetRunResponse
+	28, // 92: tank.agent.v1.AgentService.ListRuns:output_type -> tank.agent.v1.ListRunsResponse
+	30, // 93: tank.agent.v1.AgentService.ListAgents:output_type -> tank.agent.v1.ListAgentsResponse
+	57, // 94: tank.agent.v1.AgentService.GetRepoConnection:output_type -> tank.agent.v1.GetRepoConnectionResponse
+	59, // 95: tank.agent.v1.AgentService.StartGitHubConnect:output_type -> tank.agent.v1.StartGitHubConnectResponse
+	61, // 96: tank.agent.v1.AgentService.BindRepo:output_type -> tank.agent.v1.BindRepoResponse
+	63, // 97: tank.agent.v1.AgentService.UnbindRepo:output_type -> tank.agent.v1.UnbindRepoResponse
+	35, // 98: tank.agent.v1.AgentService.SetRepoAccess:output_type -> tank.agent.v1.SetRepoAccessResponse
+	72, // 99: tank.agent.v1.AgentService.CreateTreadRepo:output_type -> tank.agent.v1.CreateTreadRepoResponse
+	74, // 100: tank.agent.v1.AgentService.SetTreadDeployment:output_type -> tank.agent.v1.SetTreadDeploymentResponse
+	38, // 101: tank.agent.v1.AgentService.SetUpRepoPreviews:output_type -> tank.agent.v1.SetUpRepoPreviewsResponse
+	40, // 102: tank.agent.v1.AgentService.ListRepoPreviewSetups:output_type -> tank.agent.v1.ListRepoPreviewSetupsResponse
+	53, // 103: tank.agent.v1.AgentService.GetTreadSwitchboard:output_type -> tank.agent.v1.GetTreadSwitchboardResponse
+	55, // 104: tank.agent.v1.AgentService.SetTreadSettings:output_type -> tank.agent.v1.SetTreadSettingsResponse
+	51, // 105: tank.agent.v1.AgentService.GetWorkspaceSpend:output_type -> tank.agent.v1.GetWorkspaceSpendResponse
+	69, // 106: tank.agent.v1.AgentService.ListTreadSecurity:output_type -> tank.agent.v1.ListTreadSecurityResponse
+	67, // 107: tank.agent.v1.AgentService.ListWorkspaceDeployments:output_type -> tank.agent.v1.ListWorkspaceDeploymentsResponse
+	80, // [80:108] is the sub-list for method output_type
+	52, // [52:80] is the sub-list for method input_type
+	52, // [52:52] is the sub-list for extension type_name
+	52, // [52:52] is the sub-list for extension extendee
+	0,  // [0:52] is the sub-list for field type_name
 }
 
 func init() { file_tank_agent_v1_agent_proto_init() }
@@ -5949,7 +6249,7 @@ func file_tank_agent_v1_agent_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tank_agent_v1_agent_proto_rawDesc), len(file_tank_agent_v1_agent_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   72,
+			NumMessages:   77,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -96,6 +96,27 @@ message OpenThreadResponse {
   string thread_root_id = 1;
 }
 
+// Workspace-level agent settings, admins only. Off by default.
+message WorkspaceAgentSettings {
+  // An organization grant ('*') made in any Tread counts for every Tread in the
+  // workspace, present and future. Off: access is per Tread, as granted.
+  bool org_access_everywhere = 1;
+}
+message GetWorkspaceAgentSettingsRequest {
+  string workspace_id = 1;
+}
+message GetWorkspaceAgentSettingsResponse {
+  WorkspaceAgentSettings settings = 1;
+  bool can_manage = 2; // the caller is an admin or owner
+}
+message SetWorkspaceAgentSettingsRequest {
+  string workspace_id = 1;
+  WorkspaceAgentSettings settings = 2;
+}
+message SetWorkspaceAgentSettingsResponse {
+  WorkspaceAgentSettings settings = 1;
+}
+
 message StopRunRequest {
   string run_id = 1;
   string reason = 2;
@@ -546,6 +567,8 @@ message GetTreadPlanResponse {
 service AgentService {
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
   rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
+  rpc GetWorkspaceAgentSettings(GetWorkspaceAgentSettingsRequest) returns (GetWorkspaceAgentSettingsResponse);
+  rpc SetWorkspaceAgentSettings(SetWorkspaceAgentSettingsRequest) returns (SetWorkspaceAgentSettingsResponse);
   rpc GetTreadPlan(GetTreadPlanRequest) returns (GetTreadPlanResponse);
   rpc StopRun(StopRunRequest) returns (StopRunResponse);
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
