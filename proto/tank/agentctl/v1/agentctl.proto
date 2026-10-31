@@ -223,6 +223,13 @@ message TeamMember {
   Envelope envelope = 9;            // the default for a hand-off to this member
   bool enabled = 10;
   bool is_me = 11;
+  // A person on the team (seat person): a hand-off to them is a question in a new
+  // thread with a deadline; their reply is the result.
+  bool person = 12;
+  string user_id = 13;
+  // The member's record, as a line the coordinator reads: "12 done, 1 failed; 9 of 10
+  // hand-offs accepted; ~$1.80 and 6 min each; best at: tests, review".
+  string record = 14;
 }
 message Envelope {
   double usd = 1;
@@ -256,6 +263,12 @@ message HandoffStatus {
   // "" until it decides; "accepted" or "rejected" after.
   string verdict = 11;
   string verdict_note = 12;
+  // The other hand-off this one was paired with for a quorum, if any.
+  string quorum_with = 13;
+  // A hand-off to a person: their user id and the deadline; state is "waiting" until
+  // they reply or the deadline passes ("done" with their reply, "timed_out" without).
+  string person_user_id = 14;
+  google.protobuf.Timestamp deadline = 15;
 }
 
 // Hand a bounded piece of work to a team member: a child run in a new sub-thread of
@@ -267,12 +280,21 @@ message DelegateRequest {
   string return_shape = 3;
   string acceptance_check = 4;
   Envelope envelope = 5;  // zero fields take the member's default, bounded by what is left
+  // Quorum: the same ask goes to this second member too; both results come back and
+  // the coordinator accepts the one that passes the check (or both, or neither).
+  string quorum_handle = 6;
+  // For a hand-off to a person: how long to wait for their reply before carrying on
+  // without it (0 = a day).
+  int32 deadline_minutes = 7;
 }
 message DelegateResponse {
   string child_run_id = 1;
   string thread_root_id = 2;
   Envelope envelope = 3;      // what the child actually got
   Envelope envelope_left = 4; // what this run has left to hand out
+  string quorum_child_run_id = 5;  // the second hand-off, for a quorum
+  // Hand-offs the control plane refused as already in hand: who is on it and where.
+  string already = 6;
 }
 // The coordinator's verdict on a hand-off, after checking the result against the
 // acceptance check. A rejected hand-off may be handed again.

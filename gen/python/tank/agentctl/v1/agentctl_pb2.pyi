@@ -308,7 +308,7 @@ class ListClaimsResponse(_message.Message):
     def __init__(self, mine: _Optional[_Iterable[_Union[HeldClaim, _Mapping]]] = ..., others: _Optional[_Iterable[_Union[HeldClaim, _Mapping]]] = ...) -> None: ...
 
 class TeamMember(_message.Message):
-    __slots__ = ("member_id", "agent_id", "title", "handle", "coordinator", "triggers", "delegate", "delegate_to", "envelope", "enabled", "is_me")
+    __slots__ = ("member_id", "agent_id", "title", "handle", "coordinator", "triggers", "delegate", "delegate_to", "envelope", "enabled", "is_me", "person", "user_id", "record")
     MEMBER_ID_FIELD_NUMBER: _ClassVar[int]
     AGENT_ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
@@ -320,6 +320,9 @@ class TeamMember(_message.Message):
     ENVELOPE_FIELD_NUMBER: _ClassVar[int]
     ENABLED_FIELD_NUMBER: _ClassVar[int]
     IS_ME_FIELD_NUMBER: _ClassVar[int]
+    PERSON_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    RECORD_FIELD_NUMBER: _ClassVar[int]
     member_id: str
     agent_id: str
     title: str
@@ -331,7 +334,10 @@ class TeamMember(_message.Message):
     envelope: Envelope
     enabled: bool
     is_me: bool
-    def __init__(self, member_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., title: _Optional[str] = ..., handle: _Optional[str] = ..., coordinator: bool = ..., triggers: _Optional[_Iterable[str]] = ..., delegate: bool = ..., delegate_to: _Optional[_Iterable[str]] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., enabled: bool = ..., is_me: bool = ...) -> None: ...
+    person: bool
+    user_id: str
+    record: str
+    def __init__(self, member_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., title: _Optional[str] = ..., handle: _Optional[str] = ..., coordinator: bool = ..., triggers: _Optional[_Iterable[str]] = ..., delegate: bool = ..., delegate_to: _Optional[_Iterable[str]] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., enabled: bool = ..., is_me: bool = ..., person: bool = ..., user_id: _Optional[str] = ..., record: _Optional[str] = ...) -> None: ...
 
 class Envelope(_message.Message):
     __slots__ = ("usd", "turns", "minutes")
@@ -360,7 +366,7 @@ class Handoff(_message.Message):
     def __init__(self, ask: _Optional[str] = ..., return_shape: _Optional[str] = ..., acceptance_check: _Optional[str] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., from_title: _Optional[str] = ..., to_title: _Optional[str] = ...) -> None: ...
 
 class HandoffStatus(_message.Message):
-    __slots__ = ("child_run_id", "member_id", "title", "handle", "state", "cost_usd", "envelope", "handoff", "result", "thread_root_id", "verdict", "verdict_note")
+    __slots__ = ("child_run_id", "member_id", "title", "handle", "state", "cost_usd", "envelope", "handoff", "result", "thread_root_id", "verdict", "verdict_note", "quorum_with", "person_user_id", "deadline")
     CHILD_RUN_ID_FIELD_NUMBER: _ClassVar[int]
     MEMBER_ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
@@ -373,6 +379,9 @@ class HandoffStatus(_message.Message):
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     VERDICT_FIELD_NUMBER: _ClassVar[int]
     VERDICT_NOTE_FIELD_NUMBER: _ClassVar[int]
+    QUORUM_WITH_FIELD_NUMBER: _ClassVar[int]
+    PERSON_USER_ID_FIELD_NUMBER: _ClassVar[int]
+    DEADLINE_FIELD_NUMBER: _ClassVar[int]
     child_run_id: str
     member_id: str
     title: str
@@ -385,33 +394,44 @@ class HandoffStatus(_message.Message):
     thread_root_id: str
     verdict: str
     verdict_note: str
-    def __init__(self, child_run_id: _Optional[str] = ..., member_id: _Optional[str] = ..., title: _Optional[str] = ..., handle: _Optional[str] = ..., state: _Optional[str] = ..., cost_usd: _Optional[float] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., result: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., verdict: _Optional[str] = ..., verdict_note: _Optional[str] = ...) -> None: ...
+    quorum_with: str
+    person_user_id: str
+    deadline: _timestamp_pb2.Timestamp
+    def __init__(self, child_run_id: _Optional[str] = ..., member_id: _Optional[str] = ..., title: _Optional[str] = ..., handle: _Optional[str] = ..., state: _Optional[str] = ..., cost_usd: _Optional[float] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., result: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., verdict: _Optional[str] = ..., verdict_note: _Optional[str] = ..., quorum_with: _Optional[str] = ..., person_user_id: _Optional[str] = ..., deadline: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class DelegateRequest(_message.Message):
-    __slots__ = ("member_handle", "ask", "return_shape", "acceptance_check", "envelope")
+    __slots__ = ("member_handle", "ask", "return_shape", "acceptance_check", "envelope", "quorum_handle", "deadline_minutes")
     MEMBER_HANDLE_FIELD_NUMBER: _ClassVar[int]
     ASK_FIELD_NUMBER: _ClassVar[int]
     RETURN_SHAPE_FIELD_NUMBER: _ClassVar[int]
     ACCEPTANCE_CHECK_FIELD_NUMBER: _ClassVar[int]
     ENVELOPE_FIELD_NUMBER: _ClassVar[int]
+    QUORUM_HANDLE_FIELD_NUMBER: _ClassVar[int]
+    DEADLINE_MINUTES_FIELD_NUMBER: _ClassVar[int]
     member_handle: str
     ask: str
     return_shape: str
     acceptance_check: str
     envelope: Envelope
-    def __init__(self, member_handle: _Optional[str] = ..., ask: _Optional[str] = ..., return_shape: _Optional[str] = ..., acceptance_check: _Optional[str] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ...) -> None: ...
+    quorum_handle: str
+    deadline_minutes: int
+    def __init__(self, member_handle: _Optional[str] = ..., ask: _Optional[str] = ..., return_shape: _Optional[str] = ..., acceptance_check: _Optional[str] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., quorum_handle: _Optional[str] = ..., deadline_minutes: _Optional[int] = ...) -> None: ...
 
 class DelegateResponse(_message.Message):
-    __slots__ = ("child_run_id", "thread_root_id", "envelope", "envelope_left")
+    __slots__ = ("child_run_id", "thread_root_id", "envelope", "envelope_left", "quorum_child_run_id", "already")
     CHILD_RUN_ID_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     ENVELOPE_FIELD_NUMBER: _ClassVar[int]
     ENVELOPE_LEFT_FIELD_NUMBER: _ClassVar[int]
+    QUORUM_CHILD_RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    ALREADY_FIELD_NUMBER: _ClassVar[int]
     child_run_id: str
     thread_root_id: str
     envelope: Envelope
     envelope_left: Envelope
-    def __init__(self, child_run_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ...) -> None: ...
+    quorum_child_run_id: str
+    already: str
+    def __init__(self, child_run_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., envelope: _Optional[_Union[Envelope, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ..., quorum_child_run_id: _Optional[str] = ..., already: _Optional[str] = ...) -> None: ...
 
 class AcceptHandoffRequest(_message.Message):
     __slots__ = ("child_run_id", "accepted", "note")
