@@ -9,6 +9,7 @@ import "tank/blocks/v1/blocks.proto";
 import "tank/board/v1/board.proto";
 import "tank/books/v1/books.proto";
 import "tank/canvas/v1/canvas.proto";
+import "tank/guardrails/v1/guardrails.proto";
 import "tank/social/v1/social.proto";
 
 // Runner <-> control-plane contract. The in-sandbox agent runner talks only to
@@ -159,6 +160,10 @@ message RunContext {
   // answers every receive-pack with 403; a push is PushBranch. Empty when the control
   // plane hands out credentials the old way.
   string git_proxy_url = 38;
+  // Every guardrail this run carries (workspace, Tread and platform), snapshotted at
+  // admission. TANK enforces them at the action; the runner shows them to the model and
+  // stops and asks when one is hit.
+  repeated tank.guardrails.v1.Guardrail guardrails = 39;
 }
 
 // An Ops team as a run sees it (tank.agentops.v1 holds the full record).
@@ -438,6 +443,8 @@ message AskForApprovalRequest {
   tank.blocks.v1.GateKind kind = 1;
   string subject = 2;  // what is being approved (scope change description, command, ...)
   string reason = 3;
+  // For kind GUARDRAIL: which guardrail stopped the run.
+  string guardrail_id = 4;
 }
 message AskForApprovalResponse {
   string gate_id = 1;
@@ -494,7 +501,11 @@ message ReportCompletionRequest {
   repeated string remaining = 2;  // parts not started or not finished, in order
   repeated string blocked = 3;    // parts that need a person: a decision, access, money
 }
-message ReportCompletionResponse {}
+message ReportCompletionResponse {
+  // Guardrails judged unmet for the whole run: the run is blocked, not finished, until
+  // each is met or the guardrail changes.
+  repeated GuardrailRefusal unmet = 1;
+}
 
 message ReadProductRequest {
   int32 tail_lines = 1;         // 0 = 200, at most 2000
@@ -807,6 +818,16 @@ message OpenPullRequestRequest {
 message OpenPullRequestResponse {
   string pr_url = 1;
   int32 pr_number = 2;
+  // Set when no pull request was opened because a guardrail refused it: the run stops
+  // and asks with ask_for_approval(kind: GUARDRAIL), never tries another way.
+  GuardrailRefusal refused = 3;
+}
+
+// Why an action was not performed: the guardrail and the exact blocker.
+message GuardrailRefusal {
+  string guardrail_id = 1;
+  string text = 2;
+  string reason = 3;
 }
 
 message RequestCiWatchRequest {
@@ -1202,6 +1223,13 @@ service ControlService {
   // text only, with no tools and no sandbox, so it can only be answered by TANK's
   // weights. Refused when tank-neural is not served by TANK's own model server.
   rpc ArenaTurn(ArenaTurnRequest) returns (ArenaTurnResponse);
+  // Guardrails, for the messaging core (which never writes schema agent): the rows and
+  // the verdicts live here, the rating is computed here.
+  rpc ListGuardrails(ListGuardrailsRequest) returns (ListGuardrailsResponse);
+  rpc PutGuardrail(PutGuardrailRequest) returns (PutGuardrailResponse);
+  rpc DeleteGuardrail(DeleteGuardrailRequest) returns (DeleteGuardrailResponse);
+  rpc RateGuardrail(RateGuardrailRequest) returns (RateGuardrailResponse);
+  rpc ListGuardrailVerdicts(ListGuardrailVerdictsRequest) returns (ListGuardrailVerdictsResponse);
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
   rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
   rpc RefreshNeuralKnowledge(RefreshNeuralKnowledgeRequest) returns (RefreshNeuralKnowledgeResponse);
@@ -1709,6 +1737,47 @@ message SetWorkspaceAgentPolicyRequest {
 }
 message SetWorkspaceAgentPolicyResponse {
   bytes policy = 1; // what was stored, after narrowing
+}
+
+message ListGuardrailsRequest {
+  string workspace_id = 1;
+  string channel_id = 2; // with it: the workspace's plus that Tread's own
+}
+message ListGuardrailsResponse {
+  repeated tank.guardrails.v1.Guardrail guardrails = 1;
+}
+message PutGuardrailRequest {
+  string workspace_id = 1;
+  tank.guardrails.v1.Guardrail guardrail = 2;
+  string requested_by = 3; // user id, for the audit record
+}
+message PutGuardrailResponse {
+  tank.guardrails.v1.Guardrail guardrail = 1;
+}
+message DeleteGuardrailRequest {
+  string workspace_id = 1;
+  string id = 2;
+  string requested_by = 3;
+}
+message DeleteGuardrailResponse {}
+message RateGuardrailRequest {
+  string workspace_id = 1;
+  tank.guardrails.v1.GuardrailScope scope = 2;
+  tank.guardrails.v1.GuardrailKind kind = 3;
+  string text = 4;
+  google.protobuf.Struct params = 5;
+}
+message RateGuardrailResponse {
+  tank.guardrails.v1.Rating rating = 1;
+}
+message ListGuardrailVerdictsRequest {
+  string workspace_id = 1;
+  string run_id = 2;
+  string guardrail_id = 3;
+  int32 limit = 4;
+}
+message ListGuardrailVerdictsResponse {
+  repeated tank.guardrails.v1.Verdict verdicts = 1;
 }
 
 message ArenaTurnRequest {

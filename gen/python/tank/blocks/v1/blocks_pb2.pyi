@@ -41,6 +41,7 @@ class GateKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     GATE_KIND_DEPLOY: _ClassVar[GateKind]
     GATE_KIND_DESTRUCTIVE_TOOL: _ClassVar[GateKind]
     GATE_KIND_BUDGET_INCREASE: _ClassVar[GateKind]
+    GATE_KIND_GUARDRAIL: _ClassVar[GateKind]
 BUTTON_STYLE_UNSPECIFIED: ButtonStyle
 BUTTON_STYLE_PRIMARY: ButtonStyle
 BUTTON_STYLE_DANGER: ButtonStyle
@@ -63,6 +64,7 @@ GATE_KIND_MERGE: GateKind
 GATE_KIND_DEPLOY: GateKind
 GATE_KIND_DESTRUCTIVE_TOOL: GateKind
 GATE_KIND_BUDGET_INCREASE: GateKind
+GATE_KIND_GUARDRAIL: GateKind
 
 class Blocks(_message.Message):
     __slots__ = ("blocks",)
@@ -181,7 +183,7 @@ class PlanStep(_message.Message):
     def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., status: _Optional[_Union[StepStatus, str]] = ..., files: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class PlanCard(_message.Message):
-    __slots__ = ("summary", "steps", "risks", "questions", "approver_ids", "plan_hash", "version")
+    __slots__ = ("summary", "steps", "risks", "questions", "approver_ids", "plan_hash", "version", "guardrails")
     SUMMARY_FIELD_NUMBER: _ClassVar[int]
     STEPS_FIELD_NUMBER: _ClassVar[int]
     RISKS_FIELD_NUMBER: _ClassVar[int]
@@ -189,6 +191,7 @@ class PlanCard(_message.Message):
     APPROVER_IDS_FIELD_NUMBER: _ClassVar[int]
     PLAN_HASH_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
+    GUARDRAILS_FIELD_NUMBER: _ClassVar[int]
     summary: str
     steps: _containers.RepeatedCompositeFieldContainer[PlanStep]
     risks: _containers.RepeatedScalarFieldContainer[str]
@@ -196,7 +199,22 @@ class PlanCard(_message.Message):
     approver_ids: _containers.RepeatedScalarFieldContainer[str]
     plan_hash: str
     version: int
-    def __init__(self, summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., questions: _Optional[_Iterable[str]] = ..., approver_ids: _Optional[_Iterable[str]] = ..., plan_hash: _Optional[str] = ..., version: _Optional[int] = ...) -> None: ...
+    guardrails: _containers.RepeatedCompositeFieldContainer[GuardrailCheck]
+    def __init__(self, summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., questions: _Optional[_Iterable[str]] = ..., approver_ids: _Optional[_Iterable[str]] = ..., plan_hash: _Optional[str] = ..., version: _Optional[int] = ..., guardrails: _Optional[_Iterable[_Union[GuardrailCheck, _Mapping]]] = ...) -> None: ...
+
+class GuardrailCheck(_message.Message):
+    __slots__ = ("guardrail_id", "text", "state", "quote", "judged")
+    GUARDRAIL_ID_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    QUOTE_FIELD_NUMBER: _ClassVar[int]
+    JUDGED_FIELD_NUMBER: _ClassVar[int]
+    guardrail_id: str
+    text: str
+    state: str
+    quote: str
+    judged: bool
+    def __init__(self, guardrail_id: _Optional[str] = ..., text: _Optional[str] = ..., state: _Optional[str] = ..., quote: _Optional[str] = ..., judged: bool = ...) -> None: ...
 
 class DiffFile(_message.Message):
     __slots__ = ("path", "additions", "deletions", "hunk_preview")
@@ -249,7 +267,7 @@ class CiStatus(_message.Message):
     def __init__(self, head_sha: _Optional[str] = ..., checks: _Optional[_Iterable[_Union[Check, _Mapping]]] = ..., pr_url: _Optional[str] = ..., pr_number: _Optional[int] = ...) -> None: ...
 
 class ApprovalPrompt(_message.Message):
-    __slots__ = ("gate_id", "kind", "subject", "approver_ids", "min_approvals", "expires_at", "decided", "decision")
+    __slots__ = ("gate_id", "kind", "subject", "approver_ids", "min_approvals", "expires_at", "decided", "decision", "guardrail_id", "guardrail_text", "blocker")
     GATE_ID_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     SUBJECT_FIELD_NUMBER: _ClassVar[int]
@@ -258,6 +276,9 @@ class ApprovalPrompt(_message.Message):
     EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
     DECIDED_FIELD_NUMBER: _ClassVar[int]
     DECISION_FIELD_NUMBER: _ClassVar[int]
+    GUARDRAIL_ID_FIELD_NUMBER: _ClassVar[int]
+    GUARDRAIL_TEXT_FIELD_NUMBER: _ClassVar[int]
+    BLOCKER_FIELD_NUMBER: _ClassVar[int]
     gate_id: str
     kind: GateKind
     subject: str
@@ -266,7 +287,10 @@ class ApprovalPrompt(_message.Message):
     expires_at: _timestamp_pb2.Timestamp
     decided: bool
     decision: str
-    def __init__(self, gate_id: _Optional[str] = ..., kind: _Optional[_Union[GateKind, str]] = ..., subject: _Optional[str] = ..., approver_ids: _Optional[_Iterable[str]] = ..., min_approvals: _Optional[int] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., decided: bool = ..., decision: _Optional[str] = ...) -> None: ...
+    guardrail_id: str
+    guardrail_text: str
+    blocker: str
+    def __init__(self, gate_id: _Optional[str] = ..., kind: _Optional[_Union[GateKind, str]] = ..., subject: _Optional[str] = ..., approver_ids: _Optional[_Iterable[str]] = ..., min_approvals: _Optional[int] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., decided: bool = ..., decision: _Optional[str] = ..., guardrail_id: _Optional[str] = ..., guardrail_text: _Optional[str] = ..., blocker: _Optional[str] = ...) -> None: ...
 
 class ToolLogEntry(_message.Message):
     __slots__ = ("at", "tool", "summary", "ok")

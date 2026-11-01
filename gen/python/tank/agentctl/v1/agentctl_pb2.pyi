@@ -5,6 +5,7 @@ from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
 from tank.board.v1 import board_pb2 as _board_pb2
 from tank.books.v1 import books_pb2 as _books_pb2
 from tank.canvas.v1 import canvas_pb2 as _canvas_pb2
+from tank.guardrails.v1 import guardrails_pb2 as _guardrails_pb2
 from tank.social.v1 import social_pb2 as _social_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
@@ -132,7 +133,7 @@ class ApprovedPlan(_message.Message):
     def __init__(self, plan_hash: _Optional[str] = ..., summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[_blocks_pb2.PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., approved_by: _Optional[str] = ..., approved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback: _Optional[str] = ...) -> None: ...
 
 class RunContext(_message.Message):
-    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan", "mode", "team", "parent_run_id", "handoff", "envelope_left", "git_proxy_url")
+    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan", "mode", "team", "parent_run_id", "handoff", "envelope_left", "git_proxy_url", "guardrails")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -171,6 +172,7 @@ class RunContext(_message.Message):
     HANDOFF_FIELD_NUMBER: _ClassVar[int]
     ENVELOPE_LEFT_FIELD_NUMBER: _ClassVar[int]
     GIT_PROXY_URL_FIELD_NUMBER: _ClassVar[int]
+    GUARDRAILS_FIELD_NUMBER: _ClassVar[int]
     run_id: str
     workspace_id: str
     channel_id: str
@@ -209,7 +211,8 @@ class RunContext(_message.Message):
     handoff: Handoff
     envelope_left: Envelope
     git_proxy_url: str
-    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ..., git_proxy_url: _Optional[str] = ...) -> None: ...
+    guardrails: _containers.RepeatedCompositeFieldContainer[_guardrails_pb2.Guardrail]
+    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ..., git_proxy_url: _Optional[str] = ..., guardrails: _Optional[_Iterable[_Union[_guardrails_pb2.Guardrail, _Mapping]]] = ...) -> None: ...
 
 class TeamContext(_message.Message):
     __slots__ = ("team_id", "name", "handle", "purpose", "members", "member_id", "coordinator", "board_id", "paused", "cap_note", "memory")
@@ -616,14 +619,16 @@ class UpdateCardResponse(_message.Message):
     def __init__(self) -> None: ...
 
 class AskForApprovalRequest(_message.Message):
-    __slots__ = ("kind", "subject", "reason")
+    __slots__ = ("kind", "subject", "reason", "guardrail_id")
     KIND_FIELD_NUMBER: _ClassVar[int]
     SUBJECT_FIELD_NUMBER: _ClassVar[int]
     REASON_FIELD_NUMBER: _ClassVar[int]
+    GUARDRAIL_ID_FIELD_NUMBER: _ClassVar[int]
     kind: _blocks_pb2.GateKind
     subject: str
     reason: str
-    def __init__(self, kind: _Optional[_Union[_blocks_pb2.GateKind, str]] = ..., subject: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+    guardrail_id: str
+    def __init__(self, kind: _Optional[_Union[_blocks_pb2.GateKind, str]] = ..., subject: _Optional[str] = ..., reason: _Optional[str] = ..., guardrail_id: _Optional[str] = ...) -> None: ...
 
 class AskForApprovalResponse(_message.Message):
     __slots__ = ("gate_id", "decision", "feedback")
@@ -714,8 +719,10 @@ class ReportCompletionRequest(_message.Message):
     def __init__(self, done: _Optional[_Iterable[str]] = ..., remaining: _Optional[_Iterable[str]] = ..., blocked: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class ReportCompletionResponse(_message.Message):
-    __slots__ = ()
-    def __init__(self) -> None: ...
+    __slots__ = ("unmet",)
+    UNMET_FIELD_NUMBER: _ClassVar[int]
+    unmet: _containers.RepeatedCompositeFieldContainer[GuardrailRefusal]
+    def __init__(self, unmet: _Optional[_Iterable[_Union[GuardrailRefusal, _Mapping]]] = ...) -> None: ...
 
 class ReadProductRequest(_message.Message):
     __slots__ = ("tail_lines", "pull_request")
@@ -1290,12 +1297,24 @@ class OpenPullRequestRequest(_message.Message):
     def __init__(self, title: _Optional[str] = ..., body: _Optional[str] = ..., head_sha: _Optional[str] = ..., draft: bool = ..., repo: _Optional[str] = ..., branch: _Optional[str] = ..., base_branch: _Optional[str] = ...) -> None: ...
 
 class OpenPullRequestResponse(_message.Message):
-    __slots__ = ("pr_url", "pr_number")
+    __slots__ = ("pr_url", "pr_number", "refused")
     PR_URL_FIELD_NUMBER: _ClassVar[int]
     PR_NUMBER_FIELD_NUMBER: _ClassVar[int]
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
     pr_url: str
     pr_number: int
-    def __init__(self, pr_url: _Optional[str] = ..., pr_number: _Optional[int] = ...) -> None: ...
+    refused: GuardrailRefusal
+    def __init__(self, pr_url: _Optional[str] = ..., pr_number: _Optional[int] = ..., refused: _Optional[_Union[GuardrailRefusal, _Mapping]] = ...) -> None: ...
+
+class GuardrailRefusal(_message.Message):
+    __slots__ = ("guardrail_id", "text", "reason")
+    GUARDRAIL_ID_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    guardrail_id: str
+    text: str
+    reason: str
+    def __init__(self, guardrail_id: _Optional[str] = ..., text: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
 
 class RequestCiWatchRequest(_message.Message):
     __slots__ = ("head_sha", "workflows")
@@ -2490,6 +2509,88 @@ class SetWorkspaceAgentPolicyResponse(_message.Message):
     POLICY_FIELD_NUMBER: _ClassVar[int]
     policy: bytes
     def __init__(self, policy: _Optional[bytes] = ...) -> None: ...
+
+class ListGuardrailsRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ...) -> None: ...
+
+class ListGuardrailsResponse(_message.Message):
+    __slots__ = ("guardrails",)
+    GUARDRAILS_FIELD_NUMBER: _ClassVar[int]
+    guardrails: _containers.RepeatedCompositeFieldContainer[_guardrails_pb2.Guardrail]
+    def __init__(self, guardrails: _Optional[_Iterable[_Union[_guardrails_pb2.Guardrail, _Mapping]]] = ...) -> None: ...
+
+class PutGuardrailRequest(_message.Message):
+    __slots__ = ("workspace_id", "guardrail", "requested_by")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    GUARDRAIL_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    guardrail: _guardrails_pb2.Guardrail
+    requested_by: str
+    def __init__(self, workspace_id: _Optional[str] = ..., guardrail: _Optional[_Union[_guardrails_pb2.Guardrail, _Mapping]] = ..., requested_by: _Optional[str] = ...) -> None: ...
+
+class PutGuardrailResponse(_message.Message):
+    __slots__ = ("guardrail",)
+    GUARDRAIL_FIELD_NUMBER: _ClassVar[int]
+    guardrail: _guardrails_pb2.Guardrail
+    def __init__(self, guardrail: _Optional[_Union[_guardrails_pb2.Guardrail, _Mapping]] = ...) -> None: ...
+
+class DeleteGuardrailRequest(_message.Message):
+    __slots__ = ("workspace_id", "id", "requested_by")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    id: str
+    requested_by: str
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ..., requested_by: _Optional[str] = ...) -> None: ...
+
+class DeleteGuardrailResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class RateGuardrailRequest(_message.Message):
+    __slots__ = ("workspace_id", "scope", "kind", "text", "params")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SCOPE_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    PARAMS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    scope: _guardrails_pb2.GuardrailScope
+    kind: _guardrails_pb2.GuardrailKind
+    text: str
+    params: _struct_pb2.Struct
+    def __init__(self, workspace_id: _Optional[str] = ..., scope: _Optional[_Union[_guardrails_pb2.GuardrailScope, str]] = ..., kind: _Optional[_Union[_guardrails_pb2.GuardrailKind, str]] = ..., text: _Optional[str] = ..., params: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
+
+class RateGuardrailResponse(_message.Message):
+    __slots__ = ("rating",)
+    RATING_FIELD_NUMBER: _ClassVar[int]
+    rating: _guardrails_pb2.Rating
+    def __init__(self, rating: _Optional[_Union[_guardrails_pb2.Rating, _Mapping]] = ...) -> None: ...
+
+class ListGuardrailVerdictsRequest(_message.Message):
+    __slots__ = ("workspace_id", "run_id", "guardrail_id", "limit")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    GUARDRAIL_ID_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    run_id: str
+    guardrail_id: str
+    limit: int
+    def __init__(self, workspace_id: _Optional[str] = ..., run_id: _Optional[str] = ..., guardrail_id: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListGuardrailVerdictsResponse(_message.Message):
+    __slots__ = ("verdicts",)
+    VERDICTS_FIELD_NUMBER: _ClassVar[int]
+    verdicts: _containers.RepeatedCompositeFieldContainer[_guardrails_pb2.Verdict]
+    def __init__(self, verdicts: _Optional[_Iterable[_Union[_guardrails_pb2.Verdict, _Mapping]]] = ...) -> None: ...
 
 class ArenaTurnRequest(_message.Message):
     __slots__ = ("environment_id", "round_id", "product_workspace_id", "system", "user", "max_tokens")

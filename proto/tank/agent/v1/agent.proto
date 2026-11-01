@@ -24,6 +24,9 @@ enum RunState {
   RUN_STATE_BUDGET_EXHAUSTED = 16;
   RUN_STATE_TIMED_OUT = 17;
   RUN_STATE_APPROVAL_EXPIRED = 18;
+  // Stopped at a guardrail it cannot meet, waiting for the guardrail to change or the run
+  // to be stopped. Not terminal: the run's branch and session are kept.
+  RUN_STATE_BLOCKED = 19;
 }
 
 message Agent {
