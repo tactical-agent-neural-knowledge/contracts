@@ -48,6 +48,9 @@ const (
 	// GuardrailServiceListVerdictsProcedure is the fully-qualified name of the GuardrailService's
 	// ListVerdicts RPC.
 	GuardrailServiceListVerdictsProcedure = "/tank.guardrails.v1.GuardrailService/ListVerdicts"
+	// GuardrailServiceExtractGuardrailsProcedure is the fully-qualified name of the GuardrailService's
+	// ExtractGuardrails RPC.
+	GuardrailServiceExtractGuardrailsProcedure = "/tank.guardrails.v1.GuardrailService/ExtractGuardrails"
 )
 
 // GuardrailServiceClient is a client for the tank.guardrails.v1.GuardrailService service.
@@ -57,6 +60,7 @@ type GuardrailServiceClient interface {
 	DeleteGuardrail(context.Context, *connect.Request[v1.DeleteGuardrailRequest]) (*connect.Response[v1.DeleteGuardrailResponse], error)
 	RateGuardrail(context.Context, *connect.Request[v1.RateGuardrailRequest]) (*connect.Response[v1.RateGuardrailResponse], error)
 	ListVerdicts(context.Context, *connect.Request[v1.ListVerdictsRequest]) (*connect.Response[v1.ListVerdictsResponse], error)
+	ExtractGuardrails(context.Context, *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error)
 }
 
 // NewGuardrailServiceClient constructs a client for the tank.guardrails.v1.GuardrailService
@@ -100,16 +104,23 @@ func NewGuardrailServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(guardrailServiceMethods.ByName("ListVerdicts")),
 			connect.WithClientOptions(opts...),
 		),
+		extractGuardrails: connect.NewClient[v1.ExtractGuardrailsRequest, v1.ExtractGuardrailsResponse](
+			httpClient,
+			baseURL+GuardrailServiceExtractGuardrailsProcedure,
+			connect.WithSchema(guardrailServiceMethods.ByName("ExtractGuardrails")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // guardrailServiceClient implements GuardrailServiceClient.
 type guardrailServiceClient struct {
-	listGuardrails  *connect.Client[v1.ListGuardrailsRequest, v1.ListGuardrailsResponse]
-	putGuardrail    *connect.Client[v1.PutGuardrailRequest, v1.PutGuardrailResponse]
-	deleteGuardrail *connect.Client[v1.DeleteGuardrailRequest, v1.DeleteGuardrailResponse]
-	rateGuardrail   *connect.Client[v1.RateGuardrailRequest, v1.RateGuardrailResponse]
-	listVerdicts    *connect.Client[v1.ListVerdictsRequest, v1.ListVerdictsResponse]
+	listGuardrails    *connect.Client[v1.ListGuardrailsRequest, v1.ListGuardrailsResponse]
+	putGuardrail      *connect.Client[v1.PutGuardrailRequest, v1.PutGuardrailResponse]
+	deleteGuardrail   *connect.Client[v1.DeleteGuardrailRequest, v1.DeleteGuardrailResponse]
+	rateGuardrail     *connect.Client[v1.RateGuardrailRequest, v1.RateGuardrailResponse]
+	listVerdicts      *connect.Client[v1.ListVerdictsRequest, v1.ListVerdictsResponse]
+	extractGuardrails *connect.Client[v1.ExtractGuardrailsRequest, v1.ExtractGuardrailsResponse]
 }
 
 // ListGuardrails calls tank.guardrails.v1.GuardrailService.ListGuardrails.
@@ -137,6 +148,11 @@ func (c *guardrailServiceClient) ListVerdicts(ctx context.Context, req *connect.
 	return c.listVerdicts.CallUnary(ctx, req)
 }
 
+// ExtractGuardrails calls tank.guardrails.v1.GuardrailService.ExtractGuardrails.
+func (c *guardrailServiceClient) ExtractGuardrails(ctx context.Context, req *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error) {
+	return c.extractGuardrails.CallUnary(ctx, req)
+}
+
 // GuardrailServiceHandler is an implementation of the tank.guardrails.v1.GuardrailService service.
 type GuardrailServiceHandler interface {
 	ListGuardrails(context.Context, *connect.Request[v1.ListGuardrailsRequest]) (*connect.Response[v1.ListGuardrailsResponse], error)
@@ -144,6 +160,7 @@ type GuardrailServiceHandler interface {
 	DeleteGuardrail(context.Context, *connect.Request[v1.DeleteGuardrailRequest]) (*connect.Response[v1.DeleteGuardrailResponse], error)
 	RateGuardrail(context.Context, *connect.Request[v1.RateGuardrailRequest]) (*connect.Response[v1.RateGuardrailResponse], error)
 	ListVerdicts(context.Context, *connect.Request[v1.ListVerdictsRequest]) (*connect.Response[v1.ListVerdictsResponse], error)
+	ExtractGuardrails(context.Context, *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error)
 }
 
 // NewGuardrailServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -183,6 +200,12 @@ func NewGuardrailServiceHandler(svc GuardrailServiceHandler, opts ...connect.Han
 		connect.WithSchema(guardrailServiceMethods.ByName("ListVerdicts")),
 		connect.WithHandlerOptions(opts...),
 	)
+	guardrailServiceExtractGuardrailsHandler := connect.NewUnaryHandler(
+		GuardrailServiceExtractGuardrailsProcedure,
+		svc.ExtractGuardrails,
+		connect.WithSchema(guardrailServiceMethods.ByName("ExtractGuardrails")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.guardrails.v1.GuardrailService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case GuardrailServiceListGuardrailsProcedure:
@@ -195,6 +218,8 @@ func NewGuardrailServiceHandler(svc GuardrailServiceHandler, opts ...connect.Han
 			guardrailServiceRateGuardrailHandler.ServeHTTP(w, r)
 		case GuardrailServiceListVerdictsProcedure:
 			guardrailServiceListVerdictsHandler.ServeHTTP(w, r)
+		case GuardrailServiceExtractGuardrailsProcedure:
+			guardrailServiceExtractGuardrailsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -222,4 +247,8 @@ func (UnimplementedGuardrailServiceHandler) RateGuardrail(context.Context, *conn
 
 func (UnimplementedGuardrailServiceHandler) ListVerdicts(context.Context, *connect.Request[v1.ListVerdictsRequest]) (*connect.Response[v1.ListVerdictsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.guardrails.v1.GuardrailService.ListVerdicts is not implemented"))
+}
+
+func (UnimplementedGuardrailServiceHandler) ExtractGuardrails(context.Context, *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.guardrails.v1.GuardrailService.ExtractGuardrails is not implemented"))
 }

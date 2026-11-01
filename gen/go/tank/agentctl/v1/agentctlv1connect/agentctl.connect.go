@@ -221,6 +221,9 @@ const (
 	// ControlServiceListGuardrailVerdictsProcedure is the fully-qualified name of the ControlService's
 	// ListGuardrailVerdicts RPC.
 	ControlServiceListGuardrailVerdictsProcedure = "/tank.agentctl.v1.ControlService/ListGuardrailVerdicts"
+	// ControlServiceExtractGuardrailsProcedure is the fully-qualified name of the ControlService's
+	// ExtractGuardrails RPC.
+	ControlServiceExtractGuardrailsProcedure = "/tank.agentctl.v1.ControlService/ExtractGuardrails"
 	// ControlServiceStartRunProcedure is the fully-qualified name of the ControlService's StartRun RPC.
 	ControlServiceStartRunProcedure = "/tank.agentctl.v1.ControlService/StartRun"
 	// ControlServiceOpenThreadProcedure is the fully-qualified name of the ControlService's OpenThread
@@ -1950,6 +1953,7 @@ type ControlServiceClient interface {
 	DeleteGuardrail(context.Context, *connect.Request[v1.DeleteGuardrailRequest]) (*connect.Response[v1.DeleteGuardrailResponse], error)
 	RateGuardrail(context.Context, *connect.Request[v1.RateGuardrailRequest]) (*connect.Response[v1.RateGuardrailResponse], error)
 	ListGuardrailVerdicts(context.Context, *connect.Request[v1.ListGuardrailVerdictsRequest]) (*connect.Response[v1.ListGuardrailVerdictsResponse], error)
+	ExtractGuardrails(context.Context, *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error)
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
@@ -2084,6 +2088,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+ControlServiceListGuardrailVerdictsProcedure,
 			connect.WithSchema(controlServiceMethods.ByName("ListGuardrailVerdicts")),
+			connect.WithClientOptions(opts...),
+		),
+		extractGuardrails: connect.NewClient[v1.ExtractGuardrailsRequest, v1.ExtractGuardrailsResponse](
+			httpClient,
+			baseURL+ControlServiceExtractGuardrailsProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ExtractGuardrails")),
 			connect.WithClientOptions(opts...),
 		),
 		startRun: connect.NewClient[v1.StartRunRequest, v1.StartRunResponse](
@@ -2331,6 +2341,7 @@ type controlServiceClient struct {
 	deleteGuardrail          *connect.Client[v1.DeleteGuardrailRequest, v1.DeleteGuardrailResponse]
 	rateGuardrail            *connect.Client[v1.RateGuardrailRequest, v1.RateGuardrailResponse]
 	listGuardrailVerdicts    *connect.Client[v1.ListGuardrailVerdictsRequest, v1.ListGuardrailVerdictsResponse]
+	extractGuardrails        *connect.Client[v1.ExtractGuardrailsRequest, v1.ExtractGuardrailsResponse]
 	startRun                 *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
 	openThread               *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
 	refreshNeuralKnowledge   *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
@@ -2400,6 +2411,11 @@ func (c *controlServiceClient) RateGuardrail(ctx context.Context, req *connect.R
 // ListGuardrailVerdicts calls tank.agentctl.v1.ControlService.ListGuardrailVerdicts.
 func (c *controlServiceClient) ListGuardrailVerdicts(ctx context.Context, req *connect.Request[v1.ListGuardrailVerdictsRequest]) (*connect.Response[v1.ListGuardrailVerdictsResponse], error) {
 	return c.listGuardrailVerdicts.CallUnary(ctx, req)
+}
+
+// ExtractGuardrails calls tank.agentctl.v1.ControlService.ExtractGuardrails.
+func (c *controlServiceClient) ExtractGuardrails(ctx context.Context, req *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error) {
+	return c.extractGuardrails.CallUnary(ctx, req)
 }
 
 // StartRun calls tank.agentctl.v1.ControlService.StartRun.
@@ -2610,6 +2626,7 @@ type ControlServiceHandler interface {
 	DeleteGuardrail(context.Context, *connect.Request[v1.DeleteGuardrailRequest]) (*connect.Response[v1.DeleteGuardrailResponse], error)
 	RateGuardrail(context.Context, *connect.Request[v1.RateGuardrailRequest]) (*connect.Response[v1.RateGuardrailResponse], error)
 	ListGuardrailVerdicts(context.Context, *connect.Request[v1.ListGuardrailVerdictsRequest]) (*connect.Response[v1.ListGuardrailVerdictsResponse], error)
+	ExtractGuardrails(context.Context, *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error)
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
@@ -2740,6 +2757,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		ControlServiceListGuardrailVerdictsProcedure,
 		svc.ListGuardrailVerdicts,
 		connect.WithSchema(controlServiceMethods.ByName("ListGuardrailVerdicts")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceExtractGuardrailsHandler := connect.NewUnaryHandler(
+		ControlServiceExtractGuardrailsProcedure,
+		svc.ExtractGuardrails,
+		connect.WithSchema(controlServiceMethods.ByName("ExtractGuardrails")),
 		connect.WithHandlerOptions(opts...),
 	)
 	controlServiceStartRunHandler := connect.NewUnaryHandler(
@@ -2990,6 +3013,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceRateGuardrailHandler.ServeHTTP(w, r)
 		case ControlServiceListGuardrailVerdictsProcedure:
 			controlServiceListGuardrailVerdictsHandler.ServeHTTP(w, r)
+		case ControlServiceExtractGuardrailsProcedure:
+			controlServiceExtractGuardrailsHandler.ServeHTTP(w, r)
 		case ControlServiceStartRunProcedure:
 			controlServiceStartRunHandler.ServeHTTP(w, r)
 		case ControlServiceOpenThreadProcedure:
@@ -3099,6 +3124,10 @@ func (UnimplementedControlServiceHandler) RateGuardrail(context.Context, *connec
 
 func (UnimplementedControlServiceHandler) ListGuardrailVerdicts(context.Context, *connect.Request[v1.ListGuardrailVerdictsRequest]) (*connect.Response[v1.ListGuardrailVerdictsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListGuardrailVerdicts is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ExtractGuardrails(context.Context, *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ExtractGuardrails is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error) {

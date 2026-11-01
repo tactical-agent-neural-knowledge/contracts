@@ -1230,6 +1230,7 @@ service ControlService {
   rpc DeleteGuardrail(DeleteGuardrailRequest) returns (DeleteGuardrailResponse);
   rpc RateGuardrail(RateGuardrailRequest) returns (RateGuardrailResponse);
   rpc ListGuardrailVerdicts(ListGuardrailVerdictsRequest) returns (ListGuardrailVerdictsResponse);
+  rpc ExtractGuardrails(ExtractGuardrailsRequest) returns (ExtractGuardrailsResponse);
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
   rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
   rpc RefreshNeuralKnowledge(RefreshNeuralKnowledgeRequest) returns (RefreshNeuralKnowledgeResponse);
@@ -1778,6 +1779,15 @@ message ListGuardrailVerdictsRequest {
 }
 message ListGuardrailVerdictsResponse {
   repeated tank.guardrails.v1.Verdict verdicts = 1;
+}
+message ExtractGuardrailsRequest {
+  string workspace_id = 1;
+  string text = 2;
+  string channel_id = 3;
+}
+message ExtractGuardrailsResponse {
+  repeated tank.guardrails.v1.Guardrail proposals = 1;
+  repeated string sources = 2;
 }
 
 message ArenaTurnRequest {
