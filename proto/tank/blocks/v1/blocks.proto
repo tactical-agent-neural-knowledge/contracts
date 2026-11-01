@@ -99,6 +99,18 @@ message PlanCard {
   repeated string approver_ids = 5;
   string plan_hash = 6;
   int32 version = 7;
+  // Each guardrail checked against this plan: met, or a conflict with the quoted reason.
+  // A plan with a conflict cannot be approved.
+  repeated GuardrailCheck guardrails = 8;
+}
+
+// One guardrail's verdict on a plan or a run, as a card shows it.
+message GuardrailCheck {
+  string guardrail_id = 1;
+  string text = 2;
+  string state = 3; // met | violated | unsure | not_applicable | blocked
+  string quote = 4;
+  bool judged = 5; // Watched (a model's verdict) rather than Guaranteed
 }
 
 message DiffFile {
@@ -147,6 +159,9 @@ enum GateKind {
   GATE_KIND_DEPLOY = 4;
   GATE_KIND_DESTRUCTIVE_TOOL = 5;
   GATE_KIND_BUDGET_INCREASE = 6;
+  // A guardrail the run cannot meet: the run stops and asks. The only ways on are to
+  // change the guardrail or to stop the run; nothing is allowed once.
+  GATE_KIND_GUARDRAIL = 7;
 }
 
 message ApprovalPrompt {
@@ -158,6 +173,10 @@ message ApprovalPrompt {
   google.protobuf.Timestamp expires_at = 6;
   bool decided = 7;
   string decision = 8; // approved | rejected | expired
+  // For a GUARDRAIL gate: the guardrail, its sentence, and what the run was about to do.
+  string guardrail_id = 9;
+  string guardrail_text = 10;
+  string blocker = 11;
 }
 
 message ToolLogEntry {

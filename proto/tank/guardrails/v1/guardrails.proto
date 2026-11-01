@@ -1,0 +1,171 @@
+syntax = "proto3";
+
+package tank.guardrails.v1;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/guardrails/v1;guardrailsv1";
+
+// Guardrails (2026-11-01): rules every agent in a workspace follows, set for the whole
+// organization or for one Tread, enforced by the control plane at the points where a run
+// acts, never by a prompt. A run that cannot meet one stops and asks; nothing is ever
+// allowed once. Premium: the pages are grayed with Upgrade on a free workspace, and a run
+// there carries only the platform's own guardrails.
+
+// What shape a guardrail has, which decides how it is enforced.
+enum GuardrailKind {
+  GUARDRAIL_KIND_UNSPECIFIED = 0;
+  // A sentence a separate model judges at the checkpoints: Watched, never Guaranteed.
+  GUARDRAIL_KIND_RULE = 1;
+  // "<A> lands before <B> starts": paths or labels; refused at push and pull request.
+  GUARDRAIL_KIND_ORDER = 2;
+  // "Before <step>, a person decides: <question>": the run waits on a decision card.
+  GUARDRAIL_KIND_DECIDE = 3;
+  // "<check> must pass before a pull request": proven by TANK's own checker job.
+  GUARDRAIL_KIND_VERIFY = 4;
+  // What a pull request looks like: one per repository, draft until, at most N files.
+  GUARDRAIL_KIND_SHAPE = 5;
+  // Paths and repositories a run may or may not touch.
+  GUARDRAIL_KIND_SCOPE = 6;
+  // Commands refused or gated, hosts allowed: the policy's tools section, same page.
+  GUARDRAIL_KIND_TOOLS = 7;
+}
+
+enum GuardrailScope {
+  GUARDRAIL_SCOPE_UNSPECIFIED = 0;
+  GUARDRAIL_SCOPE_WORKSPACE = 1; // every Tread in the workspace
+  GUARDRAIL_SCOPE_TREAD = 2;     // one Tread (scope_id is its channel id)
+}
+
+// How much a guardrail can promise, computed as it is typed and stored with it.
+enum Strength {
+  STRENGTH_UNSPECIFIED = 0;
+  STRENGTH_WEAK = 1;        // Watched and too vague to judge
+  STRENGTH_OK = 2;          // Watched, specific enough to judge from evidence
+  STRENGTH_STRONG = 3;      // Guaranteed: refused at the action by TANK's records
+  STRENGTH_VERY_STRONG = 4; // Guaranteed, organization-wide, refused at push time, drilled daily
+}
+
+message Guardrail {
+  string id = 1;
+  string workspace_id = 2;
+  GuardrailScope scope = 3;
+  string scope_id = 4; // channel id for a Tread guardrail; empty for the workspace
+  GuardrailKind kind = 5;
+  // The sentence a person reads. For a rule it is the whole guardrail.
+  string text = 6;
+  // The shape's parameters, by kind: order {before, after}, decide {step, question,
+  // options}, verify {check, command}, shape {prs_per_repo, draft_until, max_files,
+  // labels}, scope {never_paths, only_paths, repos}, tools {deny, gate, hosts}.
+  google.protobuf.Struct params = 7;
+  // Watched: judged by a model at the checkpoints rather than refused by a record.
+  bool judged = 8;
+  bool enabled = 9;
+  string created_by = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+  Strength strength = 13;
+  // Why it is as strong as it is, one line each, and the risk sentence a weak or OK
+  // guardrail shows.
+  repeated string strength_reasons = 14;
+  string risk = 15;
+  // How many runs this guardrail stopped, by mode, so coverage is visible: e.g. {"tread": 2, "crew": 1}.
+  map<string, int64> stops = 16;
+  // Platform guardrails apply everywhere and cannot be edited.
+  bool platform = 17;
+}
+
+// A judgement of one guardrail at one checkpoint of one run.
+enum VerdictState {
+  VERDICT_STATE_UNSPECIFIED = 0;
+  VERDICT_STATE_MET = 1;
+  VERDICT_STATE_VIOLATED = 2;
+  VERDICT_STATE_UNSURE = 3;
+  VERDICT_STATE_NOT_APPLICABLE = 4;
+}
+
+message Verdict {
+  string id = 1;
+  string run_id = 2;
+  string guardrail_id = 3;
+  string guardrail_text = 4;
+  // c0 admission, c1 plan, c2 tool, c3 pull_request, c4 done, c5 intake
+  string checkpoint = 5;
+  VerdictState state = 6;
+  // One sentence, and the verbatim quote from TANK's records it rests on.
+  string detail = 7;
+  string quote = 8;
+  google.protobuf.Timestamp at = 9;
+  // Who decided, for a stop-and-ask that was answered: a user id, or "judge".
+  string decided_by = 10;
+  string run_mode = 11;
+}
+
+// The rating a guardrail gets as it is typed.
+message Rating {
+  Strength strength = 1;
+  repeated string reasons = 2;
+  string risk = 3;
+  // What a Watched sentence could become to be Guaranteed, when TANK can tell.
+  GuardrailKind suggested_kind = 4;
+  google.protobuf.Struct suggested_params = 5;
+}
+
+message ListGuardrailsRequest {
+  string workspace_id = 1;
+  // With a channel id: the workspace's guardrails plus that Tread's own.
+  string channel_id = 2;
+}
+message ListGuardrailsResponse {
+  repeated Guardrail guardrails = 1;
+  // False on a free workspace: the list holds only the platform's guardrails and the
+  // page is grayed with Upgrade.
+  bool premium = 2;
+}
+
+message PutGuardrailRequest {
+  string workspace_id = 1;
+  // id empty makes a new one; otherwise the one to change (audited).
+  Guardrail guardrail = 2;
+}
+message PutGuardrailResponse {
+  Guardrail guardrail = 1;
+}
+
+message DeleteGuardrailRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message DeleteGuardrailResponse {}
+
+message RateGuardrailRequest {
+  string workspace_id = 1;
+  GuardrailScope scope = 2;
+  GuardrailKind kind = 3;
+  string text = 4;
+  google.protobuf.Struct params = 5;
+}
+message RateGuardrailResponse {
+  Rating rating = 1;
+}
+
+message ListVerdictsRequest {
+  string workspace_id = 1;
+  string run_id = 2;       // every verdict of one run
+  string guardrail_id = 3; // or every verdict of one guardrail, newest first
+  int32 limit = 4;
+}
+message ListVerdictsResponse {
+  repeated Verdict verdicts = 1;
+}
+
+// GuardrailService is what the clients call, on the messaging core, which checks the
+// workspace, the plan and the caller's role and asks the control plane for the rest.
+service GuardrailService {
+  rpc ListGuardrails(ListGuardrailsRequest) returns (ListGuardrailsResponse);
+  rpc PutGuardrail(PutGuardrailRequest) returns (PutGuardrailResponse);
+  rpc DeleteGuardrail(DeleteGuardrailRequest) returns (DeleteGuardrailResponse);
+  rpc RateGuardrail(RateGuardrailRequest) returns (RateGuardrailResponse);
+  rpc ListVerdicts(ListVerdictsRequest) returns (ListVerdictsResponse);
+}

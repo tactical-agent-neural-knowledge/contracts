@@ -206,6 +206,21 @@ const (
 	// ControlServiceArenaTurnProcedure is the fully-qualified name of the ControlService's ArenaTurn
 	// RPC.
 	ControlServiceArenaTurnProcedure = "/tank.agentctl.v1.ControlService/ArenaTurn"
+	// ControlServiceListGuardrailsProcedure is the fully-qualified name of the ControlService's
+	// ListGuardrails RPC.
+	ControlServiceListGuardrailsProcedure = "/tank.agentctl.v1.ControlService/ListGuardrails"
+	// ControlServicePutGuardrailProcedure is the fully-qualified name of the ControlService's
+	// PutGuardrail RPC.
+	ControlServicePutGuardrailProcedure = "/tank.agentctl.v1.ControlService/PutGuardrail"
+	// ControlServiceDeleteGuardrailProcedure is the fully-qualified name of the ControlService's
+	// DeleteGuardrail RPC.
+	ControlServiceDeleteGuardrailProcedure = "/tank.agentctl.v1.ControlService/DeleteGuardrail"
+	// ControlServiceRateGuardrailProcedure is the fully-qualified name of the ControlService's
+	// RateGuardrail RPC.
+	ControlServiceRateGuardrailProcedure = "/tank.agentctl.v1.ControlService/RateGuardrail"
+	// ControlServiceListGuardrailVerdictsProcedure is the fully-qualified name of the ControlService's
+	// ListGuardrailVerdicts RPC.
+	ControlServiceListGuardrailVerdictsProcedure = "/tank.agentctl.v1.ControlService/ListGuardrailVerdicts"
 	// ControlServiceStartRunProcedure is the fully-qualified name of the ControlService's StartRun RPC.
 	ControlServiceStartRunProcedure = "/tank.agentctl.v1.ControlService/StartRun"
 	// ControlServiceOpenThreadProcedure is the fully-qualified name of the ControlService's OpenThread
@@ -1928,6 +1943,13 @@ type ControlServiceClient interface {
 	// text only, with no tools and no sandbox, so it can only be answered by TANK's
 	// weights. Refused when tank-neural is not served by TANK's own model server.
 	ArenaTurn(context.Context, *connect.Request[v1.ArenaTurnRequest]) (*connect.Response[v1.ArenaTurnResponse], error)
+	// Guardrails, for the messaging core (which never writes schema agent): the rows and
+	// the verdicts live here, the rating is computed here.
+	ListGuardrails(context.Context, *connect.Request[v1.ListGuardrailsRequest]) (*connect.Response[v1.ListGuardrailsResponse], error)
+	PutGuardrail(context.Context, *connect.Request[v1.PutGuardrailRequest]) (*connect.Response[v1.PutGuardrailResponse], error)
+	DeleteGuardrail(context.Context, *connect.Request[v1.DeleteGuardrailRequest]) (*connect.Response[v1.DeleteGuardrailResponse], error)
+	RateGuardrail(context.Context, *connect.Request[v1.RateGuardrailRequest]) (*connect.Response[v1.RateGuardrailResponse], error)
+	ListGuardrailVerdicts(context.Context, *connect.Request[v1.ListGuardrailVerdictsRequest]) (*connect.Response[v1.ListGuardrailVerdictsResponse], error)
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
@@ -2032,6 +2054,36 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+ControlServiceArenaTurnProcedure,
 			connect.WithSchema(controlServiceMethods.ByName("ArenaTurn")),
+			connect.WithClientOptions(opts...),
+		),
+		listGuardrails: connect.NewClient[v1.ListGuardrailsRequest, v1.ListGuardrailsResponse](
+			httpClient,
+			baseURL+ControlServiceListGuardrailsProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListGuardrails")),
+			connect.WithClientOptions(opts...),
+		),
+		putGuardrail: connect.NewClient[v1.PutGuardrailRequest, v1.PutGuardrailResponse](
+			httpClient,
+			baseURL+ControlServicePutGuardrailProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("PutGuardrail")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteGuardrail: connect.NewClient[v1.DeleteGuardrailRequest, v1.DeleteGuardrailResponse](
+			httpClient,
+			baseURL+ControlServiceDeleteGuardrailProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("DeleteGuardrail")),
+			connect.WithClientOptions(opts...),
+		),
+		rateGuardrail: connect.NewClient[v1.RateGuardrailRequest, v1.RateGuardrailResponse](
+			httpClient,
+			baseURL+ControlServiceRateGuardrailProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("RateGuardrail")),
+			connect.WithClientOptions(opts...),
+		),
+		listGuardrailVerdicts: connect.NewClient[v1.ListGuardrailVerdictsRequest, v1.ListGuardrailVerdictsResponse](
+			httpClient,
+			baseURL+ControlServiceListGuardrailVerdictsProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListGuardrailVerdicts")),
 			connect.WithClientOptions(opts...),
 		),
 		startRun: connect.NewClient[v1.StartRunRequest, v1.StartRunResponse](
@@ -2274,6 +2326,11 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 // controlServiceClient implements ControlServiceClient.
 type controlServiceClient struct {
 	arenaTurn                *connect.Client[v1.ArenaTurnRequest, v1.ArenaTurnResponse]
+	listGuardrails           *connect.Client[v1.ListGuardrailsRequest, v1.ListGuardrailsResponse]
+	putGuardrail             *connect.Client[v1.PutGuardrailRequest, v1.PutGuardrailResponse]
+	deleteGuardrail          *connect.Client[v1.DeleteGuardrailRequest, v1.DeleteGuardrailResponse]
+	rateGuardrail            *connect.Client[v1.RateGuardrailRequest, v1.RateGuardrailResponse]
+	listGuardrailVerdicts    *connect.Client[v1.ListGuardrailVerdictsRequest, v1.ListGuardrailVerdictsResponse]
 	startRun                 *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
 	openThread               *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
 	refreshNeuralKnowledge   *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
@@ -2318,6 +2375,31 @@ type controlServiceClient struct {
 // ArenaTurn calls tank.agentctl.v1.ControlService.ArenaTurn.
 func (c *controlServiceClient) ArenaTurn(ctx context.Context, req *connect.Request[v1.ArenaTurnRequest]) (*connect.Response[v1.ArenaTurnResponse], error) {
 	return c.arenaTurn.CallUnary(ctx, req)
+}
+
+// ListGuardrails calls tank.agentctl.v1.ControlService.ListGuardrails.
+func (c *controlServiceClient) ListGuardrails(ctx context.Context, req *connect.Request[v1.ListGuardrailsRequest]) (*connect.Response[v1.ListGuardrailsResponse], error) {
+	return c.listGuardrails.CallUnary(ctx, req)
+}
+
+// PutGuardrail calls tank.agentctl.v1.ControlService.PutGuardrail.
+func (c *controlServiceClient) PutGuardrail(ctx context.Context, req *connect.Request[v1.PutGuardrailRequest]) (*connect.Response[v1.PutGuardrailResponse], error) {
+	return c.putGuardrail.CallUnary(ctx, req)
+}
+
+// DeleteGuardrail calls tank.agentctl.v1.ControlService.DeleteGuardrail.
+func (c *controlServiceClient) DeleteGuardrail(ctx context.Context, req *connect.Request[v1.DeleteGuardrailRequest]) (*connect.Response[v1.DeleteGuardrailResponse], error) {
+	return c.deleteGuardrail.CallUnary(ctx, req)
+}
+
+// RateGuardrail calls tank.agentctl.v1.ControlService.RateGuardrail.
+func (c *controlServiceClient) RateGuardrail(ctx context.Context, req *connect.Request[v1.RateGuardrailRequest]) (*connect.Response[v1.RateGuardrailResponse], error) {
+	return c.rateGuardrail.CallUnary(ctx, req)
+}
+
+// ListGuardrailVerdicts calls tank.agentctl.v1.ControlService.ListGuardrailVerdicts.
+func (c *controlServiceClient) ListGuardrailVerdicts(ctx context.Context, req *connect.Request[v1.ListGuardrailVerdictsRequest]) (*connect.Response[v1.ListGuardrailVerdictsResponse], error) {
+	return c.listGuardrailVerdicts.CallUnary(ctx, req)
 }
 
 // StartRun calls tank.agentctl.v1.ControlService.StartRun.
@@ -2521,6 +2603,13 @@ type ControlServiceHandler interface {
 	// text only, with no tools and no sandbox, so it can only be answered by TANK's
 	// weights. Refused when tank-neural is not served by TANK's own model server.
 	ArenaTurn(context.Context, *connect.Request[v1.ArenaTurnRequest]) (*connect.Response[v1.ArenaTurnResponse], error)
+	// Guardrails, for the messaging core (which never writes schema agent): the rows and
+	// the verdicts live here, the rating is computed here.
+	ListGuardrails(context.Context, *connect.Request[v1.ListGuardrailsRequest]) (*connect.Response[v1.ListGuardrailsResponse], error)
+	PutGuardrail(context.Context, *connect.Request[v1.PutGuardrailRequest]) (*connect.Response[v1.PutGuardrailResponse], error)
+	DeleteGuardrail(context.Context, *connect.Request[v1.DeleteGuardrailRequest]) (*connect.Response[v1.DeleteGuardrailResponse], error)
+	RateGuardrail(context.Context, *connect.Request[v1.RateGuardrailRequest]) (*connect.Response[v1.RateGuardrailResponse], error)
+	ListGuardrailVerdicts(context.Context, *connect.Request[v1.ListGuardrailVerdictsRequest]) (*connect.Response[v1.ListGuardrailVerdictsResponse], error)
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
@@ -2621,6 +2710,36 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		ControlServiceArenaTurnProcedure,
 		svc.ArenaTurn,
 		connect.WithSchema(controlServiceMethods.ByName("ArenaTurn")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceListGuardrailsHandler := connect.NewUnaryHandler(
+		ControlServiceListGuardrailsProcedure,
+		svc.ListGuardrails,
+		connect.WithSchema(controlServiceMethods.ByName("ListGuardrails")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServicePutGuardrailHandler := connect.NewUnaryHandler(
+		ControlServicePutGuardrailProcedure,
+		svc.PutGuardrail,
+		connect.WithSchema(controlServiceMethods.ByName("PutGuardrail")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceDeleteGuardrailHandler := connect.NewUnaryHandler(
+		ControlServiceDeleteGuardrailProcedure,
+		svc.DeleteGuardrail,
+		connect.WithSchema(controlServiceMethods.ByName("DeleteGuardrail")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceRateGuardrailHandler := connect.NewUnaryHandler(
+		ControlServiceRateGuardrailProcedure,
+		svc.RateGuardrail,
+		connect.WithSchema(controlServiceMethods.ByName("RateGuardrail")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceListGuardrailVerdictsHandler := connect.NewUnaryHandler(
+		ControlServiceListGuardrailVerdictsProcedure,
+		svc.ListGuardrailVerdicts,
+		connect.WithSchema(controlServiceMethods.ByName("ListGuardrailVerdicts")),
 		connect.WithHandlerOptions(opts...),
 	)
 	controlServiceStartRunHandler := connect.NewUnaryHandler(
@@ -2861,6 +2980,16 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		switch r.URL.Path {
 		case ControlServiceArenaTurnProcedure:
 			controlServiceArenaTurnHandler.ServeHTTP(w, r)
+		case ControlServiceListGuardrailsProcedure:
+			controlServiceListGuardrailsHandler.ServeHTTP(w, r)
+		case ControlServicePutGuardrailProcedure:
+			controlServicePutGuardrailHandler.ServeHTTP(w, r)
+		case ControlServiceDeleteGuardrailProcedure:
+			controlServiceDeleteGuardrailHandler.ServeHTTP(w, r)
+		case ControlServiceRateGuardrailProcedure:
+			controlServiceRateGuardrailHandler.ServeHTTP(w, r)
+		case ControlServiceListGuardrailVerdictsProcedure:
+			controlServiceListGuardrailVerdictsHandler.ServeHTTP(w, r)
 		case ControlServiceStartRunProcedure:
 			controlServiceStartRunHandler.ServeHTTP(w, r)
 		case ControlServiceOpenThreadProcedure:
@@ -2950,6 +3079,26 @@ type UnimplementedControlServiceHandler struct{}
 
 func (UnimplementedControlServiceHandler) ArenaTurn(context.Context, *connect.Request[v1.ArenaTurnRequest]) (*connect.Response[v1.ArenaTurnResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ArenaTurn is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListGuardrails(context.Context, *connect.Request[v1.ListGuardrailsRequest]) (*connect.Response[v1.ListGuardrailsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListGuardrails is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) PutGuardrail(context.Context, *connect.Request[v1.PutGuardrailRequest]) (*connect.Response[v1.PutGuardrailResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.PutGuardrail is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) DeleteGuardrail(context.Context, *connect.Request[v1.DeleteGuardrailRequest]) (*connect.Response[v1.DeleteGuardrailResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.DeleteGuardrail is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) RateGuardrail(context.Context, *connect.Request[v1.RateGuardrailRequest]) (*connect.Response[v1.RateGuardrailResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.RateGuardrail is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListGuardrailVerdicts(context.Context, *connect.Request[v1.ListGuardrailVerdictsRequest]) (*connect.Response[v1.ListGuardrailVerdictsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListGuardrailVerdicts is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error) {
