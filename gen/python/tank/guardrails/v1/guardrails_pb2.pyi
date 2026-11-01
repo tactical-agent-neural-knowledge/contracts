@@ -226,3 +226,21 @@ class ListVerdictsResponse(_message.Message):
     VERDICTS_FIELD_NUMBER: _ClassVar[int]
     verdicts: _containers.RepeatedCompositeFieldContainer[Verdict]
     def __init__(self, verdicts: _Optional[_Iterable[_Union[Verdict, _Mapping]]] = ...) -> None: ...
+
+class ExtractGuardrailsRequest(_message.Message):
+    __slots__ = ("workspace_id", "text", "channel_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    text: str
+    channel_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., text: _Optional[str] = ..., channel_id: _Optional[str] = ...) -> None: ...
+
+class ExtractGuardrailsResponse(_message.Message):
+    __slots__ = ("proposals", "sources")
+    PROPOSALS_FIELD_NUMBER: _ClassVar[int]
+    SOURCES_FIELD_NUMBER: _ClassVar[int]
+    proposals: _containers.RepeatedCompositeFieldContainer[Guardrail]
+    sources: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, proposals: _Optional[_Iterable[_Union[Guardrail, _Mapping]]] = ..., sources: _Optional[_Iterable[str]] = ...) -> None: ...

@@ -160,6 +160,24 @@ message ListVerdictsResponse {
   repeated Verdict verdicts = 1;
 }
 
+// Phase 3: "add guardrails from this document". The text of a plan, a spec or a policy
+// is read for the rules it states; each becomes a proposed guardrail, shaped where the
+// sentence has a shape and a rule otherwise, rated, and shown for confirmation before
+// anything is saved. Nothing is stored by this call.
+message ExtractGuardrailsRequest {
+  string workspace_id = 1;
+  // The document's text (plain text or Markdown), at most 200 KiB.
+  string text = 2;
+  // With a channel id the proposals are scoped to that Tread; otherwise the workspace.
+  string channel_id = 3;
+}
+message ExtractGuardrailsResponse {
+  // Proposed guardrails, unsaved (no id), each with its rating filled in.
+  repeated Guardrail proposals = 1;
+  // The document's sentence each proposal came from, parallel to proposals.
+  repeated string sources = 2;
+}
+
 // GuardrailService is what the clients call, on the messaging core, which checks the
 // workspace, the plan and the caller's role and asks the control plane for the rest.
 service GuardrailService {
@@ -168,4 +186,5 @@ service GuardrailService {
   rpc DeleteGuardrail(DeleteGuardrailRequest) returns (DeleteGuardrailResponse);
   rpc RateGuardrail(RateGuardrailRequest) returns (RateGuardrailResponse);
   rpc ListVerdicts(ListVerdictsRequest) returns (ListVerdictsResponse);
+  rpc ExtractGuardrails(ExtractGuardrailsRequest) returns (ExtractGuardrailsResponse);
 }
