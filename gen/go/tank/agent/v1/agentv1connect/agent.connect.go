@@ -107,6 +107,9 @@ const (
 	// AgentServiceListWorkspaceDeploymentsProcedure is the fully-qualified name of the AgentService's
 	// ListWorkspaceDeployments RPC.
 	AgentServiceListWorkspaceDeploymentsProcedure = "/tank.agent.v1.AgentService/ListWorkspaceDeployments"
+	// AgentServiceEnsureAgentTreadProcedure is the fully-qualified name of the AgentService's
+	// EnsureAgentTread RPC.
+	AgentServiceEnsureAgentTreadProcedure = "/tank.agent.v1.AgentService/EnsureAgentTread"
 )
 
 // AgentServiceClient is a client for the tank.agent.v1.AgentService service.
@@ -150,6 +153,11 @@ type AgentServiceClient interface {
 	ListTreadSecurity(context.Context, *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error)
 	// Every app the workspace hosts on TANK, for the Treads the caller is in.
 	ListWorkspaceDeployments(context.Context, *connect.Request[v1.ListWorkspaceDeploymentsRequest]) (*connect.Response[v1.ListWorkspaceDeploymentsResponse], error)
+	// The control plane's own Tread in a workspace, found by name or made, with the
+	// workspace's agent, owners and admins in it. Platform token only. First use: Neural
+	// Knowledge refreshes live in #neural-knowledge rather than a Tread like #general
+	// (Robby, 2026-11-01).
+	EnsureAgentTread(context.Context, *connect.Request[v1.EnsureAgentTreadRequest]) (*connect.Response[v1.EnsureAgentTreadResponse], error)
 }
 
 // NewAgentServiceClient constructs a client for the tank.agent.v1.AgentService service. By default,
@@ -331,6 +339,12 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("ListWorkspaceDeployments")),
 			connect.WithClientOptions(opts...),
 		),
+		ensureAgentTread: connect.NewClient[v1.EnsureAgentTreadRequest, v1.EnsureAgentTreadResponse](
+			httpClient,
+			baseURL+AgentServiceEnsureAgentTreadProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("EnsureAgentTread")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -364,6 +378,7 @@ type agentServiceClient struct {
 	getWorkspaceSpend         *connect.Client[v1.GetWorkspaceSpendRequest, v1.GetWorkspaceSpendResponse]
 	listTreadSecurity         *connect.Client[v1.ListTreadSecurityRequest, v1.ListTreadSecurityResponse]
 	listWorkspaceDeployments  *connect.Client[v1.ListWorkspaceDeploymentsRequest, v1.ListWorkspaceDeploymentsResponse]
+	ensureAgentTread          *connect.Client[v1.EnsureAgentTreadRequest, v1.EnsureAgentTreadResponse]
 }
 
 // StartRun calls tank.agent.v1.AgentService.StartRun.
@@ -506,6 +521,11 @@ func (c *agentServiceClient) ListWorkspaceDeployments(ctx context.Context, req *
 	return c.listWorkspaceDeployments.CallUnary(ctx, req)
 }
 
+// EnsureAgentTread calls tank.agent.v1.AgentService.EnsureAgentTread.
+func (c *agentServiceClient) EnsureAgentTread(ctx context.Context, req *connect.Request[v1.EnsureAgentTreadRequest]) (*connect.Response[v1.EnsureAgentTreadResponse], error) {
+	return c.ensureAgentTread.CallUnary(ctx, req)
+}
+
 // AgentServiceHandler is an implementation of the tank.agent.v1.AgentService service.
 type AgentServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
@@ -547,6 +567,11 @@ type AgentServiceHandler interface {
 	ListTreadSecurity(context.Context, *connect.Request[v1.ListTreadSecurityRequest]) (*connect.Response[v1.ListTreadSecurityResponse], error)
 	// Every app the workspace hosts on TANK, for the Treads the caller is in.
 	ListWorkspaceDeployments(context.Context, *connect.Request[v1.ListWorkspaceDeploymentsRequest]) (*connect.Response[v1.ListWorkspaceDeploymentsResponse], error)
+	// The control plane's own Tread in a workspace, found by name or made, with the
+	// workspace's agent, owners and admins in it. Platform token only. First use: Neural
+	// Knowledge refreshes live in #neural-knowledge rather than a Tread like #general
+	// (Robby, 2026-11-01).
+	EnsureAgentTread(context.Context, *connect.Request[v1.EnsureAgentTreadRequest]) (*connect.Response[v1.EnsureAgentTreadResponse], error)
 }
 
 // NewAgentServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -724,6 +749,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("ListWorkspaceDeployments")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceEnsureAgentTreadHandler := connect.NewUnaryHandler(
+		AgentServiceEnsureAgentTreadProcedure,
+		svc.EnsureAgentTread,
+		connect.WithSchema(agentServiceMethods.ByName("EnsureAgentTread")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agent.v1.AgentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AgentServiceStartRunProcedure:
@@ -782,6 +813,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceListTreadSecurityHandler.ServeHTTP(w, r)
 		case AgentServiceListWorkspaceDeploymentsProcedure:
 			agentServiceListWorkspaceDeploymentsHandler.ServeHTTP(w, r)
+		case AgentServiceEnsureAgentTreadProcedure:
+			agentServiceEnsureAgentTreadHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -901,4 +934,8 @@ func (UnimplementedAgentServiceHandler) ListTreadSecurity(context.Context, *conn
 
 func (UnimplementedAgentServiceHandler) ListWorkspaceDeployments(context.Context, *connect.Request[v1.ListWorkspaceDeploymentsRequest]) (*connect.Response[v1.ListWorkspaceDeploymentsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.ListWorkspaceDeployments is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) EnsureAgentTread(context.Context, *connect.Request[v1.EnsureAgentTreadRequest]) (*connect.Response[v1.EnsureAgentTreadResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.EnsureAgentTread is not implemented"))
 }
