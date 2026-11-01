@@ -608,4 +608,19 @@ service AgentService {
   rpc ListTreadSecurity(ListTreadSecurityRequest) returns (ListTreadSecurityResponse);
   // Every app the workspace hosts on TANK, for the Treads the caller is in.
   rpc ListWorkspaceDeployments(ListWorkspaceDeploymentsRequest) returns (ListWorkspaceDeploymentsResponse);
+  // The control plane's own Tread in a workspace, found by name or made, with the
+  // workspace's agent, owners and admins in it. Platform token only. First use: Neural
+  // Knowledge refreshes live in #neural-knowledge rather than a Tread like #general
+  // (Robby, 2026-11-01).
+  rpc EnsureAgentTread(EnsureAgentTreadRequest) returns (EnsureAgentTreadResponse);
+}
+
+message EnsureAgentTreadRequest {
+  string workspace_id = 1;
+  // The Tread's name, without '#': 1-80 of a-z 0-9 . _ -
+  string name = 2;
+}
+message EnsureAgentTreadResponse {
+  string channel_id = 1;
+  bool created = 2;
 }

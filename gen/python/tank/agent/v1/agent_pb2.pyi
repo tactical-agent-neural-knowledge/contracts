@@ -880,3 +880,19 @@ class GetTreadPlanResponse(_message.Message):
     PLAN_FIELD_NUMBER: _ClassVar[int]
     plan: TreadPlan
     def __init__(self, plan: _Optional[_Union[TreadPlan, _Mapping]] = ...) -> None: ...
+
+class EnsureAgentTreadRequest(_message.Message):
+    __slots__ = ("workspace_id", "name")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    name: str
+    def __init__(self, workspace_id: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
+
+class EnsureAgentTreadResponse(_message.Message):
+    __slots__ = ("channel_id", "created")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    CREATED_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    created: bool
+    def __init__(self, channel_id: _Optional[str] = ..., created: bool = ...) -> None: ...
