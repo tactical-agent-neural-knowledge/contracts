@@ -61,6 +61,9 @@ message ListConversationsRequest {
   // Matches the title and the first message; empty lists everything.
   string query = 1;
   int32 limit = 2;
+  // With a workspace id: only the caller's conversations in that workspace, for its TANK
+  // Neural section (2026-11-01). Empty keeps the list as it was: every conversation.
+  string workspace_id = 3;
 }
 message ListConversationsResponse {
   repeated Conversation conversations = 1;
