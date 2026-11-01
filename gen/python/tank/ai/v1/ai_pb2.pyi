@@ -73,12 +73,14 @@ class Message(_message.Message):
     def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ...) -> None: ...
 
 class ListConversationsRequest(_message.Message):
-    __slots__ = ("query", "limit")
+    __slots__ = ("query", "limit", "workspace_id")
     QUERY_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     query: str
     limit: int
-    def __init__(self, query: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+    workspace_id: str
+    def __init__(self, query: _Optional[str] = ..., limit: _Optional[int] = ..., workspace_id: _Optional[str] = ...) -> None: ...
 
 class ListConversationsResponse(_message.Message):
     __slots__ = ("conversations",)
