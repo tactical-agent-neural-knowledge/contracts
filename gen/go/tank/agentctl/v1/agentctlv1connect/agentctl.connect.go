@@ -41,6 +41,9 @@ const (
 	// RunnerServiceGetGitCredentialProcedure is the fully-qualified name of the RunnerService's
 	// GetGitCredential RPC.
 	RunnerServiceGetGitCredentialProcedure = "/tank.agentctl.v1.RunnerService/GetGitCredential"
+	// RunnerServicePushBranchProcedure is the fully-qualified name of the RunnerService's PushBranch
+	// RPC.
+	RunnerServicePushBranchProcedure = "/tank.agentctl.v1.RunnerService/PushBranch"
 	// RunnerServicePostToThreadProcedure is the fully-qualified name of the RunnerService's
 	// PostToThread RPC.
 	RunnerServicePostToThreadProcedure = "/tank.agentctl.v1.RunnerService/PostToThread"
@@ -321,6 +324,7 @@ const (
 type RunnerServiceClient interface {
 	GetRunContext(context.Context, *connect.Request[v1.GetRunContextRequest]) (*connect.Response[v1.GetRunContextResponse], error)
 	GetGitCredential(context.Context, *connect.Request[v1.GetGitCredentialRequest]) (*connect.Response[v1.GetGitCredentialResponse], error)
+	PushBranch(context.Context) *connect.ClientStreamForClient[v1.PushBranchRequest, v1.PushBranchResponse]
 	PostToThread(context.Context, *connect.Request[v1.PostToThreadRequest]) (*connect.Response[v1.PostToThreadResponse], error)
 	AttachArtifact(context.Context, *connect.Request[v1.AttachArtifactRequest]) (*connect.Response[v1.AttachArtifactResponse], error)
 	GetAttachment(context.Context, *connect.Request[v1.GetAttachmentRequest]) (*connect.ServerStreamForClient[v1.GetAttachmentResponse], error)
@@ -412,6 +416,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServiceGetGitCredentialProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("GetGitCredential")),
+			connect.WithClientOptions(opts...),
+		),
+		pushBranch: connect.NewClient[v1.PushBranchRequest, v1.PushBranchResponse](
+			httpClient,
+			baseURL+RunnerServicePushBranchProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("PushBranch")),
 			connect.WithClientOptions(opts...),
 		),
 		postToThread: connect.NewClient[v1.PostToThreadRequest, v1.PostToThreadResponse](
@@ -757,6 +767,7 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 type runnerServiceClient struct {
 	getRunContext            *connect.Client[v1.GetRunContextRequest, v1.GetRunContextResponse]
 	getGitCredential         *connect.Client[v1.GetGitCredentialRequest, v1.GetGitCredentialResponse]
+	pushBranch               *connect.Client[v1.PushBranchRequest, v1.PushBranchResponse]
 	postToThread             *connect.Client[v1.PostToThreadRequest, v1.PostToThreadResponse]
 	attachArtifact           *connect.Client[v1.AttachArtifactRequest, v1.AttachArtifactResponse]
 	getAttachment            *connect.Client[v1.GetAttachmentRequest, v1.GetAttachmentResponse]
@@ -823,6 +834,11 @@ func (c *runnerServiceClient) GetRunContext(ctx context.Context, req *connect.Re
 // GetGitCredential calls tank.agentctl.v1.RunnerService.GetGitCredential.
 func (c *runnerServiceClient) GetGitCredential(ctx context.Context, req *connect.Request[v1.GetGitCredentialRequest]) (*connect.Response[v1.GetGitCredentialResponse], error) {
 	return c.getGitCredential.CallUnary(ctx, req)
+}
+
+// PushBranch calls tank.agentctl.v1.RunnerService.PushBranch.
+func (c *runnerServiceClient) PushBranch(ctx context.Context) *connect.ClientStreamForClient[v1.PushBranchRequest, v1.PushBranchResponse] {
+	return c.pushBranch.CallClientStream(ctx)
 }
 
 // PostToThread calls tank.agentctl.v1.RunnerService.PostToThread.
@@ -1109,6 +1125,7 @@ func (c *runnerServiceClient) SessionStoreDelete(ctx context.Context, req *conne
 type RunnerServiceHandler interface {
 	GetRunContext(context.Context, *connect.Request[v1.GetRunContextRequest]) (*connect.Response[v1.GetRunContextResponse], error)
 	GetGitCredential(context.Context, *connect.Request[v1.GetGitCredentialRequest]) (*connect.Response[v1.GetGitCredentialResponse], error)
+	PushBranch(context.Context, *connect.ClientStream[v1.PushBranchRequest]) (*connect.Response[v1.PushBranchResponse], error)
 	PostToThread(context.Context, *connect.Request[v1.PostToThreadRequest]) (*connect.Response[v1.PostToThreadResponse], error)
 	AttachArtifact(context.Context, *connect.Request[v1.AttachArtifactRequest]) (*connect.Response[v1.AttachArtifactResponse], error)
 	GetAttachment(context.Context, *connect.Request[v1.GetAttachmentRequest], *connect.ServerStream[v1.GetAttachmentResponse]) error
@@ -1196,6 +1213,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceGetGitCredentialProcedure,
 		svc.GetGitCredential,
 		connect.WithSchema(runnerServiceMethods.ByName("GetGitCredential")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServicePushBranchHandler := connect.NewClientStreamHandler(
+		RunnerServicePushBranchProcedure,
+		svc.PushBranch,
+		connect.WithSchema(runnerServiceMethods.ByName("PushBranch")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServicePostToThreadHandler := connect.NewUnaryHandler(
@@ -1540,6 +1563,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceGetRunContextHandler.ServeHTTP(w, r)
 		case RunnerServiceGetGitCredentialProcedure:
 			runnerServiceGetGitCredentialHandler.ServeHTTP(w, r)
+		case RunnerServicePushBranchProcedure:
+			runnerServicePushBranchHandler.ServeHTTP(w, r)
 		case RunnerServicePostToThreadProcedure:
 			runnerServicePostToThreadHandler.ServeHTTP(w, r)
 		case RunnerServiceAttachArtifactProcedure:
@@ -1667,6 +1692,10 @@ func (UnimplementedRunnerServiceHandler) GetRunContext(context.Context, *connect
 
 func (UnimplementedRunnerServiceHandler) GetGitCredential(context.Context, *connect.Request[v1.GetGitCredentialRequest]) (*connect.Response[v1.GetGitCredentialResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.GetGitCredential is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) PushBranch(context.Context, *connect.ClientStream[v1.PushBranchRequest]) (*connect.Response[v1.PushBranchResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.PushBranch is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) PostToThread(context.Context, *connect.Request[v1.PostToThreadRequest]) (*connect.Response[v1.PostToThreadResponse], error) {

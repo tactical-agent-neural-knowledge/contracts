@@ -153,6 +153,12 @@ message RunContext {
   // What this run may still hand out: its own envelope less what its hand-offs have
   // taken. Zero means no envelope (the policy's budget applies).
   Envelope envelope_left = 37;
+  // TANK's git proxy (Guardrails phase 0, 2026-11-01): the base URL git reads from
+  // instead of github.com, authenticated with the run's LLM token as the password of
+  // the user "run". It serves upload-pack for the repositories the run may read and
+  // answers every receive-pack with 403; a push is PushBranch. Empty when the control
+  // plane hands out credentials the old way.
+  string git_proxy_url = 38;
 }
 
 // An Ops team as a run sees it (tank.agentops.v1 holds the full record).
@@ -332,6 +338,30 @@ message GetGitCredentialResponse {
   string password = 2;
   google.protobuf.Timestamp expires_at = 3;
   string remote_url = 4; // remote to use with these credentials
+}
+
+// PushBranch (Guardrails phase 0): the one way a commit leaves the sandbox. The runner
+// streams a git bundle of the commits since the base branch; the control plane applies
+// it to its own clone, inspects the diff against the guarded paths, and pushes the ref
+// with the App's own token, which the sandbox never holds. A refused push leaves no
+// commit on GitHub. wip writes refs/agent/wip/<run> (a checkpoint, force-updated, not
+// inspected); otherwise refs/heads/<branch> in the run's repository or, with repo set,
+// in another repository the Tread may write to.
+message PushBranchRequest {
+  // The first message names the target; every message may carry a chunk.
+  string branch = 1;
+  bool wip = 2;
+  string repo = 3;     // owner/name; empty = the run's own repository
+  string head_sha = 4; // what the bundle's head is expected to be
+  bytes chunk = 5;     // a piece of `git bundle create` output, in order
+}
+message PushBranchResponse {
+  string head_sha = 1;
+  string ref = 2; // the ref written
+  // Set when nothing was written: what the control plane would not push and why. The
+  // run stops and asks; it never tries another way.
+  string refused = 3;
+  int32 changed_files = 4;
 }
 
 // ----------------------------------------------------------------- thread I/O
@@ -968,6 +998,7 @@ message PollInboxResponse {
 service RunnerService {
   rpc GetRunContext(GetRunContextRequest) returns (GetRunContextResponse);
   rpc GetGitCredential(GetGitCredentialRequest) returns (GetGitCredentialResponse);
+  rpc PushBranch(stream PushBranchRequest) returns (PushBranchResponse);
 
   rpc PostToThread(PostToThreadRequest) returns (PostToThreadResponse);
   rpc AttachArtifact(AttachArtifactRequest) returns (AttachArtifactResponse);
