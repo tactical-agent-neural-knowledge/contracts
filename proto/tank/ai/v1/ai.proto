@@ -55,6 +55,9 @@ message Message {
   int32 output_tokens = 9;
   // -1 thumbs down, 0 none, 1 thumbs up.
   int32 rating = 10;
+  // How current the sources behind an assistant turn were, as the server says it ("Sources
+  // from today"); empty when nothing was looked up.
+  string as_of = 11;
 }
 
 message ListConversationsRequest {
@@ -138,10 +141,22 @@ message SendMessageResponse {
 }
 // Stage is one step of the work before a reply, as the server names it.
 message Stage {
-  // sorting | searching | reading | writing
+  // sorting | searching | reading | writing | outline
   string kind = 1;
-  // The line to show, from the server (for example "Searching 6.1M pages").
+  // The line to show, from the server (for example "Searching 6.1M pages"). Empty for an
+  // outline, which has no line of its own.
   string text = 2;
+  // Reading: the pages found, in the order the answer numbers them.
+  repeated StageSource sources = 3;
+  // Outline: the sections a long answer is about to write, in order. It arrives with or
+  // after the first words and the clients tick each one off as its heading appears.
+  repeated string outline = 4;
+}
+message StageSource {
+  string title = 1;
+  // The site, for the chip: "en.wikipedia.org".
+  string host = 2;
+  string url = 3;
 }
 message Started {
   Conversation conversation = 1;

@@ -49,7 +49,7 @@ class Attachment(_message.Message):
     def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., data: _Optional[bytes] = ..., size: _Optional[int] = ...) -> None: ...
 
 class Message(_message.Message):
-    __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating")
+    __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of")
     ID_FIELD_NUMBER: _ClassVar[int]
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
     ROLE_FIELD_NUMBER: _ClassVar[int]
@@ -60,6 +60,7 @@ class Message(_message.Message):
     INPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
     OUTPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
     RATING_FIELD_NUMBER: _ClassVar[int]
+    AS_OF_FIELD_NUMBER: _ClassVar[int]
     id: str
     conversation_id: str
     role: Role
@@ -70,7 +71,8 @@ class Message(_message.Message):
     input_tokens: int
     output_tokens: int
     rating: int
-    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ...) -> None: ...
+    as_of: str
+    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ..., as_of: _Optional[str] = ...) -> None: ...
 
 class ListConversationsRequest(_message.Message):
     __slots__ = ("query", "limit", "workspace_id")
@@ -177,12 +179,26 @@ class SendMessageResponse(_message.Message):
     def __init__(self, started: _Optional[_Union[Started, _Mapping]] = ..., delta: _Optional[str] = ..., done: _Optional[_Union[Message, _Mapping]] = ..., title: _Optional[str] = ..., warming: _Optional[str] = ..., stage: _Optional[_Union[Stage, _Mapping]] = ...) -> None: ...
 
 class Stage(_message.Message):
-    __slots__ = ("kind", "text")
+    __slots__ = ("kind", "text", "sources", "outline")
     KIND_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
+    SOURCES_FIELD_NUMBER: _ClassVar[int]
+    OUTLINE_FIELD_NUMBER: _ClassVar[int]
     kind: str
     text: str
-    def __init__(self, kind: _Optional[str] = ..., text: _Optional[str] = ...) -> None: ...
+    sources: _containers.RepeatedCompositeFieldContainer[StageSource]
+    outline: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, kind: _Optional[str] = ..., text: _Optional[str] = ..., sources: _Optional[_Iterable[_Union[StageSource, _Mapping]]] = ..., outline: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class StageSource(_message.Message):
+    __slots__ = ("title", "host", "url")
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    HOST_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    title: str
+    host: str
+    url: str
+    def __init__(self, title: _Optional[str] = ..., host: _Optional[str] = ..., url: _Optional[str] = ...) -> None: ...
 
 class Started(_message.Message):
     __slots__ = ("conversation", "user_message", "assistant_message_id")
