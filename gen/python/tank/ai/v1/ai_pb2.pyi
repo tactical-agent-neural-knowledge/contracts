@@ -161,18 +161,28 @@ class SendMessageRequest(_message.Message):
     def __init__(self, conversation_id: _Optional[str] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., regenerate_message_id: _Optional[str] = ..., replace_message_id: _Optional[str] = ..., workspace_id: _Optional[str] = ...) -> None: ...
 
 class SendMessageResponse(_message.Message):
-    __slots__ = ("started", "delta", "done", "title", "warming")
+    __slots__ = ("started", "delta", "done", "title", "warming", "stage")
     STARTED_FIELD_NUMBER: _ClassVar[int]
     DELTA_FIELD_NUMBER: _ClassVar[int]
     DONE_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     WARMING_FIELD_NUMBER: _ClassVar[int]
+    STAGE_FIELD_NUMBER: _ClassVar[int]
     started: Started
     delta: str
     done: Message
     title: str
     warming: str
-    def __init__(self, started: _Optional[_Union[Started, _Mapping]] = ..., delta: _Optional[str] = ..., done: _Optional[_Union[Message, _Mapping]] = ..., title: _Optional[str] = ..., warming: _Optional[str] = ...) -> None: ...
+    stage: Stage
+    def __init__(self, started: _Optional[_Union[Started, _Mapping]] = ..., delta: _Optional[str] = ..., done: _Optional[_Union[Message, _Mapping]] = ..., title: _Optional[str] = ..., warming: _Optional[str] = ..., stage: _Optional[_Union[Stage, _Mapping]] = ...) -> None: ...
+
+class Stage(_message.Message):
+    __slots__ = ("kind", "text")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    text: str
+    def __init__(self, kind: _Optional[str] = ..., text: _Optional[str] = ...) -> None: ...
 
 class Started(_message.Message):
     __slots__ = ("conversation", "user_message", "assistant_message_id")
