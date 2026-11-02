@@ -150,6 +150,9 @@ const (
 	// RunnerServiceReadCanvasProcedure is the fully-qualified name of the RunnerService's ReadCanvas
 	// RPC.
 	RunnerServiceReadCanvasProcedure = "/tank.agentctl.v1.RunnerService/ReadCanvas"
+	// RunnerServiceWriteOnCanvasProcedure is the fully-qualified name of the RunnerService's
+	// WriteOnCanvas RPC.
+	RunnerServiceWriteOnCanvasProcedure = "/tank.agentctl.v1.RunnerService/WriteOnCanvas"
 	// RunnerServiceAskCanvasProcedure is the fully-qualified name of the RunnerService's AskCanvas RPC.
 	RunnerServiceAskCanvasProcedure = "/tank.agentctl.v1.RunnerService/AskCanvas"
 	// RunnerServiceListBoardsProcedure is the fully-qualified name of the RunnerService's ListBoards
@@ -390,6 +393,7 @@ type RunnerServiceClient interface {
 	SocialPublishPost(context.Context, *connect.Request[v1.SocialPublishPostRequest]) (*connect.Response[v1.SocialPublishPostResponse], error)
 	WriteUpThread(context.Context, *connect.Request[v1.WriteUpThreadRequest]) (*connect.Response[v1.WriteUpThreadResponse], error)
 	ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error)
+	WriteOnCanvas(context.Context, *connect.Request[v1.WriteOnCanvasRequest]) (*connect.Response[v1.WriteOnCanvasResponse], error)
 	AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error)
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
 	ReadBoard(context.Context, *connect.Request[v1.ReadBoardRequest]) (*connect.Response[v1.ReadBoardResponse], error)
@@ -664,6 +668,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("ReadCanvas")),
 			connect.WithClientOptions(opts...),
 		),
+		writeOnCanvas: connect.NewClient[v1.WriteOnCanvasRequest, v1.WriteOnCanvasResponse](
+			httpClient,
+			baseURL+RunnerServiceWriteOnCanvasProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("WriteOnCanvas")),
+			connect.WithClientOptions(opts...),
+		),
 		askCanvas: connect.NewClient[v1.AskCanvasRequest, v1.AskCanvasResponse](
 			httpClient,
 			baseURL+RunnerServiceAskCanvasProcedure,
@@ -823,6 +833,7 @@ type runnerServiceClient struct {
 	socialPublishPost        *connect.Client[v1.SocialPublishPostRequest, v1.SocialPublishPostResponse]
 	writeUpThread            *connect.Client[v1.WriteUpThreadRequest, v1.WriteUpThreadResponse]
 	readCanvas               *connect.Client[v1.ReadCanvasRequest, v1.ReadCanvasResponse]
+	writeOnCanvas            *connect.Client[v1.WriteOnCanvasRequest, v1.WriteOnCanvasResponse]
 	askCanvas                *connect.Client[v1.AskCanvasRequest, v1.AskCanvasResponse]
 	listBoards               *connect.Client[v1.ListBoardsRequest, v1.ListBoardsResponse]
 	readBoard                *connect.Client[v1.ReadBoardRequest, v1.ReadBoardResponse]
@@ -1044,6 +1055,11 @@ func (c *runnerServiceClient) ReadCanvas(ctx context.Context, req *connect.Reque
 	return c.readCanvas.CallUnary(ctx, req)
 }
 
+// WriteOnCanvas calls tank.agentctl.v1.RunnerService.WriteOnCanvas.
+func (c *runnerServiceClient) WriteOnCanvas(ctx context.Context, req *connect.Request[v1.WriteOnCanvasRequest]) (*connect.Response[v1.WriteOnCanvasResponse], error) {
+	return c.writeOnCanvas.CallUnary(ctx, req)
+}
+
 // AskCanvas calls tank.agentctl.v1.RunnerService.AskCanvas.
 func (c *runnerServiceClient) AskCanvas(ctx context.Context, req *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error) {
 	return c.askCanvas.CallUnary(ctx, req)
@@ -1191,6 +1207,7 @@ type RunnerServiceHandler interface {
 	SocialPublishPost(context.Context, *connect.Request[v1.SocialPublishPostRequest]) (*connect.Response[v1.SocialPublishPostResponse], error)
 	WriteUpThread(context.Context, *connect.Request[v1.WriteUpThreadRequest]) (*connect.Response[v1.WriteUpThreadResponse], error)
 	ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error)
+	WriteOnCanvas(context.Context, *connect.Request[v1.WriteOnCanvasRequest]) (*connect.Response[v1.WriteOnCanvasResponse], error)
 	AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error)
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
 	ReadBoard(context.Context, *connect.Request[v1.ReadBoardRequest]) (*connect.Response[v1.ReadBoardResponse], error)
@@ -1461,6 +1478,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("ReadCanvas")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceWriteOnCanvasHandler := connect.NewUnaryHandler(
+		RunnerServiceWriteOnCanvasProcedure,
+		svc.WriteOnCanvas,
+		connect.WithSchema(runnerServiceMethods.ByName("WriteOnCanvas")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServiceAskCanvasHandler := connect.NewUnaryHandler(
 		RunnerServiceAskCanvasProcedure,
 		svc.AskCanvas,
@@ -1657,6 +1680,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceWriteUpThreadHandler.ServeHTTP(w, r)
 		case RunnerServiceReadCanvasProcedure:
 			runnerServiceReadCanvasHandler.ServeHTTP(w, r)
+		case RunnerServiceWriteOnCanvasProcedure:
+			runnerServiceWriteOnCanvasHandler.ServeHTTP(w, r)
 		case RunnerServiceAskCanvasProcedure:
 			runnerServiceAskCanvasHandler.ServeHTTP(w, r)
 		case RunnerServiceListBoardsProcedure:
@@ -1862,6 +1887,10 @@ func (UnimplementedRunnerServiceHandler) WriteUpThread(context.Context, *connect
 
 func (UnimplementedRunnerServiceHandler) ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReadCanvas is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) WriteOnCanvas(context.Context, *connect.Request[v1.WriteOnCanvasRequest]) (*connect.Response[v1.WriteOnCanvasResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.WriteOnCanvas is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error) {
