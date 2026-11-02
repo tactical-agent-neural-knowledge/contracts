@@ -171,6 +171,14 @@ message RateMessageRequest {
 }
 message RateMessageResponse {}
 
+// Stops a reply the server is writing. A reply belongs to the server once it starts, so a
+// dropped connection does not stop it (the client fetches the stored reply instead); only
+// this does. The reply is stored as far as it got, with stop_reason "stopped".
+message StopReplyRequest {
+  string message_id = 1;                       // the assistant message id from Started
+}
+message StopReplyResponse {}
+
 // What the person wants the model to know every time: name, how to answer, their work.
 message GetSettingsRequest {}
 message GetSettingsResponse {
@@ -235,6 +243,7 @@ service AiService {
   rpc DeleteConversation(DeleteConversationRequest) returns (DeleteConversationResponse);
   rpc SendMessage(SendMessageRequest) returns (stream SendMessageResponse);
   rpc RateMessage(RateMessageRequest) returns (RateMessageResponse);
+  rpc StopReply(StopReplyRequest) returns (StopReplyResponse);
   rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
   rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
   rpc GetUsage(GetUsageRequest) returns (GetUsageResponse);

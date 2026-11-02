@@ -52,6 +52,8 @@ const (
 	AiServiceSendMessageProcedure = "/tank.ai.v1.AiService/SendMessage"
 	// AiServiceRateMessageProcedure is the fully-qualified name of the AiService's RateMessage RPC.
 	AiServiceRateMessageProcedure = "/tank.ai.v1.AiService/RateMessage"
+	// AiServiceStopReplyProcedure is the fully-qualified name of the AiService's StopReply RPC.
+	AiServiceStopReplyProcedure = "/tank.ai.v1.AiService/StopReply"
 	// AiServiceGetSettingsProcedure is the fully-qualified name of the AiService's GetSettings RPC.
 	AiServiceGetSettingsProcedure = "/tank.ai.v1.AiService/GetSettings"
 	// AiServiceUpdateSettingsProcedure is the fully-qualified name of the AiService's UpdateSettings
@@ -70,6 +72,7 @@ type AiServiceClient interface {
 	DeleteConversation(context.Context, *connect.Request[v1.DeleteConversationRequest]) (*connect.Response[v1.DeleteConversationResponse], error)
 	SendMessage(context.Context, *connect.Request[v1.SendMessageRequest]) (*connect.ServerStreamForClient[v1.SendMessageResponse], error)
 	RateMessage(context.Context, *connect.Request[v1.RateMessageRequest]) (*connect.Response[v1.RateMessageResponse], error)
+	StopReply(context.Context, *connect.Request[v1.StopReplyRequest]) (*connect.Response[v1.StopReplyResponse], error)
 	GetSettings(context.Context, *connect.Request[v1.GetSettingsRequest]) (*connect.Response[v1.GetSettingsResponse], error)
 	UpdateSettings(context.Context, *connect.Request[v1.UpdateSettingsRequest]) (*connect.Response[v1.UpdateSettingsResponse], error)
 	GetUsage(context.Context, *connect.Request[v1.GetUsageRequest]) (*connect.Response[v1.GetUsageResponse], error)
@@ -128,6 +131,12 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("RateMessage")),
 			connect.WithClientOptions(opts...),
 		),
+		stopReply: connect.NewClient[v1.StopReplyRequest, v1.StopReplyResponse](
+			httpClient,
+			baseURL+AiServiceStopReplyProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("StopReply")),
+			connect.WithClientOptions(opts...),
+		),
 		getSettings: connect.NewClient[v1.GetSettingsRequest, v1.GetSettingsResponse](
 			httpClient,
 			baseURL+AiServiceGetSettingsProcedure,
@@ -158,6 +167,7 @@ type aiServiceClient struct {
 	deleteConversation *connect.Client[v1.DeleteConversationRequest, v1.DeleteConversationResponse]
 	sendMessage        *connect.Client[v1.SendMessageRequest, v1.SendMessageResponse]
 	rateMessage        *connect.Client[v1.RateMessageRequest, v1.RateMessageResponse]
+	stopReply          *connect.Client[v1.StopReplyRequest, v1.StopReplyResponse]
 	getSettings        *connect.Client[v1.GetSettingsRequest, v1.GetSettingsResponse]
 	updateSettings     *connect.Client[v1.UpdateSettingsRequest, v1.UpdateSettingsResponse]
 	getUsage           *connect.Client[v1.GetUsageRequest, v1.GetUsageResponse]
@@ -198,6 +208,11 @@ func (c *aiServiceClient) RateMessage(ctx context.Context, req *connect.Request[
 	return c.rateMessage.CallUnary(ctx, req)
 }
 
+// StopReply calls tank.ai.v1.AiService.StopReply.
+func (c *aiServiceClient) StopReply(ctx context.Context, req *connect.Request[v1.StopReplyRequest]) (*connect.Response[v1.StopReplyResponse], error) {
+	return c.stopReply.CallUnary(ctx, req)
+}
+
 // GetSettings calls tank.ai.v1.AiService.GetSettings.
 func (c *aiServiceClient) GetSettings(ctx context.Context, req *connect.Request[v1.GetSettingsRequest]) (*connect.Response[v1.GetSettingsResponse], error) {
 	return c.getSettings.CallUnary(ctx, req)
@@ -222,6 +237,7 @@ type AiServiceHandler interface {
 	DeleteConversation(context.Context, *connect.Request[v1.DeleteConversationRequest]) (*connect.Response[v1.DeleteConversationResponse], error)
 	SendMessage(context.Context, *connect.Request[v1.SendMessageRequest], *connect.ServerStream[v1.SendMessageResponse]) error
 	RateMessage(context.Context, *connect.Request[v1.RateMessageRequest]) (*connect.Response[v1.RateMessageResponse], error)
+	StopReply(context.Context, *connect.Request[v1.StopReplyRequest]) (*connect.Response[v1.StopReplyResponse], error)
 	GetSettings(context.Context, *connect.Request[v1.GetSettingsRequest]) (*connect.Response[v1.GetSettingsResponse], error)
 	UpdateSettings(context.Context, *connect.Request[v1.UpdateSettingsRequest]) (*connect.Response[v1.UpdateSettingsResponse], error)
 	GetUsage(context.Context, *connect.Request[v1.GetUsageRequest]) (*connect.Response[v1.GetUsageResponse], error)
@@ -276,6 +292,12 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("RateMessage")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServiceStopReplyHandler := connect.NewUnaryHandler(
+		AiServiceStopReplyProcedure,
+		svc.StopReply,
+		connect.WithSchema(aiServiceMethods.ByName("StopReply")),
+		connect.WithHandlerOptions(opts...),
+	)
 	aiServiceGetSettingsHandler := connect.NewUnaryHandler(
 		AiServiceGetSettingsProcedure,
 		svc.GetSettings,
@@ -310,6 +332,8 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceSendMessageHandler.ServeHTTP(w, r)
 		case AiServiceRateMessageProcedure:
 			aiServiceRateMessageHandler.ServeHTTP(w, r)
+		case AiServiceStopReplyProcedure:
+			aiServiceStopReplyHandler.ServeHTTP(w, r)
 		case AiServiceGetSettingsProcedure:
 			aiServiceGetSettingsHandler.ServeHTTP(w, r)
 		case AiServiceUpdateSettingsProcedure:
@@ -351,6 +375,10 @@ func (UnimplementedAiServiceHandler) SendMessage(context.Context, *connect.Reque
 
 func (UnimplementedAiServiceHandler) RateMessage(context.Context, *connect.Request[v1.RateMessageRequest]) (*connect.Response[v1.RateMessageResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.RateMessage is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) StopReply(context.Context, *connect.Request[v1.StopReplyRequest]) (*connect.Response[v1.StopReplyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.StopReply is not implemented"))
 }
 
 func (UnimplementedAiServiceHandler) GetSettings(context.Context, *connect.Request[v1.GetSettingsRequest]) (*connect.Response[v1.GetSettingsResponse], error) {
