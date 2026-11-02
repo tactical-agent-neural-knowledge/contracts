@@ -180,6 +180,9 @@ message CreateCanvasRequest {
   string template = 8;
   // People invited with it, beyond its Tread. Each must be in the workspace.
   repeated tank.access.v1.Invite invites = 9;
+  // The page as Markdown, converted by the server (a plan Neural wrote, added to Atlas).
+  // Ignored when blocks are given; an empty title takes the first heading.
+  string markdown = 10;
 }
 message CreateCanvasResponse { Canvas canvas = 1; }
 
