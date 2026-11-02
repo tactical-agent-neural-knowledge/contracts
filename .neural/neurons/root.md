@@ -1,6 +1,6 @@
 # Neurons · .
 
-refreshed 2026-10-26 · b36299acbfe8
+refreshed 2026-11-02 · c0a09db322a1
 
 - This repo is input + output: hand-written `.proto` under `proto/`, generated Go, TypeScript and Python committed under `gen/`. `.gitignore` ignores `node_modules/`, `gen/ts/dist/`, `gen/ts/*.tgz`, `__pycache__/`, and `.tools/` — generated *sources* are tracked on purpose, so every PR that touches a proto also carries the regenerated files.
 - `Makefile` is the one documented entry point. `make check` = `lint gen build` plus `git diff --exit-code --stat gen/`, the stale-generated-code gate; same gate CI enforces.
