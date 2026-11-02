@@ -262,7 +262,7 @@ class CreateCanvasFromFileResponse(_message.Message):
     def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ...) -> None: ...
 
 class CreateCanvasRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "title", "icon", "blocks", "sources", "parent_id", "template", "invites")
+    __slots__ = ("workspace_id", "channel_id", "title", "icon", "blocks", "sources", "parent_id", "template", "invites", "markdown")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
@@ -272,6 +272,7 @@ class CreateCanvasRequest(_message.Message):
     PARENT_ID_FIELD_NUMBER: _ClassVar[int]
     TEMPLATE_FIELD_NUMBER: _ClassVar[int]
     INVITES_FIELD_NUMBER: _ClassVar[int]
+    MARKDOWN_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     title: str
@@ -281,7 +282,8 @@ class CreateCanvasRequest(_message.Message):
     parent_id: str
     template: str
     invites: _containers.RepeatedCompositeFieldContainer[_access_pb2.Invite]
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., parent_id: _Optional[str] = ..., template: _Optional[str] = ..., invites: _Optional[_Iterable[_Union[_access_pb2.Invite, _Mapping]]] = ...) -> None: ...
+    markdown: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., parent_id: _Optional[str] = ..., template: _Optional[str] = ..., invites: _Optional[_Iterable[_Union[_access_pb2.Invite, _Mapping]]] = ..., markdown: _Optional[str] = ...) -> None: ...
 
 class CreateCanvasResponse(_message.Message):
     __slots__ = ("canvas",)
