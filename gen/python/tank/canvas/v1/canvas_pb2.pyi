@@ -335,6 +335,26 @@ class UpdateCanvasResponse(_message.Message):
     mentions: MentionOutcome
     def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ..., mentions: _Optional[_Union[MentionOutcome, _Mapping]] = ...) -> None: ...
 
+class WriteMarkdownRequest(_message.Message):
+    __slots__ = ("workspace_id", "canvas_id", "markdown", "after_block_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    MARKDOWN_FIELD_NUMBER: _ClassVar[int]
+    AFTER_BLOCK_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    canvas_id: str
+    markdown: str
+    after_block_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., canvas_id: _Optional[str] = ..., markdown: _Optional[str] = ..., after_block_id: _Optional[str] = ...) -> None: ...
+
+class WriteMarkdownResponse(_message.Message):
+    __slots__ = ("canvas", "written")
+    CANVAS_FIELD_NUMBER: _ClassVar[int]
+    WRITTEN_FIELD_NUMBER: _ClassVar[int]
+    canvas: Canvas
+    written: int
+    def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ..., written: _Optional[int] = ...) -> None: ...
+
 class MentionOutcome(_message.Message):
     __slots__ = ("cannot_open", "asked_in_channel_id", "ask_needs_tread")
     CANNOT_OPEN_FIELD_NUMBER: _ClassVar[int]

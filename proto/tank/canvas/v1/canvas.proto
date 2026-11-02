@@ -216,6 +216,19 @@ message UpdateCanvasResponse {
   MentionOutcome mentions = 2;
 }
 
+// Write markdown onto a page as blocks, placed after after_block_id or at the end.
+// How an agent answers on a page what it was asked there.
+message WriteMarkdownRequest {
+  string workspace_id = 1;
+  string canvas_id = 2;
+  string markdown = 3;
+  string after_block_id = 4;
+}
+message WriteMarkdownResponse {
+  Canvas canvas = 1;
+  int32 written = 2;
+}
+
 // What a write's new mentions led to. A person who cannot open the page was not told,
 // so the writer can offer to share it; an agent mentioned on the page was asked in the
 // page's Tread, which needs the page to have one the writer is in.
@@ -346,6 +359,7 @@ service CanvasService {
   rpc WriteFromThread(WriteFromThreadRequest) returns (WriteFromThreadResponse);
   rpc Ask(AskRequest) returns (AskResponse);
   rpc UpdateBlock(UpdateBlockRequest) returns (UpdateBlockResponse);
+  rpc WriteMarkdown(WriteMarkdownRequest) returns (WriteMarkdownResponse);
   rpc ListTemplates(ListTemplatesRequest) returns (ListTemplatesResponse);
   rpc ListDecisions(ListDecisionsRequest) returns (ListDecisionsResponse);
   // Who has access and why. Anyone who can open it may ask.
