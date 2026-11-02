@@ -678,6 +678,17 @@ message WriteUpThreadResponse {
   int32 decisions = 4;
 }
 message ReadCanvasRequest { string canvas_id = 1; }
+// Write on an Atlas page: markdown becomes blocks, placed after after_block_id or at
+// the end. How a run answers an ask made on the page itself.
+message WriteOnCanvasRequest {
+  string canvas_id = 1;
+  string markdown = 2;
+  string after_block_id = 3;
+}
+message WriteOnCanvasResponse {
+  string title = 1;
+  int32 blocks = 2;
+}
 message ReadCanvasResponse {
   tank.canvas.v1.Canvas canvas = 1;
 }
@@ -1068,6 +1079,7 @@ service RunnerService {
   rpc SocialPublishPost(SocialPublishPostRequest) returns (SocialPublishPostResponse);
   rpc WriteUpThread(WriteUpThreadRequest) returns (WriteUpThreadResponse);
   rpc ReadCanvas(ReadCanvasRequest) returns (ReadCanvasResponse);
+  rpc WriteOnCanvas(WriteOnCanvasRequest) returns (WriteOnCanvasResponse);
   rpc AskCanvas(AskCanvasRequest) returns (AskCanvasResponse);
   rpc ListBoards(ListBoardsRequest) returns (ListBoardsResponse);
   rpc ReadBoard(ReadBoardRequest) returns (ReadBoardResponse);

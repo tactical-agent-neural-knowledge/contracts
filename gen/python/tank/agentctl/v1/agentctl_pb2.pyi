@@ -1054,6 +1054,24 @@ class ReadCanvasRequest(_message.Message):
     canvas_id: str
     def __init__(self, canvas_id: _Optional[str] = ...) -> None: ...
 
+class WriteOnCanvasRequest(_message.Message):
+    __slots__ = ("canvas_id", "markdown", "after_block_id")
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    MARKDOWN_FIELD_NUMBER: _ClassVar[int]
+    AFTER_BLOCK_ID_FIELD_NUMBER: _ClassVar[int]
+    canvas_id: str
+    markdown: str
+    after_block_id: str
+    def __init__(self, canvas_id: _Optional[str] = ..., markdown: _Optional[str] = ..., after_block_id: _Optional[str] = ...) -> None: ...
+
+class WriteOnCanvasResponse(_message.Message):
+    __slots__ = ("title", "blocks")
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    BLOCKS_FIELD_NUMBER: _ClassVar[int]
+    title: str
+    blocks: int
+    def __init__(self, title: _Optional[str] = ..., blocks: _Optional[int] = ...) -> None: ...
+
 class ReadCanvasResponse(_message.Message):
     __slots__ = ("canvas",)
     CANVAS_FIELD_NUMBER: _ClassVar[int]

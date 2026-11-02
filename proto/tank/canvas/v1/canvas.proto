@@ -211,7 +211,19 @@ message UpdateCanvasRequest {
   string channel_id = 10;
   bool set_channel = 11;
 }
-message UpdateCanvasResponse { Canvas canvas = 1; }
+message UpdateCanvasResponse {
+  Canvas canvas = 1;
+  MentionOutcome mentions = 2;
+}
+
+// What a write's new mentions led to. A person who cannot open the page was not told,
+// so the writer can offer to share it; an agent mentioned on the page was asked in the
+// page's Tread, which needs the page to have one the writer is in.
+message MentionOutcome {
+  repeated BlockMention cannot_open = 1;
+  string asked_in_channel_id = 2;
+  bool ask_needs_tread = 3;
+}
 
 message DeleteCanvasRequest {
   string workspace_id = 1;
@@ -243,6 +255,7 @@ message UpdateBlockResponse {
   bool conflict = 2;
   Block theirs = 3;
   string conflict_note = 4;
+  MentionOutcome mentions = 5;
 }
 
 // The decision ledger: every decision block on every page in the workspace, as rows.

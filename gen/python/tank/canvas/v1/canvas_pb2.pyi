@@ -328,10 +328,22 @@ class UpdateCanvasRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ..., title: _Optional[str] = ..., icon: _Optional[str] = ..., blocks: _Optional[_Iterable[_Union[Block, _Mapping]]] = ..., set_blocks: bool = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., set_sources: bool = ..., base_version: _Optional[int] = ..., channel_id: _Optional[str] = ..., set_channel: bool = ...) -> None: ...
 
 class UpdateCanvasResponse(_message.Message):
-    __slots__ = ("canvas",)
+    __slots__ = ("canvas", "mentions")
     CANVAS_FIELD_NUMBER: _ClassVar[int]
+    MENTIONS_FIELD_NUMBER: _ClassVar[int]
     canvas: Canvas
-    def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ...) -> None: ...
+    mentions: MentionOutcome
+    def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ..., mentions: _Optional[_Union[MentionOutcome, _Mapping]] = ...) -> None: ...
+
+class MentionOutcome(_message.Message):
+    __slots__ = ("cannot_open", "asked_in_channel_id", "ask_needs_tread")
+    CANNOT_OPEN_FIELD_NUMBER: _ClassVar[int]
+    ASKED_IN_CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    ASK_NEEDS_TREAD_FIELD_NUMBER: _ClassVar[int]
+    cannot_open: _containers.RepeatedCompositeFieldContainer[BlockMention]
+    asked_in_channel_id: str
+    ask_needs_tread: bool
+    def __init__(self, cannot_open: _Optional[_Iterable[_Union[BlockMention, _Mapping]]] = ..., asked_in_channel_id: _Optional[str] = ..., ask_needs_tread: bool = ...) -> None: ...
 
 class DeleteCanvasRequest(_message.Message):
     __slots__ = ("workspace_id", "id")
@@ -362,16 +374,18 @@ class UpdateBlockRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ..., canvas_id: _Optional[str] = ..., block: _Optional[_Union[Block, _Mapping]] = ..., delete: bool = ..., after_block_id: _Optional[str] = ..., base_rev: _Optional[int] = ...) -> None: ...
 
 class UpdateBlockResponse(_message.Message):
-    __slots__ = ("canvas", "conflict", "theirs", "conflict_note")
+    __slots__ = ("canvas", "conflict", "theirs", "conflict_note", "mentions")
     CANVAS_FIELD_NUMBER: _ClassVar[int]
     CONFLICT_FIELD_NUMBER: _ClassVar[int]
     THEIRS_FIELD_NUMBER: _ClassVar[int]
     CONFLICT_NOTE_FIELD_NUMBER: _ClassVar[int]
+    MENTIONS_FIELD_NUMBER: _ClassVar[int]
     canvas: Canvas
     conflict: bool
     theirs: Block
     conflict_note: str
-    def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ..., conflict: bool = ..., theirs: _Optional[_Union[Block, _Mapping]] = ..., conflict_note: _Optional[str] = ...) -> None: ...
+    mentions: MentionOutcome
+    def __init__(self, canvas: _Optional[_Union[Canvas, _Mapping]] = ..., conflict: bool = ..., theirs: _Optional[_Union[Block, _Mapping]] = ..., conflict_note: _Optional[str] = ..., mentions: _Optional[_Union[MentionOutcome, _Mapping]] = ...) -> None: ...
 
 class DecisionRecord(_message.Message):
     __slots__ = ("block_id", "canvas_id", "canvas_title", "canvas_icon", "what", "decided_by", "decided_at", "because", "supersedes_block_id", "thread_root_id", "needs_revisiting", "revisit_note", "superseded", "superseded_by_block_id", "superseded_by_what", "superseded_at")
