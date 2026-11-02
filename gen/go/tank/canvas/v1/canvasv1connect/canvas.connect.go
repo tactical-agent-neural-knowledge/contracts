@@ -58,6 +58,9 @@ const (
 	// CanvasServiceUpdateBlockProcedure is the fully-qualified name of the CanvasService's UpdateBlock
 	// RPC.
 	CanvasServiceUpdateBlockProcedure = "/tank.canvas.v1.CanvasService/UpdateBlock"
+	// CanvasServiceWriteMarkdownProcedure is the fully-qualified name of the CanvasService's
+	// WriteMarkdown RPC.
+	CanvasServiceWriteMarkdownProcedure = "/tank.canvas.v1.CanvasService/WriteMarkdown"
 	// CanvasServiceListTemplatesProcedure is the fully-qualified name of the CanvasService's
 	// ListTemplates RPC.
 	CanvasServiceListTemplatesProcedure = "/tank.canvas.v1.CanvasService/ListTemplates"
@@ -90,6 +93,7 @@ type CanvasServiceClient interface {
 	WriteFromThread(context.Context, *connect.Request[v1.WriteFromThreadRequest]) (*connect.Response[v1.WriteFromThreadResponse], error)
 	Ask(context.Context, *connect.Request[v1.AskRequest]) (*connect.Response[v1.AskResponse], error)
 	UpdateBlock(context.Context, *connect.Request[v1.UpdateBlockRequest]) (*connect.Response[v1.UpdateBlockResponse], error)
+	WriteMarkdown(context.Context, *connect.Request[v1.WriteMarkdownRequest]) (*connect.Response[v1.WriteMarkdownResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
 	ListDecisions(context.Context, *connect.Request[v1.ListDecisionsRequest]) (*connect.Response[v1.ListDecisionsResponse], error)
 	// Who has access and why. Anyone who can open it may ask.
@@ -165,6 +169,12 @@ func NewCanvasServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(canvasServiceMethods.ByName("UpdateBlock")),
 			connect.WithClientOptions(opts...),
 		),
+		writeMarkdown: connect.NewClient[v1.WriteMarkdownRequest, v1.WriteMarkdownResponse](
+			httpClient,
+			baseURL+CanvasServiceWriteMarkdownProcedure,
+			connect.WithSchema(canvasServiceMethods.ByName("WriteMarkdown")),
+			connect.WithClientOptions(opts...),
+		),
 		listTemplates: connect.NewClient[v1.ListTemplatesRequest, v1.ListTemplatesResponse](
 			httpClient,
 			baseURL+CanvasServiceListTemplatesProcedure,
@@ -209,6 +219,7 @@ type canvasServiceClient struct {
 	writeFromThread      *connect.Client[v1.WriteFromThreadRequest, v1.WriteFromThreadResponse]
 	ask                  *connect.Client[v1.AskRequest, v1.AskResponse]
 	updateBlock          *connect.Client[v1.UpdateBlockRequest, v1.UpdateBlockResponse]
+	writeMarkdown        *connect.Client[v1.WriteMarkdownRequest, v1.WriteMarkdownResponse]
 	listTemplates        *connect.Client[v1.ListTemplatesRequest, v1.ListTemplatesResponse]
 	listDecisions        *connect.Client[v1.ListDecisionsRequest, v1.ListDecisionsResponse]
 	listCanvasAccess     *connect.Client[v1.ListCanvasAccessRequest, v1.ListCanvasAccessResponse]
@@ -261,6 +272,11 @@ func (c *canvasServiceClient) UpdateBlock(ctx context.Context, req *connect.Requ
 	return c.updateBlock.CallUnary(ctx, req)
 }
 
+// WriteMarkdown calls tank.canvas.v1.CanvasService.WriteMarkdown.
+func (c *canvasServiceClient) WriteMarkdown(ctx context.Context, req *connect.Request[v1.WriteMarkdownRequest]) (*connect.Response[v1.WriteMarkdownResponse], error) {
+	return c.writeMarkdown.CallUnary(ctx, req)
+}
+
 // ListTemplates calls tank.canvas.v1.CanvasService.ListTemplates.
 func (c *canvasServiceClient) ListTemplates(ctx context.Context, req *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error) {
 	return c.listTemplates.CallUnary(ctx, req)
@@ -301,6 +317,7 @@ type CanvasServiceHandler interface {
 	WriteFromThread(context.Context, *connect.Request[v1.WriteFromThreadRequest]) (*connect.Response[v1.WriteFromThreadResponse], error)
 	Ask(context.Context, *connect.Request[v1.AskRequest]) (*connect.Response[v1.AskResponse], error)
 	UpdateBlock(context.Context, *connect.Request[v1.UpdateBlockRequest]) (*connect.Response[v1.UpdateBlockResponse], error)
+	WriteMarkdown(context.Context, *connect.Request[v1.WriteMarkdownRequest]) (*connect.Response[v1.WriteMarkdownResponse], error)
 	ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error)
 	ListDecisions(context.Context, *connect.Request[v1.ListDecisionsRequest]) (*connect.Response[v1.ListDecisionsResponse], error)
 	// Who has access and why. Anyone who can open it may ask.
@@ -372,6 +389,12 @@ func NewCanvasServiceHandler(svc CanvasServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(canvasServiceMethods.ByName("UpdateBlock")),
 		connect.WithHandlerOptions(opts...),
 	)
+	canvasServiceWriteMarkdownHandler := connect.NewUnaryHandler(
+		CanvasServiceWriteMarkdownProcedure,
+		svc.WriteMarkdown,
+		connect.WithSchema(canvasServiceMethods.ByName("WriteMarkdown")),
+		connect.WithHandlerOptions(opts...),
+	)
 	canvasServiceListTemplatesHandler := connect.NewUnaryHandler(
 		CanvasServiceListTemplatesProcedure,
 		svc.ListTemplates,
@@ -422,6 +445,8 @@ func NewCanvasServiceHandler(svc CanvasServiceHandler, opts ...connect.HandlerOp
 			canvasServiceAskHandler.ServeHTTP(w, r)
 		case CanvasServiceUpdateBlockProcedure:
 			canvasServiceUpdateBlockHandler.ServeHTTP(w, r)
+		case CanvasServiceWriteMarkdownProcedure:
+			canvasServiceWriteMarkdownHandler.ServeHTTP(w, r)
 		case CanvasServiceListTemplatesProcedure:
 			canvasServiceListTemplatesHandler.ServeHTTP(w, r)
 		case CanvasServiceListDecisionsProcedure:
@@ -475,6 +500,10 @@ func (UnimplementedCanvasServiceHandler) Ask(context.Context, *connect.Request[v
 
 func (UnimplementedCanvasServiceHandler) UpdateBlock(context.Context, *connect.Request[v1.UpdateBlockRequest]) (*connect.Response[v1.UpdateBlockResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.canvas.v1.CanvasService.UpdateBlock is not implemented"))
+}
+
+func (UnimplementedCanvasServiceHandler) WriteMarkdown(context.Context, *connect.Request[v1.WriteMarkdownRequest]) (*connect.Response[v1.WriteMarkdownResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.canvas.v1.CanvasService.WriteMarkdown is not implemented"))
 }
 
 func (UnimplementedCanvasServiceHandler) ListTemplates(context.Context, *connect.Request[v1.ListTemplatesRequest]) (*connect.Response[v1.ListTemplatesResponse], error) {
