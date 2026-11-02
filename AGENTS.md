@@ -1,51 +1,56 @@
-# Neural Knowledge by TANK · refreshed 2026-10-26 · b36299acbfe8
+# Neural Knowledge by TANK · refreshed 2026-11-02 · c0a09db322a1
 
-This repository is the wire contract for the TANK platform: hand-written `.proto` files under `proto/`, with generated Go, TypeScript and Python committed under `gen/`. Every service the platform exposes — messaging, agents, hosting, canvas, billing and more — is defined here, and every client reads the generated code directly from this repo rather than fetching it at build time.
+This repository is the source of truth for the TANK platform's wire contracts: hand-written Protocol Buffer definitions under `proto/` that every service and client in the system shares. Generated Go, TypeScript and Python bindings live under `gen/` and are committed on purpose, so every PR that changes a proto also carries the regenerated files and CI can verify they are current. It is a pure contracts repo — no runtime code, no server, no tests beyond lint, type-check and the stale-generation gate.
 
 ## Commands
 
 ```
-npx --yes @bufbuild/buf lint                           # lint all proto files
-npx --yes @bufbuild/buf build                          # compile-check all 32 files
-npx --yes @bufbuild/buf breaking --against '.git#branch=main'  # breaking-change check (PR only)
-npx --yes @bufbuild/buf generate                       # regenerate gen/ (needs make tools first)
-make tools                                             # install pinned generators into .tools/
-make gen                                               # tools + buf generate
-make check                                             # lint gen build + stale-gen gate
-go build ./...                                         # build the Go module
-go test ./...                                          # test the Go module
+make gen          # regenerate Go, TypeScript and Python from proto/ (runs make tools first)
+make lint         # buf lint
+make breaking     # buf breaking --against '.git#branch=main'
+make build        # go build ./...
+make check        # lint + gen + build + git diff --exit-code gen/ (everything CI runs)
+make tools        # install pinned generators into .tools/ (required before gen)
 ```
 
-> `make` is often absent in agent sandboxes. Run the `npx` commands above directly.
-> `buf generate` requires `.tools/` to be populated first (`make tools`).
+`make` may be absent in agent sandboxes. Equivalent bare commands:
+```
+npx --yes @bufbuild/buf lint
+npx --yes @bufbuild/buf generate
+npx --yes @bufbuild/buf breaking --against '.git#branch=main'
+go build ./...
+```
 
 ## Areas
 
-- `.` — Makefile, buf.yaml, buf.gen.yaml, CLAUDE.md; the repo's build and generation setup. Read `.neural/neurons/root.md`.
-- `.github` — `ci.yml` (lint, breaking, gen-staleness, go build, tsc, publish-ts) and `security.yml` (gitleaks secret scan). Read `.neural/neurons/github.md`.
-- `proto` — 32 `.proto` files, one domain per directory under `proto/tank/`. Read `.neural/neurons/proto.md`.
+- `.` — repo root: Makefile, buf.yaml, buf.gen.yaml, go.mod, CLAUDE.md. Read `.neural/neurons/root.md`.
+- `.github` — CI workflows: ci.yml (lint, breaking, gen-staleness, go build, tsc, npm publish), security.yml. Read `.neural/neurons/github.md`.
+- `proto` — 35 `.proto` files under `proto/tank/<domain>/v1/`. One package per domain. Read `.neural/neurons/proto.md`.
 
 ## Rules
 
-From `CLAUDE.md` — these are hard prohibitions and settled decisions that must not be re-litigated:
+From `CLAUDE.md`:
+- "Renumbering or reusing field numbers" is prohibited.
+- "Removing a field before every client has shipped without it" is prohibited.
+- "Editing `gen/` by hand" is prohibited.
+- "Changing plugin versions without regenerating everything in the same PR" is prohibited.
+- "Wire names stay neutral (`Channel`, not `Tread`); product vocabulary lives in the clients."
+- "One proto package per domain, version suffix `v1`."
+- "Generated code committed, not fetched at build time."
 
-- Never renumber or reuse field numbers.
-- Never remove a field before every client has shipped without it.
-- Never edit `gen/` by hand.
-- Never change plugin versions without regenerating everything in the same PR.
-- Wire names stay neutral (`Channel`, not `Tread`); product vocabulary lives in the clients.
-- One proto package per domain, version suffix `v1`.
-- Generated code is committed, not fetched at build time.
+From `buf.yaml`:
+- `lint.use: [STANDARD]` except `PACKAGE_VERSION_SUFFIX`.
+- `breaking.use: [FILE]` — moving a message between files is a breaking change.
 
 ## Before changing anything
 
-1. Run `npx --yes @bufbuild/buf lint` — must be clean before any PR is opened.
-2. Run `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` — every field-number change is a breaking change; check before pushing.
-3. After editing any `.proto`, run `make tools && make gen` to regenerate `gen/`; commit the generated files in the same PR.
-4. CI enforces `git diff --exit-code --stat gen/` — a PR with stale generated code fails the check step.
-5. The `buf.gen.yaml` plugins are local (in `.tools/`), pinned to exact versions; never swap a version without regenerating everything.
-6. Open a pull request against `main`; CI runs all checks; breaking check only runs on PRs (it needs a `main` ref to compare against).
+1. Run `make tools` to install pinned generators into `.tools/` before running `make gen`.
+2. Any proto change must be accompanied by `make gen`; commit the updated `gen/` files in the same PR or CI will fail the stale-generation gate.
+3. Run `make breaking` locally before opening a PR — it checks wire compatibility against main and is required on every PR by CI.
+4. All field numbers are permanent: never renumber, never reuse, never remove a field before all clients have shipped without it.
+5. `buf.yaml` uses `breaking.use: [FILE]`, so moving a message between `.proto` files is a breaking change even when field numbers are unchanged.
+6. The `.neural/map.yaml` `commands:` block is what the PR pre-check runs; keep it in sync with what actually works in a sandbox (bare `npx` commands, not `make`).
 
 ## Neural Knowledge
 
-This layer is generated by TANK and lives in `.neural/`. `AGENTS.md` and `.neural/neurons/*.md` are refreshed automatically on every push to the default branch; edits made by hand are overwritten on the next refresh. To understand what changed, read the neuron files — they are the running log of what an agent has verified in this repository.
+This layer is generated by TANK and lives in `.neural/`. The map (`map.yaml`), index (`index.json`) and per-area neuron files (`neurons/*.md`) are refreshed automatically on every push to the default branch and are overwritten on each refresh — do not edit them by hand. Any agent working in this repository reads `AGENTS.md` first, then the neuron file for the area it is changing.
