@@ -222,6 +222,16 @@ class RateMessageResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class StopReplyRequest(_message.Message):
+    __slots__ = ("message_id",)
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    def __init__(self, message_id: _Optional[str] = ...) -> None: ...
+
+class StopReplyResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class GetSettingsRequest(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
