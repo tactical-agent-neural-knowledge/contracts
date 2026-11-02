@@ -131,7 +131,17 @@ message SendMessageResponse {
     // The model was asleep and is starting: the reply follows in a few minutes. The
     // sentence to show, from the server.
     string warming = 5;
+    // What Neural is doing before the first word: sorting the question, searching, reading
+    // what it found, writing. Each one replaces the last; the reply's first delta ends them.
+    Stage stage = 6;
   }
+}
+// Stage is one step of the work before a reply, as the server names it.
+message Stage {
+  // sorting | searching | reading | writing
+  string kind = 1;
+  // The line to show, from the server (for example "Searching 6.1M pages").
+  string text = 2;
 }
 message Started {
   Conversation conversation = 1;
