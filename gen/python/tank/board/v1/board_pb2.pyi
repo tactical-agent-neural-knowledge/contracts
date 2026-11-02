@@ -72,7 +72,7 @@ class Style(_message.Message):
     def __init__(self, fill: _Optional[str] = ..., stroke: _Optional[str] = ..., stroke_width: _Optional[float] = ..., opacity: _Optional[float] = ..., corner_radius: _Optional[float] = ..., dash: _Optional[str] = ..., font_size: _Optional[int] = ..., font_weight: _Optional[str] = ..., align: _Optional[str] = ..., shadow: _Optional[str] = ..., blur: _Optional[float] = ...) -> None: ...
 
 class AppFrame(_message.Message):
-    __slots__ = ("repo", "ref", "path", "platform", "viewport_width", "viewport_height", "preview_url", "status", "note", "drawn_from_sha", "drawn_at", "moved_on", "moved_note", "environment", "screen", "change_id", "change_approved")
+    __slots__ = ("repo", "ref", "path", "platform", "viewport_width", "viewport_height", "preview_url", "status", "note", "drawn_from_sha", "drawn_at", "moved_on", "moved_note", "environment", "screen", "change_id", "change_approved", "progress")
     REPO_FIELD_NUMBER: _ClassVar[int]
     REF_FIELD_NUMBER: _ClassVar[int]
     PATH_FIELD_NUMBER: _ClassVar[int]
@@ -90,6 +90,7 @@ class AppFrame(_message.Message):
     SCREEN_FIELD_NUMBER: _ClassVar[int]
     CHANGE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANGE_APPROVED_FIELD_NUMBER: _ClassVar[int]
+    PROGRESS_FIELD_NUMBER: _ClassVar[int]
     repo: str
     ref: str
     path: str
@@ -107,7 +108,8 @@ class AppFrame(_message.Message):
     screen: str
     change_id: str
     change_approved: bool
-    def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., platform: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., preview_url: _Optional[str] = ..., status: _Optional[str] = ..., note: _Optional[str] = ..., drawn_from_sha: _Optional[str] = ..., drawn_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., moved_on: bool = ..., moved_note: _Optional[str] = ..., environment: _Optional[str] = ..., screen: _Optional[str] = ..., change_id: _Optional[str] = ..., change_approved: bool = ...) -> None: ...
+    progress: int
+    def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., platform: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ..., preview_url: _Optional[str] = ..., status: _Optional[str] = ..., note: _Optional[str] = ..., drawn_from_sha: _Optional[str] = ..., drawn_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., moved_on: bool = ..., moved_note: _Optional[str] = ..., environment: _Optional[str] = ..., screen: _Optional[str] = ..., change_id: _Optional[str] = ..., change_approved: bool = ..., progress: _Optional[int] = ...) -> None: ...
 
 class BoardObject(_message.Message):
     __slots__ = ("id", "kind", "at", "style", "text", "rotation", "z", "parent_id", "from_id", "to_id", "points", "file_id", "file_url", "app", "locked", "meta", "created_by", "rev", "derived", "code")

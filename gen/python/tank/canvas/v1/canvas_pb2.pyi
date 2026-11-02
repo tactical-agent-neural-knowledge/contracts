@@ -92,7 +92,7 @@ class Live(_message.Message):
     def __init__(self, kind: _Optional[str] = ..., ref: _Optional[str] = ..., label: _Optional[str] = ..., value: _Optional[str] = ..., detail: _Optional[str] = ..., as_of: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[str] = ...) -> None: ...
 
 class Block(_message.Message):
-    __slots__ = ("id", "kind", "text", "depth", "checked", "lang", "decision", "live", "message_id", "file_id", "table", "file_url", "rev")
+    __slots__ = ("id", "kind", "text", "depth", "checked", "lang", "decision", "live", "message_id", "file_id", "table", "file_url", "rev", "mentions")
     ID_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
@@ -106,6 +106,7 @@ class Block(_message.Message):
     TABLE_FIELD_NUMBER: _ClassVar[int]
     FILE_URL_FIELD_NUMBER: _ClassVar[int]
     REV_FIELD_NUMBER: _ClassVar[int]
+    MENTIONS_FIELD_NUMBER: _ClassVar[int]
     id: str
     kind: BlockKind
     text: str
@@ -119,7 +120,16 @@ class Block(_message.Message):
     table: Table
     file_url: str
     rev: int
-    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[BlockKind, str]] = ..., text: _Optional[str] = ..., depth: _Optional[int] = ..., checked: bool = ..., lang: _Optional[str] = ..., decision: _Optional[_Union[Decision, _Mapping]] = ..., live: _Optional[_Union[Live, _Mapping]] = ..., message_id: _Optional[str] = ..., file_id: _Optional[str] = ..., table: _Optional[_Union[Table, _Mapping]] = ..., file_url: _Optional[str] = ..., rev: _Optional[int] = ...) -> None: ...
+    mentions: _containers.RepeatedCompositeFieldContainer[BlockMention]
+    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[BlockKind, str]] = ..., text: _Optional[str] = ..., depth: _Optional[int] = ..., checked: bool = ..., lang: _Optional[str] = ..., decision: _Optional[_Union[Decision, _Mapping]] = ..., live: _Optional[_Union[Live, _Mapping]] = ..., message_id: _Optional[str] = ..., file_id: _Optional[str] = ..., table: _Optional[_Union[Table, _Mapping]] = ..., file_url: _Optional[str] = ..., rev: _Optional[int] = ..., mentions: _Optional[_Iterable[_Union[BlockMention, _Mapping]]] = ...) -> None: ...
+
+class BlockMention(_message.Message):
+    __slots__ = ("user_id", "label")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    LABEL_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    label: str
+    def __init__(self, user_id: _Optional[str] = ..., label: _Optional[str] = ...) -> None: ...
 
 class Source(_message.Message):
     __slots__ = ("kind", "ref", "label", "seen_at", "changed", "changed_note")

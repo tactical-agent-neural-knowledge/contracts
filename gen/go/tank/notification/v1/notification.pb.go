@@ -96,6 +96,8 @@ type Notification struct {
 	ReadAt      *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=read_at,json=readAt,proto3" json:"read_at,omitempty"`
 	CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	// kind shared: what was shared with the person. item_kind is canvas | board.
+	// kind mention with item_kind canvas: the Atlas page the person was mentioned on
+	// (no message_id).
 	ItemKind      string `protobuf:"bytes,10,opt,name=item_kind,json=itemKind,proto3" json:"item_kind,omitempty"`
 	ItemId        string `protobuf:"bytes,11,opt,name=item_id,json=itemId,proto3" json:"item_id,omitempty"`
 	ItemTitle     string `protobuf:"bytes,12,opt,name=item_title,json=itemTitle,proto3" json:"item_title,omitempty"`

@@ -18,6 +18,8 @@ message Notification {
   google.protobuf.Timestamp read_at = 8;
   google.protobuf.Timestamp created_at = 9;
   // kind shared: what was shared with the person. item_kind is canvas | board.
+  // kind mention with item_kind canvas: the Atlas page the person was mentioned on
+  // (no message_id).
   string item_kind = 10;
   string item_id = 11;
   string item_title = 12;

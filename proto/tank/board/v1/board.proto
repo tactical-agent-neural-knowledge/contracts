@@ -79,6 +79,10 @@ message AppFrame {
   // showing the agent's branch for that change. Server-filled ref while it works.
   string change_id = 16;
   bool change_approved = 17;
+  // Server-filled while TANK builds the frame's app (status "building"): how far along
+  // it is, 1 to 99, from the step the build has reached. 0 = no build in progress or
+  // not known.
+  int32 progress = 18;
 }
 
 message BoardObject {
