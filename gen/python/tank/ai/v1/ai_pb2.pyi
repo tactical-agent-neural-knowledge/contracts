@@ -97,12 +97,44 @@ class GetConversationRequest(_message.Message):
     def __init__(self, id: _Optional[str] = ...) -> None: ...
 
 class GetConversationResponse(_message.Message):
-    __slots__ = ("conversation", "messages")
+    __slots__ = ("conversation", "messages", "atlas_pages")
     CONVERSATION_FIELD_NUMBER: _ClassVar[int]
     MESSAGES_FIELD_NUMBER: _ClassVar[int]
+    ATLAS_PAGES_FIELD_NUMBER: _ClassVar[int]
     conversation: Conversation
     messages: _containers.RepeatedCompositeFieldContainer[Message]
-    def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ..., messages: _Optional[_Iterable[_Union[Message, _Mapping]]] = ...) -> None: ...
+    atlas_pages: _containers.RepeatedCompositeFieldContainer[AtlasPage]
+    def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ..., messages: _Optional[_Iterable[_Union[Message, _Mapping]]] = ..., atlas_pages: _Optional[_Iterable[_Union[AtlasPage, _Mapping]]] = ...) -> None: ...
+
+class AtlasPage(_message.Message):
+    __slots__ = ("name", "canvas_id", "markdown", "added_at")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    MARKDOWN_FIELD_NUMBER: _ClassVar[int]
+    ADDED_AT_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    canvas_id: str
+    markdown: str
+    added_at: _timestamp_pb2.Timestamp
+    def __init__(self, name: _Optional[str] = ..., canvas_id: _Optional[str] = ..., markdown: _Optional[str] = ..., added_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class AddToAtlasRequest(_message.Message):
+    __slots__ = ("conversation_id", "name", "markdown", "replace_canvas_id")
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    MARKDOWN_FIELD_NUMBER: _ClassVar[int]
+    REPLACE_CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    name: str
+    markdown: str
+    replace_canvas_id: str
+    def __init__(self, conversation_id: _Optional[str] = ..., name: _Optional[str] = ..., markdown: _Optional[str] = ..., replace_canvas_id: _Optional[str] = ...) -> None: ...
+
+class AddToAtlasResponse(_message.Message):
+    __slots__ = ("page",)
+    PAGE_FIELD_NUMBER: _ClassVar[int]
+    page: AtlasPage
+    def __init__(self, page: _Optional[_Union[AtlasPage, _Mapping]] = ...) -> None: ...
 
 class CreateConversationRequest(_message.Message):
     __slots__ = ("workspace_id",)

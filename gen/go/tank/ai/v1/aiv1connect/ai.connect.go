@@ -61,6 +61,8 @@ const (
 	AiServiceUpdateSettingsProcedure = "/tank.ai.v1.AiService/UpdateSettings"
 	// AiServiceGetUsageProcedure is the fully-qualified name of the AiService's GetUsage RPC.
 	AiServiceGetUsageProcedure = "/tank.ai.v1.AiService/GetUsage"
+	// AiServiceAddToAtlasProcedure is the fully-qualified name of the AiService's AddToAtlas RPC.
+	AiServiceAddToAtlasProcedure = "/tank.ai.v1.AiService/AddToAtlas"
 )
 
 // AiServiceClient is a client for the tank.ai.v1.AiService service.
@@ -76,6 +78,7 @@ type AiServiceClient interface {
 	GetSettings(context.Context, *connect.Request[v1.GetSettingsRequest]) (*connect.Response[v1.GetSettingsResponse], error)
 	UpdateSettings(context.Context, *connect.Request[v1.UpdateSettingsRequest]) (*connect.Response[v1.UpdateSettingsResponse], error)
 	GetUsage(context.Context, *connect.Request[v1.GetUsageRequest]) (*connect.Response[v1.GetUsageResponse], error)
+	AddToAtlas(context.Context, *connect.Request[v1.AddToAtlasRequest]) (*connect.Response[v1.AddToAtlasResponse], error)
 }
 
 // NewAiServiceClient constructs a client for the tank.ai.v1.AiService service. By default, it uses
@@ -155,6 +158,12 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("GetUsage")),
 			connect.WithClientOptions(opts...),
 		),
+		addToAtlas: connect.NewClient[v1.AddToAtlasRequest, v1.AddToAtlasResponse](
+			httpClient,
+			baseURL+AiServiceAddToAtlasProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("AddToAtlas")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -171,6 +180,7 @@ type aiServiceClient struct {
 	getSettings        *connect.Client[v1.GetSettingsRequest, v1.GetSettingsResponse]
 	updateSettings     *connect.Client[v1.UpdateSettingsRequest, v1.UpdateSettingsResponse]
 	getUsage           *connect.Client[v1.GetUsageRequest, v1.GetUsageResponse]
+	addToAtlas         *connect.Client[v1.AddToAtlasRequest, v1.AddToAtlasResponse]
 }
 
 // ListConversations calls tank.ai.v1.AiService.ListConversations.
@@ -228,6 +238,11 @@ func (c *aiServiceClient) GetUsage(ctx context.Context, req *connect.Request[v1.
 	return c.getUsage.CallUnary(ctx, req)
 }
 
+// AddToAtlas calls tank.ai.v1.AiService.AddToAtlas.
+func (c *aiServiceClient) AddToAtlas(ctx context.Context, req *connect.Request[v1.AddToAtlasRequest]) (*connect.Response[v1.AddToAtlasResponse], error) {
+	return c.addToAtlas.CallUnary(ctx, req)
+}
+
 // AiServiceHandler is an implementation of the tank.ai.v1.AiService service.
 type AiServiceHandler interface {
 	ListConversations(context.Context, *connect.Request[v1.ListConversationsRequest]) (*connect.Response[v1.ListConversationsResponse], error)
@@ -241,6 +256,7 @@ type AiServiceHandler interface {
 	GetSettings(context.Context, *connect.Request[v1.GetSettingsRequest]) (*connect.Response[v1.GetSettingsResponse], error)
 	UpdateSettings(context.Context, *connect.Request[v1.UpdateSettingsRequest]) (*connect.Response[v1.UpdateSettingsResponse], error)
 	GetUsage(context.Context, *connect.Request[v1.GetUsageRequest]) (*connect.Response[v1.GetUsageResponse], error)
+	AddToAtlas(context.Context, *connect.Request[v1.AddToAtlasRequest]) (*connect.Response[v1.AddToAtlasResponse], error)
 }
 
 // NewAiServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -316,6 +332,12 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("GetUsage")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServiceAddToAtlasHandler := connect.NewUnaryHandler(
+		AiServiceAddToAtlasProcedure,
+		svc.AddToAtlas,
+		connect.WithSchema(aiServiceMethods.ByName("AddToAtlas")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.ai.v1.AiService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AiServiceListConversationsProcedure:
@@ -340,6 +362,8 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceUpdateSettingsHandler.ServeHTTP(w, r)
 		case AiServiceGetUsageProcedure:
 			aiServiceGetUsageHandler.ServeHTTP(w, r)
+		case AiServiceAddToAtlasProcedure:
+			aiServiceAddToAtlasHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -391,4 +415,8 @@ func (UnimplementedAiServiceHandler) UpdateSettings(context.Context, *connect.Re
 
 func (UnimplementedAiServiceHandler) GetUsage(context.Context, *connect.Request[v1.GetUsageRequest]) (*connect.Response[v1.GetUsageResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.GetUsage is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) AddToAtlas(context.Context, *connect.Request[v1.AddToAtlasRequest]) (*connect.Response[v1.AddToAtlasResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.AddToAtlas is not implemented"))
 }
