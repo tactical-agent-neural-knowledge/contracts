@@ -78,6 +78,33 @@ message GetConversationRequest {
 message GetConversationResponse {
   Conversation conversation = 1;
   repeated Message messages = 2;
+  // The Markdown files from this conversation that are pages in Atlas, oldest first. A page
+  // since deleted is not listed.
+  repeated AtlasPage atlas_pages = 3;
+}
+
+// A Markdown file Neural wrote, added to Atlas from this conversation (Robby, 2026-11-03:
+// a file already added is not offered again; a changed one is offered as a new page or as
+// a replacement for the page it made).
+message AtlasPage {
+  string name = 1;       // the file's name, as Neural's fence named it
+  string canvas_id = 2;
+  // The Markdown the page was last made from: the same text means the file is in Atlas.
+  string markdown = 3;
+  google.protobuf.Timestamp added_at = 4;
+}
+
+// AddToAtlas makes a page from a file in a workspace conversation, or with
+// replace_canvas_id replaces the page an earlier version of it made (that page must be
+// one of this conversation's atlas_pages, and the person must be able to edit it).
+message AddToAtlasRequest {
+  string conversation_id = 1;
+  string name = 2;
+  string markdown = 3;
+  string replace_canvas_id = 4;
+}
+message AddToAtlasResponse {
+  AtlasPage page = 1;
 }
 
 message CreateConversationRequest {
@@ -247,4 +274,5 @@ service AiService {
   rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
   rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
   rpc GetUsage(GetUsageRequest) returns (GetUsageResponse);
+  rpc AddToAtlas(AddToAtlasRequest) returns (AddToAtlasResponse);
 }
