@@ -1,0 +1,171 @@
+syntax = "proto3";
+
+package tank.devices.v1;
+
+import "google/protobuf/timestamp.proto";
+import "tank/ai/v1/ai.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/devices/v1;devicesv1";
+
+// Agentic Devices (Robby, 2026-11-03): a person connects any Bluetooth device in a Neural chat and
+// Neural works out what it is and what its data means. Nothing is integrated per device: the app
+// reports what it can see of the device and its raw bytes; the server reads standard data from the
+// Bluetooth SIG's published layouts, has Neural propose how to read the rest, checks that proposal
+// against the live bytes, and keeps what works for the next person with the same device. Only the
+// person's app can reach the device, so the app holds the connection and the server does the rest.
+// Neural chat's own models only.
+
+// What the app can see of a device once connected.
+message Device {
+  string transport = 1;     // "ble"
+  string name = 2;          // the advertised local name, if any
+  string manufacturer = 3;  // Device Information: Manufacturer Name String, if readable
+  string model = 4;         // Device Information: Model Number String
+  string firmware = 5;      // Device Information: Firmware Revision String
+  repeated Service services = 6;
+  // Bluetooth company identifier from the advertisement's manufacturer data, 0 when absent.
+  uint32 company_id = 7;
+}
+
+message Service {
+  string uuid = 1;  // lowercase, 128-bit form (0000180d-0000-1000-8000-00805f9b34fb)
+  repeated Characteristic characteristics = 2;
+}
+
+message Characteristic {
+  string uuid = 1;
+  // "read", "write", "write_without_response", "notify", "indicate"
+  repeated string properties = 2;
+  // The value read once at connect, when the characteristic is readable (a feature mask, a name).
+  bytes value = 3;
+}
+
+// One notification or read from the device, as raw bytes.
+message Reading {
+  string characteristic_uuid = 1;
+  // Milliseconds since the session opened, by the app's clock.
+  int64 at_ms = 2;
+  bytes value = 3;
+}
+
+// One number the server read out of the device's data.
+message Point {
+  string field = 1;  // Field.key
+  int64 at_ms = 2;
+  double value = 3;
+}
+
+message Field {
+  string key = 1;                  // stable within the session: "<characteristic>/<name>"
+  string label = 2;                // the field's own name ("Instantaneous Power")
+  string unit = 3;                 // short unit ("W", "rpm", "bpm"), empty when unitless
+  string characteristic_uuid = 4;
+  // Where the reading came from: "standard" (the SIG's published layout), "learned" (a reading
+  // Neural worked out and the server has checked against live data), "proposed" (worked out, not
+  // yet checked enough).
+  string source = 5;
+}
+
+// Generic figures for one field, worked out by the server.
+message FieldStats {
+  string field = 1;
+  double last = 2;
+  double avg_30s = 3;
+  double avg_5m = 4;
+  double avg_session = 5;
+  double min = 6;
+  double max = 7;
+  // Change per minute over the last five minutes (least squares), 0 with too little data.
+  double trend_per_min = 8;
+  int64 samples = 9;
+}
+
+enum State {
+  STATE_UNSPECIFIED = 0;
+  STATE_IDENTIFYING = 1;  // Neural is working out what the device is
+  STATE_READING = 2;      // fields are known and being read
+  STATE_CLOSED = 3;
+}
+
+message Session {
+  string id = 1;
+  string conversation_id = 2;
+  Device device = 3;
+  State state = 4;
+  // What Neural says the device is, in a sentence ("A Wahoo KICKR smart trainer: power, cadence
+  // and speed, with resistance control."). Empty while identifying.
+  string identity = 5;
+  repeated Field fields = 6;
+  // The characteristics the app should subscribe to (notify or indicate).
+  repeated string subscribe = 7;
+  google.protobuf.Timestamp opened_at = 8;
+  google.protobuf.Timestamp closed_at = 9;
+  // How Neural speaks while reading, in words ("every minute"; "only when heart rate is over
+  // 170"), as the person last set it.
+  string feedback_rule = 10;
+}
+
+message ListCatalogServicesRequest {}
+// Every standard service UUID, for an app that must name services before it may open them
+// (Web Bluetooth's optionalServices).
+message ListCatalogServicesResponse {
+  repeated string uuids = 1;
+}
+
+message OpenSessionRequest {
+  string conversation_id = 1;
+  Device device = 2;
+}
+message OpenSessionResponse {
+  Session session = 1;
+}
+
+message PushReadingsRequest {
+  string session_id = 1;
+  repeated Reading readings = 2;
+}
+message PushReadingsResponse {
+  // The numbers read out of these readings, for the live chart.
+  repeated Point points = 1;
+  // The session, when it changed (identified, a field learned, a rule set); absent otherwise.
+  Session session = 2;
+  repeated FieldStats stats = 3;
+  // Neural's feedback written since the last push, already stored in the conversation.
+  repeated tank.ai.v1.Message messages = 4;
+}
+
+message GetSessionRequest {
+  string session_id = 1;
+  // Points newer than this, for an app reopening a session; 0 sends the last five minutes.
+  int64 since_ms = 2;
+}
+message GetSessionResponse {
+  Session session = 1;
+  repeated Point points = 2;
+  repeated FieldStats stats = 3;
+}
+
+message ListSessionsRequest {
+  string conversation_id = 1;
+}
+message ListSessionsResponse {
+  repeated Session sessions = 1;
+}
+
+message CloseSessionRequest {
+  string session_id = 1;
+}
+message CloseSessionResponse {
+  Session session = 1;
+  // Neural's summary of the session, stored in the conversation.
+  tank.ai.v1.Message summary = 2;
+}
+
+service DeviceService {
+  rpc ListCatalogServices(ListCatalogServicesRequest) returns (ListCatalogServicesResponse);
+  rpc OpenSession(OpenSessionRequest) returns (OpenSessionResponse);
+  rpc PushReadings(PushReadingsRequest) returns (PushReadingsResponse);
+  rpc GetSession(GetSessionRequest) returns (GetSessionResponse);
+  rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);
+  rpc CloseSession(CloseSessionRequest) returns (CloseSessionResponse);
+}
