@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package tank.neural.v1;
+
+import "google/protobuf/timestamp.proto";
+import "tank/ai/v1/ai.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/neural/v1;neuralv1";
+
+// The Neural API (Robby, 2026-11-03): TANK Neural from a workspace's own code, with the same
+// models and the same pictures, video and documents as Neural chat, and nothing but TANK's own
+// models behind it. A workspace's admins make API keys; a key calls NeuralService; usage is
+// charged to the workspace at Neural chat's rate and stops at its monthly cap.
+
+// An API key as its workspace sees it. The secret is shown once, when it is made.
+message ApiKey {
+  string id = 1;
+  string name = 2;
+  // The key's last four characters, so a person can tell keys apart.
+  string last4 = 3;
+  google.protobuf.Timestamp created_at = 4;
+  // Unset when the key has never been used.
+  google.protobuf.Timestamp last_used_at = 5;
+  string created_by = 6;
+}
+
+message ListApiKeysRequest {
+  string workspace_id = 1;
+}
+message ListApiKeysResponse {
+  repeated ApiKey keys = 1;
+}
+
+message CreateApiKeyRequest {
+  string workspace_id = 1;
+  string name = 2;
+}
+message CreateApiKeyResponse {
+  ApiKey key = 1;
+  // The key itself, returned this once and never again.
+  string secret = 2;
+}
+
+message RevokeApiKeyRequest {
+  string workspace_id = 1;
+  string key_id = 2;
+}
+message RevokeApiKeyResponse {}
+
+// One key's use on one day (UTC).
+message UsageDay {
+  string day = 1;  // 2026-11-03
+  string key_id = 2;
+  int64 requests = 3;
+  int64 input_tokens = 4;
+  int64 output_tokens = 5;
+  double charge_usd = 6;
+}
+
+message GetApiUsageRequest {
+  string workspace_id = 1;
+}
+// This month's use of the workspace's keys, by day and key, and the totals.
+message GetApiUsageResponse {
+  repeated UsageDay days = 1;
+  int64 requests = 2;
+  int64 input_tokens = 3;
+  int64 output_tokens = 4;
+  double charge_usd = 5;
+}
+
+// Managing keys: a workspace's owners and admins, signed in.
+service NeuralKeyService {
+  rpc ListApiKeys(ListApiKeysRequest) returns (ListApiKeysResponse);
+  rpc CreateApiKey(CreateApiKeyRequest) returns (CreateApiKeyResponse);
+  rpc RevokeApiKey(RevokeApiKeyRequest) returns (RevokeApiKeyResponse);
+  rpc GetApiUsage(GetApiUsageRequest) returns (GetApiUsageResponse);
+}
+
+// One turn of a conversation the caller keeps.
+message ChatMessage {
+  string role = 1;  // "user" or "assistant"
+  string text = 2;
+  // Pictures and text files travel as bytes; a video is uploaded first (FilesService
+  // CreateUpload / CompleteUpload, with the same key) and named by file_id.
+  repeated tank.ai.v1.Attachment attachments = 3;
+}
+
+message ChatRequest {
+  // Oldest first; the last is the caller's new message.
+  repeated ChatMessage messages = 1;
+  // The caller's own instructions, after TANK's.
+  string instructions = 2;
+  // Look the question up in TANK's own web index first, and cite what was used.
+  bool look_up = 3;
+}
+
+message ChatDone {
+  string id = 1;  // the reply's id, as it appears in usage
+  string stop_reason = 2;
+  int32 input_tokens = 3;
+  int32 output_tokens = 4;
+  double charge_usd = 5;
+}
+
+message ChatResponse {
+  oneof event {
+    string delta = 1;  // the next piece of the reply's text
+    ChatDone done = 2; // last
+  }
+}
+
+// Called with an API key: "Authorization: Bearer <key>".
+service NeuralService {
+  rpc Chat(ChatRequest) returns (stream ChatResponse);
+}
