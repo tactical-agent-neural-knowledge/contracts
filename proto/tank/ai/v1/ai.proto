@@ -33,6 +33,11 @@ message Attachment {
   string mime = 3;
   bytes data = 4;
   int64 size = 5;
+  // A video, uploaded through FilesService into the conversation's workspace first,
+  // because it is too large to travel in the request: data is empty and the server reads
+  // the file itself. TANK's own models see its frames and hear its speech; nothing else
+  // does. Clients play it back through FilesService.GetDownloadUrl.
+  string file_id = 6;
 }
 
 enum Role {

@@ -35,18 +35,20 @@ class Conversation(_message.Message):
     def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ...) -> None: ...
 
 class Attachment(_message.Message):
-    __slots__ = ("id", "name", "mime", "data", "size")
+    __slots__ = ("id", "name", "mime", "data", "size", "file_id")
     ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     MIME_FIELD_NUMBER: _ClassVar[int]
     DATA_FIELD_NUMBER: _ClassVar[int]
     SIZE_FIELD_NUMBER: _ClassVar[int]
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
     name: str
     mime: str
     data: bytes
     size: int
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., data: _Optional[bytes] = ..., size: _Optional[int] = ...) -> None: ...
+    file_id: str
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., data: _Optional[bytes] = ..., size: _Optional[int] = ..., file_id: _Optional[str] = ...) -> None: ...
 
 class Message(_message.Message):
     __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of")
