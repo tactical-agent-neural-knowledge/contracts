@@ -177,6 +177,11 @@ message ApprovalPrompt {
   string guardrail_id = 9;
   string guardrail_text = 10;
   string blocker = 11;
+  // A gate that names its own buttons ("Revoke" / "Keep") and says what approving does in
+  // one line, shown instead of the approvals count. Unset: Approve / Reject.
+  string approve_label = 12;
+  string reject_label = 13;
+  string detail = 14;
 }
 
 message ToolLogEntry {

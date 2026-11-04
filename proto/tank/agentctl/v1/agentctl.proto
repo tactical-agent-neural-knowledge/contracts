@@ -10,6 +10,7 @@ import "tank/board/v1/board.proto";
 import "tank/books/v1/books.proto";
 import "tank/canvas/v1/canvas.proto";
 import "tank/guardrails/v1/guardrails.proto";
+import "tank/neural/v1/neural.proto";
 import "tank/social/v1/social.proto";
 
 // Runner <-> control-plane contract. The in-sandbox agent runner talks only to
@@ -678,6 +679,35 @@ message WriteUpThreadResponse {
   int32 decisions = 4;
 }
 message ReadCanvasRequest { string canvas_id = 1; }
+// The workspace's Neural API keys, for a run whose requester is an owner or admin (checked
+// at every call). Nothing here ever carries a key's secret: a key the run makes is copied by
+// the person who asked from a card the control plane posts, once.
+message ListApiKeysRequest {}
+message ListApiKeysResponse {
+  repeated tank.neural.v1.ApiKey keys = 1;
+}
+message CreateApiKeyRequest {
+  string name = 1;
+}
+message CreateApiKeyResponse {
+  tank.neural.v1.ApiKey created = 1;
+}
+// Revoking asks the requester first, on an approval card; the key is revoked when they press
+// Revoke, and the decision reaches the run on its inbox.
+message RevokeApiKeyRequest {
+  string key_id = 1;
+  string name = 2; // when key_id is empty: the one live key with this name
+}
+message RevokeApiKeyResponse {
+  string gate_id = 1;
+  tank.neural.v1.ApiKey revoking = 2;
+}
+message ApiUsageRequest {}
+message ApiUsageResponse {
+  tank.neural.v1.GetApiUsageResponse usage = 1;
+  repeated tank.neural.v1.ApiKey keys = 2; // names for usage's key ids
+}
+
 // Write on an Atlas page: markdown becomes blocks, placed after after_block_id or at
 // the end. How a run answers an ask made on the page itself.
 message WriteOnCanvasRequest {
@@ -1081,6 +1111,10 @@ service RunnerService {
   rpc ReadCanvas(ReadCanvasRequest) returns (ReadCanvasResponse);
   rpc WriteOnCanvas(WriteOnCanvasRequest) returns (WriteOnCanvasResponse);
   rpc AskCanvas(AskCanvasRequest) returns (AskCanvasResponse);
+  rpc ListApiKeys(ListApiKeysRequest) returns (ListApiKeysResponse);
+  rpc CreateApiKey(CreateApiKeyRequest) returns (CreateApiKeyResponse);
+  rpc RevokeApiKey(RevokeApiKeyRequest) returns (RevokeApiKeyResponse);
+  rpc ApiUsage(ApiUsageRequest) returns (ApiUsageResponse);
   rpc ListBoards(ListBoardsRequest) returns (ListBoardsResponse);
   rpc ReadBoard(ReadBoardRequest) returns (ReadBoardResponse);
   rpc DrawOnBoard(DrawOnBoardRequest) returns (DrawOnBoardResponse);

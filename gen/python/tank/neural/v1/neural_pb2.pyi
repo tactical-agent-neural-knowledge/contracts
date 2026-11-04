@@ -44,12 +44,26 @@ class CreateApiKeyRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
 
 class CreateApiKeyResponse(_message.Message):
-    __slots__ = ("key", "secret")
+    __slots__ = ("key", "secret", "reveal_id")
     KEY_FIELD_NUMBER: _ClassVar[int]
     SECRET_FIELD_NUMBER: _ClassVar[int]
+    REVEAL_ID_FIELD_NUMBER: _ClassVar[int]
     key: ApiKey
     secret: str
-    def __init__(self, key: _Optional[_Union[ApiKey, _Mapping]] = ..., secret: _Optional[str] = ...) -> None: ...
+    reveal_id: str
+    def __init__(self, key: _Optional[_Union[ApiKey, _Mapping]] = ..., secret: _Optional[str] = ..., reveal_id: _Optional[str] = ...) -> None: ...
+
+class RevealApiKeyRequest(_message.Message):
+    __slots__ = ("reveal_id",)
+    REVEAL_ID_FIELD_NUMBER: _ClassVar[int]
+    reveal_id: str
+    def __init__(self, reveal_id: _Optional[str] = ...) -> None: ...
+
+class RevealApiKeyResponse(_message.Message):
+    __slots__ = ("secret",)
+    SECRET_FIELD_NUMBER: _ClassVar[int]
+    secret: str
+    def __init__(self, secret: _Optional[str] = ...) -> None: ...
 
 class RevokeApiKeyRequest(_message.Message):
     __slots__ = ("workspace_id", "key_id")
