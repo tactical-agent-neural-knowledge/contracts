@@ -115,6 +115,26 @@ class ListWorkspacesResponse(_message.Message):
     workspaces: _containers.RepeatedCompositeFieldContainer[Workspace]
     def __init__(self, workspaces: _Optional[_Iterable[_Union[Workspace, _Mapping]]] = ...) -> None: ...
 
+class ListWorkspaceUnreadsRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListWorkspaceUnreadsResponse(_message.Message):
+    __slots__ = ("unreads",)
+    UNREADS_FIELD_NUMBER: _ClassVar[int]
+    unreads: _containers.RepeatedCompositeFieldContainer[WorkspaceUnread]
+    def __init__(self, unreads: _Optional[_Iterable[_Union[WorkspaceUnread, _Mapping]]] = ...) -> None: ...
+
+class WorkspaceUnread(_message.Message):
+    __slots__ = ("workspace_id", "has_unread", "badge_count")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    HAS_UNREAD_FIELD_NUMBER: _ClassVar[int]
+    BADGE_COUNT_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    has_unread: bool
+    badge_count: int
+    def __init__(self, workspace_id: _Optional[str] = ..., has_unread: bool = ..., badge_count: _Optional[int] = ...) -> None: ...
+
 class GetBootstrapRequest(_message.Message):
     __slots__ = ("workspace_id",)
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]

@@ -39,6 +39,9 @@ const (
 	// WorkspaceServiceListWorkspacesProcedure is the fully-qualified name of the WorkspaceService's
 	// ListWorkspaces RPC.
 	WorkspaceServiceListWorkspacesProcedure = "/tank.workspace.v1.WorkspaceService/ListWorkspaces"
+	// WorkspaceServiceListWorkspaceUnreadsProcedure is the fully-qualified name of the
+	// WorkspaceService's ListWorkspaceUnreads RPC.
+	WorkspaceServiceListWorkspaceUnreadsProcedure = "/tank.workspace.v1.WorkspaceService/ListWorkspaceUnreads"
 	// WorkspaceServiceListAgenturesProcedure is the fully-qualified name of the WorkspaceService's
 	// ListAgentures RPC.
 	WorkspaceServiceListAgenturesProcedure = "/tank.workspace.v1.WorkspaceService/ListAgentures"
@@ -174,6 +177,8 @@ const (
 type WorkspaceServiceClient interface {
 	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
 	ListWorkspaces(context.Context, *connect.Request[v1.ListWorkspacesRequest]) (*connect.Response[v1.ListWorkspacesResponse], error)
+	// Unread state per workspace for the switcher; polled, cheap.
+	ListWorkspaceUnreads(context.Context, *connect.Request[v1.ListWorkspaceUnreadsRequest]) (*connect.Response[v1.ListWorkspaceUnreadsResponse], error)
 	// The agenture board.
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
 	AgentActivity(context.Context, *connect.Request[v1.AgentActivityRequest]) (*connect.Response[v1.AgentActivityResponse], error)
@@ -247,6 +252,12 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			httpClient,
 			baseURL+WorkspaceServiceListWorkspacesProcedure,
 			connect.WithSchema(workspaceServiceMethods.ByName("ListWorkspaces")),
+			connect.WithClientOptions(opts...),
+		),
+		listWorkspaceUnreads: connect.NewClient[v1.ListWorkspaceUnreadsRequest, v1.ListWorkspaceUnreadsResponse](
+			httpClient,
+			baseURL+WorkspaceServiceListWorkspaceUnreadsProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("ListWorkspaceUnreads")),
 			connect.WithClientOptions(opts...),
 		),
 		listAgentures: connect.NewClient[v1.ListAgenturesRequest, v1.ListAgenturesResponse](
@@ -514,6 +525,7 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 type workspaceServiceClient struct {
 	createWorkspace        *connect.Client[v1.CreateWorkspaceRequest, v1.CreateWorkspaceResponse]
 	listWorkspaces         *connect.Client[v1.ListWorkspacesRequest, v1.ListWorkspacesResponse]
+	listWorkspaceUnreads   *connect.Client[v1.ListWorkspaceUnreadsRequest, v1.ListWorkspaceUnreadsResponse]
 	listAgentures          *connect.Client[v1.ListAgenturesRequest, v1.ListAgenturesResponse]
 	agentActivity          *connect.Client[v1.AgentActivityRequest, v1.AgentActivityResponse]
 	getAgenture            *connect.Client[v1.GetAgentureRequest, v1.GetAgentureResponse]
@@ -567,6 +579,11 @@ func (c *workspaceServiceClient) CreateWorkspace(ctx context.Context, req *conne
 // ListWorkspaces calls tank.workspace.v1.WorkspaceService.ListWorkspaces.
 func (c *workspaceServiceClient) ListWorkspaces(ctx context.Context, req *connect.Request[v1.ListWorkspacesRequest]) (*connect.Response[v1.ListWorkspacesResponse], error) {
 	return c.listWorkspaces.CallUnary(ctx, req)
+}
+
+// ListWorkspaceUnreads calls tank.workspace.v1.WorkspaceService.ListWorkspaceUnreads.
+func (c *workspaceServiceClient) ListWorkspaceUnreads(ctx context.Context, req *connect.Request[v1.ListWorkspaceUnreadsRequest]) (*connect.Response[v1.ListWorkspaceUnreadsResponse], error) {
+	return c.listWorkspaceUnreads.CallUnary(ctx, req)
 }
 
 // ListAgentures calls tank.workspace.v1.WorkspaceService.ListAgentures.
@@ -788,6 +805,8 @@ func (c *workspaceServiceClient) CancelScheduled(ctx context.Context, req *conne
 type WorkspaceServiceHandler interface {
 	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
 	ListWorkspaces(context.Context, *connect.Request[v1.ListWorkspacesRequest]) (*connect.Response[v1.ListWorkspacesResponse], error)
+	// Unread state per workspace for the switcher; polled, cheap.
+	ListWorkspaceUnreads(context.Context, *connect.Request[v1.ListWorkspaceUnreadsRequest]) (*connect.Response[v1.ListWorkspaceUnreadsResponse], error)
 	// The agenture board.
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
 	AgentActivity(context.Context, *connect.Request[v1.AgentActivityRequest]) (*connect.Response[v1.AgentActivityResponse], error)
@@ -857,6 +876,12 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 		WorkspaceServiceListWorkspacesProcedure,
 		svc.ListWorkspaces,
 		connect.WithSchema(workspaceServiceMethods.ByName("ListWorkspaces")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceListWorkspaceUnreadsHandler := connect.NewUnaryHandler(
+		WorkspaceServiceListWorkspaceUnreadsProcedure,
+		svc.ListWorkspaceUnreads,
+		connect.WithSchema(workspaceServiceMethods.ByName("ListWorkspaceUnreads")),
 		connect.WithHandlerOptions(opts...),
 	)
 	workspaceServiceListAgenturesHandler := connect.NewUnaryHandler(
@@ -1123,6 +1148,8 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 			workspaceServiceCreateWorkspaceHandler.ServeHTTP(w, r)
 		case WorkspaceServiceListWorkspacesProcedure:
 			workspaceServiceListWorkspacesHandler.ServeHTTP(w, r)
+		case WorkspaceServiceListWorkspaceUnreadsProcedure:
+			workspaceServiceListWorkspaceUnreadsHandler.ServeHTTP(w, r)
 		case WorkspaceServiceListAgenturesProcedure:
 			workspaceServiceListAgenturesHandler.ServeHTTP(w, r)
 		case WorkspaceServiceAgentActivityProcedure:
@@ -1224,6 +1251,10 @@ func (UnimplementedWorkspaceServiceHandler) CreateWorkspace(context.Context, *co
 
 func (UnimplementedWorkspaceServiceHandler) ListWorkspaces(context.Context, *connect.Request[v1.ListWorkspacesRequest]) (*connect.Response[v1.ListWorkspacesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ListWorkspaces is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) ListWorkspaceUnreads(context.Context, *connect.Request[v1.ListWorkspaceUnreadsRequest]) (*connect.Response[v1.ListWorkspaceUnreadsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ListWorkspaceUnreads is not implemented"))
 }
 
 func (UnimplementedWorkspaceServiceHandler) ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error) {

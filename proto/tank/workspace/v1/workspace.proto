@@ -68,6 +68,24 @@ message ListWorkspacesResponse {
   repeated Workspace workspaces = 1;
 }
 
+// What is waiting for the caller in each workspace they belong to, so the
+// workspace rail and switcher can mark the ones with something new. Counted on
+// the server over the caller's own memberships only; muted Treads, archived
+// Treads and threads in them are left out.
+message ListWorkspaceUnreadsRequest {}
+message ListWorkspaceUnreadsResponse {
+  // One per workspace the caller is an active member of, including those with
+  // nothing unread.
+  repeated WorkspaceUnread unreads = 1;
+}
+message WorkspaceUnread {
+  string workspace_id = 1;
+  // Something unread in a Tread, a DM or a followed thread: the dot.
+  bool has_unread = 2;
+  // Mentions plus unread direct messages: the number on the badge.
+  int32 badge_count = 3;
+}
+
 // One call on app open. Everything else is lazy.
 message GetBootstrapRequest {
   string workspace_id = 1;
@@ -612,6 +630,8 @@ message ClaimAgentureResponse { Workspace workspace = 1; }
 service WorkspaceService {
   rpc CreateWorkspace(CreateWorkspaceRequest) returns (CreateWorkspaceResponse);
   rpc ListWorkspaces(ListWorkspacesRequest) returns (ListWorkspacesResponse);
+  // Unread state per workspace for the switcher; polled, cheap.
+  rpc ListWorkspaceUnreads(ListWorkspaceUnreadsRequest) returns (ListWorkspaceUnreadsResponse);
 
   // The agenture board.
   rpc ListAgentures(ListAgenturesRequest) returns (ListAgenturesResponse);
