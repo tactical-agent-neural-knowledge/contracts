@@ -133,6 +133,19 @@ message HeartbeatRequest {
 }
 message HeartbeatResponse {}
 
+// A fresh agent-session token for a run that has not ended, for the control plane only. A
+// run can wait days for a person (a plan or merge approval) and its token keeps a fixed
+// eight-hour clock; without this the run could not say anything once the wait was over.
+// The old token is revoked; the new one has the same principal, workspace, thread, scopes
+// and clock.
+message RenewRunTokenRequest {
+  string run_id = 1;
+}
+message RenewRunTokenResponse {
+  string agent_session_token = 1;
+  google.protobuf.Timestamp token_expires_at = 2;
+}
+
 message SetStatusRequest {
   string run_id = 1;
   RunState state = 2;
@@ -575,6 +588,7 @@ service AgentService {
   rpc GetTreadPlan(GetTreadPlanRequest) returns (GetTreadPlanResponse);
   rpc StopRun(StopRunRequest) returns (StopRunResponse);
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+  rpc RenewRunToken(RenewRunTokenRequest) returns (RenewRunTokenResponse);
   rpc SetStatus(SetStatusRequest) returns (SetStatusResponse);
   // A product's brand and landing page, set by the run working in it (an agenture only).
   rpc SetProductBrand(SetProductBrandRequest) returns (SetProductBrandResponse);

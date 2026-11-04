@@ -50,6 +50,9 @@ const (
 	AgentServiceStopRunProcedure = "/tank.agent.v1.AgentService/StopRun"
 	// AgentServiceHeartbeatProcedure is the fully-qualified name of the AgentService's Heartbeat RPC.
 	AgentServiceHeartbeatProcedure = "/tank.agent.v1.AgentService/Heartbeat"
+	// AgentServiceRenewRunTokenProcedure is the fully-qualified name of the AgentService's
+	// RenewRunToken RPC.
+	AgentServiceRenewRunTokenProcedure = "/tank.agent.v1.AgentService/RenewRunToken"
 	// AgentServiceSetStatusProcedure is the fully-qualified name of the AgentService's SetStatus RPC.
 	AgentServiceSetStatusProcedure = "/tank.agent.v1.AgentService/SetStatus"
 	// AgentServiceSetProductBrandProcedure is the fully-qualified name of the AgentService's
@@ -121,6 +124,7 @@ type AgentServiceClient interface {
 	GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error)
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
 	Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error)
+	RenewRunToken(context.Context, *connect.Request[v1.RenewRunTokenRequest]) (*connect.Response[v1.RenewRunTokenResponse], error)
 	SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error)
 	// A product's brand and landing page, set by the run working in it (an agenture only).
 	SetProductBrand(context.Context, *connect.Request[v1.SetProductBrandRequest]) (*connect.Response[v1.SetProductBrandResponse], error)
@@ -211,6 +215,12 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			httpClient,
 			baseURL+AgentServiceHeartbeatProcedure,
 			connect.WithSchema(agentServiceMethods.ByName("Heartbeat")),
+			connect.WithClientOptions(opts...),
+		),
+		renewRunToken: connect.NewClient[v1.RenewRunTokenRequest, v1.RenewRunTokenResponse](
+			httpClient,
+			baseURL+AgentServiceRenewRunTokenProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("RenewRunToken")),
 			connect.WithClientOptions(opts...),
 		),
 		setStatus: connect.NewClient[v1.SetStatusRequest, v1.SetStatusResponse](
@@ -357,6 +367,7 @@ type agentServiceClient struct {
 	getTreadPlan              *connect.Client[v1.GetTreadPlanRequest, v1.GetTreadPlanResponse]
 	stopRun                   *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
 	heartbeat                 *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
+	renewRunToken             *connect.Client[v1.RenewRunTokenRequest, v1.RenewRunTokenResponse]
 	setStatus                 *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
 	setProductBrand           *connect.Client[v1.SetProductBrandRequest, v1.SetProductBrandResponse]
 	setProductLanding         *connect.Client[v1.SetProductLandingRequest, v1.SetProductLandingResponse]
@@ -414,6 +425,11 @@ func (c *agentServiceClient) StopRun(ctx context.Context, req *connect.Request[v
 // Heartbeat calls tank.agent.v1.AgentService.Heartbeat.
 func (c *agentServiceClient) Heartbeat(ctx context.Context, req *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error) {
 	return c.heartbeat.CallUnary(ctx, req)
+}
+
+// RenewRunToken calls tank.agent.v1.AgentService.RenewRunToken.
+func (c *agentServiceClient) RenewRunToken(ctx context.Context, req *connect.Request[v1.RenewRunTokenRequest]) (*connect.Response[v1.RenewRunTokenResponse], error) {
+	return c.renewRunToken.CallUnary(ctx, req)
 }
 
 // SetStatus calls tank.agent.v1.AgentService.SetStatus.
@@ -535,6 +551,7 @@ type AgentServiceHandler interface {
 	GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error)
 	StopRun(context.Context, *connect.Request[v1.StopRunRequest]) (*connect.Response[v1.StopRunResponse], error)
 	Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error)
+	RenewRunToken(context.Context, *connect.Request[v1.RenewRunTokenRequest]) (*connect.Response[v1.RenewRunTokenResponse], error)
 	SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error)
 	// A product's brand and landing page, set by the run working in it (an agenture only).
 	SetProductBrand(context.Context, *connect.Request[v1.SetProductBrandRequest]) (*connect.Response[v1.SetProductBrandResponse], error)
@@ -621,6 +638,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		AgentServiceHeartbeatProcedure,
 		svc.Heartbeat,
 		connect.WithSchema(agentServiceMethods.ByName("Heartbeat")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceRenewRunTokenHandler := connect.NewUnaryHandler(
+		AgentServiceRenewRunTokenProcedure,
+		svc.RenewRunToken,
+		connect.WithSchema(agentServiceMethods.ByName("RenewRunToken")),
 		connect.WithHandlerOptions(opts...),
 	)
 	agentServiceSetStatusHandler := connect.NewUnaryHandler(
@@ -771,6 +794,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceStopRunHandler.ServeHTTP(w, r)
 		case AgentServiceHeartbeatProcedure:
 			agentServiceHeartbeatHandler.ServeHTTP(w, r)
+		case AgentServiceRenewRunTokenProcedure:
+			agentServiceRenewRunTokenHandler.ServeHTTP(w, r)
 		case AgentServiceSetStatusProcedure:
 			agentServiceSetStatusHandler.ServeHTTP(w, r)
 		case AgentServiceSetProductBrandProcedure:
@@ -850,6 +875,10 @@ func (UnimplementedAgentServiceHandler) StopRun(context.Context, *connect.Reques
 
 func (UnimplementedAgentServiceHandler) Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.Heartbeat is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) RenewRunToken(context.Context, *connect.Request[v1.RenewRunTokenRequest]) (*connect.Response[v1.RenewRunTokenResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.RenewRunToken is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error) {

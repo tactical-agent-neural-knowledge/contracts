@@ -221,6 +221,20 @@ class HeartbeatResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class RenewRunTokenRequest(_message.Message):
+    __slots__ = ("run_id",)
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    def __init__(self, run_id: _Optional[str] = ...) -> None: ...
+
+class RenewRunTokenResponse(_message.Message):
+    __slots__ = ("agent_session_token", "token_expires_at")
+    AGENT_SESSION_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    TOKEN_EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    agent_session_token: str
+    token_expires_at: _timestamp_pb2.Timestamp
+    def __init__(self, agent_session_token: _Optional[str] = ..., token_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
 class SetStatusRequest(_message.Message):
     __slots__ = ("run_id", "state", "status", "branch", "pr_url", "cost_usd")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
