@@ -1072,10 +1072,10 @@ class CreateApiKeyRequest(_message.Message):
     def __init__(self, name: _Optional[str] = ...) -> None: ...
 
 class CreateApiKeyResponse(_message.Message):
-    __slots__ = ("key",)
-    KEY_FIELD_NUMBER: _ClassVar[int]
-    key: _neural_pb2.ApiKey
-    def __init__(self, key: _Optional[_Union[_neural_pb2.ApiKey, _Mapping]] = ...) -> None: ...
+    __slots__ = ("created",)
+    CREATED_FIELD_NUMBER: _ClassVar[int]
+    created: _neural_pb2.ApiKey
+    def __init__(self, created: _Optional[_Union[_neural_pb2.ApiKey, _Mapping]] = ...) -> None: ...
 
 class RevokeApiKeyRequest(_message.Message):
     __slots__ = ("key_id", "name")
@@ -1086,12 +1086,12 @@ class RevokeApiKeyRequest(_message.Message):
     def __init__(self, key_id: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
 
 class RevokeApiKeyResponse(_message.Message):
-    __slots__ = ("gate_id", "key")
+    __slots__ = ("gate_id", "revoking")
     GATE_ID_FIELD_NUMBER: _ClassVar[int]
-    KEY_FIELD_NUMBER: _ClassVar[int]
+    REVOKING_FIELD_NUMBER: _ClassVar[int]
     gate_id: str
-    key: _neural_pb2.ApiKey
-    def __init__(self, gate_id: _Optional[str] = ..., key: _Optional[_Union[_neural_pb2.ApiKey, _Mapping]] = ...) -> None: ...
+    revoking: _neural_pb2.ApiKey
+    def __init__(self, gate_id: _Optional[str] = ..., revoking: _Optional[_Union[_neural_pb2.ApiKey, _Mapping]] = ...) -> None: ...
 
 class ApiUsageRequest(_message.Message):
     __slots__ = ()

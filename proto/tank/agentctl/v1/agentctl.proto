@@ -690,7 +690,7 @@ message CreateApiKeyRequest {
   string name = 1;
 }
 message CreateApiKeyResponse {
-  tank.neural.v1.ApiKey key = 1;
+  tank.neural.v1.ApiKey created = 1;
 }
 // Revoking asks the requester first, on an approval card; the key is revoked when they press
 // Revoke, and the decision reaches the run on its inbox.
@@ -700,7 +700,7 @@ message RevokeApiKeyRequest {
 }
 message RevokeApiKeyResponse {
   string gate_id = 1;
-  tank.neural.v1.ApiKey key = 2;
+  tank.neural.v1.ApiKey revoking = 2;
 }
 message ApiUsageRequest {}
 message ApiUsageResponse {
