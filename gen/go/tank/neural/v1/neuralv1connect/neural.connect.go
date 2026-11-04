@@ -47,6 +47,9 @@ const (
 	// NeuralKeyServiceGetApiUsageProcedure is the fully-qualified name of the NeuralKeyService's
 	// GetApiUsage RPC.
 	NeuralKeyServiceGetApiUsageProcedure = "/tank.neural.v1.NeuralKeyService/GetApiUsage"
+	// NeuralKeyServiceRevealApiKeyProcedure is the fully-qualified name of the NeuralKeyService's
+	// RevealApiKey RPC.
+	NeuralKeyServiceRevealApiKeyProcedure = "/tank.neural.v1.NeuralKeyService/RevealApiKey"
 	// NeuralServiceChatProcedure is the fully-qualified name of the NeuralService's Chat RPC.
 	NeuralServiceChatProcedure = "/tank.neural.v1.NeuralService/Chat"
 )
@@ -57,6 +60,7 @@ type NeuralKeyServiceClient interface {
 	CreateApiKey(context.Context, *connect.Request[v1.CreateApiKeyRequest]) (*connect.Response[v1.CreateApiKeyResponse], error)
 	RevokeApiKey(context.Context, *connect.Request[v1.RevokeApiKeyRequest]) (*connect.Response[v1.RevokeApiKeyResponse], error)
 	GetApiUsage(context.Context, *connect.Request[v1.GetApiUsageRequest]) (*connect.Response[v1.GetApiUsageResponse], error)
+	RevealApiKey(context.Context, *connect.Request[v1.RevealApiKeyRequest]) (*connect.Response[v1.RevealApiKeyResponse], error)
 }
 
 // NewNeuralKeyServiceClient constructs a client for the tank.neural.v1.NeuralKeyService service. By
@@ -94,6 +98,12 @@ func NewNeuralKeyServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(neuralKeyServiceMethods.ByName("GetApiUsage")),
 			connect.WithClientOptions(opts...),
 		),
+		revealApiKey: connect.NewClient[v1.RevealApiKeyRequest, v1.RevealApiKeyResponse](
+			httpClient,
+			baseURL+NeuralKeyServiceRevealApiKeyProcedure,
+			connect.WithSchema(neuralKeyServiceMethods.ByName("RevealApiKey")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -103,6 +113,7 @@ type neuralKeyServiceClient struct {
 	createApiKey *connect.Client[v1.CreateApiKeyRequest, v1.CreateApiKeyResponse]
 	revokeApiKey *connect.Client[v1.RevokeApiKeyRequest, v1.RevokeApiKeyResponse]
 	getApiUsage  *connect.Client[v1.GetApiUsageRequest, v1.GetApiUsageResponse]
+	revealApiKey *connect.Client[v1.RevealApiKeyRequest, v1.RevealApiKeyResponse]
 }
 
 // ListApiKeys calls tank.neural.v1.NeuralKeyService.ListApiKeys.
@@ -125,12 +136,18 @@ func (c *neuralKeyServiceClient) GetApiUsage(ctx context.Context, req *connect.R
 	return c.getApiUsage.CallUnary(ctx, req)
 }
 
+// RevealApiKey calls tank.neural.v1.NeuralKeyService.RevealApiKey.
+func (c *neuralKeyServiceClient) RevealApiKey(ctx context.Context, req *connect.Request[v1.RevealApiKeyRequest]) (*connect.Response[v1.RevealApiKeyResponse], error) {
+	return c.revealApiKey.CallUnary(ctx, req)
+}
+
 // NeuralKeyServiceHandler is an implementation of the tank.neural.v1.NeuralKeyService service.
 type NeuralKeyServiceHandler interface {
 	ListApiKeys(context.Context, *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error)
 	CreateApiKey(context.Context, *connect.Request[v1.CreateApiKeyRequest]) (*connect.Response[v1.CreateApiKeyResponse], error)
 	RevokeApiKey(context.Context, *connect.Request[v1.RevokeApiKeyRequest]) (*connect.Response[v1.RevokeApiKeyResponse], error)
 	GetApiUsage(context.Context, *connect.Request[v1.GetApiUsageRequest]) (*connect.Response[v1.GetApiUsageResponse], error)
+	RevealApiKey(context.Context, *connect.Request[v1.RevealApiKeyRequest]) (*connect.Response[v1.RevealApiKeyResponse], error)
 }
 
 // NewNeuralKeyServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -164,6 +181,12 @@ func NewNeuralKeyServiceHandler(svc NeuralKeyServiceHandler, opts ...connect.Han
 		connect.WithSchema(neuralKeyServiceMethods.ByName("GetApiUsage")),
 		connect.WithHandlerOptions(opts...),
 	)
+	neuralKeyServiceRevealApiKeyHandler := connect.NewUnaryHandler(
+		NeuralKeyServiceRevealApiKeyProcedure,
+		svc.RevealApiKey,
+		connect.WithSchema(neuralKeyServiceMethods.ByName("RevealApiKey")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.neural.v1.NeuralKeyService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case NeuralKeyServiceListApiKeysProcedure:
@@ -174,6 +197,8 @@ func NewNeuralKeyServiceHandler(svc NeuralKeyServiceHandler, opts ...connect.Han
 			neuralKeyServiceRevokeApiKeyHandler.ServeHTTP(w, r)
 		case NeuralKeyServiceGetApiUsageProcedure:
 			neuralKeyServiceGetApiUsageHandler.ServeHTTP(w, r)
+		case NeuralKeyServiceRevealApiKeyProcedure:
+			neuralKeyServiceRevealApiKeyHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -197,6 +222,10 @@ func (UnimplementedNeuralKeyServiceHandler) RevokeApiKey(context.Context, *conne
 
 func (UnimplementedNeuralKeyServiceHandler) GetApiUsage(context.Context, *connect.Request[v1.GetApiUsageRequest]) (*connect.Response[v1.GetApiUsageResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.neural.v1.NeuralKeyService.GetApiUsage is not implemented"))
+}
+
+func (UnimplementedNeuralKeyServiceHandler) RevealApiKey(context.Context, *connect.Request[v1.RevealApiKeyRequest]) (*connect.Response[v1.RevealApiKeyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.neural.v1.NeuralKeyService.RevealApiKey is not implemented"))
 }
 
 // NeuralServiceClient is a client for the tank.neural.v1.NeuralService service.

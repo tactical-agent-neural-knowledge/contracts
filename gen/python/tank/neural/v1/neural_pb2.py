@@ -26,7 +26,7 @@ from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__
 from tank.ai.v1 import ai_pb2 as tank_dot_ai_dot_v1_dot_ai__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1btank/neural/v1/neural.proto\x12\x0etank.neural.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x13tank/ai/v1/ai.proto\"\xda\x01\n\x06\x41piKey\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05last4\x18\x03 \x01(\tR\x05last4\x12\x39\n\ncreated_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tcreatedAt\x12<\n\x0clast_used_at\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\nlastUsedAt\x12\x1d\n\ncreated_by\x18\x06 \x01(\tR\tcreatedBy\"7\n\x12ListApiKeysRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\"A\n\x13ListApiKeysResponse\x12*\n\x04keys\x18\x01 \x03(\x0b\x32\x16.tank.neural.v1.ApiKeyR\x04keys\"L\n\x13\x43reateApiKeyRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\"X\n\x14\x43reateApiKeyResponse\x12(\n\x03key\x18\x01 \x01(\x0b\x32\x16.tank.neural.v1.ApiKeyR\x03key\x12\x16\n\x06secret\x18\x02 \x01(\tR\x06secret\"O\n\x13RevokeApiKeyRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x15\n\x06key_id\x18\x02 \x01(\tR\x05keyId\"\x16\n\x14RevokeApiKeyResponse\"\xb6\x01\n\x08UsageDay\x12\x10\n\x03\x64\x61y\x18\x01 \x01(\tR\x03\x64\x61y\x12\x15\n\x06key_id\x18\x02 \x01(\tR\x05keyId\x12\x1a\n\x08requests\x18\x03 \x01(\x03R\x08requests\x12!\n\x0cinput_tokens\x18\x04 \x01(\x03R\x0binputTokens\x12#\n\routput_tokens\x18\x05 \x01(\x03R\x0coutputTokens\x12\x1d\n\ncharge_usd\x18\x06 \x01(\x01R\tchargeUsd\"7\n\x12GetApiUsageRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\"\xc6\x01\n\x13GetApiUsageResponse\x12,\n\x04\x64\x61ys\x18\x01 \x03(\x0b\x32\x18.tank.neural.v1.UsageDayR\x04\x64\x61ys\x12\x1a\n\x08requests\x18\x02 \x01(\x03R\x08requests\x12!\n\x0cinput_tokens\x18\x03 \x01(\x03R\x0binputTokens\x12#\n\routput_tokens\x18\x04 \x01(\x03R\x0coutputTokens\x12\x1d\n\ncharge_usd\x18\x05 \x01(\x01R\tchargeUsd\"o\n\x0b\x43hatMessage\x12\x12\n\x04role\x18\x01 \x01(\tR\x04role\x12\x12\n\x04text\x18\x02 \x01(\tR\x04text\x12\x38\n\x0b\x61ttachments\x18\x03 \x03(\x0b\x32\x16.tank.ai.v1.AttachmentR\x0b\x61ttachments\"\x83\x01\n\x0b\x43hatRequest\x12\x37\n\x08messages\x18\x01 \x03(\x0b\x32\x1b.tank.neural.v1.ChatMessageR\x08messages\x12\"\n\x0cinstructions\x18\x02 \x01(\tR\x0cinstructions\x12\x17\n\x07look_up\x18\x03 \x01(\x08R\x06lookUp\"\xa2\x01\n\x08\x43hatDone\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n\x0bstop_reason\x18\x02 \x01(\tR\nstopReason\x12!\n\x0cinput_tokens\x18\x03 \x01(\x05R\x0binputTokens\x12#\n\routput_tokens\x18\x04 \x01(\x05R\x0coutputTokens\x12\x1d\n\ncharge_usd\x18\x05 \x01(\x01R\tchargeUsd\"_\n\x0c\x43hatResponse\x12\x16\n\x05\x64\x65lta\x18\x01 \x01(\tH\x00R\x05\x64\x65lta\x12.\n\x04\x64one\x18\x02 \x01(\x0b\x32\x18.tank.neural.v1.ChatDoneH\x00R\x04\x64oneB\x07\n\x05\x65vent2\xf8\x02\n\x10NeuralKeyService\x12V\n\x0bListApiKeys\x12\".tank.neural.v1.ListApiKeysRequest\x1a#.tank.neural.v1.ListApiKeysResponse\x12Y\n\x0c\x43reateApiKey\x12#.tank.neural.v1.CreateApiKeyRequest\x1a$.tank.neural.v1.CreateApiKeyResponse\x12Y\n\x0cRevokeApiKey\x12#.tank.neural.v1.RevokeApiKeyRequest\x1a$.tank.neural.v1.RevokeApiKeyResponse\x12V\n\x0bGetApiUsage\x12\".tank.neural.v1.GetApiUsageRequest\x1a#.tank.neural.v1.GetApiUsageResponse2T\n\rNeuralService\x12\x43\n\x04\x43hat\x12\x1b.tank.neural.v1.ChatRequest\x1a\x1c.tank.neural.v1.ChatResponse0\x01\x42\xd0\x01\n\x12\x63om.tank.neural.v1B\x0bNeuralProtoP\x01ZSgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/neural/v1;neuralv1\xa2\x02\x03TNX\xaa\x02\x0eTank.Neural.V1\xca\x02\x0eTank\\Neural\\V1\xe2\x02\x1aTank\\Neural\\V1\\GPBMetadata\xea\x02\x10Tank::Neural::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1btank/neural/v1/neural.proto\x12\x0etank.neural.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x13tank/ai/v1/ai.proto\"\xda\x01\n\x06\x41piKey\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05last4\x18\x03 \x01(\tR\x05last4\x12\x39\n\ncreated_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tcreatedAt\x12<\n\x0clast_used_at\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\nlastUsedAt\x12\x1d\n\ncreated_by\x18\x06 \x01(\tR\tcreatedBy\"7\n\x12ListApiKeysRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\"A\n\x13ListApiKeysResponse\x12*\n\x04keys\x18\x01 \x03(\x0b\x32\x16.tank.neural.v1.ApiKeyR\x04keys\"L\n\x13\x43reateApiKeyRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\"u\n\x14\x43reateApiKeyResponse\x12(\n\x03key\x18\x01 \x01(\x0b\x32\x16.tank.neural.v1.ApiKeyR\x03key\x12\x16\n\x06secret\x18\x02 \x01(\tR\x06secret\x12\x1b\n\treveal_id\x18\x03 \x01(\tR\x08revealId\"2\n\x13RevealApiKeyRequest\x12\x1b\n\treveal_id\x18\x01 \x01(\tR\x08revealId\".\n\x14RevealApiKeyResponse\x12\x16\n\x06secret\x18\x01 \x01(\tR\x06secret\"O\n\x13RevokeApiKeyRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x15\n\x06key_id\x18\x02 \x01(\tR\x05keyId\"\x16\n\x14RevokeApiKeyResponse\"\xb6\x01\n\x08UsageDay\x12\x10\n\x03\x64\x61y\x18\x01 \x01(\tR\x03\x64\x61y\x12\x15\n\x06key_id\x18\x02 \x01(\tR\x05keyId\x12\x1a\n\x08requests\x18\x03 \x01(\x03R\x08requests\x12!\n\x0cinput_tokens\x18\x04 \x01(\x03R\x0binputTokens\x12#\n\routput_tokens\x18\x05 \x01(\x03R\x0coutputTokens\x12\x1d\n\ncharge_usd\x18\x06 \x01(\x01R\tchargeUsd\"7\n\x12GetApiUsageRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\"\xc6\x01\n\x13GetApiUsageResponse\x12,\n\x04\x64\x61ys\x18\x01 \x03(\x0b\x32\x18.tank.neural.v1.UsageDayR\x04\x64\x61ys\x12\x1a\n\x08requests\x18\x02 \x01(\x03R\x08requests\x12!\n\x0cinput_tokens\x18\x03 \x01(\x03R\x0binputTokens\x12#\n\routput_tokens\x18\x04 \x01(\x03R\x0coutputTokens\x12\x1d\n\ncharge_usd\x18\x05 \x01(\x01R\tchargeUsd\"o\n\x0b\x43hatMessage\x12\x12\n\x04role\x18\x01 \x01(\tR\x04role\x12\x12\n\x04text\x18\x02 \x01(\tR\x04text\x12\x38\n\x0b\x61ttachments\x18\x03 \x03(\x0b\x32\x16.tank.ai.v1.AttachmentR\x0b\x61ttachments\"\x83\x01\n\x0b\x43hatRequest\x12\x37\n\x08messages\x18\x01 \x03(\x0b\x32\x1b.tank.neural.v1.ChatMessageR\x08messages\x12\"\n\x0cinstructions\x18\x02 \x01(\tR\x0cinstructions\x12\x17\n\x07look_up\x18\x03 \x01(\x08R\x06lookUp\"\xa2\x01\n\x08\x43hatDone\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n\x0bstop_reason\x18\x02 \x01(\tR\nstopReason\x12!\n\x0cinput_tokens\x18\x03 \x01(\x05R\x0binputTokens\x12#\n\routput_tokens\x18\x04 \x01(\x05R\x0coutputTokens\x12\x1d\n\ncharge_usd\x18\x05 \x01(\x01R\tchargeUsd\"_\n\x0c\x43hatResponse\x12\x16\n\x05\x64\x65lta\x18\x01 \x01(\tH\x00R\x05\x64\x65lta\x12.\n\x04\x64one\x18\x02 \x01(\x0b\x32\x18.tank.neural.v1.ChatDoneH\x00R\x04\x64oneB\x07\n\x05\x65vent2\xd3\x03\n\x10NeuralKeyService\x12V\n\x0bListApiKeys\x12\".tank.neural.v1.ListApiKeysRequest\x1a#.tank.neural.v1.ListApiKeysResponse\x12Y\n\x0c\x43reateApiKey\x12#.tank.neural.v1.CreateApiKeyRequest\x1a$.tank.neural.v1.CreateApiKeyResponse\x12Y\n\x0cRevokeApiKey\x12#.tank.neural.v1.RevokeApiKeyRequest\x1a$.tank.neural.v1.RevokeApiKeyResponse\x12V\n\x0bGetApiUsage\x12\".tank.neural.v1.GetApiUsageRequest\x1a#.tank.neural.v1.GetApiUsageResponse\x12Y\n\x0cRevealApiKey\x12#.tank.neural.v1.RevealApiKeyRequest\x1a$.tank.neural.v1.RevealApiKeyResponse2T\n\rNeuralService\x12\x43\n\x04\x43hat\x12\x1b.tank.neural.v1.ChatRequest\x1a\x1c.tank.neural.v1.ChatResponse0\x01\x42\xd0\x01\n\x12\x63om.tank.neural.v1B\x0bNeuralProtoP\x01ZSgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/neural/v1;neuralv1\xa2\x02\x03TNX\xaa\x02\x0eTank.Neural.V1\xca\x02\x0eTank\\Neural\\V1\xe2\x02\x1aTank\\Neural\\V1\\GPBMetadata\xea\x02\x10Tank::Neural::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -43,27 +43,31 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_CREATEAPIKEYREQUEST']._serialized_start=446
   _globals['_CREATEAPIKEYREQUEST']._serialized_end=522
   _globals['_CREATEAPIKEYRESPONSE']._serialized_start=524
-  _globals['_CREATEAPIKEYRESPONSE']._serialized_end=612
-  _globals['_REVOKEAPIKEYREQUEST']._serialized_start=614
-  _globals['_REVOKEAPIKEYREQUEST']._serialized_end=693
-  _globals['_REVOKEAPIKEYRESPONSE']._serialized_start=695
-  _globals['_REVOKEAPIKEYRESPONSE']._serialized_end=717
-  _globals['_USAGEDAY']._serialized_start=720
-  _globals['_USAGEDAY']._serialized_end=902
-  _globals['_GETAPIUSAGEREQUEST']._serialized_start=904
-  _globals['_GETAPIUSAGEREQUEST']._serialized_end=959
-  _globals['_GETAPIUSAGERESPONSE']._serialized_start=962
-  _globals['_GETAPIUSAGERESPONSE']._serialized_end=1160
-  _globals['_CHATMESSAGE']._serialized_start=1162
-  _globals['_CHATMESSAGE']._serialized_end=1273
-  _globals['_CHATREQUEST']._serialized_start=1276
-  _globals['_CHATREQUEST']._serialized_end=1407
-  _globals['_CHATDONE']._serialized_start=1410
-  _globals['_CHATDONE']._serialized_end=1572
-  _globals['_CHATRESPONSE']._serialized_start=1574
-  _globals['_CHATRESPONSE']._serialized_end=1669
-  _globals['_NEURALKEYSERVICE']._serialized_start=1672
-  _globals['_NEURALKEYSERVICE']._serialized_end=2048
-  _globals['_NEURALSERVICE']._serialized_start=2050
-  _globals['_NEURALSERVICE']._serialized_end=2134
+  _globals['_CREATEAPIKEYRESPONSE']._serialized_end=641
+  _globals['_REVEALAPIKEYREQUEST']._serialized_start=643
+  _globals['_REVEALAPIKEYREQUEST']._serialized_end=693
+  _globals['_REVEALAPIKEYRESPONSE']._serialized_start=695
+  _globals['_REVEALAPIKEYRESPONSE']._serialized_end=741
+  _globals['_REVOKEAPIKEYREQUEST']._serialized_start=743
+  _globals['_REVOKEAPIKEYREQUEST']._serialized_end=822
+  _globals['_REVOKEAPIKEYRESPONSE']._serialized_start=824
+  _globals['_REVOKEAPIKEYRESPONSE']._serialized_end=846
+  _globals['_USAGEDAY']._serialized_start=849
+  _globals['_USAGEDAY']._serialized_end=1031
+  _globals['_GETAPIUSAGEREQUEST']._serialized_start=1033
+  _globals['_GETAPIUSAGEREQUEST']._serialized_end=1088
+  _globals['_GETAPIUSAGERESPONSE']._serialized_start=1091
+  _globals['_GETAPIUSAGERESPONSE']._serialized_end=1289
+  _globals['_CHATMESSAGE']._serialized_start=1291
+  _globals['_CHATMESSAGE']._serialized_end=1402
+  _globals['_CHATREQUEST']._serialized_start=1405
+  _globals['_CHATREQUEST']._serialized_end=1536
+  _globals['_CHATDONE']._serialized_start=1539
+  _globals['_CHATDONE']._serialized_end=1701
+  _globals['_CHATRESPONSE']._serialized_start=1703
+  _globals['_CHATRESPONSE']._serialized_end=1798
+  _globals['_NEURALKEYSERVICE']._serialized_start=1801
+  _globals['_NEURALKEYSERVICE']._serialized_end=2268
+  _globals['_NEURALSERVICE']._serialized_start=2270
+  _globals['_NEURALSERVICE']._serialized_end=2354
 # @@protoc_insertion_point(module_scope)

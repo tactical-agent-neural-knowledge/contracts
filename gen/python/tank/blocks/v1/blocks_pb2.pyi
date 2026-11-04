@@ -267,7 +267,7 @@ class CiStatus(_message.Message):
     def __init__(self, head_sha: _Optional[str] = ..., checks: _Optional[_Iterable[_Union[Check, _Mapping]]] = ..., pr_url: _Optional[str] = ..., pr_number: _Optional[int] = ...) -> None: ...
 
 class ApprovalPrompt(_message.Message):
-    __slots__ = ("gate_id", "kind", "subject", "approver_ids", "min_approvals", "expires_at", "decided", "decision", "guardrail_id", "guardrail_text", "blocker")
+    __slots__ = ("gate_id", "kind", "subject", "approver_ids", "min_approvals", "expires_at", "decided", "decision", "guardrail_id", "guardrail_text", "blocker", "approve_label", "reject_label", "detail")
     GATE_ID_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     SUBJECT_FIELD_NUMBER: _ClassVar[int]
@@ -279,6 +279,9 @@ class ApprovalPrompt(_message.Message):
     GUARDRAIL_ID_FIELD_NUMBER: _ClassVar[int]
     GUARDRAIL_TEXT_FIELD_NUMBER: _ClassVar[int]
     BLOCKER_FIELD_NUMBER: _ClassVar[int]
+    APPROVE_LABEL_FIELD_NUMBER: _ClassVar[int]
+    REJECT_LABEL_FIELD_NUMBER: _ClassVar[int]
+    DETAIL_FIELD_NUMBER: _ClassVar[int]
     gate_id: str
     kind: GateKind
     subject: str
@@ -290,7 +293,10 @@ class ApprovalPrompt(_message.Message):
     guardrail_id: str
     guardrail_text: str
     blocker: str
-    def __init__(self, gate_id: _Optional[str] = ..., kind: _Optional[_Union[GateKind, str]] = ..., subject: _Optional[str] = ..., approver_ids: _Optional[_Iterable[str]] = ..., min_approvals: _Optional[int] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., decided: bool = ..., decision: _Optional[str] = ..., guardrail_id: _Optional[str] = ..., guardrail_text: _Optional[str] = ..., blocker: _Optional[str] = ...) -> None: ...
+    approve_label: str
+    reject_label: str
+    detail: str
+    def __init__(self, gate_id: _Optional[str] = ..., kind: _Optional[_Union[GateKind, str]] = ..., subject: _Optional[str] = ..., approver_ids: _Optional[_Iterable[str]] = ..., min_approvals: _Optional[int] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., decided: bool = ..., decision: _Optional[str] = ..., guardrail_id: _Optional[str] = ..., guardrail_text: _Optional[str] = ..., blocker: _Optional[str] = ..., approve_label: _Optional[str] = ..., reject_label: _Optional[str] = ..., detail: _Optional[str] = ...) -> None: ...
 
 class ToolLogEntry(_message.Message):
     __slots__ = ("at", "tool", "summary", "ok")

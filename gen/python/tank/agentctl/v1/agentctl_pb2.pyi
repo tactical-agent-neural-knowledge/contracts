@@ -6,6 +6,7 @@ from tank.board.v1 import board_pb2 as _board_pb2
 from tank.books.v1 import books_pb2 as _books_pb2
 from tank.canvas.v1 import canvas_pb2 as _canvas_pb2
 from tank.guardrails.v1 import guardrails_pb2 as _guardrails_pb2
+from tank.neural.v1 import neural_pb2 as _neural_pb2
 from tank.social.v1 import social_pb2 as _social_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
@@ -1053,6 +1054,56 @@ class ReadCanvasRequest(_message.Message):
     CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
     canvas_id: str
     def __init__(self, canvas_id: _Optional[str] = ...) -> None: ...
+
+class ListApiKeysRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListApiKeysResponse(_message.Message):
+    __slots__ = ("keys",)
+    KEYS_FIELD_NUMBER: _ClassVar[int]
+    keys: _containers.RepeatedCompositeFieldContainer[_neural_pb2.ApiKey]
+    def __init__(self, keys: _Optional[_Iterable[_Union[_neural_pb2.ApiKey, _Mapping]]] = ...) -> None: ...
+
+class CreateApiKeyRequest(_message.Message):
+    __slots__ = ("name",)
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    def __init__(self, name: _Optional[str] = ...) -> None: ...
+
+class CreateApiKeyResponse(_message.Message):
+    __slots__ = ("key",)
+    KEY_FIELD_NUMBER: _ClassVar[int]
+    key: _neural_pb2.ApiKey
+    def __init__(self, key: _Optional[_Union[_neural_pb2.ApiKey, _Mapping]] = ...) -> None: ...
+
+class RevokeApiKeyRequest(_message.Message):
+    __slots__ = ("key_id", "name")
+    KEY_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    key_id: str
+    name: str
+    def __init__(self, key_id: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
+
+class RevokeApiKeyResponse(_message.Message):
+    __slots__ = ("gate_id", "key")
+    GATE_ID_FIELD_NUMBER: _ClassVar[int]
+    KEY_FIELD_NUMBER: _ClassVar[int]
+    gate_id: str
+    key: _neural_pb2.ApiKey
+    def __init__(self, gate_id: _Optional[str] = ..., key: _Optional[_Union[_neural_pb2.ApiKey, _Mapping]] = ...) -> None: ...
+
+class ApiUsageRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ApiUsageResponse(_message.Message):
+    __slots__ = ("usage", "keys")
+    USAGE_FIELD_NUMBER: _ClassVar[int]
+    KEYS_FIELD_NUMBER: _ClassVar[int]
+    usage: _neural_pb2.GetApiUsageResponse
+    keys: _containers.RepeatedCompositeFieldContainer[_neural_pb2.ApiKey]
+    def __init__(self, usage: _Optional[_Union[_neural_pb2.GetApiUsageResponse, _Mapping]] = ..., keys: _Optional[_Iterable[_Union[_neural_pb2.ApiKey, _Mapping]]] = ...) -> None: ...
 
 class WriteOnCanvasRequest(_message.Message):
     __slots__ = ("canvas_id", "markdown", "after_block_id")

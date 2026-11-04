@@ -37,8 +37,21 @@ message CreateApiKeyRequest {
 }
 message CreateApiKeyResponse {
   ApiKey key = 1;
-  // The key itself, returned this once and never again.
+  // The key itself, returned this once and never again. Empty when a run made the key.
   string secret = 2;
+  // Set instead of secret when the tank agent made the key for the person who asked: the
+  // secret is sealed for that person and copied by them, once, through RevealApiKey. It never
+  // passes through the agent (the Lockbox rule).
+  string reveal_id = 3;
+}
+
+// The key an agent made, for the person who asked for it: only that person, signed in, and
+// only once; a reveal expires after a day.
+message RevealApiKeyRequest {
+  string reveal_id = 1;
+}
+message RevealApiKeyResponse {
+  string secret = 1;
 }
 
 message RevokeApiKeyRequest {
@@ -69,12 +82,14 @@ message GetApiUsageResponse {
   double charge_usd = 5;
 }
 
-// Managing keys: a workspace's owners and admins, signed in.
+// Managing keys: a workspace's owners and admins, signed in, or a run of the tank agent whose
+// requester is one (checked at every call).
 service NeuralKeyService {
   rpc ListApiKeys(ListApiKeysRequest) returns (ListApiKeysResponse);
   rpc CreateApiKey(CreateApiKeyRequest) returns (CreateApiKeyResponse);
   rpc RevokeApiKey(RevokeApiKeyRequest) returns (RevokeApiKeyResponse);
   rpc GetApiUsage(GetApiUsageRequest) returns (GetApiUsageResponse);
+  rpc RevealApiKey(RevealApiKeyRequest) returns (RevealApiKeyResponse);
 }
 
 // One turn of a conversation the caller keeps.

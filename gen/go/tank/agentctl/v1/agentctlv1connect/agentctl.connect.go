@@ -155,6 +155,17 @@ const (
 	RunnerServiceWriteOnCanvasProcedure = "/tank.agentctl.v1.RunnerService/WriteOnCanvas"
 	// RunnerServiceAskCanvasProcedure is the fully-qualified name of the RunnerService's AskCanvas RPC.
 	RunnerServiceAskCanvasProcedure = "/tank.agentctl.v1.RunnerService/AskCanvas"
+	// RunnerServiceListApiKeysProcedure is the fully-qualified name of the RunnerService's ListApiKeys
+	// RPC.
+	RunnerServiceListApiKeysProcedure = "/tank.agentctl.v1.RunnerService/ListApiKeys"
+	// RunnerServiceCreateApiKeyProcedure is the fully-qualified name of the RunnerService's
+	// CreateApiKey RPC.
+	RunnerServiceCreateApiKeyProcedure = "/tank.agentctl.v1.RunnerService/CreateApiKey"
+	// RunnerServiceRevokeApiKeyProcedure is the fully-qualified name of the RunnerService's
+	// RevokeApiKey RPC.
+	RunnerServiceRevokeApiKeyProcedure = "/tank.agentctl.v1.RunnerService/RevokeApiKey"
+	// RunnerServiceApiUsageProcedure is the fully-qualified name of the RunnerService's ApiUsage RPC.
+	RunnerServiceApiUsageProcedure = "/tank.agentctl.v1.RunnerService/ApiUsage"
 	// RunnerServiceListBoardsProcedure is the fully-qualified name of the RunnerService's ListBoards
 	// RPC.
 	RunnerServiceListBoardsProcedure = "/tank.agentctl.v1.RunnerService/ListBoards"
@@ -395,6 +406,10 @@ type RunnerServiceClient interface {
 	ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error)
 	WriteOnCanvas(context.Context, *connect.Request[v1.WriteOnCanvasRequest]) (*connect.Response[v1.WriteOnCanvasResponse], error)
 	AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error)
+	ListApiKeys(context.Context, *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error)
+	CreateApiKey(context.Context, *connect.Request[v1.CreateApiKeyRequest]) (*connect.Response[v1.CreateApiKeyResponse], error)
+	RevokeApiKey(context.Context, *connect.Request[v1.RevokeApiKeyRequest]) (*connect.Response[v1.RevokeApiKeyResponse], error)
+	ApiUsage(context.Context, *connect.Request[v1.ApiUsageRequest]) (*connect.Response[v1.ApiUsageResponse], error)
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
 	ReadBoard(context.Context, *connect.Request[v1.ReadBoardRequest]) (*connect.Response[v1.ReadBoardResponse], error)
 	DrawOnBoard(context.Context, *connect.Request[v1.DrawOnBoardRequest]) (*connect.Response[v1.DrawOnBoardResponse], error)
@@ -680,6 +695,30 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("AskCanvas")),
 			connect.WithClientOptions(opts...),
 		),
+		listApiKeys: connect.NewClient[v1.ListApiKeysRequest, v1.ListApiKeysResponse](
+			httpClient,
+			baseURL+RunnerServiceListApiKeysProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ListApiKeys")),
+			connect.WithClientOptions(opts...),
+		),
+		createApiKey: connect.NewClient[v1.CreateApiKeyRequest, v1.CreateApiKeyResponse](
+			httpClient,
+			baseURL+RunnerServiceCreateApiKeyProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("CreateApiKey")),
+			connect.WithClientOptions(opts...),
+		),
+		revokeApiKey: connect.NewClient[v1.RevokeApiKeyRequest, v1.RevokeApiKeyResponse](
+			httpClient,
+			baseURL+RunnerServiceRevokeApiKeyProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("RevokeApiKey")),
+			connect.WithClientOptions(opts...),
+		),
+		apiUsage: connect.NewClient[v1.ApiUsageRequest, v1.ApiUsageResponse](
+			httpClient,
+			baseURL+RunnerServiceApiUsageProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ApiUsage")),
+			connect.WithClientOptions(opts...),
+		),
 		listBoards: connect.NewClient[v1.ListBoardsRequest, v1.ListBoardsResponse](
 			httpClient,
 			baseURL+RunnerServiceListBoardsProcedure,
@@ -835,6 +874,10 @@ type runnerServiceClient struct {
 	readCanvas               *connect.Client[v1.ReadCanvasRequest, v1.ReadCanvasResponse]
 	writeOnCanvas            *connect.Client[v1.WriteOnCanvasRequest, v1.WriteOnCanvasResponse]
 	askCanvas                *connect.Client[v1.AskCanvasRequest, v1.AskCanvasResponse]
+	listApiKeys              *connect.Client[v1.ListApiKeysRequest, v1.ListApiKeysResponse]
+	createApiKey             *connect.Client[v1.CreateApiKeyRequest, v1.CreateApiKeyResponse]
+	revokeApiKey             *connect.Client[v1.RevokeApiKeyRequest, v1.RevokeApiKeyResponse]
+	apiUsage                 *connect.Client[v1.ApiUsageRequest, v1.ApiUsageResponse]
 	listBoards               *connect.Client[v1.ListBoardsRequest, v1.ListBoardsResponse]
 	readBoard                *connect.Client[v1.ReadBoardRequest, v1.ReadBoardResponse]
 	drawOnBoard              *connect.Client[v1.DrawOnBoardRequest, v1.DrawOnBoardResponse]
@@ -1065,6 +1108,26 @@ func (c *runnerServiceClient) AskCanvas(ctx context.Context, req *connect.Reques
 	return c.askCanvas.CallUnary(ctx, req)
 }
 
+// ListApiKeys calls tank.agentctl.v1.RunnerService.ListApiKeys.
+func (c *runnerServiceClient) ListApiKeys(ctx context.Context, req *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error) {
+	return c.listApiKeys.CallUnary(ctx, req)
+}
+
+// CreateApiKey calls tank.agentctl.v1.RunnerService.CreateApiKey.
+func (c *runnerServiceClient) CreateApiKey(ctx context.Context, req *connect.Request[v1.CreateApiKeyRequest]) (*connect.Response[v1.CreateApiKeyResponse], error) {
+	return c.createApiKey.CallUnary(ctx, req)
+}
+
+// RevokeApiKey calls tank.agentctl.v1.RunnerService.RevokeApiKey.
+func (c *runnerServiceClient) RevokeApiKey(ctx context.Context, req *connect.Request[v1.RevokeApiKeyRequest]) (*connect.Response[v1.RevokeApiKeyResponse], error) {
+	return c.revokeApiKey.CallUnary(ctx, req)
+}
+
+// ApiUsage calls tank.agentctl.v1.RunnerService.ApiUsage.
+func (c *runnerServiceClient) ApiUsage(ctx context.Context, req *connect.Request[v1.ApiUsageRequest]) (*connect.Response[v1.ApiUsageResponse], error) {
+	return c.apiUsage.CallUnary(ctx, req)
+}
+
 // ListBoards calls tank.agentctl.v1.RunnerService.ListBoards.
 func (c *runnerServiceClient) ListBoards(ctx context.Context, req *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error) {
 	return c.listBoards.CallUnary(ctx, req)
@@ -1209,6 +1272,10 @@ type RunnerServiceHandler interface {
 	ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error)
 	WriteOnCanvas(context.Context, *connect.Request[v1.WriteOnCanvasRequest]) (*connect.Response[v1.WriteOnCanvasResponse], error)
 	AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error)
+	ListApiKeys(context.Context, *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error)
+	CreateApiKey(context.Context, *connect.Request[v1.CreateApiKeyRequest]) (*connect.Response[v1.CreateApiKeyResponse], error)
+	RevokeApiKey(context.Context, *connect.Request[v1.RevokeApiKeyRequest]) (*connect.Response[v1.RevokeApiKeyResponse], error)
+	ApiUsage(context.Context, *connect.Request[v1.ApiUsageRequest]) (*connect.Response[v1.ApiUsageResponse], error)
 	ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error)
 	ReadBoard(context.Context, *connect.Request[v1.ReadBoardRequest]) (*connect.Response[v1.ReadBoardResponse], error)
 	DrawOnBoard(context.Context, *connect.Request[v1.DrawOnBoardRequest]) (*connect.Response[v1.DrawOnBoardResponse], error)
@@ -1490,6 +1557,30 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("AskCanvas")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceListApiKeysHandler := connect.NewUnaryHandler(
+		RunnerServiceListApiKeysProcedure,
+		svc.ListApiKeys,
+		connect.WithSchema(runnerServiceMethods.ByName("ListApiKeys")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceCreateApiKeyHandler := connect.NewUnaryHandler(
+		RunnerServiceCreateApiKeyProcedure,
+		svc.CreateApiKey,
+		connect.WithSchema(runnerServiceMethods.ByName("CreateApiKey")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceRevokeApiKeyHandler := connect.NewUnaryHandler(
+		RunnerServiceRevokeApiKeyProcedure,
+		svc.RevokeApiKey,
+		connect.WithSchema(runnerServiceMethods.ByName("RevokeApiKey")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceApiUsageHandler := connect.NewUnaryHandler(
+		RunnerServiceApiUsageProcedure,
+		svc.ApiUsage,
+		connect.WithSchema(runnerServiceMethods.ByName("ApiUsage")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServiceListBoardsHandler := connect.NewUnaryHandler(
 		RunnerServiceListBoardsProcedure,
 		svc.ListBoards,
@@ -1684,6 +1775,14 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceWriteOnCanvasHandler.ServeHTTP(w, r)
 		case RunnerServiceAskCanvasProcedure:
 			runnerServiceAskCanvasHandler.ServeHTTP(w, r)
+		case RunnerServiceListApiKeysProcedure:
+			runnerServiceListApiKeysHandler.ServeHTTP(w, r)
+		case RunnerServiceCreateApiKeyProcedure:
+			runnerServiceCreateApiKeyHandler.ServeHTTP(w, r)
+		case RunnerServiceRevokeApiKeyProcedure:
+			runnerServiceRevokeApiKeyHandler.ServeHTTP(w, r)
+		case RunnerServiceApiUsageProcedure:
+			runnerServiceApiUsageHandler.ServeHTTP(w, r)
 		case RunnerServiceListBoardsProcedure:
 			runnerServiceListBoardsHandler.ServeHTTP(w, r)
 		case RunnerServiceReadBoardProcedure:
@@ -1895,6 +1994,22 @@ func (UnimplementedRunnerServiceHandler) WriteOnCanvas(context.Context, *connect
 
 func (UnimplementedRunnerServiceHandler) AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.AskCanvas is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ListApiKeys(context.Context, *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ListApiKeys is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) CreateApiKey(context.Context, *connect.Request[v1.CreateApiKeyRequest]) (*connect.Response[v1.CreateApiKeyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.CreateApiKey is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) RevokeApiKey(context.Context, *connect.Request[v1.RevokeApiKeyRequest]) (*connect.Response[v1.RevokeApiKeyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.RevokeApiKey is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ApiUsage(context.Context, *connect.Request[v1.ApiUsageRequest]) (*connect.Response[v1.ApiUsageResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ApiUsage is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) ListBoards(context.Context, *connect.Request[v1.ListBoardsRequest]) (*connect.Response[v1.ListBoardsResponse], error) {
