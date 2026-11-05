@@ -153,6 +153,20 @@ class ListFilesResponse(_message.Message):
     next_cursor: str
     def __init__(self, files: _Optional[_Iterable[_Union[File, _Mapping]]] = ..., next_cursor: _Optional[str] = ...) -> None: ...
 
+class OpenPreviewLinkRequest(_message.Message):
+    __slots__ = ("url",)
+    URL_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    def __init__(self, url: _Optional[str] = ...) -> None: ...
+
+class OpenPreviewLinkResponse(_message.Message):
+    __slots__ = ("url", "expires_at")
+    URL_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    expires_at: _timestamp_pb2.Timestamp
+    def __init__(self, url: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
 class DeleteFileRequest(_message.Message):
     __slots__ = ("file_id",)
     FILE_ID_FIELD_NUMBER: _ClassVar[int]

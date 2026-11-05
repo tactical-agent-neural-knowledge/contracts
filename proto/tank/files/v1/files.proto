@@ -103,6 +103,21 @@ service FilesService {
   // carried it. The uploader may, and so may a workspace admin — a file
   // someone else attached is still the workspace's to take down.
   rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse);
+  // Open an address on TANK's preview domain that somebody pasted or copied: a page sent
+  // in TANK or a branch preview TANK built. The address carries no pass, so the edge sends
+  // the viewer here (2026-11-05); the caller gets the same address with a fresh pass when
+  // they may see what it shows, and NotFound otherwise, so hosts cannot be probed.
+  rpc OpenPreviewLink(OpenPreviewLinkRequest) returns (OpenPreviewLinkResponse);
+}
+
+message OpenPreviewLinkRequest {
+  // The whole address, https://<host>.<preview domain>/<path>?<query>.
+  string url = 1;
+}
+message OpenPreviewLinkResponse {
+  // The address to open: the host's pass door, which keeps the pass and redirects to the path.
+  string url = 1;
+  google.protobuf.Timestamp expires_at = 2;
 }
 
 message DeleteFileRequest {
