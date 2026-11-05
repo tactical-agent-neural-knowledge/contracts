@@ -48,6 +48,9 @@ const (
 	FilesServiceListFilesProcedure = "/tank.files.v1.FilesService/ListFiles"
 	// FilesServiceDeleteFileProcedure is the fully-qualified name of the FilesService's DeleteFile RPC.
 	FilesServiceDeleteFileProcedure = "/tank.files.v1.FilesService/DeleteFile"
+	// FilesServiceOpenPreviewLinkProcedure is the fully-qualified name of the FilesService's
+	// OpenPreviewLink RPC.
+	FilesServiceOpenPreviewLinkProcedure = "/tank.files.v1.FilesService/OpenPreviewLink"
 )
 
 // FilesServiceClient is a client for the tank.files.v1.FilesService service.
@@ -61,6 +64,11 @@ type FilesServiceClient interface {
 	// carried it. The uploader may, and so may a workspace admin — a file
 	// someone else attached is still the workspace's to take down.
 	DeleteFile(context.Context, *connect.Request[v1.DeleteFileRequest]) (*connect.Response[v1.DeleteFileResponse], error)
+	// Open an address on TANK's preview domain that somebody pasted or copied: a page sent
+	// in TANK or a branch preview TANK built. The address carries no pass, so the edge sends
+	// the viewer here (2026-11-05); the caller gets the same address with a fresh pass when
+	// they may see what it shows, and NotFound otherwise, so hosts cannot be probed.
+	OpenPreviewLink(context.Context, *connect.Request[v1.OpenPreviewLinkRequest]) (*connect.Response[v1.OpenPreviewLinkResponse], error)
 }
 
 // NewFilesServiceClient constructs a client for the tank.files.v1.FilesService service. By default,
@@ -110,17 +118,24 @@ func NewFilesServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(filesServiceMethods.ByName("DeleteFile")),
 			connect.WithClientOptions(opts...),
 		),
+		openPreviewLink: connect.NewClient[v1.OpenPreviewLinkRequest, v1.OpenPreviewLinkResponse](
+			httpClient,
+			baseURL+FilesServiceOpenPreviewLinkProcedure,
+			connect.WithSchema(filesServiceMethods.ByName("OpenPreviewLink")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // filesServiceClient implements FilesServiceClient.
 type filesServiceClient struct {
-	createUpload   *connect.Client[v1.CreateUploadRequest, v1.CreateUploadResponse]
-	completeUpload *connect.Client[v1.CompleteUploadRequest, v1.CompleteUploadResponse]
-	getDownloadUrl *connect.Client[v1.GetDownloadUrlRequest, v1.GetDownloadUrlResponse]
-	getFile        *connect.Client[v1.GetFileRequest, v1.GetFileResponse]
-	listFiles      *connect.Client[v1.ListFilesRequest, v1.ListFilesResponse]
-	deleteFile     *connect.Client[v1.DeleteFileRequest, v1.DeleteFileResponse]
+	createUpload    *connect.Client[v1.CreateUploadRequest, v1.CreateUploadResponse]
+	completeUpload  *connect.Client[v1.CompleteUploadRequest, v1.CompleteUploadResponse]
+	getDownloadUrl  *connect.Client[v1.GetDownloadUrlRequest, v1.GetDownloadUrlResponse]
+	getFile         *connect.Client[v1.GetFileRequest, v1.GetFileResponse]
+	listFiles       *connect.Client[v1.ListFilesRequest, v1.ListFilesResponse]
+	deleteFile      *connect.Client[v1.DeleteFileRequest, v1.DeleteFileResponse]
+	openPreviewLink *connect.Client[v1.OpenPreviewLinkRequest, v1.OpenPreviewLinkResponse]
 }
 
 // CreateUpload calls tank.files.v1.FilesService.CreateUpload.
@@ -153,6 +168,11 @@ func (c *filesServiceClient) DeleteFile(ctx context.Context, req *connect.Reques
 	return c.deleteFile.CallUnary(ctx, req)
 }
 
+// OpenPreviewLink calls tank.files.v1.FilesService.OpenPreviewLink.
+func (c *filesServiceClient) OpenPreviewLink(ctx context.Context, req *connect.Request[v1.OpenPreviewLinkRequest]) (*connect.Response[v1.OpenPreviewLinkResponse], error) {
+	return c.openPreviewLink.CallUnary(ctx, req)
+}
+
 // FilesServiceHandler is an implementation of the tank.files.v1.FilesService service.
 type FilesServiceHandler interface {
 	CreateUpload(context.Context, *connect.Request[v1.CreateUploadRequest]) (*connect.Response[v1.CreateUploadResponse], error)
@@ -164,6 +184,11 @@ type FilesServiceHandler interface {
 	// carried it. The uploader may, and so may a workspace admin — a file
 	// someone else attached is still the workspace's to take down.
 	DeleteFile(context.Context, *connect.Request[v1.DeleteFileRequest]) (*connect.Response[v1.DeleteFileResponse], error)
+	// Open an address on TANK's preview domain that somebody pasted or copied: a page sent
+	// in TANK or a branch preview TANK built. The address carries no pass, so the edge sends
+	// the viewer here (2026-11-05); the caller gets the same address with a fresh pass when
+	// they may see what it shows, and NotFound otherwise, so hosts cannot be probed.
+	OpenPreviewLink(context.Context, *connect.Request[v1.OpenPreviewLinkRequest]) (*connect.Response[v1.OpenPreviewLinkResponse], error)
 }
 
 // NewFilesServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -209,6 +234,12 @@ func NewFilesServiceHandler(svc FilesServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(filesServiceMethods.ByName("DeleteFile")),
 		connect.WithHandlerOptions(opts...),
 	)
+	filesServiceOpenPreviewLinkHandler := connect.NewUnaryHandler(
+		FilesServiceOpenPreviewLinkProcedure,
+		svc.OpenPreviewLink,
+		connect.WithSchema(filesServiceMethods.ByName("OpenPreviewLink")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.files.v1.FilesService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case FilesServiceCreateUploadProcedure:
@@ -223,6 +254,8 @@ func NewFilesServiceHandler(svc FilesServiceHandler, opts ...connect.HandlerOpti
 			filesServiceListFilesHandler.ServeHTTP(w, r)
 		case FilesServiceDeleteFileProcedure:
 			filesServiceDeleteFileHandler.ServeHTTP(w, r)
+		case FilesServiceOpenPreviewLinkProcedure:
+			filesServiceOpenPreviewLinkHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -254,4 +287,8 @@ func (UnimplementedFilesServiceHandler) ListFiles(context.Context, *connect.Requ
 
 func (UnimplementedFilesServiceHandler) DeleteFile(context.Context, *connect.Request[v1.DeleteFileRequest]) (*connect.Response[v1.DeleteFileResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.files.v1.FilesService.DeleteFile is not implemented"))
+}
+
+func (UnimplementedFilesServiceHandler) OpenPreviewLink(context.Context, *connect.Request[v1.OpenPreviewLinkRequest]) (*connect.Response[v1.OpenPreviewLinkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.files.v1.FilesService.OpenPreviewLink is not implemented"))
 }
