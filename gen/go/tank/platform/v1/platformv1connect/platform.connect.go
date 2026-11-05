@@ -79,6 +79,18 @@ const (
 	// PlatformServiceGetNeuralProcedure is the fully-qualified name of the PlatformService's GetNeural
 	// RPC.
 	PlatformServiceGetNeuralProcedure = "/tank.platform.v1.PlatformService/GetNeural"
+	// PlatformServiceSetWorkspacePlanProcedure is the fully-qualified name of the PlatformService's
+	// SetWorkspacePlan RPC.
+	PlatformServiceSetWorkspacePlanProcedure = "/tank.platform.v1.PlatformService/SetWorkspacePlan"
+	// PlatformServiceSetWorkspaceAddonProcedure is the fully-qualified name of the PlatformService's
+	// SetWorkspaceAddon RPC.
+	PlatformServiceSetWorkspaceAddonProcedure = "/tank.platform.v1.PlatformService/SetWorkspaceAddon"
+	// PlatformServiceSuspendWorkspaceProcedure is the fully-qualified name of the PlatformService's
+	// SuspendWorkspace RPC.
+	PlatformServiceSuspendWorkspaceProcedure = "/tank.platform.v1.PlatformService/SuspendWorkspace"
+	// PlatformServiceSuspendUserProcedure is the fully-qualified name of the PlatformService's
+	// SuspendUser RPC.
+	PlatformServiceSuspendUserProcedure = "/tank.platform.v1.PlatformService/SuspendUser"
 )
 
 // PlatformServiceClient is a client for the tank.platform.v1.PlatformService service.
@@ -99,6 +111,10 @@ type PlatformServiceClient interface {
 	AddSuperAdmin(context.Context, *connect.Request[v1.AddSuperAdminRequest]) (*connect.Response[v1.AddSuperAdminResponse], error)
 	RemoveSuperAdmin(context.Context, *connect.Request[v1.RemoveSuperAdminRequest]) (*connect.Response[v1.RemoveSuperAdminResponse], error)
 	GetNeural(context.Context, *connect.Request[v1.GetNeuralRequest]) (*connect.Response[v1.GetNeuralResponse], error)
+	SetWorkspacePlan(context.Context, *connect.Request[v1.SetWorkspacePlanRequest]) (*connect.Response[v1.SetWorkspacePlanResponse], error)
+	SetWorkspaceAddon(context.Context, *connect.Request[v1.SetWorkspaceAddonRequest]) (*connect.Response[v1.SetWorkspaceAddonResponse], error)
+	SuspendWorkspace(context.Context, *connect.Request[v1.SuspendWorkspaceRequest]) (*connect.Response[v1.SuspendWorkspaceResponse], error)
+	SuspendUser(context.Context, *connect.Request[v1.SuspendUserRequest]) (*connect.Response[v1.SuspendUserResponse], error)
 }
 
 // NewPlatformServiceClient constructs a client for the tank.platform.v1.PlatformService service. By
@@ -208,6 +224,30 @@ func NewPlatformServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(platformServiceMethods.ByName("GetNeural")),
 			connect.WithClientOptions(opts...),
 		),
+		setWorkspacePlan: connect.NewClient[v1.SetWorkspacePlanRequest, v1.SetWorkspacePlanResponse](
+			httpClient,
+			baseURL+PlatformServiceSetWorkspacePlanProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("SetWorkspacePlan")),
+			connect.WithClientOptions(opts...),
+		),
+		setWorkspaceAddon: connect.NewClient[v1.SetWorkspaceAddonRequest, v1.SetWorkspaceAddonResponse](
+			httpClient,
+			baseURL+PlatformServiceSetWorkspaceAddonProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("SetWorkspaceAddon")),
+			connect.WithClientOptions(opts...),
+		),
+		suspendWorkspace: connect.NewClient[v1.SuspendWorkspaceRequest, v1.SuspendWorkspaceResponse](
+			httpClient,
+			baseURL+PlatformServiceSuspendWorkspaceProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("SuspendWorkspace")),
+			connect.WithClientOptions(opts...),
+		),
+		suspendUser: connect.NewClient[v1.SuspendUserRequest, v1.SuspendUserResponse](
+			httpClient,
+			baseURL+PlatformServiceSuspendUserProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("SuspendUser")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -229,6 +269,10 @@ type platformServiceClient struct {
 	addSuperAdmin      *connect.Client[v1.AddSuperAdminRequest, v1.AddSuperAdminResponse]
 	removeSuperAdmin   *connect.Client[v1.RemoveSuperAdminRequest, v1.RemoveSuperAdminResponse]
 	getNeural          *connect.Client[v1.GetNeuralRequest, v1.GetNeuralResponse]
+	setWorkspacePlan   *connect.Client[v1.SetWorkspacePlanRequest, v1.SetWorkspacePlanResponse]
+	setWorkspaceAddon  *connect.Client[v1.SetWorkspaceAddonRequest, v1.SetWorkspaceAddonResponse]
+	suspendWorkspace   *connect.Client[v1.SuspendWorkspaceRequest, v1.SuspendWorkspaceResponse]
+	suspendUser        *connect.Client[v1.SuspendUserRequest, v1.SuspendUserResponse]
 }
 
 // ListAgentures calls tank.platform.v1.PlatformService.ListAgentures.
@@ -311,6 +355,26 @@ func (c *platformServiceClient) GetNeural(ctx context.Context, req *connect.Requ
 	return c.getNeural.CallUnary(ctx, req)
 }
 
+// SetWorkspacePlan calls tank.platform.v1.PlatformService.SetWorkspacePlan.
+func (c *platformServiceClient) SetWorkspacePlan(ctx context.Context, req *connect.Request[v1.SetWorkspacePlanRequest]) (*connect.Response[v1.SetWorkspacePlanResponse], error) {
+	return c.setWorkspacePlan.CallUnary(ctx, req)
+}
+
+// SetWorkspaceAddon calls tank.platform.v1.PlatformService.SetWorkspaceAddon.
+func (c *platformServiceClient) SetWorkspaceAddon(ctx context.Context, req *connect.Request[v1.SetWorkspaceAddonRequest]) (*connect.Response[v1.SetWorkspaceAddonResponse], error) {
+	return c.setWorkspaceAddon.CallUnary(ctx, req)
+}
+
+// SuspendWorkspace calls tank.platform.v1.PlatformService.SuspendWorkspace.
+func (c *platformServiceClient) SuspendWorkspace(ctx context.Context, req *connect.Request[v1.SuspendWorkspaceRequest]) (*connect.Response[v1.SuspendWorkspaceResponse], error) {
+	return c.suspendWorkspace.CallUnary(ctx, req)
+}
+
+// SuspendUser calls tank.platform.v1.PlatformService.SuspendUser.
+func (c *platformServiceClient) SuspendUser(ctx context.Context, req *connect.Request[v1.SuspendUserRequest]) (*connect.Response[v1.SuspendUserResponse], error) {
+	return c.suspendUser.CallUnary(ctx, req)
+}
+
 // PlatformServiceHandler is an implementation of the tank.platform.v1.PlatformService service.
 type PlatformServiceHandler interface {
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
@@ -329,6 +393,10 @@ type PlatformServiceHandler interface {
 	AddSuperAdmin(context.Context, *connect.Request[v1.AddSuperAdminRequest]) (*connect.Response[v1.AddSuperAdminResponse], error)
 	RemoveSuperAdmin(context.Context, *connect.Request[v1.RemoveSuperAdminRequest]) (*connect.Response[v1.RemoveSuperAdminResponse], error)
 	GetNeural(context.Context, *connect.Request[v1.GetNeuralRequest]) (*connect.Response[v1.GetNeuralResponse], error)
+	SetWorkspacePlan(context.Context, *connect.Request[v1.SetWorkspacePlanRequest]) (*connect.Response[v1.SetWorkspacePlanResponse], error)
+	SetWorkspaceAddon(context.Context, *connect.Request[v1.SetWorkspaceAddonRequest]) (*connect.Response[v1.SetWorkspaceAddonResponse], error)
+	SuspendWorkspace(context.Context, *connect.Request[v1.SuspendWorkspaceRequest]) (*connect.Response[v1.SuspendWorkspaceResponse], error)
+	SuspendUser(context.Context, *connect.Request[v1.SuspendUserRequest]) (*connect.Response[v1.SuspendUserResponse], error)
 }
 
 // NewPlatformServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -434,6 +502,30 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 		connect.WithSchema(platformServiceMethods.ByName("GetNeural")),
 		connect.WithHandlerOptions(opts...),
 	)
+	platformServiceSetWorkspacePlanHandler := connect.NewUnaryHandler(
+		PlatformServiceSetWorkspacePlanProcedure,
+		svc.SetWorkspacePlan,
+		connect.WithSchema(platformServiceMethods.ByName("SetWorkspacePlan")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceSetWorkspaceAddonHandler := connect.NewUnaryHandler(
+		PlatformServiceSetWorkspaceAddonProcedure,
+		svc.SetWorkspaceAddon,
+		connect.WithSchema(platformServiceMethods.ByName("SetWorkspaceAddon")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceSuspendWorkspaceHandler := connect.NewUnaryHandler(
+		PlatformServiceSuspendWorkspaceProcedure,
+		svc.SuspendWorkspace,
+		connect.WithSchema(platformServiceMethods.ByName("SuspendWorkspace")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceSuspendUserHandler := connect.NewUnaryHandler(
+		PlatformServiceSuspendUserProcedure,
+		svc.SuspendUser,
+		connect.WithSchema(platformServiceMethods.ByName("SuspendUser")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.platform.v1.PlatformService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PlatformServiceListAgenturesProcedure:
@@ -468,6 +560,14 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 			platformServiceRemoveSuperAdminHandler.ServeHTTP(w, r)
 		case PlatformServiceGetNeuralProcedure:
 			platformServiceGetNeuralHandler.ServeHTTP(w, r)
+		case PlatformServiceSetWorkspacePlanProcedure:
+			platformServiceSetWorkspacePlanHandler.ServeHTTP(w, r)
+		case PlatformServiceSetWorkspaceAddonProcedure:
+			platformServiceSetWorkspaceAddonHandler.ServeHTTP(w, r)
+		case PlatformServiceSuspendWorkspaceProcedure:
+			platformServiceSuspendWorkspaceHandler.ServeHTTP(w, r)
+		case PlatformServiceSuspendUserProcedure:
+			platformServiceSuspendUserHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -539,4 +639,20 @@ func (UnimplementedPlatformServiceHandler) RemoveSuperAdmin(context.Context, *co
 
 func (UnimplementedPlatformServiceHandler) GetNeural(context.Context, *connect.Request[v1.GetNeuralRequest]) (*connect.Response[v1.GetNeuralResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.GetNeural is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) SetWorkspacePlan(context.Context, *connect.Request[v1.SetWorkspacePlanRequest]) (*connect.Response[v1.SetWorkspacePlanResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.SetWorkspacePlan is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) SetWorkspaceAddon(context.Context, *connect.Request[v1.SetWorkspaceAddonRequest]) (*connect.Response[v1.SetWorkspaceAddonResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.SetWorkspaceAddon is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) SuspendWorkspace(context.Context, *connect.Request[v1.SuspendWorkspaceRequest]) (*connect.Response[v1.SuspendWorkspaceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.SuspendWorkspace is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) SuspendUser(context.Context, *connect.Request[v1.SuspendUserRequest]) (*connect.Response[v1.SuspendUserResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.SuspendUser is not implemented"))
 }

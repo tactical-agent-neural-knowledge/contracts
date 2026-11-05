@@ -174,6 +174,8 @@ message UserRow {
   google.protobuf.Timestamp last_active_at = 7;// latest across the workspaces they are in
   int32 workspaces = 8;
   bool super_admin = 9;
+  google.protobuf.Timestamp suspended_at = 10; // unset when the account is not suspended
+  string suspended_reason = 11;
 }
 
 message SearchUsersRequest {
@@ -232,6 +234,8 @@ message WorkspaceRow {
   int32 agent_runs_30d = 11;
   double agent_cost_usd_30d = 12;              // what its agents cost us
   int64 agent_billed_cents_month = 13;         // what it is charged this month
+  google.protobuf.Timestamp suspended_at = 14; // unset when the workspace is not suspended
+  string suspended_reason = 15;
 }
 
 message SearchWorkspacesRequest {
@@ -500,6 +504,47 @@ message GetNeuralResponse {
   repeated NeuralDay days = 9;                 // the last 30, oldest first
 }
 
+// ---------------------------------------------------------------- Actions
+//
+// What a super admin may change from the console (Robby, 2026-11-05). Each change is
+// written to the audit log in the same transaction: a workspace change to that
+// workspace's own log, a person's suspension to every workspace they are in. The
+// console reads the result back with GetWorkspace or GetUser.
+
+// SetWorkspacePlan moves a workspace between free and premium. Premium provisions its
+// agent. Nothing is charged or refunded: Stripe and the App Store are not touched.
+message SetWorkspacePlanRequest {
+  string workspace_id = 1;
+  string plan = 2;                             // free | premium
+}
+message SetWorkspacePlanResponse {}
+
+// SetWorkspaceAddon turns one add-on on or off.
+message SetWorkspaceAddonRequest {
+  string workspace_id = 1;
+  string addon = 2;                            // shield | books | blueprint | atlas | neuron | agentops
+  bool on = 3;
+}
+message SetWorkspaceAddonResponse {}
+
+// SuspendWorkspace stops everyone using a workspace, its agents included, until it is
+// unsuspended. Nothing in it is changed or deleted.
+message SuspendWorkspaceRequest {
+  string workspace_id = 1;
+  bool suspended = 2;                          // false unsuspends
+  string reason = 3;                           // kept with the suspension and in the audit log
+}
+message SuspendWorkspaceResponse {}
+
+// SuspendUser signs a person out everywhere and refuses them across the platform until
+// they are unsuspended. Their memberships, messages and keys are kept.
+message SuspendUserRequest {
+  string user_id = 1;
+  bool suspended = 2;
+  string reason = 3;
+}
+message SuspendUserResponse {}
+
 service PlatformService {
   rpc ListAgentures(ListAgenturesRequest) returns (ListAgenturesResponse);
   rpc SetAllocation(SetAllocationRequest) returns (SetAllocationResponse);
@@ -519,4 +564,9 @@ service PlatformService {
   rpc RemoveSuperAdmin(RemoveSuperAdminRequest) returns (RemoveSuperAdminResponse);
 
   rpc GetNeural(GetNeuralRequest) returns (GetNeuralResponse);
+
+  rpc SetWorkspacePlan(SetWorkspacePlanRequest) returns (SetWorkspacePlanResponse);
+  rpc SetWorkspaceAddon(SetWorkspaceAddonRequest) returns (SetWorkspaceAddonResponse);
+  rpc SuspendWorkspace(SuspendWorkspaceRequest) returns (SuspendWorkspaceResponse);
+  rpc SuspendUser(SuspendUserRequest) returns (SuspendUserResponse);
 }

@@ -237,7 +237,7 @@ class ListDropCandidatesResponse(_message.Message):
     def __init__(self, candidates: _Optional[_Iterable[_Union[DropCandidate, _Mapping]]] = ..., day: _Optional[str] = ...) -> None: ...
 
 class UserRow(_message.Message):
-    __slots__ = ("id", "display_name", "email", "kind", "created_at", "last_login_at", "last_active_at", "workspaces", "super_admin")
+    __slots__ = ("id", "display_name", "email", "kind", "created_at", "last_login_at", "last_active_at", "workspaces", "super_admin", "suspended_at", "suspended_reason")
     ID_FIELD_NUMBER: _ClassVar[int]
     DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
     EMAIL_FIELD_NUMBER: _ClassVar[int]
@@ -247,6 +247,8 @@ class UserRow(_message.Message):
     LAST_ACTIVE_AT_FIELD_NUMBER: _ClassVar[int]
     WORKSPACES_FIELD_NUMBER: _ClassVar[int]
     SUPER_ADMIN_FIELD_NUMBER: _ClassVar[int]
+    SUSPENDED_AT_FIELD_NUMBER: _ClassVar[int]
+    SUSPENDED_REASON_FIELD_NUMBER: _ClassVar[int]
     id: str
     display_name: str
     email: str
@@ -256,7 +258,9 @@ class UserRow(_message.Message):
     last_active_at: _timestamp_pb2.Timestamp
     workspaces: int
     super_admin: bool
-    def __init__(self, id: _Optional[str] = ..., display_name: _Optional[str] = ..., email: _Optional[str] = ..., kind: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_login_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_active_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., workspaces: _Optional[int] = ..., super_admin: bool = ...) -> None: ...
+    suspended_at: _timestamp_pb2.Timestamp
+    suspended_reason: str
+    def __init__(self, id: _Optional[str] = ..., display_name: _Optional[str] = ..., email: _Optional[str] = ..., kind: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_login_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_active_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., workspaces: _Optional[int] = ..., super_admin: bool = ..., suspended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., suspended_reason: _Optional[str] = ...) -> None: ...
 
 class SearchUsersRequest(_message.Message):
     __slots__ = ("query", "limit", "offset", "include_machines", "sort")
@@ -329,7 +333,7 @@ class GetUserResponse(_message.Message):
     def __init__(self, user: _Optional[_Union[UserRow, _Mapping]] = ..., memberships: _Optional[_Iterable[_Union[Membership, _Mapping]]] = ..., logins: _Optional[_Iterable[_Union[LoginRow, _Mapping]]] = ...) -> None: ...
 
 class WorkspaceRow(_message.Message):
-    __slots__ = ("id", "slug", "name", "kind", "plan", "addons", "people", "created_at", "last_active_at", "owner_email", "agent_runs_30d", "agent_cost_usd_30d", "agent_billed_cents_month")
+    __slots__ = ("id", "slug", "name", "kind", "plan", "addons", "people", "created_at", "last_active_at", "owner_email", "agent_runs_30d", "agent_cost_usd_30d", "agent_billed_cents_month", "suspended_at", "suspended_reason")
     ID_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -343,6 +347,8 @@ class WorkspaceRow(_message.Message):
     AGENT_RUNS_30D_FIELD_NUMBER: _ClassVar[int]
     AGENT_COST_USD_30D_FIELD_NUMBER: _ClassVar[int]
     AGENT_BILLED_CENTS_MONTH_FIELD_NUMBER: _ClassVar[int]
+    SUSPENDED_AT_FIELD_NUMBER: _ClassVar[int]
+    SUSPENDED_REASON_FIELD_NUMBER: _ClassVar[int]
     id: str
     slug: str
     name: str
@@ -356,7 +362,9 @@ class WorkspaceRow(_message.Message):
     agent_runs_30d: int
     agent_cost_usd_30d: float
     agent_billed_cents_month: int
-    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., kind: _Optional[str] = ..., plan: _Optional[str] = ..., addons: _Optional[_Iterable[str]] = ..., people: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_active_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., owner_email: _Optional[str] = ..., agent_runs_30d: _Optional[int] = ..., agent_cost_usd_30d: _Optional[float] = ..., agent_billed_cents_month: _Optional[int] = ...) -> None: ...
+    suspended_at: _timestamp_pb2.Timestamp
+    suspended_reason: str
+    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., kind: _Optional[str] = ..., plan: _Optional[str] = ..., addons: _Optional[_Iterable[str]] = ..., people: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_active_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., owner_email: _Optional[str] = ..., agent_runs_30d: _Optional[int] = ..., agent_cost_usd_30d: _Optional[float] = ..., agent_billed_cents_month: _Optional[int] = ..., suspended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., suspended_reason: _Optional[str] = ...) -> None: ...
 
 class SearchWorkspacesRequest(_message.Message):
     __slots__ = ("query", "limit", "offset", "sort", "kind", "plan")
@@ -813,3 +821,57 @@ class GetNeuralResponse(_message.Message):
     usage: NeuralUsage
     days: _containers.RepeatedCompositeFieldContainer[NeuralDay]
     def __init__(self, base_model: _Optional[str] = ..., server_up: bool = ..., loaded: _Optional[_Iterable[str]] = ..., neurons: _Optional[_Iterable[_Union[NeuronRow, _Mapping]]] = ..., neuron_workspaces: _Optional[_Iterable[_Union[NeuronWorkspace, _Mapping]]] = ..., fields: _Optional[_Iterable[_Union[FieldRow, _Mapping]]] = ..., web: _Optional[_Union[WebIndex, _Mapping]] = ..., usage: _Optional[_Union[NeuralUsage, _Mapping]] = ..., days: _Optional[_Iterable[_Union[NeuralDay, _Mapping]]] = ...) -> None: ...
+
+class SetWorkspacePlanRequest(_message.Message):
+    __slots__ = ("workspace_id", "plan")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    PLAN_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    plan: str
+    def __init__(self, workspace_id: _Optional[str] = ..., plan: _Optional[str] = ...) -> None: ...
+
+class SetWorkspacePlanResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class SetWorkspaceAddonRequest(_message.Message):
+    __slots__ = ("workspace_id", "addon", "on")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ADDON_FIELD_NUMBER: _ClassVar[int]
+    ON_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    addon: str
+    on: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., addon: _Optional[str] = ..., on: bool = ...) -> None: ...
+
+class SetWorkspaceAddonResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class SuspendWorkspaceRequest(_message.Message):
+    __slots__ = ("workspace_id", "suspended", "reason")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SUSPENDED_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    suspended: bool
+    reason: str
+    def __init__(self, workspace_id: _Optional[str] = ..., suspended: bool = ..., reason: _Optional[str] = ...) -> None: ...
+
+class SuspendWorkspaceResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class SuspendUserRequest(_message.Message):
+    __slots__ = ("user_id", "suspended", "reason")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    SUSPENDED_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    suspended: bool
+    reason: str
+    def __init__(self, user_id: _Optional[str] = ..., suspended: bool = ..., reason: _Optional[str] = ...) -> None: ...
+
+class SuspendUserResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
