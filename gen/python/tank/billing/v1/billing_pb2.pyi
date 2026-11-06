@@ -159,7 +159,7 @@ class SetAgentCapResponse(_message.Message):
     def __init__(self, agent_cap_cents: _Optional[int] = ...) -> None: ...
 
 class AgentTime(_message.Message):
-    __slots__ = ("balance_cents", "included_cents", "included_left_cents", "used_this_month_cents", "blocked", "auto_refill", "auto_refilled_this_month_cents", "has_payment_method", "history", "pack_cents", "min_custom_cents", "can_manage")
+    __slots__ = ("balance_cents", "included_cents", "included_left_cents", "used_this_month_cents", "blocked", "auto_refill", "auto_refilled_this_month_cents", "has_payment_method", "history", "pack_cents", "min_custom_cents", "can_manage", "prepaid")
     BALANCE_CENTS_FIELD_NUMBER: _ClassVar[int]
     INCLUDED_CENTS_FIELD_NUMBER: _ClassVar[int]
     INCLUDED_LEFT_CENTS_FIELD_NUMBER: _ClassVar[int]
@@ -172,6 +172,7 @@ class AgentTime(_message.Message):
     PACK_CENTS_FIELD_NUMBER: _ClassVar[int]
     MIN_CUSTOM_CENTS_FIELD_NUMBER: _ClassVar[int]
     CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
+    PREPAID_FIELD_NUMBER: _ClassVar[int]
     balance_cents: int
     included_cents: int
     included_left_cents: int
@@ -184,7 +185,8 @@ class AgentTime(_message.Message):
     pack_cents: _containers.RepeatedScalarFieldContainer[int]
     min_custom_cents: int
     can_manage: bool
-    def __init__(self, balance_cents: _Optional[int] = ..., included_cents: _Optional[int] = ..., included_left_cents: _Optional[int] = ..., used_this_month_cents: _Optional[int] = ..., blocked: bool = ..., auto_refill: _Optional[_Union[AutoRefill, _Mapping]] = ..., auto_refilled_this_month_cents: _Optional[int] = ..., has_payment_method: bool = ..., history: _Optional[_Iterable[_Union[AgentTimeEntry, _Mapping]]] = ..., pack_cents: _Optional[_Iterable[int]] = ..., min_custom_cents: _Optional[int] = ..., can_manage: bool = ...) -> None: ...
+    prepaid: bool
+    def __init__(self, balance_cents: _Optional[int] = ..., included_cents: _Optional[int] = ..., included_left_cents: _Optional[int] = ..., used_this_month_cents: _Optional[int] = ..., blocked: bool = ..., auto_refill: _Optional[_Union[AutoRefill, _Mapping]] = ..., auto_refilled_this_month_cents: _Optional[int] = ..., has_payment_method: bool = ..., history: _Optional[_Iterable[_Union[AgentTimeEntry, _Mapping]]] = ..., pack_cents: _Optional[_Iterable[int]] = ..., min_custom_cents: _Optional[int] = ..., can_manage: bool = ..., prepaid: bool = ...) -> None: ...
 
 class AutoRefill(_message.Message):
     __slots__ = ("enabled", "below_cents", "amount_cents", "monthly_cap_cents", "last_error")

@@ -150,6 +150,7 @@ message AgentTime {
   repeated int64 pack_cents = 10;         // the preset amounts to buy
   int64 min_custom_cents = 11;            // the smallest custom amount
   bool can_manage = 12;                   // the caller may buy and change auto-refill
+  bool prepaid = 13;                      // false: the workspace is not on prepaid agent time yet
 }
 
 message AutoRefill {
