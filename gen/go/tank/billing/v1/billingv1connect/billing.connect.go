@@ -65,6 +65,15 @@ const (
 	// BillingServiceCreateServiceApiKeyProcedure is the fully-qualified name of the BillingService's
 	// CreateServiceApiKey RPC.
 	BillingServiceCreateServiceApiKeyProcedure = "/tank.billing.v1.BillingService/CreateServiceApiKey"
+	// BillingServiceGetAgentTimeProcedure is the fully-qualified name of the BillingService's
+	// GetAgentTime RPC.
+	BillingServiceGetAgentTimeProcedure = "/tank.billing.v1.BillingService/GetAgentTime"
+	// BillingServiceStartAgentTimeCheckoutProcedure is the fully-qualified name of the BillingService's
+	// StartAgentTimeCheckout RPC.
+	BillingServiceStartAgentTimeCheckoutProcedure = "/tank.billing.v1.BillingService/StartAgentTimeCheckout"
+	// BillingServiceSetAutoRefillProcedure is the fully-qualified name of the BillingService's
+	// SetAutoRefill RPC.
+	BillingServiceSetAutoRefillProcedure = "/tank.billing.v1.BillingService/SetAutoRefill"
 )
 
 // BillingServiceClient is a client for the tank.billing.v1.BillingService service.
@@ -83,6 +92,12 @@ type BillingServiceClient interface {
 	OpenServicePortal(context.Context, *connect.Request[v1.OpenServicePortalRequest]) (*connect.Response[v1.OpenServicePortalResponse], error)
 	// A new key replaces the old one; the key is shown once and stored as a hash.
 	CreateServiceApiKey(context.Context, *connect.Request[v1.CreateServiceApiKeyRequest]) (*connect.Response[v1.CreateServiceApiKeyResponse], error)
+	// Agent time (2026-11-06) is prepaid. Premium includes an amount each month, spent
+	// first; past it an admin buys agent time in advance, by hand or with auto-refill.
+	// At zero no run starts and a running one stops with its work saved.
+	GetAgentTime(context.Context, *connect.Request[v1.GetAgentTimeRequest]) (*connect.Response[v1.GetAgentTimeResponse], error)
+	StartAgentTimeCheckout(context.Context, *connect.Request[v1.StartAgentTimeCheckoutRequest]) (*connect.Response[v1.StartAgentTimeCheckoutResponse], error)
+	SetAutoRefill(context.Context, *connect.Request[v1.SetAutoRefillRequest]) (*connect.Response[v1.SetAutoRefillResponse], error)
 }
 
 // NewBillingServiceClient constructs a client for the tank.billing.v1.BillingService service. By
@@ -162,6 +177,24 @@ func NewBillingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(billingServiceMethods.ByName("CreateServiceApiKey")),
 			connect.WithClientOptions(opts...),
 		),
+		getAgentTime: connect.NewClient[v1.GetAgentTimeRequest, v1.GetAgentTimeResponse](
+			httpClient,
+			baseURL+BillingServiceGetAgentTimeProcedure,
+			connect.WithSchema(billingServiceMethods.ByName("GetAgentTime")),
+			connect.WithClientOptions(opts...),
+		),
+		startAgentTimeCheckout: connect.NewClient[v1.StartAgentTimeCheckoutRequest, v1.StartAgentTimeCheckoutResponse](
+			httpClient,
+			baseURL+BillingServiceStartAgentTimeCheckoutProcedure,
+			connect.WithSchema(billingServiceMethods.ByName("StartAgentTimeCheckout")),
+			connect.WithClientOptions(opts...),
+		),
+		setAutoRefill: connect.NewClient[v1.SetAutoRefillRequest, v1.SetAutoRefillResponse](
+			httpClient,
+			baseURL+BillingServiceSetAutoRefillProcedure,
+			connect.WithSchema(billingServiceMethods.ByName("SetAutoRefill")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -178,6 +211,9 @@ type billingServiceClient struct {
 	listServiceSubscriptions *connect.Client[v1.ListServiceSubscriptionsRequest, v1.ListServiceSubscriptionsResponse]
 	openServicePortal        *connect.Client[v1.OpenServicePortalRequest, v1.OpenServicePortalResponse]
 	createServiceApiKey      *connect.Client[v1.CreateServiceApiKeyRequest, v1.CreateServiceApiKeyResponse]
+	getAgentTime             *connect.Client[v1.GetAgentTimeRequest, v1.GetAgentTimeResponse]
+	startAgentTimeCheckout   *connect.Client[v1.StartAgentTimeCheckoutRequest, v1.StartAgentTimeCheckoutResponse]
+	setAutoRefill            *connect.Client[v1.SetAutoRefillRequest, v1.SetAutoRefillResponse]
 }
 
 // GetPrice calls tank.billing.v1.BillingService.GetPrice.
@@ -235,6 +271,21 @@ func (c *billingServiceClient) CreateServiceApiKey(ctx context.Context, req *con
 	return c.createServiceApiKey.CallUnary(ctx, req)
 }
 
+// GetAgentTime calls tank.billing.v1.BillingService.GetAgentTime.
+func (c *billingServiceClient) GetAgentTime(ctx context.Context, req *connect.Request[v1.GetAgentTimeRequest]) (*connect.Response[v1.GetAgentTimeResponse], error) {
+	return c.getAgentTime.CallUnary(ctx, req)
+}
+
+// StartAgentTimeCheckout calls tank.billing.v1.BillingService.StartAgentTimeCheckout.
+func (c *billingServiceClient) StartAgentTimeCheckout(ctx context.Context, req *connect.Request[v1.StartAgentTimeCheckoutRequest]) (*connect.Response[v1.StartAgentTimeCheckoutResponse], error) {
+	return c.startAgentTimeCheckout.CallUnary(ctx, req)
+}
+
+// SetAutoRefill calls tank.billing.v1.BillingService.SetAutoRefill.
+func (c *billingServiceClient) SetAutoRefill(ctx context.Context, req *connect.Request[v1.SetAutoRefillRequest]) (*connect.Response[v1.SetAutoRefillResponse], error) {
+	return c.setAutoRefill.CallUnary(ctx, req)
+}
+
 // BillingServiceHandler is an implementation of the tank.billing.v1.BillingService service.
 type BillingServiceHandler interface {
 	GetPrice(context.Context, *connect.Request[v1.GetPriceRequest]) (*connect.Response[v1.GetPriceResponse], error)
@@ -251,6 +302,12 @@ type BillingServiceHandler interface {
 	OpenServicePortal(context.Context, *connect.Request[v1.OpenServicePortalRequest]) (*connect.Response[v1.OpenServicePortalResponse], error)
 	// A new key replaces the old one; the key is shown once and stored as a hash.
 	CreateServiceApiKey(context.Context, *connect.Request[v1.CreateServiceApiKeyRequest]) (*connect.Response[v1.CreateServiceApiKeyResponse], error)
+	// Agent time (2026-11-06) is prepaid. Premium includes an amount each month, spent
+	// first; past it an admin buys agent time in advance, by hand or with auto-refill.
+	// At zero no run starts and a running one stops with its work saved.
+	GetAgentTime(context.Context, *connect.Request[v1.GetAgentTimeRequest]) (*connect.Response[v1.GetAgentTimeResponse], error)
+	StartAgentTimeCheckout(context.Context, *connect.Request[v1.StartAgentTimeCheckoutRequest]) (*connect.Response[v1.StartAgentTimeCheckoutResponse], error)
+	SetAutoRefill(context.Context, *connect.Request[v1.SetAutoRefillRequest]) (*connect.Response[v1.SetAutoRefillResponse], error)
 }
 
 // NewBillingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -326,6 +383,24 @@ func NewBillingServiceHandler(svc BillingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(billingServiceMethods.ByName("CreateServiceApiKey")),
 		connect.WithHandlerOptions(opts...),
 	)
+	billingServiceGetAgentTimeHandler := connect.NewUnaryHandler(
+		BillingServiceGetAgentTimeProcedure,
+		svc.GetAgentTime,
+		connect.WithSchema(billingServiceMethods.ByName("GetAgentTime")),
+		connect.WithHandlerOptions(opts...),
+	)
+	billingServiceStartAgentTimeCheckoutHandler := connect.NewUnaryHandler(
+		BillingServiceStartAgentTimeCheckoutProcedure,
+		svc.StartAgentTimeCheckout,
+		connect.WithSchema(billingServiceMethods.ByName("StartAgentTimeCheckout")),
+		connect.WithHandlerOptions(opts...),
+	)
+	billingServiceSetAutoRefillHandler := connect.NewUnaryHandler(
+		BillingServiceSetAutoRefillProcedure,
+		svc.SetAutoRefill,
+		connect.WithSchema(billingServiceMethods.ByName("SetAutoRefill")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.billing.v1.BillingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BillingServiceGetPriceProcedure:
@@ -350,6 +425,12 @@ func NewBillingServiceHandler(svc BillingServiceHandler, opts ...connect.Handler
 			billingServiceOpenServicePortalHandler.ServeHTTP(w, r)
 		case BillingServiceCreateServiceApiKeyProcedure:
 			billingServiceCreateServiceApiKeyHandler.ServeHTTP(w, r)
+		case BillingServiceGetAgentTimeProcedure:
+			billingServiceGetAgentTimeHandler.ServeHTTP(w, r)
+		case BillingServiceStartAgentTimeCheckoutProcedure:
+			billingServiceStartAgentTimeCheckoutHandler.ServeHTTP(w, r)
+		case BillingServiceSetAutoRefillProcedure:
+			billingServiceSetAutoRefillHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -401,4 +482,16 @@ func (UnimplementedBillingServiceHandler) OpenServicePortal(context.Context, *co
 
 func (UnimplementedBillingServiceHandler) CreateServiceApiKey(context.Context, *connect.Request[v1.CreateServiceApiKeyRequest]) (*connect.Response[v1.CreateServiceApiKeyResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.CreateServiceApiKey is not implemented"))
+}
+
+func (UnimplementedBillingServiceHandler) GetAgentTime(context.Context, *connect.Request[v1.GetAgentTimeRequest]) (*connect.Response[v1.GetAgentTimeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.GetAgentTime is not implemented"))
+}
+
+func (UnimplementedBillingServiceHandler) StartAgentTimeCheckout(context.Context, *connect.Request[v1.StartAgentTimeCheckoutRequest]) (*connect.Response[v1.StartAgentTimeCheckoutResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.StartAgentTimeCheckout is not implemented"))
+}
+
+func (UnimplementedBillingServiceHandler) SetAutoRefill(context.Context, *connect.Request[v1.SetAutoRefillRequest]) (*connect.Response[v1.SetAutoRefillResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.SetAutoRefill is not implemented"))
 }
