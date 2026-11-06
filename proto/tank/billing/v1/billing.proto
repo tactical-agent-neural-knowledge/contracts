@@ -126,7 +126,63 @@ service BillingService {
   rpc OpenServicePortal(OpenServicePortalRequest) returns (OpenServicePortalResponse);
   // A new key replaces the old one; the key is shown once and stored as a hash.
   rpc CreateServiceApiKey(CreateServiceApiKeyRequest) returns (CreateServiceApiKeyResponse);
+
+  // Agent time (2026-11-06) is prepaid. Premium includes an amount each month, spent
+  // first; past it an admin buys agent time in advance, by hand or with auto-refill.
+  // At zero no run starts and a running one stops with its work saved.
+  rpc GetAgentTime(GetAgentTimeRequest) returns (GetAgentTimeResponse);
+  rpc StartAgentTimeCheckout(StartAgentTimeCheckoutRequest) returns (StartAgentTimeCheckoutResponse);
+  rpc SetAutoRefill(SetAutoRefillRequest) returns (SetAutoRefillResponse);
 }
+
+// AgentTime is a workspace's prepaid agent time. Every amount is in cents of what
+// the workspace pays (agent usage is priced at cost x 2 before it reaches here).
+message AgentTime {
+  int64 balance_cents = 1;                // purchased time left; may dip a little below zero
+  int64 included_cents = 2;               // included with Premium each month
+  int64 included_left_cents = 3;          // of that, what is left this month
+  int64 used_this_month_cents = 4;        // all agent usage this month
+  bool blocked = 5;                       // true when nothing is left and no run may start
+  AutoRefill auto_refill = 6;
+  int64 auto_refilled_this_month_cents = 7;
+  bool has_payment_method = 8;            // a saved card auto-refill can charge
+  repeated AgentTimeEntry history = 9;    // newest first
+  repeated int64 pack_cents = 10;         // the preset amounts to buy
+  int64 min_custom_cents = 11;            // the smallest custom amount
+  bool can_manage = 12;                   // the caller may buy and change auto-refill
+  bool prepaid = 13;                      // false: the workspace is not on prepaid agent time yet
+}
+
+message AutoRefill {
+  bool enabled = 1;
+  int64 below_cents = 2;                  // refill when the balance falls below this
+  int64 amount_cents = 3;                 // how much each refill buys
+  int64 monthly_cap_cents = 4;            // the most auto-refill may buy in a month; 0 = no cap
+  string last_error = 5;                  // why the last refill failed, in words people read
+}
+
+message AgentTimeEntry {
+  string kind = 1;                        // purchase | auto_refill | adjustment
+  int64 cents = 2;
+  google.protobuf.Timestamp at = 3;
+  string note = 4;
+}
+
+message GetAgentTimeRequest { string workspace_id = 1; }
+message GetAgentTimeResponse { AgentTime agent_time = 1; }
+
+message StartAgentTimeCheckoutRequest {
+  string workspace_id = 1;
+  int64 cents = 2;
+  string return_path = 3;
+}
+message StartAgentTimeCheckoutResponse { string checkout_url = 1; }
+
+message SetAutoRefillRequest {
+  string workspace_id = 1;
+  AutoRefill auto_refill = 2;             // last_error is ignored
+}
+message SetAutoRefillResponse { AgentTime agent_time = 1; }
 
 message ServiceSubscription {
   string product_workspace_id = 1;

@@ -158,6 +158,104 @@ class SetAgentCapResponse(_message.Message):
     agent_cap_cents: int
     def __init__(self, agent_cap_cents: _Optional[int] = ...) -> None: ...
 
+class AgentTime(_message.Message):
+    __slots__ = ("balance_cents", "included_cents", "included_left_cents", "used_this_month_cents", "blocked", "auto_refill", "auto_refilled_this_month_cents", "has_payment_method", "history", "pack_cents", "min_custom_cents", "can_manage", "prepaid")
+    BALANCE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    INCLUDED_CENTS_FIELD_NUMBER: _ClassVar[int]
+    INCLUDED_LEFT_CENTS_FIELD_NUMBER: _ClassVar[int]
+    USED_THIS_MONTH_CENTS_FIELD_NUMBER: _ClassVar[int]
+    BLOCKED_FIELD_NUMBER: _ClassVar[int]
+    AUTO_REFILL_FIELD_NUMBER: _ClassVar[int]
+    AUTO_REFILLED_THIS_MONTH_CENTS_FIELD_NUMBER: _ClassVar[int]
+    HAS_PAYMENT_METHOD_FIELD_NUMBER: _ClassVar[int]
+    HISTORY_FIELD_NUMBER: _ClassVar[int]
+    PACK_CENTS_FIELD_NUMBER: _ClassVar[int]
+    MIN_CUSTOM_CENTS_FIELD_NUMBER: _ClassVar[int]
+    CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
+    PREPAID_FIELD_NUMBER: _ClassVar[int]
+    balance_cents: int
+    included_cents: int
+    included_left_cents: int
+    used_this_month_cents: int
+    blocked: bool
+    auto_refill: AutoRefill
+    auto_refilled_this_month_cents: int
+    has_payment_method: bool
+    history: _containers.RepeatedCompositeFieldContainer[AgentTimeEntry]
+    pack_cents: _containers.RepeatedScalarFieldContainer[int]
+    min_custom_cents: int
+    can_manage: bool
+    prepaid: bool
+    def __init__(self, balance_cents: _Optional[int] = ..., included_cents: _Optional[int] = ..., included_left_cents: _Optional[int] = ..., used_this_month_cents: _Optional[int] = ..., blocked: bool = ..., auto_refill: _Optional[_Union[AutoRefill, _Mapping]] = ..., auto_refilled_this_month_cents: _Optional[int] = ..., has_payment_method: bool = ..., history: _Optional[_Iterable[_Union[AgentTimeEntry, _Mapping]]] = ..., pack_cents: _Optional[_Iterable[int]] = ..., min_custom_cents: _Optional[int] = ..., can_manage: bool = ..., prepaid: bool = ...) -> None: ...
+
+class AutoRefill(_message.Message):
+    __slots__ = ("enabled", "below_cents", "amount_cents", "monthly_cap_cents", "last_error")
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    BELOW_CENTS_FIELD_NUMBER: _ClassVar[int]
+    AMOUNT_CENTS_FIELD_NUMBER: _ClassVar[int]
+    MONTHLY_CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
+    LAST_ERROR_FIELD_NUMBER: _ClassVar[int]
+    enabled: bool
+    below_cents: int
+    amount_cents: int
+    monthly_cap_cents: int
+    last_error: str
+    def __init__(self, enabled: bool = ..., below_cents: _Optional[int] = ..., amount_cents: _Optional[int] = ..., monthly_cap_cents: _Optional[int] = ..., last_error: _Optional[str] = ...) -> None: ...
+
+class AgentTimeEntry(_message.Message):
+    __slots__ = ("kind", "cents", "at", "note")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    CENTS_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    cents: int
+    at: _timestamp_pb2.Timestamp
+    note: str
+    def __init__(self, kind: _Optional[str] = ..., cents: _Optional[int] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., note: _Optional[str] = ...) -> None: ...
+
+class GetAgentTimeRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class GetAgentTimeResponse(_message.Message):
+    __slots__ = ("agent_time",)
+    AGENT_TIME_FIELD_NUMBER: _ClassVar[int]
+    agent_time: AgentTime
+    def __init__(self, agent_time: _Optional[_Union[AgentTime, _Mapping]] = ...) -> None: ...
+
+class StartAgentTimeCheckoutRequest(_message.Message):
+    __slots__ = ("workspace_id", "cents", "return_path")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CENTS_FIELD_NUMBER: _ClassVar[int]
+    RETURN_PATH_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    cents: int
+    return_path: str
+    def __init__(self, workspace_id: _Optional[str] = ..., cents: _Optional[int] = ..., return_path: _Optional[str] = ...) -> None: ...
+
+class StartAgentTimeCheckoutResponse(_message.Message):
+    __slots__ = ("checkout_url",)
+    CHECKOUT_URL_FIELD_NUMBER: _ClassVar[int]
+    checkout_url: str
+    def __init__(self, checkout_url: _Optional[str] = ...) -> None: ...
+
+class SetAutoRefillRequest(_message.Message):
+    __slots__ = ("workspace_id", "auto_refill")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    AUTO_REFILL_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    auto_refill: AutoRefill
+    def __init__(self, workspace_id: _Optional[str] = ..., auto_refill: _Optional[_Union[AutoRefill, _Mapping]] = ...) -> None: ...
+
+class SetAutoRefillResponse(_message.Message):
+    __slots__ = ("agent_time",)
+    AGENT_TIME_FIELD_NUMBER: _ClassVar[int]
+    agent_time: AgentTime
+    def __init__(self, agent_time: _Optional[_Union[AgentTime, _Mapping]] = ...) -> None: ...
+
 class ServiceSubscription(_message.Message):
     __slots__ = ("product_workspace_id", "product_slug", "product_name", "status", "current_period_end", "price_cents", "has_api_key", "api_key_hint")
     PRODUCT_WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
