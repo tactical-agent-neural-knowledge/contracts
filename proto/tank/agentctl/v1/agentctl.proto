@@ -10,6 +10,7 @@ import "tank/board/v1/board.proto";
 import "tank/books/v1/books.proto";
 import "tank/canvas/v1/canvas.proto";
 import "tank/guardrails/v1/guardrails.proto";
+import "tank/infra/v1/infra.proto";
 import "tank/neural/v1/neural.proto";
 import "tank/social/v1/social.proto";
 
@@ -165,6 +166,9 @@ message RunContext {
   // admission. TANK enforces them at the action; the runner shows them to the model and
   // stops and asks when one is hit.
   repeated tank.guardrails.v1.Guardrail guardrails = 39;
+  // The workspace's infrastructure connections this Tread may use (names, what each is
+  // for, regions and clusters), never a credential. Read them with infra_run.
+  repeated InfraConnectionBrief infra_connections = 40;
 }
 
 // An Ops team as a run sees it (tank.agentops.v1 holds the full record).
@@ -1087,6 +1091,16 @@ service RunnerService {
   // Opens a page of the product TANK hosts for this run's repository, as a visitor would,
   // once it serves the expected build: status, errors, how much it shows, a screenshot.
   rpc CheckLive(CheckLiveRequest) returns (CheckLiveResponse);
+  // Infrastructure connections (2026-11-07): read-only commands against the workspace's
+  // own clouds and clusters, run in a job of the control plane's with 15-minute
+  // credentials the sandbox never sees; the run gets the output, redacted.
+  rpc InfraRun(InfraRunRequest) returns (InfraRunResponse);
+  rpc InfraHttp(InfraHttpRequest) returns (InfraHttpResponse);
+  rpc InfraCosts(InfraCostsRequest) returns (InfraCostsResponse);
+  rpc ListRunbooks(ListRunbooksRequest) returns (ListRunbooksResponse);
+  // Asks to run a runbook: opens a gate a workspace admin decides; the outcome of the
+  // workflow arrives on the inbox.
+  rpc RunRunbook(RunRunbookRequest) returns (RunRunbookResponse);
   // The product TANK runs for this run's repository, as its operator sees it: whether it
   // is up, how often it has restarted and why, recent cluster events and its log. So an
   // agent can see the product it built fail instead of hearing about it from a person.
@@ -1277,6 +1291,24 @@ service ControlService {
   rpc RateGuardrail(RateGuardrailRequest) returns (RateGuardrailResponse);
   rpc ListGuardrailVerdicts(ListGuardrailVerdictsRequest) returns (ListGuardrailVerdictsResponse);
   rpc ExtractGuardrails(ExtractGuardrailsRequest) returns (ExtractGuardrailsResponse);
+  // Infrastructure connections, for the messaging core: the rows live here, and so do
+  // the credentials path and the Lockbox Agent vault. api decides who may ask and sets
+  // requested_by.
+  rpc ListInfraConnections(ListInfraConnectionsRequest) returns (ListInfraConnectionsResponse);
+  rpc GetInfraConnection(GetInfraConnectionRequest) returns (GetInfraConnectionResponse);
+  rpc CreateInfraConnection(CreateInfraConnectionRequest) returns (CreateInfraConnectionResponse);
+  rpc UpdateInfraConnection(UpdateInfraConnectionRequest) returns (UpdateInfraConnectionResponse);
+  rpc DeleteInfraConnection(DeleteInfraConnectionRequest) returns (DeleteInfraConnectionResponse);
+  rpc TestInfraConnection(TestInfraConnectionRequest) returns (TestInfraConnectionResponse);
+  rpc GetInfraSetupGuide(GetInfraSetupGuideRequest) returns (GetInfraSetupGuideResponse);
+  rpc ListInfraUses(ListInfraUsesRequest) returns (ListInfraUsesResponse);
+  rpc ListInfraRunbooks(ListInfraRunbooksRequest) returns (ListInfraRunbooksResponse);
+  rpc PutInfraRunbook(PutInfraRunbookRequest) returns (PutInfraRunbookResponse);
+  rpc DeleteInfraRunbook(DeleteInfraRunbookRequest) returns (DeleteInfraRunbookResponse);
+  rpc ListInfraWorkflowCandidates(ListInfraWorkflowCandidatesRequest) returns (ListInfraWorkflowCandidatesResponse);
+  rpc ListInfraRelays(ListInfraRelaysRequest) returns (ListInfraRelaysResponse);
+  rpc CreateInfraRelay(CreateInfraRelayRequest) returns (CreateInfraRelayResponse);
+  rpc RevokeInfraRelay(RevokeInfraRelayRequest) returns (RevokeInfraRelayResponse);
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
   rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
   rpc RefreshNeuralKnowledge(RefreshNeuralKnowledgeRequest) returns (RefreshNeuralKnowledgeResponse);
@@ -1928,3 +1960,116 @@ message MergeChangeResponse {
   string pull_request_url = 2;
   string note = 3;
 }
+
+// What a run is told about one infrastructure connection: enough to choose it and write
+// a command, never a credential.
+message InfraConnectionBrief {
+  string name = 1;
+  tank.infra.v1.Provider provider = 2;
+  string description = 3;
+  repeated string regions = 4;
+  // Clusters kubectl can reach through it (EKS, GKE, AKS or the cluster itself).
+  repeated string clusters = 5;
+  // The tools it answers: aws, kubectl, gcloud, bq, az, http.
+  repeated string tools = 6;
+  // For an API connection, where its paths are relative to.
+  string base_url = 7;
+}
+
+message InfraRunRequest {
+  string connection = 1; // its name (or id)
+  // One command, e.g. "aws logs tail /ecs/api --since 1h" or "kubectl -n prod get pods".
+  // For kubectl, cluster picks one of the connection's clusters (default: the first).
+  string command = 2;
+  string cluster = 3;
+  string reason = 4; // one line, recorded with the use
+}
+message InfraRunResponse {
+  string output = 1;
+  int32 exit_code = 2;
+  // Why it did not run: not a read, not this Tread's connection, not connected.
+  string refused = 3;
+  bool truncated = 4;
+  int64 duration_ms = 5;
+}
+
+message InfraHttpRequest {
+  string connection = 1;
+  string path = 2; // relative to the connection's base URL, e.g. /api/v2/logs/events
+  map<string, string> query = 3;
+  string reason = 4;
+}
+message InfraHttpResponse {
+  int32 status = 1;
+  string body = 2;
+  string content_type = 3;
+  string refused = 4;
+  bool truncated = 5;
+}
+
+message InfraCostsRequest {
+  string connection = 1;
+  string start = 2; // YYYY-MM-DD, inclusive; the first of this month when empty
+  string end = 3;   // YYYY-MM-DD, exclusive; today when empty
+}
+message InfraCostLine {
+  string service = 1;
+  double amount = 2;
+  string currency = 3;
+}
+message InfraCostsResponse {
+  repeated InfraCostLine lines = 1;
+  double total = 2;
+  string currency = 3;
+  string note = 4;
+  string refused = 5;
+}
+
+message ListRunbooksRequest {}
+message ListRunbooksResponse {
+  repeated tank.infra.v1.Runbook runbooks = 1;
+}
+
+message RunRunbookRequest {
+  string runbook = 1; // its name (or id)
+  map<string, string> inputs = 2;
+  // Why it should run, in a sentence the approver reads on the card.
+  string reason = 3;
+}
+message RunRunbookResponse {
+  string gate_id = 1;
+  string refused = 2;
+  string note = 3;
+}
+
+// ControlService wrappers for tank.infra.v1 (one request type per RPC).
+message ListInfraConnectionsRequest { tank.infra.v1.ListConnectionsRequest request = 1; }
+message ListInfraConnectionsResponse { tank.infra.v1.ListConnectionsResponse response = 1; }
+message GetInfraConnectionRequest { tank.infra.v1.GetConnectionRequest request = 1; }
+message GetInfraConnectionResponse { tank.infra.v1.GetConnectionResponse response = 1; }
+message CreateInfraConnectionRequest { tank.infra.v1.CreateConnectionRequest request = 1; }
+message CreateInfraConnectionResponse { tank.infra.v1.CreateConnectionResponse response = 1; }
+message UpdateInfraConnectionRequest { tank.infra.v1.UpdateConnectionRequest request = 1; }
+message UpdateInfraConnectionResponse { tank.infra.v1.UpdateConnectionResponse response = 1; }
+message DeleteInfraConnectionRequest { tank.infra.v1.DeleteConnectionRequest request = 1; }
+message DeleteInfraConnectionResponse { tank.infra.v1.DeleteConnectionResponse response = 1; }
+message TestInfraConnectionRequest { tank.infra.v1.TestConnectionRequest request = 1; }
+message TestInfraConnectionResponse { tank.infra.v1.TestConnectionResponse response = 1; }
+message GetInfraSetupGuideRequest { tank.infra.v1.GetSetupGuideRequest request = 1; }
+message GetInfraSetupGuideResponse { tank.infra.v1.GetSetupGuideResponse response = 1; }
+message ListInfraUsesRequest { tank.infra.v1.ListUsesRequest request = 1; }
+message ListInfraUsesResponse { tank.infra.v1.ListUsesResponse response = 1; }
+message ListInfraRunbooksRequest { tank.infra.v1.ListRunbooksRequest request = 1; }
+message ListInfraRunbooksResponse { tank.infra.v1.ListRunbooksResponse response = 1; }
+message PutInfraRunbookRequest { tank.infra.v1.PutRunbookRequest request = 1; }
+message PutInfraRunbookResponse { tank.infra.v1.PutRunbookResponse response = 1; }
+message DeleteInfraRunbookRequest { tank.infra.v1.DeleteRunbookRequest request = 1; }
+message DeleteInfraRunbookResponse { tank.infra.v1.DeleteRunbookResponse response = 1; }
+message ListInfraWorkflowCandidatesRequest { tank.infra.v1.ListWorkflowCandidatesRequest request = 1; }
+message ListInfraWorkflowCandidatesResponse { tank.infra.v1.ListWorkflowCandidatesResponse response = 1; }
+message ListInfraRelaysRequest { tank.infra.v1.ListRelaysRequest request = 1; }
+message ListInfraRelaysResponse { tank.infra.v1.ListRelaysResponse response = 1; }
+message CreateInfraRelayRequest { tank.infra.v1.CreateRelayRequest request = 1; }
+message CreateInfraRelayResponse { tank.infra.v1.CreateRelayResponse response = 1; }
+message RevokeInfraRelayRequest { tank.infra.v1.RevokeRelayRequest request = 1; }
+message RevokeInfraRelayResponse { tank.infra.v1.RevokeRelayResponse response = 1; }
