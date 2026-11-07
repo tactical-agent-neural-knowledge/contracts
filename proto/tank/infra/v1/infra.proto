@@ -1,0 +1,337 @@
+syntax = "proto3";
+
+package tank.infra.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/infra/v1;infrav1";
+
+// Infrastructure connections (2026-11-07, Lockbox plan 2): the clouds and clusters a
+// workspace runs on, wherever they are, connected so TANK's agents can read them to
+// diagnose, read logs and report billing. Read only, always: changes are pull requests,
+// one-off operations are runbooks a person approves. No stored keys where the cloud can
+// federate (an AWS role with TANK's external ID; GCP and Azure trusting TANK's OIDC
+// issuer); what cannot federate lives in the Lockbox Agent vault. Commands run in a
+// throwaway job of the control plane's, never in a run's sandbox. Part of Premium.
+
+enum Provider {
+  PROVIDER_UNSPECIFIED = 0;
+  PROVIDER_AWS = 1;
+  PROVIDER_GCP = 2;
+  PROVIDER_AZURE = 3;
+  // Any Kubernetes cluster the cloud providers above do not cover.
+  PROVIDER_KUBERNETES = 4;
+  // A service with an HTTP API and a read-scoped token (Datadog, Cloudflare, Grafana…).
+  PROVIDER_API = 5;
+}
+
+enum ConnectionState {
+  CONNECTION_STATE_UNSPECIFIED = 0;
+  CONNECTION_STATE_UNVERIFIED = 1; // made, never tested
+  CONNECTION_STATE_OK = 2;         // the last test read what it should
+  CONNECTION_STATE_FAILING = 3;    // the last test could not
+}
+
+enum KubeAuth {
+  KUBE_AUTH_UNSPECIFIED = 0;
+  KUBE_AUTH_OIDC = 1;  // the cluster trusts TANK's issuer
+  KUBE_AUTH_TOKEN = 2; // a ServiceAccount token, kept in the Lockbox Agent vault
+}
+
+message AwsConfig {
+  // The role TANK assumes, in the customer's account.
+  string role_arn = 1;
+  // Made by TANK when the connection is created, unique to it; the role's trust policy
+  // requires it. Read only for clients.
+  string external_id = 2;
+  repeated string regions = 3;
+  // EKS clusters to read with kubectl, each "region/name" or "name" (first region).
+  repeated string eks_clusters = 4;
+}
+
+message GcpConfig {
+  string project_id = 1;
+  string project_number = 2;
+  // The workload identity pool and provider that trust TANK's issuer.
+  string pool_id = 3;
+  string provider_id = 4;
+  // The read-only service account TANK impersonates.
+  string service_account = 5;
+  // GKE clusters, each "location/name".
+  repeated string gke_clusters = 6;
+}
+
+message AzureConfig {
+  string tenant_id = 1;
+  string client_id = 2; // the app registration with TANK's federated credential
+  string subscription_id = 3;
+  // AKS clusters, each "resourceGroup/name".
+  repeated string aks_clusters = 4;
+}
+
+message KubernetesConfig {
+  string server = 1; // https://…
+  string ca_data = 2; // PEM or base64 PEM
+  KubeAuth auth = 3;
+  // The audience the cluster expects in TANK's token (OIDC); "tank" when empty.
+  string audience = 4;
+}
+
+message ApiConfig {
+  // Where calls go, e.g. https://api.datadoghq.com. Paths are relative to it.
+  string base_url = 1;
+  // Hosts the token may be sent to; the base URL's host is always one.
+  repeated string allowed_hosts = 2;
+  // How the token is sent: header name and what goes before it ("Bearer ").
+  string header_name = 3;
+  string header_prefix = 4;
+}
+
+message Connection {
+  string id = 1;
+  string workspace_id = 2;
+  string name = 3;
+  Provider provider = 4;
+  // What it is for, in a sentence the agent reads ("production, us-east-1").
+  string description = 5;
+  AwsConfig aws = 6;
+  GcpConfig gcp = 7;
+  AzureConfig azure = 8;
+  KubernetesConfig kubernetes = 9;
+  ApiConfig api = 10;
+  // Treads that may use it; empty means every Tread in the workspace.
+  repeated string channel_ids = 11;
+  // Run through the workspace's Lockbox Relay instead of TANK's own credentials path.
+  bool via_relay = 12;
+  string relay_id = 13;
+  ConnectionState state = 14;
+  string last_error = 15;
+  google.protobuf.Timestamp last_checked_at = 16;
+  string created_by = 17;
+  google.protobuf.Timestamp created_at = 18;
+  google.protobuf.Timestamp updated_at = 19;
+  // The subject TANK signs for this connection: workspace:<id>:connection:<id>.
+  string subject = 20;
+  // A token is stored for it in the Lockbox Agent vault (Kubernetes token, API).
+  bool has_secret = 21;
+}
+
+// One step of the setup a person follows to grant TANK access, with the exact script
+// for this connection.
+message SetupStep {
+  string title = 1;
+  string text = 2;
+  string code = 3;
+  string code_language = 4; // bash, yaml, hcl, json
+  string download_name = 5; // when the code is better saved as a file
+}
+
+message Use {
+  string id = 1;
+  string connection_id = 2;
+  string connection_name = 3;
+  string run_id = 4;
+  string channel_id = 5;
+  string user_id = 6;
+  string kind = 7; // command | http | runbook | test | costs
+  string command = 8; // redacted
+  int32 exit_code = 9;
+  string refused = 10; // why it was refused, when it was
+  int64 duration_ms = 11;
+  int64 output_bytes = 12;
+  google.protobuf.Timestamp at = 13;
+}
+
+message RunbookInput {
+  string name = 1;
+  string description = 2;
+  bool required = 3;
+  string default_value = 4;
+  repeated string options = 5;
+}
+
+// A workflow in one of the workspace's repositories that an agent may ask to run.
+// Every run of it waits for a workspace admin's approval.
+message Runbook {
+  string id = 1;
+  string workspace_id = 2;
+  string repo = 3; // owner/name
+  string workflow = 4; // .github/workflows/restart.yml
+  string ref = 5; // the branch it runs on; the default branch when empty
+  string name = 6;
+  string description = 7;
+  repeated RunbookInput inputs = 8;
+  string created_by = 9;
+  google.protobuf.Timestamp created_at = 10;
+}
+
+// A dispatchable workflow found in a repository, offered when adding a runbook.
+message WorkflowCandidate {
+  string repo = 1;
+  string workflow = 2;
+  string name = 3;
+  repeated RunbookInput inputs = 4;
+}
+
+message Relay {
+  string id = 1;
+  string workspace_id = 2;
+  string name = 3;
+  google.protobuf.Timestamp last_seen_at = 4;
+  string version = 5;
+  google.protobuf.Timestamp created_at = 6;
+  string created_by = 7;
+}
+
+message ListConnectionsRequest {
+  string workspace_id = 1;
+  string channel_id = 2; // with it: only what that Tread may use
+}
+message ListConnectionsResponse {
+  repeated Connection connections = 1;
+  bool premium = 2;
+  // What a customer's trust policies name: TANK's AWS role and OIDC issuer.
+  string aws_principal = 3;
+  string oidc_issuer = 4;
+}
+
+message GetConnectionRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message GetConnectionResponse {
+  Connection connection = 1;
+}
+
+message CreateConnectionRequest {
+  string workspace_id = 1;
+  Connection connection = 2;
+  // A token for the kinds that need one; write only, never returned.
+  string secret = 3;
+  // Set by the server from the caller; ignored when a client sends it.
+  string requested_by = 4;
+}
+message CreateConnectionResponse {
+  Connection connection = 1;
+}
+
+message UpdateConnectionRequest {
+  string workspace_id = 1;
+  Connection connection = 2;
+  string secret = 3; // empty keeps the stored one
+  string requested_by = 4;
+}
+message UpdateConnectionResponse {
+  Connection connection = 1;
+}
+
+message DeleteConnectionRequest {
+  string workspace_id = 1;
+  string id = 2;
+  string requested_by = 3;
+}
+message DeleteConnectionResponse {}
+
+message TestConnectionRequest {
+  string workspace_id = 1;
+  string id = 2;
+  string requested_by = 3;
+}
+message TestConnectionResponse {
+  ConnectionState state = 1;
+  // One line a person reads: what TANK could read, or what stopped it.
+  string detail = 2;
+  // What each check printed, redacted.
+  repeated string output = 3;
+  // Set when the identity TANK was given can do more than read.
+  string warning = 4;
+}
+
+message GetSetupGuideRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message GetSetupGuideResponse {
+  repeated SetupStep steps = 1;
+}
+
+message ListUsesRequest {
+  string workspace_id = 1;
+  string connection_id = 2; // empty: every connection
+  int32 limit = 3;
+}
+message ListUsesResponse {
+  repeated Use uses = 1;
+}
+
+message ListRunbooksRequest {
+  string workspace_id = 1;
+}
+message ListRunbooksResponse {
+  repeated Runbook runbooks = 1;
+}
+message PutRunbookRequest {
+  string workspace_id = 1;
+  Runbook runbook = 2;
+  string requested_by = 3;
+}
+message PutRunbookResponse {
+  Runbook runbook = 1;
+}
+message DeleteRunbookRequest {
+  string workspace_id = 1;
+  string id = 2;
+  string requested_by = 3;
+}
+message DeleteRunbookResponse {}
+message ListWorkflowCandidatesRequest {
+  string workspace_id = 1;
+}
+message ListWorkflowCandidatesResponse {
+  repeated WorkflowCandidate candidates = 1;
+  // Set when TANK's GitHub App may not run workflows yet.
+  string note = 2;
+}
+
+message ListRelaysRequest {
+  string workspace_id = 1;
+}
+message ListRelaysResponse {
+  repeated Relay relays = 1;
+}
+message CreateRelayRequest {
+  string workspace_id = 1;
+  string name = 2;
+  string requested_by = 3;
+}
+message CreateRelayResponse {
+  Relay relay = 1;
+  // Shown once: the relay authenticates with it.
+  string token = 2;
+  // How to run it, with the token filled in.
+  repeated SetupStep steps = 3;
+}
+message RevokeRelayRequest {
+  string workspace_id = 1;
+  string id = 2;
+  string requested_by = 3;
+}
+message RevokeRelayResponse {}
+
+service InfraService {
+  rpc ListConnections(ListConnectionsRequest) returns (ListConnectionsResponse);
+  rpc GetConnection(GetConnectionRequest) returns (GetConnectionResponse);
+  rpc CreateConnection(CreateConnectionRequest) returns (CreateConnectionResponse);
+  rpc UpdateConnection(UpdateConnectionRequest) returns (UpdateConnectionResponse);
+  rpc DeleteConnection(DeleteConnectionRequest) returns (DeleteConnectionResponse);
+  rpc TestConnection(TestConnectionRequest) returns (TestConnectionResponse);
+  rpc GetSetupGuide(GetSetupGuideRequest) returns (GetSetupGuideResponse);
+  rpc ListUses(ListUsesRequest) returns (ListUsesResponse);
+  rpc ListRunbooks(ListRunbooksRequest) returns (ListRunbooksResponse);
+  rpc PutRunbook(PutRunbookRequest) returns (PutRunbookResponse);
+  rpc DeleteRunbook(DeleteRunbookRequest) returns (DeleteRunbookResponse);
+  rpc ListWorkflowCandidates(ListWorkflowCandidatesRequest) returns (ListWorkflowCandidatesResponse);
+  rpc ListRelays(ListRelaysRequest) returns (ListRelaysResponse);
+  rpc CreateRelay(CreateRelayRequest) returns (CreateRelayResponse);
+  rpc RevokeRelay(RevokeRelayRequest) returns (RevokeRelayResponse);
+}

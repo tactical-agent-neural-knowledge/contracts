@@ -97,6 +97,19 @@ const (
 	RunnerServiceListClaimsProcedure = "/tank.agentctl.v1.RunnerService/ListClaims"
 	// RunnerServiceCheckLiveProcedure is the fully-qualified name of the RunnerService's CheckLive RPC.
 	RunnerServiceCheckLiveProcedure = "/tank.agentctl.v1.RunnerService/CheckLive"
+	// RunnerServiceInfraRunProcedure is the fully-qualified name of the RunnerService's InfraRun RPC.
+	RunnerServiceInfraRunProcedure = "/tank.agentctl.v1.RunnerService/InfraRun"
+	// RunnerServiceInfraHttpProcedure is the fully-qualified name of the RunnerService's InfraHttp RPC.
+	RunnerServiceInfraHttpProcedure = "/tank.agentctl.v1.RunnerService/InfraHttp"
+	// RunnerServiceInfraCostsProcedure is the fully-qualified name of the RunnerService's InfraCosts
+	// RPC.
+	RunnerServiceInfraCostsProcedure = "/tank.agentctl.v1.RunnerService/InfraCosts"
+	// RunnerServiceListRunbooksProcedure is the fully-qualified name of the RunnerService's
+	// ListRunbooks RPC.
+	RunnerServiceListRunbooksProcedure = "/tank.agentctl.v1.RunnerService/ListRunbooks"
+	// RunnerServiceRunRunbookProcedure is the fully-qualified name of the RunnerService's RunRunbook
+	// RPC.
+	RunnerServiceRunRunbookProcedure = "/tank.agentctl.v1.RunnerService/RunRunbook"
 	// RunnerServiceReadProductProcedure is the fully-qualified name of the RunnerService's ReadProduct
 	// RPC.
 	RunnerServiceReadProductProcedure = "/tank.agentctl.v1.RunnerService/ReadProduct"
@@ -238,6 +251,51 @@ const (
 	// ControlServiceExtractGuardrailsProcedure is the fully-qualified name of the ControlService's
 	// ExtractGuardrails RPC.
 	ControlServiceExtractGuardrailsProcedure = "/tank.agentctl.v1.ControlService/ExtractGuardrails"
+	// ControlServiceListInfraConnectionsProcedure is the fully-qualified name of the ControlService's
+	// ListInfraConnections RPC.
+	ControlServiceListInfraConnectionsProcedure = "/tank.agentctl.v1.ControlService/ListInfraConnections"
+	// ControlServiceGetInfraConnectionProcedure is the fully-qualified name of the ControlService's
+	// GetInfraConnection RPC.
+	ControlServiceGetInfraConnectionProcedure = "/tank.agentctl.v1.ControlService/GetInfraConnection"
+	// ControlServiceCreateInfraConnectionProcedure is the fully-qualified name of the ControlService's
+	// CreateInfraConnection RPC.
+	ControlServiceCreateInfraConnectionProcedure = "/tank.agentctl.v1.ControlService/CreateInfraConnection"
+	// ControlServiceUpdateInfraConnectionProcedure is the fully-qualified name of the ControlService's
+	// UpdateInfraConnection RPC.
+	ControlServiceUpdateInfraConnectionProcedure = "/tank.agentctl.v1.ControlService/UpdateInfraConnection"
+	// ControlServiceDeleteInfraConnectionProcedure is the fully-qualified name of the ControlService's
+	// DeleteInfraConnection RPC.
+	ControlServiceDeleteInfraConnectionProcedure = "/tank.agentctl.v1.ControlService/DeleteInfraConnection"
+	// ControlServiceTestInfraConnectionProcedure is the fully-qualified name of the ControlService's
+	// TestInfraConnection RPC.
+	ControlServiceTestInfraConnectionProcedure = "/tank.agentctl.v1.ControlService/TestInfraConnection"
+	// ControlServiceGetInfraSetupGuideProcedure is the fully-qualified name of the ControlService's
+	// GetInfraSetupGuide RPC.
+	ControlServiceGetInfraSetupGuideProcedure = "/tank.agentctl.v1.ControlService/GetInfraSetupGuide"
+	// ControlServiceListInfraUsesProcedure is the fully-qualified name of the ControlService's
+	// ListInfraUses RPC.
+	ControlServiceListInfraUsesProcedure = "/tank.agentctl.v1.ControlService/ListInfraUses"
+	// ControlServiceListInfraRunbooksProcedure is the fully-qualified name of the ControlService's
+	// ListInfraRunbooks RPC.
+	ControlServiceListInfraRunbooksProcedure = "/tank.agentctl.v1.ControlService/ListInfraRunbooks"
+	// ControlServicePutInfraRunbookProcedure is the fully-qualified name of the ControlService's
+	// PutInfraRunbook RPC.
+	ControlServicePutInfraRunbookProcedure = "/tank.agentctl.v1.ControlService/PutInfraRunbook"
+	// ControlServiceDeleteInfraRunbookProcedure is the fully-qualified name of the ControlService's
+	// DeleteInfraRunbook RPC.
+	ControlServiceDeleteInfraRunbookProcedure = "/tank.agentctl.v1.ControlService/DeleteInfraRunbook"
+	// ControlServiceListInfraWorkflowCandidatesProcedure is the fully-qualified name of the
+	// ControlService's ListInfraWorkflowCandidates RPC.
+	ControlServiceListInfraWorkflowCandidatesProcedure = "/tank.agentctl.v1.ControlService/ListInfraWorkflowCandidates"
+	// ControlServiceListInfraRelaysProcedure is the fully-qualified name of the ControlService's
+	// ListInfraRelays RPC.
+	ControlServiceListInfraRelaysProcedure = "/tank.agentctl.v1.ControlService/ListInfraRelays"
+	// ControlServiceCreateInfraRelayProcedure is the fully-qualified name of the ControlService's
+	// CreateInfraRelay RPC.
+	ControlServiceCreateInfraRelayProcedure = "/tank.agentctl.v1.ControlService/CreateInfraRelay"
+	// ControlServiceRevokeInfraRelayProcedure is the fully-qualified name of the ControlService's
+	// RevokeInfraRelay RPC.
+	ControlServiceRevokeInfraRelayProcedure = "/tank.agentctl.v1.ControlService/RevokeInfraRelay"
 	// ControlServiceStartRunProcedure is the fully-qualified name of the ControlService's StartRun RPC.
 	ControlServiceStartRunProcedure = "/tank.agentctl.v1.ControlService/StartRun"
 	// ControlServiceOpenThreadProcedure is the fully-qualified name of the ControlService's OpenThread
@@ -382,6 +440,16 @@ type RunnerServiceClient interface {
 	// Opens a page of the product TANK hosts for this run's repository, as a visitor would,
 	// once it serves the expected build: status, errors, how much it shows, a screenshot.
 	CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error)
+	// Infrastructure connections (2026-11-07): read-only commands against the workspace's
+	// own clouds and clusters, run in a job of the control plane's with 15-minute
+	// credentials the sandbox never sees; the run gets the output, redacted.
+	InfraRun(context.Context, *connect.Request[v1.InfraRunRequest]) (*connect.Response[v1.InfraRunResponse], error)
+	InfraHttp(context.Context, *connect.Request[v1.InfraHttpRequest]) (*connect.Response[v1.InfraHttpResponse], error)
+	InfraCosts(context.Context, *connect.Request[v1.InfraCostsRequest]) (*connect.Response[v1.InfraCostsResponse], error)
+	ListRunbooks(context.Context, *connect.Request[v1.ListRunbooksRequest]) (*connect.Response[v1.ListRunbooksResponse], error)
+	// Asks to run a runbook: opens a gate a workspace admin decides; the outcome of the
+	// workflow arrives on the inbox.
+	RunRunbook(context.Context, *connect.Request[v1.RunRunbookRequest]) (*connect.Response[v1.RunRunbookResponse], error)
 	// The product TANK runs for this run's repository, as its operator sees it: whether it
 	// is up, how often it has restarted and why, recent cluster events and its log. So an
 	// agent can see the product it built fail instead of hearing about it from a person.
@@ -573,6 +641,36 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServiceCheckLiveProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("CheckLive")),
+			connect.WithClientOptions(opts...),
+		),
+		infraRun: connect.NewClient[v1.InfraRunRequest, v1.InfraRunResponse](
+			httpClient,
+			baseURL+RunnerServiceInfraRunProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("InfraRun")),
+			connect.WithClientOptions(opts...),
+		),
+		infraHttp: connect.NewClient[v1.InfraHttpRequest, v1.InfraHttpResponse](
+			httpClient,
+			baseURL+RunnerServiceInfraHttpProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("InfraHttp")),
+			connect.WithClientOptions(opts...),
+		),
+		infraCosts: connect.NewClient[v1.InfraCostsRequest, v1.InfraCostsResponse](
+			httpClient,
+			baseURL+RunnerServiceInfraCostsProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("InfraCosts")),
+			connect.WithClientOptions(opts...),
+		),
+		listRunbooks: connect.NewClient[v1.ListRunbooksRequest, v1.ListRunbooksResponse](
+			httpClient,
+			baseURL+RunnerServiceListRunbooksProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ListRunbooks")),
+			connect.WithClientOptions(opts...),
+		),
+		runRunbook: connect.NewClient[v1.RunRunbookRequest, v1.RunRunbookResponse](
+			httpClient,
+			baseURL+RunnerServiceRunRunbookProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("RunRunbook")),
 			connect.WithClientOptions(opts...),
 		),
 		readProduct: connect.NewClient[v1.ReadProductRequest, v1.ReadProductResponse](
@@ -854,6 +952,11 @@ type runnerServiceClient struct {
 	checkClaim               *connect.Client[v1.CheckClaimRequest, v1.CheckClaimResponse]
 	listClaims               *connect.Client[v1.ListClaimsRequest, v1.ListClaimsResponse]
 	checkLive                *connect.Client[v1.CheckLiveRequest, v1.CheckLiveResponse]
+	infraRun                 *connect.Client[v1.InfraRunRequest, v1.InfraRunResponse]
+	infraHttp                *connect.Client[v1.InfraHttpRequest, v1.InfraHttpResponse]
+	infraCosts               *connect.Client[v1.InfraCostsRequest, v1.InfraCostsResponse]
+	listRunbooks             *connect.Client[v1.ListRunbooksRequest, v1.ListRunbooksResponse]
+	runRunbook               *connect.Client[v1.RunRunbookRequest, v1.RunRunbookResponse]
 	readProduct              *connect.Client[v1.ReadProductRequest, v1.ReadProductResponse]
 	validateSpec             *connect.Client[v1.ValidateSpecRequest, v1.ValidateSpecResponse]
 	readThread               *connect.Client[v1.ReadThreadRequest, v1.ReadThreadResponse]
@@ -1006,6 +1109,31 @@ func (c *runnerServiceClient) ListClaims(ctx context.Context, req *connect.Reque
 // CheckLive calls tank.agentctl.v1.RunnerService.CheckLive.
 func (c *runnerServiceClient) CheckLive(ctx context.Context, req *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error) {
 	return c.checkLive.CallUnary(ctx, req)
+}
+
+// InfraRun calls tank.agentctl.v1.RunnerService.InfraRun.
+func (c *runnerServiceClient) InfraRun(ctx context.Context, req *connect.Request[v1.InfraRunRequest]) (*connect.Response[v1.InfraRunResponse], error) {
+	return c.infraRun.CallUnary(ctx, req)
+}
+
+// InfraHttp calls tank.agentctl.v1.RunnerService.InfraHttp.
+func (c *runnerServiceClient) InfraHttp(ctx context.Context, req *connect.Request[v1.InfraHttpRequest]) (*connect.Response[v1.InfraHttpResponse], error) {
+	return c.infraHttp.CallUnary(ctx, req)
+}
+
+// InfraCosts calls tank.agentctl.v1.RunnerService.InfraCosts.
+func (c *runnerServiceClient) InfraCosts(ctx context.Context, req *connect.Request[v1.InfraCostsRequest]) (*connect.Response[v1.InfraCostsResponse], error) {
+	return c.infraCosts.CallUnary(ctx, req)
+}
+
+// ListRunbooks calls tank.agentctl.v1.RunnerService.ListRunbooks.
+func (c *runnerServiceClient) ListRunbooks(ctx context.Context, req *connect.Request[v1.ListRunbooksRequest]) (*connect.Response[v1.ListRunbooksResponse], error) {
+	return c.listRunbooks.CallUnary(ctx, req)
+}
+
+// RunRunbook calls tank.agentctl.v1.RunnerService.RunRunbook.
+func (c *runnerServiceClient) RunRunbook(ctx context.Context, req *connect.Request[v1.RunRunbookRequest]) (*connect.Response[v1.RunRunbookResponse], error) {
+	return c.runRunbook.CallUnary(ctx, req)
 }
 
 // ReadProduct calls tank.agentctl.v1.RunnerService.ReadProduct.
@@ -1248,6 +1376,16 @@ type RunnerServiceHandler interface {
 	// Opens a page of the product TANK hosts for this run's repository, as a visitor would,
 	// once it serves the expected build: status, errors, how much it shows, a screenshot.
 	CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error)
+	// Infrastructure connections (2026-11-07): read-only commands against the workspace's
+	// own clouds and clusters, run in a job of the control plane's with 15-minute
+	// credentials the sandbox never sees; the run gets the output, redacted.
+	InfraRun(context.Context, *connect.Request[v1.InfraRunRequest]) (*connect.Response[v1.InfraRunResponse], error)
+	InfraHttp(context.Context, *connect.Request[v1.InfraHttpRequest]) (*connect.Response[v1.InfraHttpResponse], error)
+	InfraCosts(context.Context, *connect.Request[v1.InfraCostsRequest]) (*connect.Response[v1.InfraCostsResponse], error)
+	ListRunbooks(context.Context, *connect.Request[v1.ListRunbooksRequest]) (*connect.Response[v1.ListRunbooksResponse], error)
+	// Asks to run a runbook: opens a gate a workspace admin decides; the outcome of the
+	// workflow arrives on the inbox.
+	RunRunbook(context.Context, *connect.Request[v1.RunRunbookRequest]) (*connect.Response[v1.RunRunbookResponse], error)
 	// The product TANK runs for this run's repository, as its operator sees it: whether it
 	// is up, how often it has restarted and why, recent cluster events and its log. So an
 	// agent can see the product it built fail instead of hearing about it from a person.
@@ -1435,6 +1573,36 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceCheckLiveProcedure,
 		svc.CheckLive,
 		connect.WithSchema(runnerServiceMethods.ByName("CheckLive")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceInfraRunHandler := connect.NewUnaryHandler(
+		RunnerServiceInfraRunProcedure,
+		svc.InfraRun,
+		connect.WithSchema(runnerServiceMethods.ByName("InfraRun")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceInfraHttpHandler := connect.NewUnaryHandler(
+		RunnerServiceInfraHttpProcedure,
+		svc.InfraHttp,
+		connect.WithSchema(runnerServiceMethods.ByName("InfraHttp")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceInfraCostsHandler := connect.NewUnaryHandler(
+		RunnerServiceInfraCostsProcedure,
+		svc.InfraCosts,
+		connect.WithSchema(runnerServiceMethods.ByName("InfraCosts")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceListRunbooksHandler := connect.NewUnaryHandler(
+		RunnerServiceListRunbooksProcedure,
+		svc.ListRunbooks,
+		connect.WithSchema(runnerServiceMethods.ByName("ListRunbooks")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceRunRunbookHandler := connect.NewUnaryHandler(
+		RunnerServiceRunRunbookProcedure,
+		svc.RunRunbook,
+		connect.WithSchema(runnerServiceMethods.ByName("RunRunbook")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServiceReadProductHandler := connect.NewUnaryHandler(
@@ -1735,6 +1903,16 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceListClaimsHandler.ServeHTTP(w, r)
 		case RunnerServiceCheckLiveProcedure:
 			runnerServiceCheckLiveHandler.ServeHTTP(w, r)
+		case RunnerServiceInfraRunProcedure:
+			runnerServiceInfraRunHandler.ServeHTTP(w, r)
+		case RunnerServiceInfraHttpProcedure:
+			runnerServiceInfraHttpHandler.ServeHTTP(w, r)
+		case RunnerServiceInfraCostsProcedure:
+			runnerServiceInfraCostsHandler.ServeHTTP(w, r)
+		case RunnerServiceListRunbooksProcedure:
+			runnerServiceListRunbooksHandler.ServeHTTP(w, r)
+		case RunnerServiceRunRunbookProcedure:
+			runnerServiceRunRunbookHandler.ServeHTTP(w, r)
 		case RunnerServiceReadProductProcedure:
 			runnerServiceReadProductHandler.ServeHTTP(w, r)
 		case RunnerServiceValidateSpecProcedure:
@@ -1914,6 +2092,26 @@ func (UnimplementedRunnerServiceHandler) ListClaims(context.Context, *connect.Re
 
 func (UnimplementedRunnerServiceHandler) CheckLive(context.Context, *connect.Request[v1.CheckLiveRequest]) (*connect.Response[v1.CheckLiveResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.CheckLive is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) InfraRun(context.Context, *connect.Request[v1.InfraRunRequest]) (*connect.Response[v1.InfraRunResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.InfraRun is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) InfraHttp(context.Context, *connect.Request[v1.InfraHttpRequest]) (*connect.Response[v1.InfraHttpResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.InfraHttp is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) InfraCosts(context.Context, *connect.Request[v1.InfraCostsRequest]) (*connect.Response[v1.InfraCostsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.InfraCosts is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ListRunbooks(context.Context, *connect.Request[v1.ListRunbooksRequest]) (*connect.Response[v1.ListRunbooksResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ListRunbooks is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) RunRunbook(context.Context, *connect.Request[v1.RunRunbookRequest]) (*connect.Response[v1.RunRunbookResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.RunRunbook is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) ReadProduct(context.Context, *connect.Request[v1.ReadProductRequest]) (*connect.Response[v1.ReadProductResponse], error) {
@@ -2098,6 +2296,24 @@ type ControlServiceClient interface {
 	RateGuardrail(context.Context, *connect.Request[v1.RateGuardrailRequest]) (*connect.Response[v1.RateGuardrailResponse], error)
 	ListGuardrailVerdicts(context.Context, *connect.Request[v1.ListGuardrailVerdictsRequest]) (*connect.Response[v1.ListGuardrailVerdictsResponse], error)
 	ExtractGuardrails(context.Context, *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error)
+	// Infrastructure connections, for the messaging core: the rows live here, and so do
+	// the credentials path and the Lockbox Agent vault. api decides who may ask and sets
+	// requested_by.
+	ListInfraConnections(context.Context, *connect.Request[v1.ListInfraConnectionsRequest]) (*connect.Response[v1.ListInfraConnectionsResponse], error)
+	GetInfraConnection(context.Context, *connect.Request[v1.GetInfraConnectionRequest]) (*connect.Response[v1.GetInfraConnectionResponse], error)
+	CreateInfraConnection(context.Context, *connect.Request[v1.CreateInfraConnectionRequest]) (*connect.Response[v1.CreateInfraConnectionResponse], error)
+	UpdateInfraConnection(context.Context, *connect.Request[v1.UpdateInfraConnectionRequest]) (*connect.Response[v1.UpdateInfraConnectionResponse], error)
+	DeleteInfraConnection(context.Context, *connect.Request[v1.DeleteInfraConnectionRequest]) (*connect.Response[v1.DeleteInfraConnectionResponse], error)
+	TestInfraConnection(context.Context, *connect.Request[v1.TestInfraConnectionRequest]) (*connect.Response[v1.TestInfraConnectionResponse], error)
+	GetInfraSetupGuide(context.Context, *connect.Request[v1.GetInfraSetupGuideRequest]) (*connect.Response[v1.GetInfraSetupGuideResponse], error)
+	ListInfraUses(context.Context, *connect.Request[v1.ListInfraUsesRequest]) (*connect.Response[v1.ListInfraUsesResponse], error)
+	ListInfraRunbooks(context.Context, *connect.Request[v1.ListInfraRunbooksRequest]) (*connect.Response[v1.ListInfraRunbooksResponse], error)
+	PutInfraRunbook(context.Context, *connect.Request[v1.PutInfraRunbookRequest]) (*connect.Response[v1.PutInfraRunbookResponse], error)
+	DeleteInfraRunbook(context.Context, *connect.Request[v1.DeleteInfraRunbookRequest]) (*connect.Response[v1.DeleteInfraRunbookResponse], error)
+	ListInfraWorkflowCandidates(context.Context, *connect.Request[v1.ListInfraWorkflowCandidatesRequest]) (*connect.Response[v1.ListInfraWorkflowCandidatesResponse], error)
+	ListInfraRelays(context.Context, *connect.Request[v1.ListInfraRelaysRequest]) (*connect.Response[v1.ListInfraRelaysResponse], error)
+	CreateInfraRelay(context.Context, *connect.Request[v1.CreateInfraRelayRequest]) (*connect.Response[v1.CreateInfraRelayResponse], error)
+	RevokeInfraRelay(context.Context, *connect.Request[v1.RevokeInfraRelayRequest]) (*connect.Response[v1.RevokeInfraRelayResponse], error)
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
@@ -2238,6 +2454,96 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+ControlServiceExtractGuardrailsProcedure,
 			connect.WithSchema(controlServiceMethods.ByName("ExtractGuardrails")),
+			connect.WithClientOptions(opts...),
+		),
+		listInfraConnections: connect.NewClient[v1.ListInfraConnectionsRequest, v1.ListInfraConnectionsResponse](
+			httpClient,
+			baseURL+ControlServiceListInfraConnectionsProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListInfraConnections")),
+			connect.WithClientOptions(opts...),
+		),
+		getInfraConnection: connect.NewClient[v1.GetInfraConnectionRequest, v1.GetInfraConnectionResponse](
+			httpClient,
+			baseURL+ControlServiceGetInfraConnectionProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("GetInfraConnection")),
+			connect.WithClientOptions(opts...),
+		),
+		createInfraConnection: connect.NewClient[v1.CreateInfraConnectionRequest, v1.CreateInfraConnectionResponse](
+			httpClient,
+			baseURL+ControlServiceCreateInfraConnectionProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("CreateInfraConnection")),
+			connect.WithClientOptions(opts...),
+		),
+		updateInfraConnection: connect.NewClient[v1.UpdateInfraConnectionRequest, v1.UpdateInfraConnectionResponse](
+			httpClient,
+			baseURL+ControlServiceUpdateInfraConnectionProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("UpdateInfraConnection")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteInfraConnection: connect.NewClient[v1.DeleteInfraConnectionRequest, v1.DeleteInfraConnectionResponse](
+			httpClient,
+			baseURL+ControlServiceDeleteInfraConnectionProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("DeleteInfraConnection")),
+			connect.WithClientOptions(opts...),
+		),
+		testInfraConnection: connect.NewClient[v1.TestInfraConnectionRequest, v1.TestInfraConnectionResponse](
+			httpClient,
+			baseURL+ControlServiceTestInfraConnectionProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("TestInfraConnection")),
+			connect.WithClientOptions(opts...),
+		),
+		getInfraSetupGuide: connect.NewClient[v1.GetInfraSetupGuideRequest, v1.GetInfraSetupGuideResponse](
+			httpClient,
+			baseURL+ControlServiceGetInfraSetupGuideProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("GetInfraSetupGuide")),
+			connect.WithClientOptions(opts...),
+		),
+		listInfraUses: connect.NewClient[v1.ListInfraUsesRequest, v1.ListInfraUsesResponse](
+			httpClient,
+			baseURL+ControlServiceListInfraUsesProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListInfraUses")),
+			connect.WithClientOptions(opts...),
+		),
+		listInfraRunbooks: connect.NewClient[v1.ListInfraRunbooksRequest, v1.ListInfraRunbooksResponse](
+			httpClient,
+			baseURL+ControlServiceListInfraRunbooksProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListInfraRunbooks")),
+			connect.WithClientOptions(opts...),
+		),
+		putInfraRunbook: connect.NewClient[v1.PutInfraRunbookRequest, v1.PutInfraRunbookResponse](
+			httpClient,
+			baseURL+ControlServicePutInfraRunbookProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("PutInfraRunbook")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteInfraRunbook: connect.NewClient[v1.DeleteInfraRunbookRequest, v1.DeleteInfraRunbookResponse](
+			httpClient,
+			baseURL+ControlServiceDeleteInfraRunbookProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("DeleteInfraRunbook")),
+			connect.WithClientOptions(opts...),
+		),
+		listInfraWorkflowCandidates: connect.NewClient[v1.ListInfraWorkflowCandidatesRequest, v1.ListInfraWorkflowCandidatesResponse](
+			httpClient,
+			baseURL+ControlServiceListInfraWorkflowCandidatesProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListInfraWorkflowCandidates")),
+			connect.WithClientOptions(opts...),
+		),
+		listInfraRelays: connect.NewClient[v1.ListInfraRelaysRequest, v1.ListInfraRelaysResponse](
+			httpClient,
+			baseURL+ControlServiceListInfraRelaysProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListInfraRelays")),
+			connect.WithClientOptions(opts...),
+		),
+		createInfraRelay: connect.NewClient[v1.CreateInfraRelayRequest, v1.CreateInfraRelayResponse](
+			httpClient,
+			baseURL+ControlServiceCreateInfraRelayProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("CreateInfraRelay")),
+			connect.WithClientOptions(opts...),
+		),
+		revokeInfraRelay: connect.NewClient[v1.RevokeInfraRelayRequest, v1.RevokeInfraRelayResponse](
+			httpClient,
+			baseURL+ControlServiceRevokeInfraRelayProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("RevokeInfraRelay")),
 			connect.WithClientOptions(opts...),
 		),
 		startRun: connect.NewClient[v1.StartRunRequest, v1.StartRunResponse](
@@ -2479,52 +2785,67 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 
 // controlServiceClient implements ControlServiceClient.
 type controlServiceClient struct {
-	arenaTurn                *connect.Client[v1.ArenaTurnRequest, v1.ArenaTurnResponse]
-	listGuardrails           *connect.Client[v1.ListGuardrailsRequest, v1.ListGuardrailsResponse]
-	putGuardrail             *connect.Client[v1.PutGuardrailRequest, v1.PutGuardrailResponse]
-	deleteGuardrail          *connect.Client[v1.DeleteGuardrailRequest, v1.DeleteGuardrailResponse]
-	rateGuardrail            *connect.Client[v1.RateGuardrailRequest, v1.RateGuardrailResponse]
-	listGuardrailVerdicts    *connect.Client[v1.ListGuardrailVerdictsRequest, v1.ListGuardrailVerdictsResponse]
-	extractGuardrails        *connect.Client[v1.ExtractGuardrailsRequest, v1.ExtractGuardrailsResponse]
-	startRun                 *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
-	openThread               *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
-	refreshNeuralKnowledge   *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
-	getRun                   *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
-	listRuns                 *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
-	decideGate               *connect.Client[v1.DecideGateRequest, v1.DecideGateResponse]
-	steerRun                 *connect.Client[v1.SteerRunRequest, v1.SteerRunResponse]
-	cancelRun                *connect.Client[v1.CancelRunRequest, v1.CancelRunResponse]
-	listRunEvents            *connect.Client[v1.ListRunEventsRequest, v1.ListRunEventsResponse]
-	createProductRepo        *connect.Client[v1.CreateProductRepoRequest, v1.CreateProductRepoResponse]
-	commitProductFiles       *connect.Client[v1.CommitProductFilesRequest, v1.CommitProductFilesResponse]
-	setProductReplicas       *connect.Client[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse]
-	registerDeployment       *connect.Client[v1.RegisterDeploymentRequest, v1.RegisterDeploymentResponse]
-	getDeployment            *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
-	getProductState          *connect.Client[v1.GetProductStateRequest, v1.GetProductStateResponse]
-	checkProductPage         *connect.Client[v1.CheckProductPageRequest, v1.CheckProductPageResponse]
-	getProductSpec           *connect.Client[v1.GetProductSpecRequest, v1.GetProductSpecResponse]
-	approveProductBuild      *connect.Client[v1.ApproveProductBuildRequest, v1.ApproveProductBuildResponse]
-	operateProduct           *connect.Client[v1.OperateProductRequest, v1.OperateProductResponse]
-	listProductChanges       *connect.Client[v1.ListProductChangesRequest, v1.ListProductChangesResponse]
-	rollbackProduct          *connect.Client[v1.RollbackProductRequest, v1.RollbackProductResponse]
-	updateProductSpec        *connect.Client[v1.UpdateProductSpecRequest, v1.UpdateProductSpecResponse]
-	previewProductSpec       *connect.Client[v1.PreviewProductSpecRequest, v1.PreviewProductSpecResponse]
-	applyProductSpec         *connect.Client[v1.ApplyProductSpecRequest, v1.ApplyProductSpecResponse]
-	getProductSpecText       *connect.Client[v1.GetProductSpecTextRequest, v1.GetProductSpecTextResponse]
-	exportProduct            *connect.Client[v1.ExportProductRequest, v1.ExportProductResponse]
-	setProductSecret         *connect.Client[v1.SetProductSecretRequest, v1.SetProductSecretResponse]
-	setUpPreviewWorkflow     *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
-	readRepo                 *connect.Client[v1.ReadRepoRequest, v1.ReadRepoResponse]
-	buildPreview             *connect.Client[v1.BuildPreviewRequest, v1.BuildPreviewResponse]
-	openSetupPullRequest     *connect.Client[v1.OpenSetupPullRequestRequest, v1.OpenSetupPullRequestResponse]
-	readElementAt            *connect.Client[v1.ReadElementAtRequest, v1.ReadElementAtResponse]
-	mergeChange              *connect.Client[v1.MergeChangeRequest, v1.MergeChangeResponse]
-	bindChannelRepo          *connect.Client[v1.BindChannelRepoRequest, v1.BindChannelRepoResponse]
-	unbindChannelRepo        *connect.Client[v1.UnbindChannelRepoRequest, v1.UnbindChannelRepoResponse]
-	setChannelRepoAccess     *connect.Client[v1.SetChannelRepoAccessRequest, v1.SetChannelRepoAccessResponse]
-	createGitHubConnectState *connect.Client[v1.CreateGitHubConnectStateRequest, v1.CreateGitHubConnectStateResponse]
-	setChannelAgentSettings  *connect.Client[v1.SetChannelAgentSettingsRequest, v1.SetChannelAgentSettingsResponse]
-	setWorkspaceAgentPolicy  *connect.Client[v1.SetWorkspaceAgentPolicyRequest, v1.SetWorkspaceAgentPolicyResponse]
+	arenaTurn                   *connect.Client[v1.ArenaTurnRequest, v1.ArenaTurnResponse]
+	listGuardrails              *connect.Client[v1.ListGuardrailsRequest, v1.ListGuardrailsResponse]
+	putGuardrail                *connect.Client[v1.PutGuardrailRequest, v1.PutGuardrailResponse]
+	deleteGuardrail             *connect.Client[v1.DeleteGuardrailRequest, v1.DeleteGuardrailResponse]
+	rateGuardrail               *connect.Client[v1.RateGuardrailRequest, v1.RateGuardrailResponse]
+	listGuardrailVerdicts       *connect.Client[v1.ListGuardrailVerdictsRequest, v1.ListGuardrailVerdictsResponse]
+	extractGuardrails           *connect.Client[v1.ExtractGuardrailsRequest, v1.ExtractGuardrailsResponse]
+	listInfraConnections        *connect.Client[v1.ListInfraConnectionsRequest, v1.ListInfraConnectionsResponse]
+	getInfraConnection          *connect.Client[v1.GetInfraConnectionRequest, v1.GetInfraConnectionResponse]
+	createInfraConnection       *connect.Client[v1.CreateInfraConnectionRequest, v1.CreateInfraConnectionResponse]
+	updateInfraConnection       *connect.Client[v1.UpdateInfraConnectionRequest, v1.UpdateInfraConnectionResponse]
+	deleteInfraConnection       *connect.Client[v1.DeleteInfraConnectionRequest, v1.DeleteInfraConnectionResponse]
+	testInfraConnection         *connect.Client[v1.TestInfraConnectionRequest, v1.TestInfraConnectionResponse]
+	getInfraSetupGuide          *connect.Client[v1.GetInfraSetupGuideRequest, v1.GetInfraSetupGuideResponse]
+	listInfraUses               *connect.Client[v1.ListInfraUsesRequest, v1.ListInfraUsesResponse]
+	listInfraRunbooks           *connect.Client[v1.ListInfraRunbooksRequest, v1.ListInfraRunbooksResponse]
+	putInfraRunbook             *connect.Client[v1.PutInfraRunbookRequest, v1.PutInfraRunbookResponse]
+	deleteInfraRunbook          *connect.Client[v1.DeleteInfraRunbookRequest, v1.DeleteInfraRunbookResponse]
+	listInfraWorkflowCandidates *connect.Client[v1.ListInfraWorkflowCandidatesRequest, v1.ListInfraWorkflowCandidatesResponse]
+	listInfraRelays             *connect.Client[v1.ListInfraRelaysRequest, v1.ListInfraRelaysResponse]
+	createInfraRelay            *connect.Client[v1.CreateInfraRelayRequest, v1.CreateInfraRelayResponse]
+	revokeInfraRelay            *connect.Client[v1.RevokeInfraRelayRequest, v1.RevokeInfraRelayResponse]
+	startRun                    *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	openThread                  *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
+	refreshNeuralKnowledge      *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
+	getRun                      *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	listRuns                    *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
+	decideGate                  *connect.Client[v1.DecideGateRequest, v1.DecideGateResponse]
+	steerRun                    *connect.Client[v1.SteerRunRequest, v1.SteerRunResponse]
+	cancelRun                   *connect.Client[v1.CancelRunRequest, v1.CancelRunResponse]
+	listRunEvents               *connect.Client[v1.ListRunEventsRequest, v1.ListRunEventsResponse]
+	createProductRepo           *connect.Client[v1.CreateProductRepoRequest, v1.CreateProductRepoResponse]
+	commitProductFiles          *connect.Client[v1.CommitProductFilesRequest, v1.CommitProductFilesResponse]
+	setProductReplicas          *connect.Client[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse]
+	registerDeployment          *connect.Client[v1.RegisterDeploymentRequest, v1.RegisterDeploymentResponse]
+	getDeployment               *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
+	getProductState             *connect.Client[v1.GetProductStateRequest, v1.GetProductStateResponse]
+	checkProductPage            *connect.Client[v1.CheckProductPageRequest, v1.CheckProductPageResponse]
+	getProductSpec              *connect.Client[v1.GetProductSpecRequest, v1.GetProductSpecResponse]
+	approveProductBuild         *connect.Client[v1.ApproveProductBuildRequest, v1.ApproveProductBuildResponse]
+	operateProduct              *connect.Client[v1.OperateProductRequest, v1.OperateProductResponse]
+	listProductChanges          *connect.Client[v1.ListProductChangesRequest, v1.ListProductChangesResponse]
+	rollbackProduct             *connect.Client[v1.RollbackProductRequest, v1.RollbackProductResponse]
+	updateProductSpec           *connect.Client[v1.UpdateProductSpecRequest, v1.UpdateProductSpecResponse]
+	previewProductSpec          *connect.Client[v1.PreviewProductSpecRequest, v1.PreviewProductSpecResponse]
+	applyProductSpec            *connect.Client[v1.ApplyProductSpecRequest, v1.ApplyProductSpecResponse]
+	getProductSpecText          *connect.Client[v1.GetProductSpecTextRequest, v1.GetProductSpecTextResponse]
+	exportProduct               *connect.Client[v1.ExportProductRequest, v1.ExportProductResponse]
+	setProductSecret            *connect.Client[v1.SetProductSecretRequest, v1.SetProductSecretResponse]
+	setUpPreviewWorkflow        *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
+	readRepo                    *connect.Client[v1.ReadRepoRequest, v1.ReadRepoResponse]
+	buildPreview                *connect.Client[v1.BuildPreviewRequest, v1.BuildPreviewResponse]
+	openSetupPullRequest        *connect.Client[v1.OpenSetupPullRequestRequest, v1.OpenSetupPullRequestResponse]
+	readElementAt               *connect.Client[v1.ReadElementAtRequest, v1.ReadElementAtResponse]
+	mergeChange                 *connect.Client[v1.MergeChangeRequest, v1.MergeChangeResponse]
+	bindChannelRepo             *connect.Client[v1.BindChannelRepoRequest, v1.BindChannelRepoResponse]
+	unbindChannelRepo           *connect.Client[v1.UnbindChannelRepoRequest, v1.UnbindChannelRepoResponse]
+	setChannelRepoAccess        *connect.Client[v1.SetChannelRepoAccessRequest, v1.SetChannelRepoAccessResponse]
+	createGitHubConnectState    *connect.Client[v1.CreateGitHubConnectStateRequest, v1.CreateGitHubConnectStateResponse]
+	setChannelAgentSettings     *connect.Client[v1.SetChannelAgentSettingsRequest, v1.SetChannelAgentSettingsResponse]
+	setWorkspaceAgentPolicy     *connect.Client[v1.SetWorkspaceAgentPolicyRequest, v1.SetWorkspaceAgentPolicyResponse]
 }
 
 // ArenaTurn calls tank.agentctl.v1.ControlService.ArenaTurn.
@@ -2560,6 +2881,81 @@ func (c *controlServiceClient) ListGuardrailVerdicts(ctx context.Context, req *c
 // ExtractGuardrails calls tank.agentctl.v1.ControlService.ExtractGuardrails.
 func (c *controlServiceClient) ExtractGuardrails(ctx context.Context, req *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error) {
 	return c.extractGuardrails.CallUnary(ctx, req)
+}
+
+// ListInfraConnections calls tank.agentctl.v1.ControlService.ListInfraConnections.
+func (c *controlServiceClient) ListInfraConnections(ctx context.Context, req *connect.Request[v1.ListInfraConnectionsRequest]) (*connect.Response[v1.ListInfraConnectionsResponse], error) {
+	return c.listInfraConnections.CallUnary(ctx, req)
+}
+
+// GetInfraConnection calls tank.agentctl.v1.ControlService.GetInfraConnection.
+func (c *controlServiceClient) GetInfraConnection(ctx context.Context, req *connect.Request[v1.GetInfraConnectionRequest]) (*connect.Response[v1.GetInfraConnectionResponse], error) {
+	return c.getInfraConnection.CallUnary(ctx, req)
+}
+
+// CreateInfraConnection calls tank.agentctl.v1.ControlService.CreateInfraConnection.
+func (c *controlServiceClient) CreateInfraConnection(ctx context.Context, req *connect.Request[v1.CreateInfraConnectionRequest]) (*connect.Response[v1.CreateInfraConnectionResponse], error) {
+	return c.createInfraConnection.CallUnary(ctx, req)
+}
+
+// UpdateInfraConnection calls tank.agentctl.v1.ControlService.UpdateInfraConnection.
+func (c *controlServiceClient) UpdateInfraConnection(ctx context.Context, req *connect.Request[v1.UpdateInfraConnectionRequest]) (*connect.Response[v1.UpdateInfraConnectionResponse], error) {
+	return c.updateInfraConnection.CallUnary(ctx, req)
+}
+
+// DeleteInfraConnection calls tank.agentctl.v1.ControlService.DeleteInfraConnection.
+func (c *controlServiceClient) DeleteInfraConnection(ctx context.Context, req *connect.Request[v1.DeleteInfraConnectionRequest]) (*connect.Response[v1.DeleteInfraConnectionResponse], error) {
+	return c.deleteInfraConnection.CallUnary(ctx, req)
+}
+
+// TestInfraConnection calls tank.agentctl.v1.ControlService.TestInfraConnection.
+func (c *controlServiceClient) TestInfraConnection(ctx context.Context, req *connect.Request[v1.TestInfraConnectionRequest]) (*connect.Response[v1.TestInfraConnectionResponse], error) {
+	return c.testInfraConnection.CallUnary(ctx, req)
+}
+
+// GetInfraSetupGuide calls tank.agentctl.v1.ControlService.GetInfraSetupGuide.
+func (c *controlServiceClient) GetInfraSetupGuide(ctx context.Context, req *connect.Request[v1.GetInfraSetupGuideRequest]) (*connect.Response[v1.GetInfraSetupGuideResponse], error) {
+	return c.getInfraSetupGuide.CallUnary(ctx, req)
+}
+
+// ListInfraUses calls tank.agentctl.v1.ControlService.ListInfraUses.
+func (c *controlServiceClient) ListInfraUses(ctx context.Context, req *connect.Request[v1.ListInfraUsesRequest]) (*connect.Response[v1.ListInfraUsesResponse], error) {
+	return c.listInfraUses.CallUnary(ctx, req)
+}
+
+// ListInfraRunbooks calls tank.agentctl.v1.ControlService.ListInfraRunbooks.
+func (c *controlServiceClient) ListInfraRunbooks(ctx context.Context, req *connect.Request[v1.ListInfraRunbooksRequest]) (*connect.Response[v1.ListInfraRunbooksResponse], error) {
+	return c.listInfraRunbooks.CallUnary(ctx, req)
+}
+
+// PutInfraRunbook calls tank.agentctl.v1.ControlService.PutInfraRunbook.
+func (c *controlServiceClient) PutInfraRunbook(ctx context.Context, req *connect.Request[v1.PutInfraRunbookRequest]) (*connect.Response[v1.PutInfraRunbookResponse], error) {
+	return c.putInfraRunbook.CallUnary(ctx, req)
+}
+
+// DeleteInfraRunbook calls tank.agentctl.v1.ControlService.DeleteInfraRunbook.
+func (c *controlServiceClient) DeleteInfraRunbook(ctx context.Context, req *connect.Request[v1.DeleteInfraRunbookRequest]) (*connect.Response[v1.DeleteInfraRunbookResponse], error) {
+	return c.deleteInfraRunbook.CallUnary(ctx, req)
+}
+
+// ListInfraWorkflowCandidates calls tank.agentctl.v1.ControlService.ListInfraWorkflowCandidates.
+func (c *controlServiceClient) ListInfraWorkflowCandidates(ctx context.Context, req *connect.Request[v1.ListInfraWorkflowCandidatesRequest]) (*connect.Response[v1.ListInfraWorkflowCandidatesResponse], error) {
+	return c.listInfraWorkflowCandidates.CallUnary(ctx, req)
+}
+
+// ListInfraRelays calls tank.agentctl.v1.ControlService.ListInfraRelays.
+func (c *controlServiceClient) ListInfraRelays(ctx context.Context, req *connect.Request[v1.ListInfraRelaysRequest]) (*connect.Response[v1.ListInfraRelaysResponse], error) {
+	return c.listInfraRelays.CallUnary(ctx, req)
+}
+
+// CreateInfraRelay calls tank.agentctl.v1.ControlService.CreateInfraRelay.
+func (c *controlServiceClient) CreateInfraRelay(ctx context.Context, req *connect.Request[v1.CreateInfraRelayRequest]) (*connect.Response[v1.CreateInfraRelayResponse], error) {
+	return c.createInfraRelay.CallUnary(ctx, req)
+}
+
+// RevokeInfraRelay calls tank.agentctl.v1.ControlService.RevokeInfraRelay.
+func (c *controlServiceClient) RevokeInfraRelay(ctx context.Context, req *connect.Request[v1.RevokeInfraRelayRequest]) (*connect.Response[v1.RevokeInfraRelayResponse], error) {
+	return c.revokeInfraRelay.CallUnary(ctx, req)
 }
 
 // StartRun calls tank.agentctl.v1.ControlService.StartRun.
@@ -2771,6 +3167,24 @@ type ControlServiceHandler interface {
 	RateGuardrail(context.Context, *connect.Request[v1.RateGuardrailRequest]) (*connect.Response[v1.RateGuardrailResponse], error)
 	ListGuardrailVerdicts(context.Context, *connect.Request[v1.ListGuardrailVerdictsRequest]) (*connect.Response[v1.ListGuardrailVerdictsResponse], error)
 	ExtractGuardrails(context.Context, *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error)
+	// Infrastructure connections, for the messaging core: the rows live here, and so do
+	// the credentials path and the Lockbox Agent vault. api decides who may ask and sets
+	// requested_by.
+	ListInfraConnections(context.Context, *connect.Request[v1.ListInfraConnectionsRequest]) (*connect.Response[v1.ListInfraConnectionsResponse], error)
+	GetInfraConnection(context.Context, *connect.Request[v1.GetInfraConnectionRequest]) (*connect.Response[v1.GetInfraConnectionResponse], error)
+	CreateInfraConnection(context.Context, *connect.Request[v1.CreateInfraConnectionRequest]) (*connect.Response[v1.CreateInfraConnectionResponse], error)
+	UpdateInfraConnection(context.Context, *connect.Request[v1.UpdateInfraConnectionRequest]) (*connect.Response[v1.UpdateInfraConnectionResponse], error)
+	DeleteInfraConnection(context.Context, *connect.Request[v1.DeleteInfraConnectionRequest]) (*connect.Response[v1.DeleteInfraConnectionResponse], error)
+	TestInfraConnection(context.Context, *connect.Request[v1.TestInfraConnectionRequest]) (*connect.Response[v1.TestInfraConnectionResponse], error)
+	GetInfraSetupGuide(context.Context, *connect.Request[v1.GetInfraSetupGuideRequest]) (*connect.Response[v1.GetInfraSetupGuideResponse], error)
+	ListInfraUses(context.Context, *connect.Request[v1.ListInfraUsesRequest]) (*connect.Response[v1.ListInfraUsesResponse], error)
+	ListInfraRunbooks(context.Context, *connect.Request[v1.ListInfraRunbooksRequest]) (*connect.Response[v1.ListInfraRunbooksResponse], error)
+	PutInfraRunbook(context.Context, *connect.Request[v1.PutInfraRunbookRequest]) (*connect.Response[v1.PutInfraRunbookResponse], error)
+	DeleteInfraRunbook(context.Context, *connect.Request[v1.DeleteInfraRunbookRequest]) (*connect.Response[v1.DeleteInfraRunbookResponse], error)
+	ListInfraWorkflowCandidates(context.Context, *connect.Request[v1.ListInfraWorkflowCandidatesRequest]) (*connect.Response[v1.ListInfraWorkflowCandidatesResponse], error)
+	ListInfraRelays(context.Context, *connect.Request[v1.ListInfraRelaysRequest]) (*connect.Response[v1.ListInfraRelaysResponse], error)
+	CreateInfraRelay(context.Context, *connect.Request[v1.CreateInfraRelayRequest]) (*connect.Response[v1.CreateInfraRelayResponse], error)
+	RevokeInfraRelay(context.Context, *connect.Request[v1.RevokeInfraRelayRequest]) (*connect.Response[v1.RevokeInfraRelayResponse], error)
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
@@ -2907,6 +3321,96 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		ControlServiceExtractGuardrailsProcedure,
 		svc.ExtractGuardrails,
 		connect.WithSchema(controlServiceMethods.ByName("ExtractGuardrails")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceListInfraConnectionsHandler := connect.NewUnaryHandler(
+		ControlServiceListInfraConnectionsProcedure,
+		svc.ListInfraConnections,
+		connect.WithSchema(controlServiceMethods.ByName("ListInfraConnections")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceGetInfraConnectionHandler := connect.NewUnaryHandler(
+		ControlServiceGetInfraConnectionProcedure,
+		svc.GetInfraConnection,
+		connect.WithSchema(controlServiceMethods.ByName("GetInfraConnection")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceCreateInfraConnectionHandler := connect.NewUnaryHandler(
+		ControlServiceCreateInfraConnectionProcedure,
+		svc.CreateInfraConnection,
+		connect.WithSchema(controlServiceMethods.ByName("CreateInfraConnection")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceUpdateInfraConnectionHandler := connect.NewUnaryHandler(
+		ControlServiceUpdateInfraConnectionProcedure,
+		svc.UpdateInfraConnection,
+		connect.WithSchema(controlServiceMethods.ByName("UpdateInfraConnection")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceDeleteInfraConnectionHandler := connect.NewUnaryHandler(
+		ControlServiceDeleteInfraConnectionProcedure,
+		svc.DeleteInfraConnection,
+		connect.WithSchema(controlServiceMethods.ByName("DeleteInfraConnection")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceTestInfraConnectionHandler := connect.NewUnaryHandler(
+		ControlServiceTestInfraConnectionProcedure,
+		svc.TestInfraConnection,
+		connect.WithSchema(controlServiceMethods.ByName("TestInfraConnection")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceGetInfraSetupGuideHandler := connect.NewUnaryHandler(
+		ControlServiceGetInfraSetupGuideProcedure,
+		svc.GetInfraSetupGuide,
+		connect.WithSchema(controlServiceMethods.ByName("GetInfraSetupGuide")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceListInfraUsesHandler := connect.NewUnaryHandler(
+		ControlServiceListInfraUsesProcedure,
+		svc.ListInfraUses,
+		connect.WithSchema(controlServiceMethods.ByName("ListInfraUses")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceListInfraRunbooksHandler := connect.NewUnaryHandler(
+		ControlServiceListInfraRunbooksProcedure,
+		svc.ListInfraRunbooks,
+		connect.WithSchema(controlServiceMethods.ByName("ListInfraRunbooks")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServicePutInfraRunbookHandler := connect.NewUnaryHandler(
+		ControlServicePutInfraRunbookProcedure,
+		svc.PutInfraRunbook,
+		connect.WithSchema(controlServiceMethods.ByName("PutInfraRunbook")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceDeleteInfraRunbookHandler := connect.NewUnaryHandler(
+		ControlServiceDeleteInfraRunbookProcedure,
+		svc.DeleteInfraRunbook,
+		connect.WithSchema(controlServiceMethods.ByName("DeleteInfraRunbook")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceListInfraWorkflowCandidatesHandler := connect.NewUnaryHandler(
+		ControlServiceListInfraWorkflowCandidatesProcedure,
+		svc.ListInfraWorkflowCandidates,
+		connect.WithSchema(controlServiceMethods.ByName("ListInfraWorkflowCandidates")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceListInfraRelaysHandler := connect.NewUnaryHandler(
+		ControlServiceListInfraRelaysProcedure,
+		svc.ListInfraRelays,
+		connect.WithSchema(controlServiceMethods.ByName("ListInfraRelays")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceCreateInfraRelayHandler := connect.NewUnaryHandler(
+		ControlServiceCreateInfraRelayProcedure,
+		svc.CreateInfraRelay,
+		connect.WithSchema(controlServiceMethods.ByName("CreateInfraRelay")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceRevokeInfraRelayHandler := connect.NewUnaryHandler(
+		ControlServiceRevokeInfraRelayProcedure,
+		svc.RevokeInfraRelay,
+		connect.WithSchema(controlServiceMethods.ByName("RevokeInfraRelay")),
 		connect.WithHandlerOptions(opts...),
 	)
 	controlServiceStartRunHandler := connect.NewUnaryHandler(
@@ -3159,6 +3663,36 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceListGuardrailVerdictsHandler.ServeHTTP(w, r)
 		case ControlServiceExtractGuardrailsProcedure:
 			controlServiceExtractGuardrailsHandler.ServeHTTP(w, r)
+		case ControlServiceListInfraConnectionsProcedure:
+			controlServiceListInfraConnectionsHandler.ServeHTTP(w, r)
+		case ControlServiceGetInfraConnectionProcedure:
+			controlServiceGetInfraConnectionHandler.ServeHTTP(w, r)
+		case ControlServiceCreateInfraConnectionProcedure:
+			controlServiceCreateInfraConnectionHandler.ServeHTTP(w, r)
+		case ControlServiceUpdateInfraConnectionProcedure:
+			controlServiceUpdateInfraConnectionHandler.ServeHTTP(w, r)
+		case ControlServiceDeleteInfraConnectionProcedure:
+			controlServiceDeleteInfraConnectionHandler.ServeHTTP(w, r)
+		case ControlServiceTestInfraConnectionProcedure:
+			controlServiceTestInfraConnectionHandler.ServeHTTP(w, r)
+		case ControlServiceGetInfraSetupGuideProcedure:
+			controlServiceGetInfraSetupGuideHandler.ServeHTTP(w, r)
+		case ControlServiceListInfraUsesProcedure:
+			controlServiceListInfraUsesHandler.ServeHTTP(w, r)
+		case ControlServiceListInfraRunbooksProcedure:
+			controlServiceListInfraRunbooksHandler.ServeHTTP(w, r)
+		case ControlServicePutInfraRunbookProcedure:
+			controlServicePutInfraRunbookHandler.ServeHTTP(w, r)
+		case ControlServiceDeleteInfraRunbookProcedure:
+			controlServiceDeleteInfraRunbookHandler.ServeHTTP(w, r)
+		case ControlServiceListInfraWorkflowCandidatesProcedure:
+			controlServiceListInfraWorkflowCandidatesHandler.ServeHTTP(w, r)
+		case ControlServiceListInfraRelaysProcedure:
+			controlServiceListInfraRelaysHandler.ServeHTTP(w, r)
+		case ControlServiceCreateInfraRelayProcedure:
+			controlServiceCreateInfraRelayHandler.ServeHTTP(w, r)
+		case ControlServiceRevokeInfraRelayProcedure:
+			controlServiceRevokeInfraRelayHandler.ServeHTTP(w, r)
 		case ControlServiceStartRunProcedure:
 			controlServiceStartRunHandler.ServeHTTP(w, r)
 		case ControlServiceOpenThreadProcedure:
@@ -3272,6 +3806,66 @@ func (UnimplementedControlServiceHandler) ListGuardrailVerdicts(context.Context,
 
 func (UnimplementedControlServiceHandler) ExtractGuardrails(context.Context, *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ExtractGuardrails is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListInfraConnections(context.Context, *connect.Request[v1.ListInfraConnectionsRequest]) (*connect.Response[v1.ListInfraConnectionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListInfraConnections is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) GetInfraConnection(context.Context, *connect.Request[v1.GetInfraConnectionRequest]) (*connect.Response[v1.GetInfraConnectionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.GetInfraConnection is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) CreateInfraConnection(context.Context, *connect.Request[v1.CreateInfraConnectionRequest]) (*connect.Response[v1.CreateInfraConnectionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.CreateInfraConnection is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) UpdateInfraConnection(context.Context, *connect.Request[v1.UpdateInfraConnectionRequest]) (*connect.Response[v1.UpdateInfraConnectionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.UpdateInfraConnection is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) DeleteInfraConnection(context.Context, *connect.Request[v1.DeleteInfraConnectionRequest]) (*connect.Response[v1.DeleteInfraConnectionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.DeleteInfraConnection is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) TestInfraConnection(context.Context, *connect.Request[v1.TestInfraConnectionRequest]) (*connect.Response[v1.TestInfraConnectionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.TestInfraConnection is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) GetInfraSetupGuide(context.Context, *connect.Request[v1.GetInfraSetupGuideRequest]) (*connect.Response[v1.GetInfraSetupGuideResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.GetInfraSetupGuide is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListInfraUses(context.Context, *connect.Request[v1.ListInfraUsesRequest]) (*connect.Response[v1.ListInfraUsesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListInfraUses is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListInfraRunbooks(context.Context, *connect.Request[v1.ListInfraRunbooksRequest]) (*connect.Response[v1.ListInfraRunbooksResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListInfraRunbooks is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) PutInfraRunbook(context.Context, *connect.Request[v1.PutInfraRunbookRequest]) (*connect.Response[v1.PutInfraRunbookResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.PutInfraRunbook is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) DeleteInfraRunbook(context.Context, *connect.Request[v1.DeleteInfraRunbookRequest]) (*connect.Response[v1.DeleteInfraRunbookResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.DeleteInfraRunbook is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListInfraWorkflowCandidates(context.Context, *connect.Request[v1.ListInfraWorkflowCandidatesRequest]) (*connect.Response[v1.ListInfraWorkflowCandidatesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListInfraWorkflowCandidates is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListInfraRelays(context.Context, *connect.Request[v1.ListInfraRelaysRequest]) (*connect.Response[v1.ListInfraRelaysResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListInfraRelays is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) CreateInfraRelay(context.Context, *connect.Request[v1.CreateInfraRelayRequest]) (*connect.Response[v1.CreateInfraRelayResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.CreateInfraRelay is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) RevokeInfraRelay(context.Context, *connect.Request[v1.RevokeInfraRelayRequest]) (*connect.Response[v1.RevokeInfraRelayResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.RevokeInfraRelay is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error) {

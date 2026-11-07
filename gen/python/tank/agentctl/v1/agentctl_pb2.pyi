@@ -6,6 +6,7 @@ from tank.board.v1 import board_pb2 as _board_pb2
 from tank.books.v1 import books_pb2 as _books_pb2
 from tank.canvas.v1 import canvas_pb2 as _canvas_pb2
 from tank.guardrails.v1 import guardrails_pb2 as _guardrails_pb2
+from tank.infra.v1 import infra_pb2 as _infra_pb2
 from tank.neural.v1 import neural_pb2 as _neural_pb2
 from tank.social.v1 import social_pb2 as _social_pb2
 from google.protobuf.internal import containers as _containers
@@ -134,7 +135,7 @@ class ApprovedPlan(_message.Message):
     def __init__(self, plan_hash: _Optional[str] = ..., summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[_blocks_pb2.PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., approved_by: _Optional[str] = ..., approved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback: _Optional[str] = ...) -> None: ...
 
 class RunContext(_message.Message):
-    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan", "mode", "team", "parent_run_id", "handoff", "envelope_left", "git_proxy_url", "guardrails")
+    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan", "mode", "team", "parent_run_id", "handoff", "envelope_left", "git_proxy_url", "guardrails", "infra_connections")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -174,6 +175,7 @@ class RunContext(_message.Message):
     ENVELOPE_LEFT_FIELD_NUMBER: _ClassVar[int]
     GIT_PROXY_URL_FIELD_NUMBER: _ClassVar[int]
     GUARDRAILS_FIELD_NUMBER: _ClassVar[int]
+    INFRA_CONNECTIONS_FIELD_NUMBER: _ClassVar[int]
     run_id: str
     workspace_id: str
     channel_id: str
@@ -213,7 +215,8 @@ class RunContext(_message.Message):
     envelope_left: Envelope
     git_proxy_url: str
     guardrails: _containers.RepeatedCompositeFieldContainer[_guardrails_pb2.Guardrail]
-    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ..., git_proxy_url: _Optional[str] = ..., guardrails: _Optional[_Iterable[_Union[_guardrails_pb2.Guardrail, _Mapping]]] = ...) -> None: ...
+    infra_connections: _containers.RepeatedCompositeFieldContainer[InfraConnectionBrief]
+    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ..., git_proxy_url: _Optional[str] = ..., guardrails: _Optional[_Iterable[_Union[_guardrails_pb2.Guardrail, _Mapping]]] = ..., infra_connections: _Optional[_Iterable[_Union[InfraConnectionBrief, _Mapping]]] = ...) -> None: ...
 
 class TeamContext(_message.Message):
     __slots__ = ("team_id", "name", "handle", "purpose", "members", "member_id", "coordinator", "board_id", "paused", "cap_note", "memory")
@@ -2848,3 +2851,331 @@ class MergeChangeResponse(_message.Message):
     pull_request_url: str
     note: str
     def __init__(self, merged: bool = ..., pull_request_url: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
+
+class InfraConnectionBrief(_message.Message):
+    __slots__ = ("name", "provider", "description", "regions", "clusters", "tools", "base_url")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    PROVIDER_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    REGIONS_FIELD_NUMBER: _ClassVar[int]
+    CLUSTERS_FIELD_NUMBER: _ClassVar[int]
+    TOOLS_FIELD_NUMBER: _ClassVar[int]
+    BASE_URL_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    provider: _infra_pb2.Provider
+    description: str
+    regions: _containers.RepeatedScalarFieldContainer[str]
+    clusters: _containers.RepeatedScalarFieldContainer[str]
+    tools: _containers.RepeatedScalarFieldContainer[str]
+    base_url: str
+    def __init__(self, name: _Optional[str] = ..., provider: _Optional[_Union[_infra_pb2.Provider, str]] = ..., description: _Optional[str] = ..., regions: _Optional[_Iterable[str]] = ..., clusters: _Optional[_Iterable[str]] = ..., tools: _Optional[_Iterable[str]] = ..., base_url: _Optional[str] = ...) -> None: ...
+
+class InfraRunRequest(_message.Message):
+    __slots__ = ("connection", "command", "cluster", "reason")
+    CONNECTION_FIELD_NUMBER: _ClassVar[int]
+    COMMAND_FIELD_NUMBER: _ClassVar[int]
+    CLUSTER_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    connection: str
+    command: str
+    cluster: str
+    reason: str
+    def __init__(self, connection: _Optional[str] = ..., command: _Optional[str] = ..., cluster: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+
+class InfraRunResponse(_message.Message):
+    __slots__ = ("output", "exit_code", "refused", "truncated", "duration_ms")
+    OUTPUT_FIELD_NUMBER: _ClassVar[int]
+    EXIT_CODE_FIELD_NUMBER: _ClassVar[int]
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
+    TRUNCATED_FIELD_NUMBER: _ClassVar[int]
+    DURATION_MS_FIELD_NUMBER: _ClassVar[int]
+    output: str
+    exit_code: int
+    refused: str
+    truncated: bool
+    duration_ms: int
+    def __init__(self, output: _Optional[str] = ..., exit_code: _Optional[int] = ..., refused: _Optional[str] = ..., truncated: bool = ..., duration_ms: _Optional[int] = ...) -> None: ...
+
+class InfraHttpRequest(_message.Message):
+    __slots__ = ("connection", "path", "query", "reason")
+    class QueryEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    CONNECTION_FIELD_NUMBER: _ClassVar[int]
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    QUERY_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    connection: str
+    path: str
+    query: _containers.ScalarMap[str, str]
+    reason: str
+    def __init__(self, connection: _Optional[str] = ..., path: _Optional[str] = ..., query: _Optional[_Mapping[str, str]] = ..., reason: _Optional[str] = ...) -> None: ...
+
+class InfraHttpResponse(_message.Message):
+    __slots__ = ("status", "body", "content_type", "refused", "truncated")
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    BODY_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
+    TRUNCATED_FIELD_NUMBER: _ClassVar[int]
+    status: int
+    body: str
+    content_type: str
+    refused: str
+    truncated: bool
+    def __init__(self, status: _Optional[int] = ..., body: _Optional[str] = ..., content_type: _Optional[str] = ..., refused: _Optional[str] = ..., truncated: bool = ...) -> None: ...
+
+class InfraCostsRequest(_message.Message):
+    __slots__ = ("connection", "start", "end")
+    CONNECTION_FIELD_NUMBER: _ClassVar[int]
+    START_FIELD_NUMBER: _ClassVar[int]
+    END_FIELD_NUMBER: _ClassVar[int]
+    connection: str
+    start: str
+    end: str
+    def __init__(self, connection: _Optional[str] = ..., start: _Optional[str] = ..., end: _Optional[str] = ...) -> None: ...
+
+class InfraCostLine(_message.Message):
+    __slots__ = ("service", "amount", "currency")
+    SERVICE_FIELD_NUMBER: _ClassVar[int]
+    AMOUNT_FIELD_NUMBER: _ClassVar[int]
+    CURRENCY_FIELD_NUMBER: _ClassVar[int]
+    service: str
+    amount: float
+    currency: str
+    def __init__(self, service: _Optional[str] = ..., amount: _Optional[float] = ..., currency: _Optional[str] = ...) -> None: ...
+
+class InfraCostsResponse(_message.Message):
+    __slots__ = ("lines", "total", "currency", "note", "refused")
+    LINES_FIELD_NUMBER: _ClassVar[int]
+    TOTAL_FIELD_NUMBER: _ClassVar[int]
+    CURRENCY_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
+    lines: _containers.RepeatedCompositeFieldContainer[InfraCostLine]
+    total: float
+    currency: str
+    note: str
+    refused: str
+    def __init__(self, lines: _Optional[_Iterable[_Union[InfraCostLine, _Mapping]]] = ..., total: _Optional[float] = ..., currency: _Optional[str] = ..., note: _Optional[str] = ..., refused: _Optional[str] = ...) -> None: ...
+
+class ListRunbooksRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListRunbooksResponse(_message.Message):
+    __slots__ = ("runbooks",)
+    RUNBOOKS_FIELD_NUMBER: _ClassVar[int]
+    runbooks: _containers.RepeatedCompositeFieldContainer[_infra_pb2.Runbook]
+    def __init__(self, runbooks: _Optional[_Iterable[_Union[_infra_pb2.Runbook, _Mapping]]] = ...) -> None: ...
+
+class RunRunbookRequest(_message.Message):
+    __slots__ = ("runbook", "inputs", "reason")
+    class InputsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    RUNBOOK_FIELD_NUMBER: _ClassVar[int]
+    INPUTS_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    runbook: str
+    inputs: _containers.ScalarMap[str, str]
+    reason: str
+    def __init__(self, runbook: _Optional[str] = ..., inputs: _Optional[_Mapping[str, str]] = ..., reason: _Optional[str] = ...) -> None: ...
+
+class RunRunbookResponse(_message.Message):
+    __slots__ = ("gate_id", "refused", "note")
+    GATE_ID_FIELD_NUMBER: _ClassVar[int]
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    gate_id: str
+    refused: str
+    note: str
+    def __init__(self, gate_id: _Optional[str] = ..., refused: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
+
+class ListInfraConnectionsRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.ListConnectionsRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.ListConnectionsRequest, _Mapping]] = ...) -> None: ...
+
+class ListInfraConnectionsResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.ListConnectionsResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.ListConnectionsResponse, _Mapping]] = ...) -> None: ...
+
+class GetInfraConnectionRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.GetConnectionRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.GetConnectionRequest, _Mapping]] = ...) -> None: ...
+
+class GetInfraConnectionResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.GetConnectionResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.GetConnectionResponse, _Mapping]] = ...) -> None: ...
+
+class CreateInfraConnectionRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.CreateConnectionRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.CreateConnectionRequest, _Mapping]] = ...) -> None: ...
+
+class CreateInfraConnectionResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.CreateConnectionResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.CreateConnectionResponse, _Mapping]] = ...) -> None: ...
+
+class UpdateInfraConnectionRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.UpdateConnectionRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.UpdateConnectionRequest, _Mapping]] = ...) -> None: ...
+
+class UpdateInfraConnectionResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.UpdateConnectionResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.UpdateConnectionResponse, _Mapping]] = ...) -> None: ...
+
+class DeleteInfraConnectionRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.DeleteConnectionRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.DeleteConnectionRequest, _Mapping]] = ...) -> None: ...
+
+class DeleteInfraConnectionResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.DeleteConnectionResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.DeleteConnectionResponse, _Mapping]] = ...) -> None: ...
+
+class TestInfraConnectionRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.TestConnectionRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.TestConnectionRequest, _Mapping]] = ...) -> None: ...
+
+class TestInfraConnectionResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.TestConnectionResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.TestConnectionResponse, _Mapping]] = ...) -> None: ...
+
+class GetInfraSetupGuideRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.GetSetupGuideRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.GetSetupGuideRequest, _Mapping]] = ...) -> None: ...
+
+class GetInfraSetupGuideResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.GetSetupGuideResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.GetSetupGuideResponse, _Mapping]] = ...) -> None: ...
+
+class ListInfraUsesRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.ListUsesRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.ListUsesRequest, _Mapping]] = ...) -> None: ...
+
+class ListInfraUsesResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.ListUsesResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.ListUsesResponse, _Mapping]] = ...) -> None: ...
+
+class ListInfraRunbooksRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.ListRunbooksRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.ListRunbooksRequest, _Mapping]] = ...) -> None: ...
+
+class ListInfraRunbooksResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.ListRunbooksResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.ListRunbooksResponse, _Mapping]] = ...) -> None: ...
+
+class PutInfraRunbookRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.PutRunbookRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.PutRunbookRequest, _Mapping]] = ...) -> None: ...
+
+class PutInfraRunbookResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.PutRunbookResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.PutRunbookResponse, _Mapping]] = ...) -> None: ...
+
+class DeleteInfraRunbookRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.DeleteRunbookRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.DeleteRunbookRequest, _Mapping]] = ...) -> None: ...
+
+class DeleteInfraRunbookResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.DeleteRunbookResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.DeleteRunbookResponse, _Mapping]] = ...) -> None: ...
+
+class ListInfraWorkflowCandidatesRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.ListWorkflowCandidatesRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.ListWorkflowCandidatesRequest, _Mapping]] = ...) -> None: ...
+
+class ListInfraWorkflowCandidatesResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.ListWorkflowCandidatesResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.ListWorkflowCandidatesResponse, _Mapping]] = ...) -> None: ...
+
+class ListInfraRelaysRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.ListRelaysRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.ListRelaysRequest, _Mapping]] = ...) -> None: ...
+
+class ListInfraRelaysResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.ListRelaysResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.ListRelaysResponse, _Mapping]] = ...) -> None: ...
+
+class CreateInfraRelayRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.CreateRelayRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.CreateRelayRequest, _Mapping]] = ...) -> None: ...
+
+class CreateInfraRelayResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.CreateRelayResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.CreateRelayResponse, _Mapping]] = ...) -> None: ...
+
+class RevokeInfraRelayRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _infra_pb2.RevokeRelayRequest
+    def __init__(self, request: _Optional[_Union[_infra_pb2.RevokeRelayRequest, _Mapping]] = ...) -> None: ...
+
+class RevokeInfraRelayResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _infra_pb2.RevokeRelayResponse
+    def __init__(self, response: _Optional[_Union[_infra_pb2.RevokeRelayResponse, _Mapping]] = ...) -> None: ...
