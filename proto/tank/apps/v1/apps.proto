@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package tank.apps.v1;
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/apps/v1;appsv1";
+
+// Apps published to Neural. A product built with TANK publishes itself by declaring
+// `neural_app` in its tank.yaml and deploying; the agentic development kit gives it an MCP
+// server that answers only TANK. A published app is public: anyone using Neural can connect
+// it in a conversation, and the app is never told who is asking.
+
+message App {
+  // The product's slug.
+  string id = 1;
+  string name = 2;
+  // What the app lets Neural read, in the app's words.
+  string description = 3;
+  // Served by the app itself.
+  string logo_url = 4;
+  // The app's public address.
+  string url = 5;
+  // The workspace that built it, by name.
+  string maker = 6;
+}
+
+// One thing an app lets Neural read: an MCP tool.
+message Tool {
+  string name = 1;
+  string description = 2;
+  // The tool's input JSON schema, as the app declared it.
+  string input_schema_json = 3;
+}
+
+// Where a result came from, for the citation.
+message Source {
+  string title = 1;
+  string url = 2;
+}
+
+message ListAppsRequest {
+  // Matches name and description; empty lists every published app.
+  string query = 1;
+}
+message ListAppsResponse {
+  repeated App apps = 1;
+}
+
+message GetToolsRequest {
+  string app_id = 1;
+}
+message GetToolsResponse {
+  App app = 1;
+  repeated Tool tools = 2;
+}
+
+// Calls one tool. Carries nothing about the person, workspace or conversation by design.
+message CallToolRequest {
+  string app_id = 1;
+  string tool = 2;
+  string arguments_json = 3;
+}
+message CallToolResponse {
+  // At most 8 KB; longer results are cut and say so.
+  string text = 1;
+  repeated Source sources = 2;
+  bool is_error = 3;
+}

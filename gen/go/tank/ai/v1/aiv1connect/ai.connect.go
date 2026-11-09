@@ -63,6 +63,12 @@ const (
 	AiServiceGetUsageProcedure = "/tank.ai.v1.AiService/GetUsage"
 	// AiServiceAddToAtlasProcedure is the fully-qualified name of the AiService's AddToAtlas RPC.
 	AiServiceAddToAtlasProcedure = "/tank.ai.v1.AiService/AddToAtlas"
+	// AiServiceListAppsProcedure is the fully-qualified name of the AiService's ListApps RPC.
+	AiServiceListAppsProcedure = "/tank.ai.v1.AiService/ListApps"
+	// AiServiceConnectAppProcedure is the fully-qualified name of the AiService's ConnectApp RPC.
+	AiServiceConnectAppProcedure = "/tank.ai.v1.AiService/ConnectApp"
+	// AiServiceDisconnectAppProcedure is the fully-qualified name of the AiService's DisconnectApp RPC.
+	AiServiceDisconnectAppProcedure = "/tank.ai.v1.AiService/DisconnectApp"
 )
 
 // AiServiceClient is a client for the tank.ai.v1.AiService service.
@@ -79,6 +85,10 @@ type AiServiceClient interface {
 	UpdateSettings(context.Context, *connect.Request[v1.UpdateSettingsRequest]) (*connect.Response[v1.UpdateSettingsResponse], error)
 	GetUsage(context.Context, *connect.Request[v1.GetUsageRequest]) (*connect.Response[v1.GetUsageResponse], error)
 	AddToAtlas(context.Context, *connect.Request[v1.AddToAtlasRequest]) (*connect.Response[v1.AddToAtlasResponse], error)
+	// Every app published to Neural, for the "Connect apps" picker.
+	ListApps(context.Context, *connect.Request[v1.ListAppsRequest]) (*connect.Response[v1.ListAppsResponse], error)
+	ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error)
+	DisconnectApp(context.Context, *connect.Request[v1.DisconnectAppRequest]) (*connect.Response[v1.DisconnectAppResponse], error)
 }
 
 // NewAiServiceClient constructs a client for the tank.ai.v1.AiService service. By default, it uses
@@ -164,6 +174,24 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("AddToAtlas")),
 			connect.WithClientOptions(opts...),
 		),
+		listApps: connect.NewClient[v1.ListAppsRequest, v1.ListAppsResponse](
+			httpClient,
+			baseURL+AiServiceListAppsProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("ListApps")),
+			connect.WithClientOptions(opts...),
+		),
+		connectApp: connect.NewClient[v1.ConnectAppRequest, v1.ConnectAppResponse](
+			httpClient,
+			baseURL+AiServiceConnectAppProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("ConnectApp")),
+			connect.WithClientOptions(opts...),
+		),
+		disconnectApp: connect.NewClient[v1.DisconnectAppRequest, v1.DisconnectAppResponse](
+			httpClient,
+			baseURL+AiServiceDisconnectAppProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("DisconnectApp")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -181,6 +209,9 @@ type aiServiceClient struct {
 	updateSettings     *connect.Client[v1.UpdateSettingsRequest, v1.UpdateSettingsResponse]
 	getUsage           *connect.Client[v1.GetUsageRequest, v1.GetUsageResponse]
 	addToAtlas         *connect.Client[v1.AddToAtlasRequest, v1.AddToAtlasResponse]
+	listApps           *connect.Client[v1.ListAppsRequest, v1.ListAppsResponse]
+	connectApp         *connect.Client[v1.ConnectAppRequest, v1.ConnectAppResponse]
+	disconnectApp      *connect.Client[v1.DisconnectAppRequest, v1.DisconnectAppResponse]
 }
 
 // ListConversations calls tank.ai.v1.AiService.ListConversations.
@@ -243,6 +274,21 @@ func (c *aiServiceClient) AddToAtlas(ctx context.Context, req *connect.Request[v
 	return c.addToAtlas.CallUnary(ctx, req)
 }
 
+// ListApps calls tank.ai.v1.AiService.ListApps.
+func (c *aiServiceClient) ListApps(ctx context.Context, req *connect.Request[v1.ListAppsRequest]) (*connect.Response[v1.ListAppsResponse], error) {
+	return c.listApps.CallUnary(ctx, req)
+}
+
+// ConnectApp calls tank.ai.v1.AiService.ConnectApp.
+func (c *aiServiceClient) ConnectApp(ctx context.Context, req *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error) {
+	return c.connectApp.CallUnary(ctx, req)
+}
+
+// DisconnectApp calls tank.ai.v1.AiService.DisconnectApp.
+func (c *aiServiceClient) DisconnectApp(ctx context.Context, req *connect.Request[v1.DisconnectAppRequest]) (*connect.Response[v1.DisconnectAppResponse], error) {
+	return c.disconnectApp.CallUnary(ctx, req)
+}
+
 // AiServiceHandler is an implementation of the tank.ai.v1.AiService service.
 type AiServiceHandler interface {
 	ListConversations(context.Context, *connect.Request[v1.ListConversationsRequest]) (*connect.Response[v1.ListConversationsResponse], error)
@@ -257,6 +303,10 @@ type AiServiceHandler interface {
 	UpdateSettings(context.Context, *connect.Request[v1.UpdateSettingsRequest]) (*connect.Response[v1.UpdateSettingsResponse], error)
 	GetUsage(context.Context, *connect.Request[v1.GetUsageRequest]) (*connect.Response[v1.GetUsageResponse], error)
 	AddToAtlas(context.Context, *connect.Request[v1.AddToAtlasRequest]) (*connect.Response[v1.AddToAtlasResponse], error)
+	// Every app published to Neural, for the "Connect apps" picker.
+	ListApps(context.Context, *connect.Request[v1.ListAppsRequest]) (*connect.Response[v1.ListAppsResponse], error)
+	ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error)
+	DisconnectApp(context.Context, *connect.Request[v1.DisconnectAppRequest]) (*connect.Response[v1.DisconnectAppResponse], error)
 }
 
 // NewAiServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -338,6 +388,24 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("AddToAtlas")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServiceListAppsHandler := connect.NewUnaryHandler(
+		AiServiceListAppsProcedure,
+		svc.ListApps,
+		connect.WithSchema(aiServiceMethods.ByName("ListApps")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceConnectAppHandler := connect.NewUnaryHandler(
+		AiServiceConnectAppProcedure,
+		svc.ConnectApp,
+		connect.WithSchema(aiServiceMethods.ByName("ConnectApp")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceDisconnectAppHandler := connect.NewUnaryHandler(
+		AiServiceDisconnectAppProcedure,
+		svc.DisconnectApp,
+		connect.WithSchema(aiServiceMethods.ByName("DisconnectApp")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.ai.v1.AiService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AiServiceListConversationsProcedure:
@@ -364,6 +432,12 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceGetUsageHandler.ServeHTTP(w, r)
 		case AiServiceAddToAtlasProcedure:
 			aiServiceAddToAtlasHandler.ServeHTTP(w, r)
+		case AiServiceListAppsProcedure:
+			aiServiceListAppsHandler.ServeHTTP(w, r)
+		case AiServiceConnectAppProcedure:
+			aiServiceConnectAppHandler.ServeHTTP(w, r)
+		case AiServiceDisconnectAppProcedure:
+			aiServiceDisconnectAppHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -419,4 +493,16 @@ func (UnimplementedAiServiceHandler) GetUsage(context.Context, *connect.Request[
 
 func (UnimplementedAiServiceHandler) AddToAtlas(context.Context, *connect.Request[v1.AddToAtlasRequest]) (*connect.Response[v1.AddToAtlasResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.AddToAtlas is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) ListApps(context.Context, *connect.Request[v1.ListAppsRequest]) (*connect.Response[v1.ListAppsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.ListApps is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.ConnectApp is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) DisconnectApp(context.Context, *connect.Request[v1.DisconnectAppRequest]) (*connect.Response[v1.DisconnectAppResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.DisconnectApp is not implemented"))
 }

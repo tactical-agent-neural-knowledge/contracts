@@ -5,6 +5,7 @@ package tank.agentctl.v1;
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "tank/agent/v1/agent.proto";
+import "tank/apps/v1/apps.proto";
 import "tank/blocks/v1/blocks.proto";
 import "tank/board/v1/board.proto";
 import "tank/books/v1/books.proto";
@@ -1294,6 +1295,11 @@ service ControlService {
   // Infrastructure connections, for the messaging core: the rows live here, and so do
   // the credentials path and the Lockbox Agent vault. api decides who may ask and sets
   // requested_by.
+  // Apps published to Neural (tank.apps.v1). api asks; the control plane owns products,
+  // holds each app's token and makes every call to an app.
+  rpc ListNeuralApps(ListNeuralAppsRequest) returns (ListNeuralAppsResponse);
+  rpc GetNeuralAppTools(GetNeuralAppToolsRequest) returns (GetNeuralAppToolsResponse);
+  rpc CallNeuralAppTool(CallNeuralAppToolRequest) returns (CallNeuralAppToolResponse);
   rpc ListInfraConnections(ListInfraConnectionsRequest) returns (ListInfraConnectionsResponse);
   rpc GetInfraConnection(GetInfraConnectionRequest) returns (GetInfraConnectionResponse);
   rpc CreateInfraConnection(CreateInfraConnectionRequest) returns (CreateInfraConnectionResponse);
@@ -2043,6 +2049,13 @@ message RunRunbookResponse {
 }
 
 // ControlService wrappers for tank.infra.v1 (one request type per RPC).
+message ListNeuralAppsRequest { tank.apps.v1.ListAppsRequest request = 1; }
+message ListNeuralAppsResponse { tank.apps.v1.ListAppsResponse response = 1; }
+message GetNeuralAppToolsRequest { tank.apps.v1.GetToolsRequest request = 1; }
+message GetNeuralAppToolsResponse { tank.apps.v1.GetToolsResponse response = 1; }
+message CallNeuralAppToolRequest { tank.apps.v1.CallToolRequest request = 1; }
+message CallNeuralAppToolResponse { tank.apps.v1.CallToolResponse response = 1; }
+
 message ListInfraConnectionsRequest { tank.infra.v1.ListConnectionsRequest request = 1; }
 message ListInfraConnectionsResponse { tank.infra.v1.ListConnectionsResponse response = 1; }
 message GetInfraConnectionRequest { tank.infra.v1.GetConnectionRequest request = 1; }
