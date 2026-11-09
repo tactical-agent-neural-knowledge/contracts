@@ -1,6 +1,7 @@
 from google.protobuf import struct_pb2 as _struct_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from tank.agent.v1 import agent_pb2 as _agent_pb2
+from tank.apps.v1 import apps_pb2 as _apps_pb2
 from tank.blocks.v1 import blocks_pb2 as _blocks_pb2
 from tank.board.v1 import board_pb2 as _board_pb2
 from tank.books.v1 import books_pb2 as _books_pb2
@@ -2999,6 +3000,42 @@ class RunRunbookResponse(_message.Message):
     refused: str
     note: str
     def __init__(self, gate_id: _Optional[str] = ..., refused: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
+
+class ListNeuralAppsRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _apps_pb2.ListAppsRequest
+    def __init__(self, request: _Optional[_Union[_apps_pb2.ListAppsRequest, _Mapping]] = ...) -> None: ...
+
+class ListNeuralAppsResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _apps_pb2.ListAppsResponse
+    def __init__(self, response: _Optional[_Union[_apps_pb2.ListAppsResponse, _Mapping]] = ...) -> None: ...
+
+class GetNeuralAppToolsRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _apps_pb2.GetToolsRequest
+    def __init__(self, request: _Optional[_Union[_apps_pb2.GetToolsRequest, _Mapping]] = ...) -> None: ...
+
+class GetNeuralAppToolsResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _apps_pb2.GetToolsResponse
+    def __init__(self, response: _Optional[_Union[_apps_pb2.GetToolsResponse, _Mapping]] = ...) -> None: ...
+
+class CallNeuralAppToolRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _apps_pb2.CallToolRequest
+    def __init__(self, request: _Optional[_Union[_apps_pb2.CallToolRequest, _Mapping]] = ...) -> None: ...
+
+class CallNeuralAppToolResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _apps_pb2.CallToolResponse
+    def __init__(self, response: _Optional[_Union[_apps_pb2.CallToolResponse, _Mapping]] = ...) -> None: ...
 
 class ListInfraConnectionsRequest(_message.Message):
     __slots__ = ("request",)

@@ -251,6 +251,15 @@ const (
 	// ControlServiceExtractGuardrailsProcedure is the fully-qualified name of the ControlService's
 	// ExtractGuardrails RPC.
 	ControlServiceExtractGuardrailsProcedure = "/tank.agentctl.v1.ControlService/ExtractGuardrails"
+	// ControlServiceListNeuralAppsProcedure is the fully-qualified name of the ControlService's
+	// ListNeuralApps RPC.
+	ControlServiceListNeuralAppsProcedure = "/tank.agentctl.v1.ControlService/ListNeuralApps"
+	// ControlServiceGetNeuralAppToolsProcedure is the fully-qualified name of the ControlService's
+	// GetNeuralAppTools RPC.
+	ControlServiceGetNeuralAppToolsProcedure = "/tank.agentctl.v1.ControlService/GetNeuralAppTools"
+	// ControlServiceCallNeuralAppToolProcedure is the fully-qualified name of the ControlService's
+	// CallNeuralAppTool RPC.
+	ControlServiceCallNeuralAppToolProcedure = "/tank.agentctl.v1.ControlService/CallNeuralAppTool"
 	// ControlServiceListInfraConnectionsProcedure is the fully-qualified name of the ControlService's
 	// ListInfraConnections RPC.
 	ControlServiceListInfraConnectionsProcedure = "/tank.agentctl.v1.ControlService/ListInfraConnections"
@@ -2299,6 +2308,11 @@ type ControlServiceClient interface {
 	// Infrastructure connections, for the messaging core: the rows live here, and so do
 	// the credentials path and the Lockbox Agent vault. api decides who may ask and sets
 	// requested_by.
+	// Apps published to Neural (tank.apps.v1). api asks; the control plane owns products,
+	// holds each app's token and makes every call to an app.
+	ListNeuralApps(context.Context, *connect.Request[v1.ListNeuralAppsRequest]) (*connect.Response[v1.ListNeuralAppsResponse], error)
+	GetNeuralAppTools(context.Context, *connect.Request[v1.GetNeuralAppToolsRequest]) (*connect.Response[v1.GetNeuralAppToolsResponse], error)
+	CallNeuralAppTool(context.Context, *connect.Request[v1.CallNeuralAppToolRequest]) (*connect.Response[v1.CallNeuralAppToolResponse], error)
 	ListInfraConnections(context.Context, *connect.Request[v1.ListInfraConnectionsRequest]) (*connect.Response[v1.ListInfraConnectionsResponse], error)
 	GetInfraConnection(context.Context, *connect.Request[v1.GetInfraConnectionRequest]) (*connect.Response[v1.GetInfraConnectionResponse], error)
 	CreateInfraConnection(context.Context, *connect.Request[v1.CreateInfraConnectionRequest]) (*connect.Response[v1.CreateInfraConnectionResponse], error)
@@ -2454,6 +2468,24 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+ControlServiceExtractGuardrailsProcedure,
 			connect.WithSchema(controlServiceMethods.ByName("ExtractGuardrails")),
+			connect.WithClientOptions(opts...),
+		),
+		listNeuralApps: connect.NewClient[v1.ListNeuralAppsRequest, v1.ListNeuralAppsResponse](
+			httpClient,
+			baseURL+ControlServiceListNeuralAppsProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListNeuralApps")),
+			connect.WithClientOptions(opts...),
+		),
+		getNeuralAppTools: connect.NewClient[v1.GetNeuralAppToolsRequest, v1.GetNeuralAppToolsResponse](
+			httpClient,
+			baseURL+ControlServiceGetNeuralAppToolsProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("GetNeuralAppTools")),
+			connect.WithClientOptions(opts...),
+		),
+		callNeuralAppTool: connect.NewClient[v1.CallNeuralAppToolRequest, v1.CallNeuralAppToolResponse](
+			httpClient,
+			baseURL+ControlServiceCallNeuralAppToolProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("CallNeuralAppTool")),
 			connect.WithClientOptions(opts...),
 		),
 		listInfraConnections: connect.NewClient[v1.ListInfraConnectionsRequest, v1.ListInfraConnectionsResponse](
@@ -2792,6 +2824,9 @@ type controlServiceClient struct {
 	rateGuardrail               *connect.Client[v1.RateGuardrailRequest, v1.RateGuardrailResponse]
 	listGuardrailVerdicts       *connect.Client[v1.ListGuardrailVerdictsRequest, v1.ListGuardrailVerdictsResponse]
 	extractGuardrails           *connect.Client[v1.ExtractGuardrailsRequest, v1.ExtractGuardrailsResponse]
+	listNeuralApps              *connect.Client[v1.ListNeuralAppsRequest, v1.ListNeuralAppsResponse]
+	getNeuralAppTools           *connect.Client[v1.GetNeuralAppToolsRequest, v1.GetNeuralAppToolsResponse]
+	callNeuralAppTool           *connect.Client[v1.CallNeuralAppToolRequest, v1.CallNeuralAppToolResponse]
 	listInfraConnections        *connect.Client[v1.ListInfraConnectionsRequest, v1.ListInfraConnectionsResponse]
 	getInfraConnection          *connect.Client[v1.GetInfraConnectionRequest, v1.GetInfraConnectionResponse]
 	createInfraConnection       *connect.Client[v1.CreateInfraConnectionRequest, v1.CreateInfraConnectionResponse]
@@ -2881,6 +2916,21 @@ func (c *controlServiceClient) ListGuardrailVerdicts(ctx context.Context, req *c
 // ExtractGuardrails calls tank.agentctl.v1.ControlService.ExtractGuardrails.
 func (c *controlServiceClient) ExtractGuardrails(ctx context.Context, req *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error) {
 	return c.extractGuardrails.CallUnary(ctx, req)
+}
+
+// ListNeuralApps calls tank.agentctl.v1.ControlService.ListNeuralApps.
+func (c *controlServiceClient) ListNeuralApps(ctx context.Context, req *connect.Request[v1.ListNeuralAppsRequest]) (*connect.Response[v1.ListNeuralAppsResponse], error) {
+	return c.listNeuralApps.CallUnary(ctx, req)
+}
+
+// GetNeuralAppTools calls tank.agentctl.v1.ControlService.GetNeuralAppTools.
+func (c *controlServiceClient) GetNeuralAppTools(ctx context.Context, req *connect.Request[v1.GetNeuralAppToolsRequest]) (*connect.Response[v1.GetNeuralAppToolsResponse], error) {
+	return c.getNeuralAppTools.CallUnary(ctx, req)
+}
+
+// CallNeuralAppTool calls tank.agentctl.v1.ControlService.CallNeuralAppTool.
+func (c *controlServiceClient) CallNeuralAppTool(ctx context.Context, req *connect.Request[v1.CallNeuralAppToolRequest]) (*connect.Response[v1.CallNeuralAppToolResponse], error) {
+	return c.callNeuralAppTool.CallUnary(ctx, req)
 }
 
 // ListInfraConnections calls tank.agentctl.v1.ControlService.ListInfraConnections.
@@ -3170,6 +3220,11 @@ type ControlServiceHandler interface {
 	// Infrastructure connections, for the messaging core: the rows live here, and so do
 	// the credentials path and the Lockbox Agent vault. api decides who may ask and sets
 	// requested_by.
+	// Apps published to Neural (tank.apps.v1). api asks; the control plane owns products,
+	// holds each app's token and makes every call to an app.
+	ListNeuralApps(context.Context, *connect.Request[v1.ListNeuralAppsRequest]) (*connect.Response[v1.ListNeuralAppsResponse], error)
+	GetNeuralAppTools(context.Context, *connect.Request[v1.GetNeuralAppToolsRequest]) (*connect.Response[v1.GetNeuralAppToolsResponse], error)
+	CallNeuralAppTool(context.Context, *connect.Request[v1.CallNeuralAppToolRequest]) (*connect.Response[v1.CallNeuralAppToolResponse], error)
 	ListInfraConnections(context.Context, *connect.Request[v1.ListInfraConnectionsRequest]) (*connect.Response[v1.ListInfraConnectionsResponse], error)
 	GetInfraConnection(context.Context, *connect.Request[v1.GetInfraConnectionRequest]) (*connect.Response[v1.GetInfraConnectionResponse], error)
 	CreateInfraConnection(context.Context, *connect.Request[v1.CreateInfraConnectionRequest]) (*connect.Response[v1.CreateInfraConnectionResponse], error)
@@ -3321,6 +3376,24 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		ControlServiceExtractGuardrailsProcedure,
 		svc.ExtractGuardrails,
 		connect.WithSchema(controlServiceMethods.ByName("ExtractGuardrails")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceListNeuralAppsHandler := connect.NewUnaryHandler(
+		ControlServiceListNeuralAppsProcedure,
+		svc.ListNeuralApps,
+		connect.WithSchema(controlServiceMethods.ByName("ListNeuralApps")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceGetNeuralAppToolsHandler := connect.NewUnaryHandler(
+		ControlServiceGetNeuralAppToolsProcedure,
+		svc.GetNeuralAppTools,
+		connect.WithSchema(controlServiceMethods.ByName("GetNeuralAppTools")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceCallNeuralAppToolHandler := connect.NewUnaryHandler(
+		ControlServiceCallNeuralAppToolProcedure,
+		svc.CallNeuralAppTool,
+		connect.WithSchema(controlServiceMethods.ByName("CallNeuralAppTool")),
 		connect.WithHandlerOptions(opts...),
 	)
 	controlServiceListInfraConnectionsHandler := connect.NewUnaryHandler(
@@ -3663,6 +3736,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceListGuardrailVerdictsHandler.ServeHTTP(w, r)
 		case ControlServiceExtractGuardrailsProcedure:
 			controlServiceExtractGuardrailsHandler.ServeHTTP(w, r)
+		case ControlServiceListNeuralAppsProcedure:
+			controlServiceListNeuralAppsHandler.ServeHTTP(w, r)
+		case ControlServiceGetNeuralAppToolsProcedure:
+			controlServiceGetNeuralAppToolsHandler.ServeHTTP(w, r)
+		case ControlServiceCallNeuralAppToolProcedure:
+			controlServiceCallNeuralAppToolHandler.ServeHTTP(w, r)
 		case ControlServiceListInfraConnectionsProcedure:
 			controlServiceListInfraConnectionsHandler.ServeHTTP(w, r)
 		case ControlServiceGetInfraConnectionProcedure:
@@ -3806,6 +3885,18 @@ func (UnimplementedControlServiceHandler) ListGuardrailVerdicts(context.Context,
 
 func (UnimplementedControlServiceHandler) ExtractGuardrails(context.Context, *connect.Request[v1.ExtractGuardrailsRequest]) (*connect.Response[v1.ExtractGuardrailsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ExtractGuardrails is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListNeuralApps(context.Context, *connect.Request[v1.ListNeuralAppsRequest]) (*connect.Response[v1.ListNeuralAppsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListNeuralApps is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) GetNeuralAppTools(context.Context, *connect.Request[v1.GetNeuralAppToolsRequest]) (*connect.Response[v1.GetNeuralAppToolsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.GetNeuralAppTools is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) CallNeuralAppTool(context.Context, *connect.Request[v1.CallNeuralAppToolRequest]) (*connect.Response[v1.CallNeuralAppToolResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.CallNeuralAppTool is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) ListInfraConnections(context.Context, *connect.Request[v1.ListInfraConnectionsRequest]) (*connect.Response[v1.ListInfraConnectionsResponse], error) {

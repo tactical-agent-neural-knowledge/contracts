@@ -1,4 +1,5 @@
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
+from tank.apps.v1 import apps_pb2 as _apps_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
@@ -17,7 +18,7 @@ ROLE_USER: Role
 ROLE_ASSISTANT: Role
 
 class Conversation(_message.Message):
-    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id")
+    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
@@ -25,6 +26,7 @@ class Conversation(_message.Message):
     PREVIEW_FIELD_NUMBER: _ClassVar[int]
     PINNED_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    APPS_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     created_at: _timestamp_pb2.Timestamp
@@ -32,7 +34,8 @@ class Conversation(_message.Message):
     preview: str
     pinned: bool
     workspace_id: str
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ...) -> None: ...
+    apps: _containers.RepeatedCompositeFieldContainer[_apps_pb2.App]
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ...) -> None: ...
 
 class Attachment(_message.Message):
     __slots__ = ("id", "name", "mime", "data", "size", "file_id")
@@ -359,3 +362,43 @@ class GetUsageResponse(_message.Message):
     conversations: _containers.RepeatedCompositeFieldContainer[ConversationUsage]
     model_label: str
     def __init__(self, days: _Optional[_Iterable[_Union[UsageDay, _Mapping]]] = ..., messages: _Optional[int] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., cost_micro_usd: _Optional[int] = ..., today_messages: _Optional[int] = ..., month_cost_micro_usd: _Optional[int] = ..., all_time_messages: _Optional[int] = ..., conversations: _Optional[_Iterable[_Union[ConversationUsage, _Mapping]]] = ..., model_label: _Optional[str] = ...) -> None: ...
+
+class ListAppsRequest(_message.Message):
+    __slots__ = ("query",)
+    QUERY_FIELD_NUMBER: _ClassVar[int]
+    query: str
+    def __init__(self, query: _Optional[str] = ...) -> None: ...
+
+class ListAppsResponse(_message.Message):
+    __slots__ = ("apps",)
+    APPS_FIELD_NUMBER: _ClassVar[int]
+    apps: _containers.RepeatedCompositeFieldContainer[_apps_pb2.App]
+    def __init__(self, apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ...) -> None: ...
+
+class ConnectAppRequest(_message.Message):
+    __slots__ = ("conversation_id", "app_id")
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    APP_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    app_id: str
+    def __init__(self, conversation_id: _Optional[str] = ..., app_id: _Optional[str] = ...) -> None: ...
+
+class ConnectAppResponse(_message.Message):
+    __slots__ = ("conversation",)
+    CONVERSATION_FIELD_NUMBER: _ClassVar[int]
+    conversation: Conversation
+    def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ...) -> None: ...
+
+class DisconnectAppRequest(_message.Message):
+    __slots__ = ("conversation_id", "app_id")
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    APP_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    app_id: str
+    def __init__(self, conversation_id: _Optional[str] = ..., app_id: _Optional[str] = ...) -> None: ...
+
+class DisconnectAppResponse(_message.Message):
+    __slots__ = ("conversation",)
+    CONVERSATION_FIELD_NUMBER: _ClassVar[int]
+    conversation: Conversation
+    def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ...) -> None: ...

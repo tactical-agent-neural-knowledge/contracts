@@ -3,6 +3,7 @@ syntax = "proto3";
 package tank.ai.v1;
 
 import "google/protobuf/timestamp.proto";
+import "tank/apps/v1/apps.proto";
 
 option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/ai/v1;aiv1";
 
@@ -22,6 +23,9 @@ message Conversation {
   // workspace, the person's own Neuron for it and its Vault join the answer; the
   // person must be a member, and a conversation keeps its workspace for life.
   string workspace_id = 7;
+  // Apps connected to this conversation ("Connect apps"). Their data joins the answer and
+  // is cited; any published app may be connected, from any workspace or none.
+  repeated tank.apps.v1.App apps = 8;
 }
 
 // An attachment a person sends with a message: an image the model can see or a text file
@@ -280,4 +284,29 @@ service AiService {
   rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
   rpc GetUsage(GetUsageRequest) returns (GetUsageResponse);
   rpc AddToAtlas(AddToAtlasRequest) returns (AddToAtlasResponse);
+  // Every app published to Neural, for the "Connect apps" picker.
+  rpc ListApps(ListAppsRequest) returns (ListAppsResponse);
+  rpc ConnectApp(ConnectAppRequest) returns (ConnectAppResponse);
+  rpc DisconnectApp(DisconnectAppRequest) returns (DisconnectAppResponse);
+}
+
+message ListAppsRequest {
+  string query = 1;
+}
+message ListAppsResponse {
+  repeated tank.apps.v1.App apps = 1;
+}
+message ConnectAppRequest {
+  string conversation_id = 1;
+  string app_id = 2;
+}
+message ConnectAppResponse {
+  Conversation conversation = 1;
+}
+message DisconnectAppRequest {
+  string conversation_id = 1;
+  string app_id = 2;
+}
+message DisconnectAppResponse {
+  Conversation conversation = 1;
 }
