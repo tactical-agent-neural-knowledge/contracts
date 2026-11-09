@@ -1,56 +1,42 @@
-# Neural Knowledge by TANK · refreshed 2026-11-02 · c0a09db322a1
+# Neural Knowledge by TANK · refreshed 2026-11-09 · 089197169722
 
-This repository is the source of truth for the TANK platform's wire contracts: hand-written Protocol Buffer definitions under `proto/` that every service and client in the system shares. Generated Go, TypeScript and Python bindings live under `gen/` and are committed on purpose, so every PR that changes a proto also carries the regenerated files and CI can verify they are current. It is a pure contracts repo — no runtime code, no server, no tests beyond lint, type-check and the stale-generation gate.
+This repository is the single source of truth for every wire contract between TANK's services. Hand-written Protocol Buffer definitions live under `proto/`; generated Go, TypeScript and Python bindings are committed under `gen/` so consumers never fetch at build time. Every change to a `.proto` file must arrive in the same PR as the regenerated output for all three languages.
 
 ## Commands
 
 ```
-make gen          # regenerate Go, TypeScript and Python from proto/ (runs make tools first)
-make lint         # buf lint
-make breaking     # buf breaking --against '.git#branch=main'
-make build        # go build ./...
-make check        # lint + gen + build + git diff --exit-code gen/ (everything CI runs)
-make tools        # install pinned generators into .tools/ (required before gen)
-```
-
-`make` may be absent in agent sandboxes. Equivalent bare commands:
-```
-npx --yes @bufbuild/buf lint
-npx --yes @bufbuild/buf generate
-npx --yes @bufbuild/buf breaking --against '.git#branch=main'
-go build ./...
+npx --yes @bufbuild/buf lint              # lint all proto files
+npx --yes @bufbuild/buf generate          # regenerate gen/ (requires make tools first)
+npx --yes @bufbuild/buf breaking --against '.git#branch=main'  # breaking-change check
+go build ./...                            # build Go bindings
+make tools                                # install pinned generators into .tools/
+make check                                # everything CI runs (lint, gen, build, stale check)
 ```
 
 ## Areas
 
-- `.` — repo root: Makefile, buf.yaml, buf.gen.yaml, go.mod, CLAUDE.md. Read `.neural/neurons/root.md`.
-- `.github` — CI workflows: ci.yml (lint, breaking, gen-staleness, go build, tsc, npm publish), security.yml. Read `.neural/neurons/github.md`.
-- `proto` — 35 `.proto` files under `proto/tank/<domain>/v1/`. One package per domain. Read `.neural/neurons/proto.md`.
+- `.` — repo root: Makefile, buf.yaml, buf.gen.yaml, go.mod; read `.neural/neurons/root.md`
+- `.github` — CI workflows (lint, gen-staleness, go build, tsc, publish-ts); read `.neural/neurons/github.md`
+- `proto` — 38 `.proto` files, one domain per subdirectory under `proto/tank/<domain>/v1/`; read `.neural/neurons/proto.md`
 
 ## Rules
 
 From `CLAUDE.md`:
-- "Renumbering or reusing field numbers" is prohibited.
-- "Removing a field before every client has shipped without it" is prohibited.
-- "Editing `gen/` by hand" is prohibited.
-- "Changing plugin versions without regenerating everything in the same PR" is prohibited.
-- "Wire names stay neutral (`Channel`, not `Tread`); product vocabulary lives in the clients."
-- "One proto package per domain, version suffix `v1`."
-- "Generated code committed, not fetched at build time."
+- Never renumber or reuse field numbers.
+- Never remove a field before every client has shipped without it.
+- Never edit `gen/` by hand.
+- Never change plugin versions without regenerating everything in the same PR.
+- Wire names stay neutral (`Channel`, not `Tread`); product vocabulary lives in the clients.
+- One proto package per domain, version suffix `v1`.
 
 From `buf.yaml`:
+- `breaking.use: [FILE]` — moving a message between files is a breaking change even when field numbers are unchanged.
 - `lint.use: [STANDARD]` except `PACKAGE_VERSION_SUFFIX`.
-- `breaking.use: [FILE]` — moving a message between files is a breaking change.
 
 ## Before changing anything
 
-1. Run `make tools` to install pinned generators into `.tools/` before running `make gen`.
-2. Any proto change must be accompanied by `make gen`; commit the updated `gen/` files in the same PR or CI will fail the stale-generation gate.
-3. Run `make breaking` locally before opening a PR — it checks wire compatibility against main and is required on every PR by CI.
-4. All field numbers are permanent: never renumber, never reuse, never remove a field before all clients have shipped without it.
-5. `buf.yaml` uses `breaking.use: [FILE]`, so moving a message between `.proto` files is a breaking change even when field numbers are unchanged.
-6. The `.neural/map.yaml` `commands:` block is what the PR pre-check runs; keep it in sync with what actually works in a sandbox (bare `npx` commands, not `make`).
+Run `make tools` once to install the pinned generators into `.tools/`; `buf generate` will fail without them. After editing any `.proto` file, run `npx --yes @bufbuild/buf lint` to catch style violations, then `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` to verify wire compatibility. Regenerate with `npx --yes @bufbuild/buf generate` and commit the updated `gen/` alongside the proto change — CI's `make check` gate rejects any PR where `gen/` is stale. `make` is often absent in agent sandboxes; run the underlying buf and go commands directly.
 
 ## Neural Knowledge
 
-This layer is generated by TANK and lives in `.neural/`. The map (`map.yaml`), index (`index.json`) and per-area neuron files (`neurons/*.md`) are refreshed automatically on every push to the default branch and are overwritten on each refresh — do not edit them by hand. Any agent working in this repository reads `AGENTS.md` first, then the neuron file for the area it is changing.
+This file and the neurons under `.neural/neurons/` are generated by TANK's Neural Knowledge system. The layer is refreshed automatically on every push to the default branch and on a weekly schedule; any edits made by hand are overwritten on the next refresh. To read deeper context about a specific area, open the neuron file listed above for that area.
