@@ -447,6 +447,22 @@ message WorkspaceSpend {
   repeated SpendByTeam teams = 10;
   repeated SpendByKind kinds = 11;
   repeated SpendByDay days = 12;    // the last thirty-one days, oldest first
+  // Whether Books is turned on in this workspace. Off, Books books nothing, so the page says
+  // so rather than promising the roll-up (2026-11-10: edero had $0 booked for that reason).
+  bool books_on = 13;
+  // Cost per run over the last ninety days, oldest first, at the Tread rate: whether the work
+  // is getting cheaper as Neural Knowledge learns the workspace's repositories.
+  repeated CostPerRunDay cost_per_run = 14;
+}
+// One UTC day of agent runs (Neural chats excluded: a reply is not a run). Dollars at the
+// Tread rate. cost_per_run_usd is the day's spend over its runs, 0 on a day with none;
+// trailing_7d_usd is the seven days ending here, summed spend over summed runs, the line to read.
+message CostPerRunDay {
+  string day = 1;  // YYYY-MM-DD, UTC
+  int32 runs = 2;
+  double spend_usd = 3;
+  double cost_per_run_usd = 4;
+  double trailing_7d_usd = 5;
 }
 message GetWorkspaceSpendRequest { string workspace_id = 1; }
 message GetWorkspaceSpendResponse {
