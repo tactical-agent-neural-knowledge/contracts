@@ -17,7 +17,11 @@ option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go
 
 // What the app can see of a device once connected.
 message Device {
-  string transport = 1;     // "ble"
+  // "ble", or "phone" for the person's own phone or computer: its camera and its sensors
+  // (Robby, 2026-11-10). A phone's sensors are characteristics with made-up UUIDs whose values
+  // the app declares (Characteristic.declared), because the operating system already hands
+  // them over as numbers with units; the camera is frames (PushReadingsRequest.frame).
+  string transport = 1;
   string name = 2;          // the advertised local name, if any
   string manufacturer = 3;  // Device Information: Manufacturer Name String, if readable
   string model = 4;         // Device Information: Model Number String
@@ -38,6 +42,23 @@ message Characteristic {
   repeated string properties = 2;
   // The value read once at connect, when the characteristic is readable (a feature mask, a name).
   bytes value = 3;
+  // A phone sensor's own name ("Accelerometer"), for transport "phone"; empty for Bluetooth.
+  string name = 4;
+  // For transport "phone": what each reading holds, in order, one little-endian float32 per
+  // field, as the operating system reported it. Ignored for Bluetooth, whose bytes the server
+  // reads itself.
+  repeated DeclaredField declared = 5;
+}
+
+message DeclaredField {
+  string name = 1;  // "X", "Pressure"
+  string unit = 2;  // "g", "hPa", "rad/s"; empty when unitless
+}
+
+// One still from a connected camera, JPEG, at most 1 MB.
+message Frame {
+  int64 at_ms = 1;
+  bytes jpeg = 2;
 }
 
 // One notification or read from the device, as raw bytes.
@@ -103,6 +124,10 @@ message Session {
   // How Neural speaks while reading, in words ("every minute"; "only when heart rate is over
   // 170"), as the person last set it.
   string feedback_rule = 10;
+  // What the connected camera last showed, in TANK's vision model's words; empty without a
+  // camera or before the first frame was looked at.
+  string view = 11;
+  google.protobuf.Timestamp view_at = 12;
 }
 
 message ListCatalogServicesRequest {}
@@ -123,6 +148,9 @@ message OpenSessionResponse {
 message PushReadingsRequest {
   string session_id = 1;
   repeated Reading readings = 2;
+  // The camera's latest still, when a camera is connected; the server looks at one every few
+  // seconds and ignores the rest.
+  Frame frame = 3;
 }
 message PushReadingsResponse {
   // The numbers read out of these readings, for the live chart.
