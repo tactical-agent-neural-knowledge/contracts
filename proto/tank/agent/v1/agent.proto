@@ -453,6 +453,9 @@ message WorkspaceSpend {
   // Cost per run over the last ninety days, oldest first, at the Tread rate: whether the work
   // is getting cheaper as Neural Knowledge learns the workspace's repositories.
   repeated CostPerRunDay cost_per_run = 14;
+  // What Neural Knowledge saved this workspace this month, at what it pays: its share of the
+  // saving (Robby, 2026-11-10: TANK keeps half). The rate behind it is never shown.
+  double neural_saved_month_usd = 15;
 }
 // One UTC day of agent runs (Neural chats excluded: a reply is not a run). Dollars at the
 // Tread rate. cost_per_run_usd is the day's spend over its runs, 0 on a day with none;

@@ -475,7 +475,7 @@ class AgentRunRow(_message.Message):
     def __init__(self, id: _Optional[str] = ..., agent_name: _Optional[str] = ..., state: _Optional[str] = ..., started_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., ended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., minutes: _Optional[int] = ..., cost_usd: _Optional[float] = ...) -> None: ...
 
 class AgentUsage(_message.Message):
-    __slots__ = ("runs_30d", "failed_30d", "minutes_30d", "cost_usd_30d", "cost_usd_month", "billed_cents_month", "cap_cents", "recent", "agents")
+    __slots__ = ("runs_30d", "failed_30d", "minutes_30d", "cost_usd_30d", "cost_usd_month", "billed_cents_month", "cap_cents", "recent", "agents", "neural_saved_raw_usd_month", "neural_saved_customer_usd_month", "rate", "rate_history")
     RUNS_30D_FIELD_NUMBER: _ClassVar[int]
     FAILED_30D_FIELD_NUMBER: _ClassVar[int]
     MINUTES_30D_FIELD_NUMBER: _ClassVar[int]
@@ -485,6 +485,10 @@ class AgentUsage(_message.Message):
     CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
     RECENT_FIELD_NUMBER: _ClassVar[int]
     AGENTS_FIELD_NUMBER: _ClassVar[int]
+    NEURAL_SAVED_RAW_USD_MONTH_FIELD_NUMBER: _ClassVar[int]
+    NEURAL_SAVED_CUSTOMER_USD_MONTH_FIELD_NUMBER: _ClassVar[int]
+    RATE_FIELD_NUMBER: _ClassVar[int]
+    RATE_HISTORY_FIELD_NUMBER: _ClassVar[int]
     runs_30d: int
     failed_30d: int
     minutes_30d: int
@@ -494,7 +498,27 @@ class AgentUsage(_message.Message):
     cap_cents: int
     recent: _containers.RepeatedCompositeFieldContainer[AgentRunRow]
     agents: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, runs_30d: _Optional[int] = ..., failed_30d: _Optional[int] = ..., minutes_30d: _Optional[int] = ..., cost_usd_30d: _Optional[float] = ..., cost_usd_month: _Optional[float] = ..., billed_cents_month: _Optional[int] = ..., cap_cents: _Optional[int] = ..., recent: _Optional[_Iterable[_Union[AgentRunRow, _Mapping]]] = ..., agents: _Optional[_Iterable[str]] = ...) -> None: ...
+    neural_saved_raw_usd_month: float
+    neural_saved_customer_usd_month: float
+    rate: float
+    rate_history: _containers.RepeatedCompositeFieldContainer[RateMonth]
+    def __init__(self, runs_30d: _Optional[int] = ..., failed_30d: _Optional[int] = ..., minutes_30d: _Optional[int] = ..., cost_usd_30d: _Optional[float] = ..., cost_usd_month: _Optional[float] = ..., billed_cents_month: _Optional[int] = ..., cap_cents: _Optional[int] = ..., recent: _Optional[_Iterable[_Union[AgentRunRow, _Mapping]]] = ..., agents: _Optional[_Iterable[str]] = ..., neural_saved_raw_usd_month: _Optional[float] = ..., neural_saved_customer_usd_month: _Optional[float] = ..., rate: _Optional[float] = ..., rate_history: _Optional[_Iterable[_Union[RateMonth, _Mapping]]] = ...) -> None: ...
+
+class RateMonth(_message.Message):
+    __slots__ = ("month", "rate", "baseline_usd", "actual_usd", "measured_runs", "saved_usd")
+    MONTH_FIELD_NUMBER: _ClassVar[int]
+    RATE_FIELD_NUMBER: _ClassVar[int]
+    BASELINE_USD_FIELD_NUMBER: _ClassVar[int]
+    ACTUAL_USD_FIELD_NUMBER: _ClassVar[int]
+    MEASURED_RUNS_FIELD_NUMBER: _ClassVar[int]
+    SAVED_USD_FIELD_NUMBER: _ClassVar[int]
+    month: str
+    rate: float
+    baseline_usd: float
+    actual_usd: float
+    measured_runs: int
+    saved_usd: float
+    def __init__(self, month: _Optional[str] = ..., rate: _Optional[float] = ..., baseline_usd: _Optional[float] = ..., actual_usd: _Optional[float] = ..., measured_runs: _Optional[int] = ..., saved_usd: _Optional[float] = ...) -> None: ...
 
 class WorkspaceCounts(_message.Message):
     __slots__ = ("treads", "messages", "files", "boards", "pages")
@@ -743,7 +767,7 @@ class WebIndex(_message.Message):
     def __init__(self, pages: _Optional[int] = ..., hosts: _Optional[int] = ..., feeds: _Optional[int] = ..., queued: _Optional[int] = ..., queued_due: _Optional[int] = ..., oldest_due: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., pages_1h: _Optional[int] = ..., pages_24h: _Optional[int] = ..., sources: _Optional[_Iterable[_Union[SourceCount, _Mapping]]] = ..., feed_rows: _Optional[_Iterable[_Union[FeedRow, _Mapping]]] = ..., host_rows: _Optional[_Iterable[_Union[HostRow, _Mapping]]] = ...) -> None: ...
 
 class NeuralDay(_message.Message):
-    __slots__ = ("day", "answers", "people", "lookups", "lookups_with_sources", "input_tokens", "output_tokens", "cost_usd", "pages_read", "agent_tokens")
+    __slots__ = ("day", "answers", "people", "lookups", "lookups_with_sources", "input_tokens", "output_tokens", "cost_usd", "pages_read", "agent_tokens", "gpu_cost_usd", "charged_usd")
     DAY_FIELD_NUMBER: _ClassVar[int]
     ANSWERS_FIELD_NUMBER: _ClassVar[int]
     PEOPLE_FIELD_NUMBER: _ClassVar[int]
@@ -754,6 +778,8 @@ class NeuralDay(_message.Message):
     COST_USD_FIELD_NUMBER: _ClassVar[int]
     PAGES_READ_FIELD_NUMBER: _ClassVar[int]
     AGENT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    GPU_COST_USD_FIELD_NUMBER: _ClassVar[int]
+    CHARGED_USD_FIELD_NUMBER: _ClassVar[int]
     day: str
     answers: int
     people: int
@@ -764,10 +790,12 @@ class NeuralDay(_message.Message):
     cost_usd: float
     pages_read: int
     agent_tokens: int
-    def __init__(self, day: _Optional[str] = ..., answers: _Optional[int] = ..., people: _Optional[int] = ..., lookups: _Optional[int] = ..., lookups_with_sources: _Optional[int] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., cost_usd: _Optional[float] = ..., pages_read: _Optional[int] = ..., agent_tokens: _Optional[int] = ...) -> None: ...
+    gpu_cost_usd: float
+    charged_usd: float
+    def __init__(self, day: _Optional[str] = ..., answers: _Optional[int] = ..., people: _Optional[int] = ..., lookups: _Optional[int] = ..., lookups_with_sources: _Optional[int] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., cost_usd: _Optional[float] = ..., pages_read: _Optional[int] = ..., agent_tokens: _Optional[int] = ..., gpu_cost_usd: _Optional[float] = ..., charged_usd: _Optional[float] = ...) -> None: ...
 
 class NeuralUsage(_message.Message):
-    __slots__ = ("answers_30d", "people_30d", "lookups_30d", "lookups_with_sources_30d", "changed_30d", "lookup_ms_avg", "input_tokens_30d", "output_tokens_30d", "cost_usd_30d", "agent_runs_30d", "agent_tokens_30d", "thumbs_up_30d", "thumbs_down_30d")
+    __slots__ = ("answers_30d", "people_30d", "lookups_30d", "lookups_with_sources_30d", "changed_30d", "lookup_ms_avg", "input_tokens_30d", "output_tokens_30d", "cost_usd_30d", "agent_runs_30d", "agent_tokens_30d", "thumbs_up_30d", "thumbs_down_30d", "gpu_cost_usd_30d", "gpu_cost_known", "charged_usd_30d")
     ANSWERS_30D_FIELD_NUMBER: _ClassVar[int]
     PEOPLE_30D_FIELD_NUMBER: _ClassVar[int]
     LOOKUPS_30D_FIELD_NUMBER: _ClassVar[int]
@@ -781,6 +809,9 @@ class NeuralUsage(_message.Message):
     AGENT_TOKENS_30D_FIELD_NUMBER: _ClassVar[int]
     THUMBS_UP_30D_FIELD_NUMBER: _ClassVar[int]
     THUMBS_DOWN_30D_FIELD_NUMBER: _ClassVar[int]
+    GPU_COST_USD_30D_FIELD_NUMBER: _ClassVar[int]
+    GPU_COST_KNOWN_FIELD_NUMBER: _ClassVar[int]
+    CHARGED_USD_30D_FIELD_NUMBER: _ClassVar[int]
     answers_30d: int
     people_30d: int
     lookups_30d: int
@@ -794,7 +825,10 @@ class NeuralUsage(_message.Message):
     agent_tokens_30d: int
     thumbs_up_30d: int
     thumbs_down_30d: int
-    def __init__(self, answers_30d: _Optional[int] = ..., people_30d: _Optional[int] = ..., lookups_30d: _Optional[int] = ..., lookups_with_sources_30d: _Optional[int] = ..., changed_30d: _Optional[int] = ..., lookup_ms_avg: _Optional[int] = ..., input_tokens_30d: _Optional[int] = ..., output_tokens_30d: _Optional[int] = ..., cost_usd_30d: _Optional[float] = ..., agent_runs_30d: _Optional[int] = ..., agent_tokens_30d: _Optional[int] = ..., thumbs_up_30d: _Optional[int] = ..., thumbs_down_30d: _Optional[int] = ...) -> None: ...
+    gpu_cost_usd_30d: float
+    gpu_cost_known: bool
+    charged_usd_30d: float
+    def __init__(self, answers_30d: _Optional[int] = ..., people_30d: _Optional[int] = ..., lookups_30d: _Optional[int] = ..., lookups_with_sources_30d: _Optional[int] = ..., changed_30d: _Optional[int] = ..., lookup_ms_avg: _Optional[int] = ..., input_tokens_30d: _Optional[int] = ..., output_tokens_30d: _Optional[int] = ..., cost_usd_30d: _Optional[float] = ..., agent_runs_30d: _Optional[int] = ..., agent_tokens_30d: _Optional[int] = ..., thumbs_up_30d: _Optional[int] = ..., thumbs_down_30d: _Optional[int] = ..., gpu_cost_usd_30d: _Optional[float] = ..., gpu_cost_known: bool = ..., charged_usd_30d: _Optional[float] = ...) -> None: ...
 
 class GetNeuralRequest(_message.Message):
     __slots__ = ()
