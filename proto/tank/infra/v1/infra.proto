@@ -23,6 +23,15 @@ enum Provider {
   PROVIDER_KUBERNETES = 4;
   // A service with an HTTP API and a read-scoped token (Datadog, Cloudflare, Grafana…).
   PROVIDER_API = 5;
+  // A database, read only (2026-11-10). Reached through the workspace's Lockbox Relay inside
+  // its own network; the password is kept in the Lockbox Agent vault and handed to the relay
+  // with each query, never to an agent.
+  PROVIDER_DATABASE = 6;
+}
+
+enum DatabaseEngine {
+  DATABASE_ENGINE_UNSPECIFIED = 0;
+  DATABASE_ENGINE_POSTGRES = 1;
 }
 
 enum ConnectionState {
@@ -87,6 +96,15 @@ message ApiConfig {
   string header_prefix = 4;
 }
 
+message DatabaseConfig {
+  DatabaseEngine engine = 1;
+  string host = 2;     // as the relay reaches it, e.g. edero-console-db.xxxx.us-east-1.rds.amazonaws.com
+  int32 port = 3;      // 5432 when zero
+  string database = 4;
+  string user = 5;     // a read-only role; the setup guide creates one
+  string ssl_mode = 6; // require (default), verify-full, disable
+}
+
 message Connection {
   string id = 1;
   string workspace_id = 2;
@@ -112,8 +130,9 @@ message Connection {
   google.protobuf.Timestamp updated_at = 19;
   // The subject TANK signs for this connection: workspace:<id>:connection:<id>.
   string subject = 20;
-  // A token is stored for it in the Lockbox Agent vault (Kubernetes token, API).
+  // A token is stored for it in the Lockbox Agent vault (Kubernetes token, API, database password).
   bool has_secret = 21;
+  DatabaseConfig database = 22;
 }
 
 // One step of the setup a person follows to grant TANK access, with the exact script
