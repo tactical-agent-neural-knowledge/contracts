@@ -46,14 +46,34 @@ class Service(_message.Message):
     def __init__(self, uuid: _Optional[str] = ..., characteristics: _Optional[_Iterable[_Union[Characteristic, _Mapping]]] = ...) -> None: ...
 
 class Characteristic(_message.Message):
-    __slots__ = ("uuid", "properties", "value")
+    __slots__ = ("uuid", "properties", "value", "name", "declared")
     UUID_FIELD_NUMBER: _ClassVar[int]
     PROPERTIES_FIELD_NUMBER: _ClassVar[int]
     VALUE_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    DECLARED_FIELD_NUMBER: _ClassVar[int]
     uuid: str
     properties: _containers.RepeatedScalarFieldContainer[str]
     value: bytes
-    def __init__(self, uuid: _Optional[str] = ..., properties: _Optional[_Iterable[str]] = ..., value: _Optional[bytes] = ...) -> None: ...
+    name: str
+    declared: _containers.RepeatedCompositeFieldContainer[DeclaredField]
+    def __init__(self, uuid: _Optional[str] = ..., properties: _Optional[_Iterable[str]] = ..., value: _Optional[bytes] = ..., name: _Optional[str] = ..., declared: _Optional[_Iterable[_Union[DeclaredField, _Mapping]]] = ...) -> None: ...
+
+class DeclaredField(_message.Message):
+    __slots__ = ("name", "unit")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    UNIT_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    unit: str
+    def __init__(self, name: _Optional[str] = ..., unit: _Optional[str] = ...) -> None: ...
+
+class Frame(_message.Message):
+    __slots__ = ("at_ms", "jpeg")
+    AT_MS_FIELD_NUMBER: _ClassVar[int]
+    JPEG_FIELD_NUMBER: _ClassVar[int]
+    at_ms: int
+    jpeg: bytes
+    def __init__(self, at_ms: _Optional[int] = ..., jpeg: _Optional[bytes] = ...) -> None: ...
 
 class Reading(_message.Message):
     __slots__ = ("characteristic_uuid", "at_ms", "value")
@@ -112,7 +132,7 @@ class FieldStats(_message.Message):
     def __init__(self, field: _Optional[str] = ..., last: _Optional[float] = ..., avg_30s: _Optional[float] = ..., avg_5m: _Optional[float] = ..., avg_session: _Optional[float] = ..., min: _Optional[float] = ..., max: _Optional[float] = ..., trend_per_min: _Optional[float] = ..., samples: _Optional[int] = ...) -> None: ...
 
 class Session(_message.Message):
-    __slots__ = ("id", "conversation_id", "device", "state", "identity", "fields", "subscribe", "opened_at", "closed_at", "feedback_rule")
+    __slots__ = ("id", "conversation_id", "device", "state", "identity", "fields", "subscribe", "opened_at", "closed_at", "feedback_rule", "view", "view_at")
     ID_FIELD_NUMBER: _ClassVar[int]
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
     DEVICE_FIELD_NUMBER: _ClassVar[int]
@@ -123,6 +143,8 @@ class Session(_message.Message):
     OPENED_AT_FIELD_NUMBER: _ClassVar[int]
     CLOSED_AT_FIELD_NUMBER: _ClassVar[int]
     FEEDBACK_RULE_FIELD_NUMBER: _ClassVar[int]
+    VIEW_FIELD_NUMBER: _ClassVar[int]
+    VIEW_AT_FIELD_NUMBER: _ClassVar[int]
     id: str
     conversation_id: str
     device: Device
@@ -133,7 +155,9 @@ class Session(_message.Message):
     opened_at: _timestamp_pb2.Timestamp
     closed_at: _timestamp_pb2.Timestamp
     feedback_rule: str
-    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., device: _Optional[_Union[Device, _Mapping]] = ..., state: _Optional[_Union[State, str]] = ..., identity: _Optional[str] = ..., fields: _Optional[_Iterable[_Union[Field, _Mapping]]] = ..., subscribe: _Optional[_Iterable[str]] = ..., opened_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., closed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback_rule: _Optional[str] = ...) -> None: ...
+    view: str
+    view_at: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., device: _Optional[_Union[Device, _Mapping]] = ..., state: _Optional[_Union[State, str]] = ..., identity: _Optional[str] = ..., fields: _Optional[_Iterable[_Union[Field, _Mapping]]] = ..., subscribe: _Optional[_Iterable[str]] = ..., opened_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., closed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback_rule: _Optional[str] = ..., view: _Optional[str] = ..., view_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class ListCatalogServicesRequest(_message.Message):
     __slots__ = ()
@@ -160,12 +184,14 @@ class OpenSessionResponse(_message.Message):
     def __init__(self, session: _Optional[_Union[Session, _Mapping]] = ...) -> None: ...
 
 class PushReadingsRequest(_message.Message):
-    __slots__ = ("session_id", "readings")
+    __slots__ = ("session_id", "readings", "frame")
     SESSION_ID_FIELD_NUMBER: _ClassVar[int]
     READINGS_FIELD_NUMBER: _ClassVar[int]
+    FRAME_FIELD_NUMBER: _ClassVar[int]
     session_id: str
     readings: _containers.RepeatedCompositeFieldContainer[Reading]
-    def __init__(self, session_id: _Optional[str] = ..., readings: _Optional[_Iterable[_Union[Reading, _Mapping]]] = ...) -> None: ...
+    frame: Frame
+    def __init__(self, session_id: _Optional[str] = ..., readings: _Optional[_Iterable[_Union[Reading, _Mapping]]] = ..., frame: _Optional[_Union[Frame, _Mapping]] = ...) -> None: ...
 
 class PushReadingsResponse(_message.Message):
     __slots__ = ("points", "session", "stats", "messages")
