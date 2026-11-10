@@ -624,7 +624,7 @@ class SpendByKind(_message.Message):
     def __init__(self, kind: _Optional[str] = ..., runs_month: _Optional[int] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., spend_today_usd: _Optional[float] = ...) -> None: ...
 
 class WorkspaceSpend(_message.Message):
-    __slots__ = ("spend_today_usd", "spend_month_usd", "runs_today", "runs_month", "running_now", "cap_month_usd", "booked_month_usd", "people", "treads", "teams", "kinds", "days", "books_on", "cost_per_run")
+    __slots__ = ("spend_today_usd", "spend_month_usd", "runs_today", "runs_month", "running_now", "cap_month_usd", "booked_month_usd", "people", "treads", "teams", "kinds", "days", "books_on", "cost_per_run", "neural_saved_month_usd")
     SPEND_TODAY_USD_FIELD_NUMBER: _ClassVar[int]
     SPEND_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
     RUNS_TODAY_FIELD_NUMBER: _ClassVar[int]
@@ -639,6 +639,7 @@ class WorkspaceSpend(_message.Message):
     DAYS_FIELD_NUMBER: _ClassVar[int]
     BOOKS_ON_FIELD_NUMBER: _ClassVar[int]
     COST_PER_RUN_FIELD_NUMBER: _ClassVar[int]
+    NEURAL_SAVED_MONTH_USD_FIELD_NUMBER: _ClassVar[int]
     spend_today_usd: float
     spend_month_usd: float
     runs_today: int
@@ -653,7 +654,8 @@ class WorkspaceSpend(_message.Message):
     days: _containers.RepeatedCompositeFieldContainer[SpendByDay]
     books_on: bool
     cost_per_run: _containers.RepeatedCompositeFieldContainer[CostPerRunDay]
-    def __init__(self, spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., runs_month: _Optional[int] = ..., running_now: _Optional[int] = ..., cap_month_usd: _Optional[float] = ..., booked_month_usd: _Optional[float] = ..., people: _Optional[_Iterable[_Union[SpendByPerson, _Mapping]]] = ..., treads: _Optional[_Iterable[_Union[SpendByTread, _Mapping]]] = ..., teams: _Optional[_Iterable[_Union[SpendByTeam, _Mapping]]] = ..., kinds: _Optional[_Iterable[_Union[SpendByKind, _Mapping]]] = ..., days: _Optional[_Iterable[_Union[SpendByDay, _Mapping]]] = ..., books_on: bool = ..., cost_per_run: _Optional[_Iterable[_Union[CostPerRunDay, _Mapping]]] = ...) -> None: ...
+    neural_saved_month_usd: float
+    def __init__(self, spend_today_usd: _Optional[float] = ..., spend_month_usd: _Optional[float] = ..., runs_today: _Optional[int] = ..., runs_month: _Optional[int] = ..., running_now: _Optional[int] = ..., cap_month_usd: _Optional[float] = ..., booked_month_usd: _Optional[float] = ..., people: _Optional[_Iterable[_Union[SpendByPerson, _Mapping]]] = ..., treads: _Optional[_Iterable[_Union[SpendByTread, _Mapping]]] = ..., teams: _Optional[_Iterable[_Union[SpendByTeam, _Mapping]]] = ..., kinds: _Optional[_Iterable[_Union[SpendByKind, _Mapping]]] = ..., days: _Optional[_Iterable[_Union[SpendByDay, _Mapping]]] = ..., books_on: bool = ..., cost_per_run: _Optional[_Iterable[_Union[CostPerRunDay, _Mapping]]] = ..., neural_saved_month_usd: _Optional[float] = ...) -> None: ...
 
 class CostPerRunDay(_message.Message):
     __slots__ = ("day", "runs", "spend_usd", "cost_per_run_usd", "trailing_7d_usd")
