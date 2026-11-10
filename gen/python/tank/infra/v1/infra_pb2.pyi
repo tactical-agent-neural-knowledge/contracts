@@ -15,6 +15,12 @@ class Provider(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     PROVIDER_AZURE: _ClassVar[Provider]
     PROVIDER_KUBERNETES: _ClassVar[Provider]
     PROVIDER_API: _ClassVar[Provider]
+    PROVIDER_DATABASE: _ClassVar[Provider]
+
+class DatabaseEngine(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    DATABASE_ENGINE_UNSPECIFIED: _ClassVar[DatabaseEngine]
+    DATABASE_ENGINE_POSTGRES: _ClassVar[DatabaseEngine]
 
 class ConnectionState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -34,6 +40,9 @@ PROVIDER_GCP: Provider
 PROVIDER_AZURE: Provider
 PROVIDER_KUBERNETES: Provider
 PROVIDER_API: Provider
+PROVIDER_DATABASE: Provider
+DATABASE_ENGINE_UNSPECIFIED: DatabaseEngine
+DATABASE_ENGINE_POSTGRES: DatabaseEngine
 CONNECTION_STATE_UNSPECIFIED: ConnectionState
 CONNECTION_STATE_UNVERIFIED: ConnectionState
 CONNECTION_STATE_OK: ConnectionState
@@ -106,8 +115,24 @@ class ApiConfig(_message.Message):
     header_prefix: str
     def __init__(self, base_url: _Optional[str] = ..., allowed_hosts: _Optional[_Iterable[str]] = ..., header_name: _Optional[str] = ..., header_prefix: _Optional[str] = ...) -> None: ...
 
+class DatabaseConfig(_message.Message):
+    __slots__ = ("engine", "host", "port", "database", "user", "ssl_mode")
+    ENGINE_FIELD_NUMBER: _ClassVar[int]
+    HOST_FIELD_NUMBER: _ClassVar[int]
+    PORT_FIELD_NUMBER: _ClassVar[int]
+    DATABASE_FIELD_NUMBER: _ClassVar[int]
+    USER_FIELD_NUMBER: _ClassVar[int]
+    SSL_MODE_FIELD_NUMBER: _ClassVar[int]
+    engine: DatabaseEngine
+    host: str
+    port: int
+    database: str
+    user: str
+    ssl_mode: str
+    def __init__(self, engine: _Optional[_Union[DatabaseEngine, str]] = ..., host: _Optional[str] = ..., port: _Optional[int] = ..., database: _Optional[str] = ..., user: _Optional[str] = ..., ssl_mode: _Optional[str] = ...) -> None: ...
+
 class Connection(_message.Message):
-    __slots__ = ("id", "workspace_id", "name", "provider", "description", "aws", "gcp", "azure", "kubernetes", "api", "channel_ids", "via_relay", "relay_id", "state", "last_error", "last_checked_at", "created_by", "created_at", "updated_at", "subject", "has_secret")
+    __slots__ = ("id", "workspace_id", "name", "provider", "description", "aws", "gcp", "azure", "kubernetes", "api", "channel_ids", "via_relay", "relay_id", "state", "last_error", "last_checked_at", "created_by", "created_at", "updated_at", "subject", "has_secret", "database")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -129,6 +154,7 @@ class Connection(_message.Message):
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
     SUBJECT_FIELD_NUMBER: _ClassVar[int]
     HAS_SECRET_FIELD_NUMBER: _ClassVar[int]
+    DATABASE_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     name: str
@@ -150,7 +176,8 @@ class Connection(_message.Message):
     updated_at: _timestamp_pb2.Timestamp
     subject: str
     has_secret: bool
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., provider: _Optional[_Union[Provider, str]] = ..., description: _Optional[str] = ..., aws: _Optional[_Union[AwsConfig, _Mapping]] = ..., gcp: _Optional[_Union[GcpConfig, _Mapping]] = ..., azure: _Optional[_Union[AzureConfig, _Mapping]] = ..., kubernetes: _Optional[_Union[KubernetesConfig, _Mapping]] = ..., api: _Optional[_Union[ApiConfig, _Mapping]] = ..., channel_ids: _Optional[_Iterable[str]] = ..., via_relay: bool = ..., relay_id: _Optional[str] = ..., state: _Optional[_Union[ConnectionState, str]] = ..., last_error: _Optional[str] = ..., last_checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., subject: _Optional[str] = ..., has_secret: bool = ...) -> None: ...
+    database: DatabaseConfig
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., provider: _Optional[_Union[Provider, str]] = ..., description: _Optional[str] = ..., aws: _Optional[_Union[AwsConfig, _Mapping]] = ..., gcp: _Optional[_Union[GcpConfig, _Mapping]] = ..., azure: _Optional[_Union[AzureConfig, _Mapping]] = ..., kubernetes: _Optional[_Union[KubernetesConfig, _Mapping]] = ..., api: _Optional[_Union[ApiConfig, _Mapping]] = ..., channel_ids: _Optional[_Iterable[str]] = ..., via_relay: bool = ..., relay_id: _Optional[str] = ..., state: _Optional[_Union[ConnectionState, str]] = ..., last_error: _Optional[str] = ..., last_checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., subject: _Optional[str] = ..., has_secret: bool = ..., database: _Optional[_Union[DatabaseConfig, _Mapping]] = ...) -> None: ...
 
 class SetupStep(_message.Message):
     __slots__ = ("title", "text", "code", "code_language", "download_name")
