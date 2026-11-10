@@ -38,7 +38,8 @@ message Service {
 
 message Characteristic {
   string uuid = 1;
-  // "read", "write", "write_without_response", "notify", "indicate"
+  // "read", "write", "write_without_response", "notify", "indicate"; for transport "phone",
+  // "notify" on a sensor and "frames" on the camera, whose stills come as PushReadingsRequest.frame
   repeated string properties = 2;
   // The value read once at connect, when the characteristic is readable (a feature mask, a name).
   bytes value = 3;

@@ -228,7 +228,8 @@ func (x *Service) GetCharacteristics() []*Characteristic {
 type Characteristic struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Uuid  string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
-	// "read", "write", "write_without_response", "notify", "indicate"
+	// "read", "write", "write_without_response", "notify", "indicate"; for transport "phone",
+	// "notify" on a sensor and "frames" on the camera, whose stills come as PushReadingsRequest.frame
 	Properties []string `protobuf:"bytes,2,rep,name=properties,proto3" json:"properties,omitempty"`
 	// The value read once at connect, when the characteristic is readable (a feature mask, a name).
 	Value []byte `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`

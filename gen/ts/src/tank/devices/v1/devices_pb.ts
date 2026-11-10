@@ -114,7 +114,8 @@ export type Characteristic = Message<"tank.devices.v1.Characteristic"> & {
   uuid: string;
 
   /**
-   * "read", "write", "write_without_response", "notify", "indicate"
+   * "read", "write", "write_without_response", "notify", "indicate"; for transport "phone",
+   * "notify" on a sensor and "frames" on the camera, whose stills come as PushReadingsRequest.frame
    *
    * @generated from field: repeated string properties = 2;
    */
