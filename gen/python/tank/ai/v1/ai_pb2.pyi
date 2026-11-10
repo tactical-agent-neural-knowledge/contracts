@@ -54,7 +54,7 @@ class Attachment(_message.Message):
     def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., data: _Optional[bytes] = ..., size: _Optional[int] = ..., file_id: _Optional[str] = ...) -> None: ...
 
 class Message(_message.Message):
-    __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of")
+    __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of", "suggestions")
     ID_FIELD_NUMBER: _ClassVar[int]
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
     ROLE_FIELD_NUMBER: _ClassVar[int]
@@ -66,6 +66,7 @@ class Message(_message.Message):
     OUTPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
     RATING_FIELD_NUMBER: _ClassVar[int]
     AS_OF_FIELD_NUMBER: _ClassVar[int]
+    SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
     id: str
     conversation_id: str
     role: Role
@@ -77,7 +78,8 @@ class Message(_message.Message):
     output_tokens: int
     rating: int
     as_of: str
-    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ..., as_of: _Optional[str] = ...) -> None: ...
+    suggestions: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ..., as_of: _Optional[str] = ..., suggestions: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class ListConversationsRequest(_message.Message):
     __slots__ = ("query", "limit", "workspace_id")
@@ -200,20 +202,30 @@ class SendMessageRequest(_message.Message):
     def __init__(self, conversation_id: _Optional[str] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., regenerate_message_id: _Optional[str] = ..., replace_message_id: _Optional[str] = ..., workspace_id: _Optional[str] = ...) -> None: ...
 
 class SendMessageResponse(_message.Message):
-    __slots__ = ("started", "delta", "done", "title", "warming", "stage")
+    __slots__ = ("started", "delta", "done", "title", "warming", "stage", "suggestions")
     STARTED_FIELD_NUMBER: _ClassVar[int]
     DELTA_FIELD_NUMBER: _ClassVar[int]
     DONE_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     WARMING_FIELD_NUMBER: _ClassVar[int]
     STAGE_FIELD_NUMBER: _ClassVar[int]
+    SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
     started: Started
     delta: str
     done: Message
     title: str
     warming: str
     stage: Stage
-    def __init__(self, started: _Optional[_Union[Started, _Mapping]] = ..., delta: _Optional[str] = ..., done: _Optional[_Union[Message, _Mapping]] = ..., title: _Optional[str] = ..., warming: _Optional[str] = ..., stage: _Optional[_Union[Stage, _Mapping]] = ...) -> None: ...
+    suggestions: Suggestions
+    def __init__(self, started: _Optional[_Union[Started, _Mapping]] = ..., delta: _Optional[str] = ..., done: _Optional[_Union[Message, _Mapping]] = ..., title: _Optional[str] = ..., warming: _Optional[str] = ..., stage: _Optional[_Union[Stage, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ...) -> None: ...
+
+class Suggestions(_message.Message):
+    __slots__ = ("message_id", "items")
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    ITEMS_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    items: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, message_id: _Optional[str] = ..., items: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class Stage(_message.Message):
     __slots__ = ("kind", "text", "sources", "outline")
