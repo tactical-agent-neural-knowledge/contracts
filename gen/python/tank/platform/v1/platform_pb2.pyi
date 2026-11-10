@@ -439,7 +439,7 @@ class Subscription(_message.Message):
     def __init__(self, product: _Optional[str] = ..., provider: _Optional[str] = ..., status: _Optional[str] = ..., seats: _Optional[int] = ..., period_end: _Optional[str] = ...) -> None: ...
 
 class DailyCount(_message.Message):
-    __slots__ = ("day", "messages", "active_people", "agent_runs", "agent_cost_usd", "new_people", "new_workspaces")
+    __slots__ = ("day", "messages", "active_people", "agent_runs", "agent_cost_usd", "new_people", "new_workspaces", "agent_charged_usd")
     DAY_FIELD_NUMBER: _ClassVar[int]
     MESSAGES_FIELD_NUMBER: _ClassVar[int]
     ACTIVE_PEOPLE_FIELD_NUMBER: _ClassVar[int]
@@ -447,6 +447,7 @@ class DailyCount(_message.Message):
     AGENT_COST_USD_FIELD_NUMBER: _ClassVar[int]
     NEW_PEOPLE_FIELD_NUMBER: _ClassVar[int]
     NEW_WORKSPACES_FIELD_NUMBER: _ClassVar[int]
+    AGENT_CHARGED_USD_FIELD_NUMBER: _ClassVar[int]
     day: str
     messages: int
     active_people: int
@@ -454,7 +455,8 @@ class DailyCount(_message.Message):
     agent_cost_usd: float
     new_people: int
     new_workspaces: int
-    def __init__(self, day: _Optional[str] = ..., messages: _Optional[int] = ..., active_people: _Optional[int] = ..., agent_runs: _Optional[int] = ..., agent_cost_usd: _Optional[float] = ..., new_people: _Optional[int] = ..., new_workspaces: _Optional[int] = ...) -> None: ...
+    agent_charged_usd: float
+    def __init__(self, day: _Optional[str] = ..., messages: _Optional[int] = ..., active_people: _Optional[int] = ..., agent_runs: _Optional[int] = ..., agent_cost_usd: _Optional[float] = ..., new_people: _Optional[int] = ..., new_workspaces: _Optional[int] = ..., agent_charged_usd: _Optional[float] = ...) -> None: ...
 
 class AgentRunRow(_message.Message):
     __slots__ = ("id", "agent_name", "state", "started_at", "ended_at", "minutes", "cost_usd")

@@ -289,6 +289,9 @@ message DailyCount {
   double agent_cost_usd = 5;
   int32 new_people = 6;                        // overview only
   int32 new_workspaces = 7;                    // overview only
+  // What workspaces were charged for that day's agent work, each at its own rate for the
+  // month (api internal/pricing); agent_cost_usd is what it cost TANK. The console stacks them.
+  double agent_charged_usd = 8;
 }
 
 // AgentRunRow is one run without its ask: what an agent was asked is the
