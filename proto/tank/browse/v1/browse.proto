@@ -21,8 +21,13 @@ service BrowseService {
   // The conversation's open pages.
   rpc ListPages(ListPagesRequest) returns (ListPagesResponse);
   // What the person does on the page: tap, type, scroll, back, go to an address. Only the
-  // page's owner may act.
+  // page's current driver may act.
   rpc Act(ActRequest) returns (ActResponse);
+  // Hands control of the page to someone else in the conversation (Robby, 2026-11-11: "allow
+  // them to give control to the other people in the conversation"). The owner may give it to
+  // anyone in the conversation and take it back at any time; the current driver may hand it
+  // back to the owner. An empty user_id gives it back to the owner.
+  rpc SetDriver(SetDriverRequest) returns (SetDriverResponse);
   // The page's screen as it changes (about once a second while it moves), with Neural's
   // marks on it. Any member of the conversation may watch.
   rpc WatchPage(WatchPageRequest) returns (stream WatchPageResponse);
@@ -39,6 +44,17 @@ message Page {
   // "loading", "ready", "closed", or "failed" (with reason).
   string state = 8;
   string reason = 9;
+  // Who is driving now: the owner unless they gave control to someone else.
+  string driver_id = 10;
+  string driver_name = 11;
+}
+
+message SetDriverRequest {
+  string page_id = 1;
+  string user_id = 2;
+}
+message SetDriverResponse {
+  Page page = 1;
 }
 
 message OpenPageRequest {
