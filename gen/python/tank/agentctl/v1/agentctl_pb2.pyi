@@ -3037,6 +3037,46 @@ class CallNeuralAppToolResponse(_message.Message):
     response: _apps_pb2.CallToolResponse
     def __init__(self, response: _Optional[_Union[_apps_pb2.CallToolResponse, _Mapping]] = ...) -> None: ...
 
+class StartNeuralAppLoginRequest(_message.Message):
+    __slots__ = ("user_id", "app_id", "return_to")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    APP_ID_FIELD_NUMBER: _ClassVar[int]
+    RETURN_TO_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    app_id: str
+    return_to: str
+    def __init__(self, user_id: _Optional[str] = ..., app_id: _Optional[str] = ..., return_to: _Optional[str] = ...) -> None: ...
+
+class StartNeuralAppLoginResponse(_message.Message):
+    __slots__ = ("url",)
+    URL_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    def __init__(self, url: _Optional[str] = ...) -> None: ...
+
+class ListNeuralAppAccountsRequest(_message.Message):
+    __slots__ = ("user_id",)
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    def __init__(self, user_id: _Optional[str] = ...) -> None: ...
+
+class ListNeuralAppAccountsResponse(_message.Message):
+    __slots__ = ("accounts",)
+    ACCOUNTS_FIELD_NUMBER: _ClassVar[int]
+    accounts: _containers.RepeatedCompositeFieldContainer[_apps_pb2.AppAccount]
+    def __init__(self, accounts: _Optional[_Iterable[_Union[_apps_pb2.AppAccount, _Mapping]]] = ...) -> None: ...
+
+class SignOutOfNeuralAppRequest(_message.Message):
+    __slots__ = ("user_id", "app_id")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    APP_ID_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    app_id: str
+    def __init__(self, user_id: _Optional[str] = ..., app_id: _Optional[str] = ...) -> None: ...
+
+class SignOutOfNeuralAppResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class ListInfraConnectionsRequest(_message.Message):
     __slots__ = ("request",)
     REQUEST_FIELD_NUMBER: _ClassVar[int]
