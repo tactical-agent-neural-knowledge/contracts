@@ -29,6 +29,36 @@ message Tool {
   string description = 2;
   // The tool's input JSON schema, as the app declared it.
   string input_schema_json = 3;
+  // Set when the tool is something Neural can offer to do on its own, from what is connected
+  // (the kit's _meta "chat.tank/offer"). An offered tool is called with the person's position
+  // as {"latitude": <number>, "longitude": <number>}, so its schema must take those two.
+  Offer offer = 4;
+}
+
+// Offer is how a tool asks Neural to offer it (Robby, 2026-11-11: "Want me to display the
+// wind over your camera so you can see the direction it is coming from?").
+message Offer {
+  // The offer as Neural says it, a question the person answers by tapping it.
+  string text = 1;
+  // What the conversation must have for the offer to make sense: "camera" (a phone camera
+  // connected), "location" (a position from a connected device). Unknown needs are never met.
+  repeated string needs = 2;
+}
+
+// Mark is one thing drawn over the person's camera, placed by compass bearing. The phone
+// turns it against its own compass, so it stays where it belongs as the person pans.
+message Mark {
+  // "from": something arriving from the bearing (wind, rain). "at": something that sits at
+  // the bearing (the sunset, a place). "badge": a reading with no direction.
+  string kind = 1;
+  // Degrees clockwise from true north, [0, 360). Ignored for a badge.
+  double bearing = 2;
+  // Short, shown large: "14 km/h".
+  string label = 3;
+  // Shown under the label: "Gusts 25 km/h".
+  string detail = 4;
+  // Degrees above the horizon, for something in the sky; 0 on the horizon.
+  double elevation = 5;
 }
 
 // Where a result came from, for the citation.
@@ -64,4 +94,6 @@ message CallToolResponse {
   string text = 1;
   repeated Source sources = 2;
   bool is_error = 3;
+  // What the result draws over the camera (the kit's _meta "chat.tank/marks"), at most 12.
+  repeated Mark marks = 4;
 }

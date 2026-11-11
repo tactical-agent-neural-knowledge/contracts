@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17tank/apps/v1/apps.proto\x12\x0ctank.apps.v1\"\x8e\x01\n\x03\x41pp\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12 \n\x0b\x64\x65scription\x18\x03 \x01(\tR\x0b\x64\x65scription\x12\x19\n\x08logo_url\x18\x04 \x01(\tR\x07logoUrl\x12\x10\n\x03url\x18\x05 \x01(\tR\x03url\x12\x14\n\x05maker\x18\x06 \x01(\tR\x05maker\"h\n\x04Tool\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12 \n\x0b\x64\x65scription\x18\x02 \x01(\tR\x0b\x64\x65scription\x12*\n\x11input_schema_json\x18\x03 \x01(\tR\x0finputSchemaJson\"0\n\x06Source\x12\x14\n\x05title\x18\x01 \x01(\tR\x05title\x12\x10\n\x03url\x18\x02 \x01(\tR\x03url\"\'\n\x0fListAppsRequest\x12\x14\n\x05query\x18\x01 \x01(\tR\x05query\"9\n\x10ListAppsResponse\x12%\n\x04\x61pps\x18\x01 \x03(\x0b\x32\x11.tank.apps.v1.AppR\x04\x61pps\"(\n\x0fGetToolsRequest\x12\x15\n\x06\x61pp_id\x18\x01 \x01(\tR\x05\x61ppId\"a\n\x10GetToolsResponse\x12#\n\x03\x61pp\x18\x01 \x01(\x0b\x32\x11.tank.apps.v1.AppR\x03\x61pp\x12(\n\x05tools\x18\x02 \x03(\x0b\x32\x12.tank.apps.v1.ToolR\x05tools\"c\n\x0f\x43\x61llToolRequest\x12\x15\n\x06\x61pp_id\x18\x01 \x01(\tR\x05\x61ppId\x12\x12\n\x04tool\x18\x02 \x01(\tR\x04tool\x12%\n\x0e\x61rguments_json\x18\x03 \x01(\tR\rargumentsJson\"q\n\x10\x43\x61llToolResponse\x12\x12\n\x04text\x18\x01 \x01(\tR\x04text\x12.\n\x07sources\x18\x02 \x03(\x0b\x32\x14.tank.apps.v1.SourceR\x07sources\x12\x19\n\x08is_error\x18\x03 \x01(\x08R\x07isErrorB\xc0\x01\n\x10\x63om.tank.apps.v1B\tAppsProtoP\x01ZOgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/apps/v1;appsv1\xa2\x02\x03TAX\xaa\x02\x0cTank.Apps.V1\xca\x02\x0cTank\\Apps\\V1\xe2\x02\x18Tank\\Apps\\V1\\GPBMetadata\xea\x02\x0eTank::Apps::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17tank/apps/v1/apps.proto\x12\x0ctank.apps.v1\"\x8e\x01\n\x03\x41pp\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12 \n\x0b\x64\x65scription\x18\x03 \x01(\tR\x0b\x64\x65scription\x12\x19\n\x08logo_url\x18\x04 \x01(\tR\x07logoUrl\x12\x10\n\x03url\x18\x05 \x01(\tR\x03url\x12\x14\n\x05maker\x18\x06 \x01(\tR\x05maker\"\x93\x01\n\x04Tool\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12 \n\x0b\x64\x65scription\x18\x02 \x01(\tR\x0b\x64\x65scription\x12*\n\x11input_schema_json\x18\x03 \x01(\tR\x0finputSchemaJson\x12)\n\x05offer\x18\x04 \x01(\x0b\x32\x13.tank.apps.v1.OfferR\x05offer\"1\n\x05Offer\x12\x12\n\x04text\x18\x01 \x01(\tR\x04text\x12\x14\n\x05needs\x18\x02 \x03(\tR\x05needs\"\x80\x01\n\x04Mark\x12\x12\n\x04kind\x18\x01 \x01(\tR\x04kind\x12\x18\n\x07\x62\x65\x61ring\x18\x02 \x01(\x01R\x07\x62\x65\x61ring\x12\x14\n\x05label\x18\x03 \x01(\tR\x05label\x12\x16\n\x06\x64\x65tail\x18\x04 \x01(\tR\x06\x64\x65tail\x12\x1c\n\televation\x18\x05 \x01(\x01R\televation\"0\n\x06Source\x12\x14\n\x05title\x18\x01 \x01(\tR\x05title\x12\x10\n\x03url\x18\x02 \x01(\tR\x03url\"\'\n\x0fListAppsRequest\x12\x14\n\x05query\x18\x01 \x01(\tR\x05query\"9\n\x10ListAppsResponse\x12%\n\x04\x61pps\x18\x01 \x03(\x0b\x32\x11.tank.apps.v1.AppR\x04\x61pps\"(\n\x0fGetToolsRequest\x12\x15\n\x06\x61pp_id\x18\x01 \x01(\tR\x05\x61ppId\"a\n\x10GetToolsResponse\x12#\n\x03\x61pp\x18\x01 \x01(\x0b\x32\x11.tank.apps.v1.AppR\x03\x61pp\x12(\n\x05tools\x18\x02 \x03(\x0b\x32\x12.tank.apps.v1.ToolR\x05tools\"c\n\x0f\x43\x61llToolRequest\x12\x15\n\x06\x61pp_id\x18\x01 \x01(\tR\x05\x61ppId\x12\x12\n\x04tool\x18\x02 \x01(\tR\x04tool\x12%\n\x0e\x61rguments_json\x18\x03 \x01(\tR\rargumentsJson\"\x9b\x01\n\x10\x43\x61llToolResponse\x12\x12\n\x04text\x18\x01 \x01(\tR\x04text\x12.\n\x07sources\x18\x02 \x03(\x0b\x32\x14.tank.apps.v1.SourceR\x07sources\x12\x19\n\x08is_error\x18\x03 \x01(\x08R\x07isError\x12(\n\x05marks\x18\x04 \x03(\x0b\x32\x12.tank.apps.v1.MarkR\x05marksB\xc0\x01\n\x10\x63om.tank.apps.v1B\tAppsProtoP\x01ZOgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/apps/v1;appsv1\xa2\x02\x03TAX\xaa\x02\x0cTank.Apps.V1\xca\x02\x0cTank\\Apps\\V1\xe2\x02\x18Tank\\Apps\\V1\\GPBMetadata\xea\x02\x0eTank::Apps::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,20 +34,24 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._serialized_options = b'\n\020com.tank.apps.v1B\tAppsProtoP\001ZOgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/apps/v1;appsv1\242\002\003TAX\252\002\014Tank.Apps.V1\312\002\014Tank\\Apps\\V1\342\002\030Tank\\Apps\\V1\\GPBMetadata\352\002\016Tank::Apps::V1'
   _globals['_APP']._serialized_start=42
   _globals['_APP']._serialized_end=184
-  _globals['_TOOL']._serialized_start=186
-  _globals['_TOOL']._serialized_end=290
-  _globals['_SOURCE']._serialized_start=292
-  _globals['_SOURCE']._serialized_end=340
-  _globals['_LISTAPPSREQUEST']._serialized_start=342
-  _globals['_LISTAPPSREQUEST']._serialized_end=381
-  _globals['_LISTAPPSRESPONSE']._serialized_start=383
-  _globals['_LISTAPPSRESPONSE']._serialized_end=440
-  _globals['_GETTOOLSREQUEST']._serialized_start=442
-  _globals['_GETTOOLSREQUEST']._serialized_end=482
-  _globals['_GETTOOLSRESPONSE']._serialized_start=484
-  _globals['_GETTOOLSRESPONSE']._serialized_end=581
-  _globals['_CALLTOOLREQUEST']._serialized_start=583
-  _globals['_CALLTOOLREQUEST']._serialized_end=682
-  _globals['_CALLTOOLRESPONSE']._serialized_start=684
-  _globals['_CALLTOOLRESPONSE']._serialized_end=797
+  _globals['_TOOL']._serialized_start=187
+  _globals['_TOOL']._serialized_end=334
+  _globals['_OFFER']._serialized_start=336
+  _globals['_OFFER']._serialized_end=385
+  _globals['_MARK']._serialized_start=388
+  _globals['_MARK']._serialized_end=516
+  _globals['_SOURCE']._serialized_start=518
+  _globals['_SOURCE']._serialized_end=566
+  _globals['_LISTAPPSREQUEST']._serialized_start=568
+  _globals['_LISTAPPSREQUEST']._serialized_end=607
+  _globals['_LISTAPPSRESPONSE']._serialized_start=609
+  _globals['_LISTAPPSRESPONSE']._serialized_end=666
+  _globals['_GETTOOLSREQUEST']._serialized_start=668
+  _globals['_GETTOOLSREQUEST']._serialized_end=708
+  _globals['_GETTOOLSRESPONSE']._serialized_start=710
+  _globals['_GETTOOLSRESPONSE']._serialized_end=807
+  _globals['_CALLTOOLREQUEST']._serialized_start=809
+  _globals['_CALLTOOLREQUEST']._serialized_end=908
+  _globals['_CALLTOOLRESPONSE']._serialized_start=911
+  _globals['_CALLTOOLRESPONSE']._serialized_end=1066
 # @@protoc_insertion_point(module_scope)
