@@ -69,6 +69,13 @@ const (
 	AiServiceConnectAppProcedure = "/tank.ai.v1.AiService/ConnectApp"
 	// AiServiceDisconnectAppProcedure is the fully-qualified name of the AiService's DisconnectApp RPC.
 	AiServiceDisconnectAppProcedure = "/tank.ai.v1.AiService/DisconnectApp"
+	// AiServiceStartAppLoginProcedure is the fully-qualified name of the AiService's StartAppLogin RPC.
+	AiServiceStartAppLoginProcedure = "/tank.ai.v1.AiService/StartAppLogin"
+	// AiServiceListAppAccountsProcedure is the fully-qualified name of the AiService's ListAppAccounts
+	// RPC.
+	AiServiceListAppAccountsProcedure = "/tank.ai.v1.AiService/ListAppAccounts"
+	// AiServiceSignOutOfAppProcedure is the fully-qualified name of the AiService's SignOutOfApp RPC.
+	AiServiceSignOutOfAppProcedure = "/tank.ai.v1.AiService/SignOutOfApp"
 	// AiServiceClearOverlayProcedure is the fully-qualified name of the AiService's ClearOverlay RPC.
 	AiServiceClearOverlayProcedure = "/tank.ai.v1.AiService/ClearOverlay"
 	// AiServiceRefreshOverlaysProcedure is the fully-qualified name of the AiService's RefreshOverlays
@@ -114,6 +121,11 @@ type AiServiceClient interface {
 	ListApps(context.Context, *connect.Request[v1.ListAppsRequest]) (*connect.Response[v1.ListAppsResponse], error)
 	ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error)
 	DisconnectApp(context.Context, *connect.Request[v1.DisconnectAppRequest]) (*connect.Response[v1.DisconnectAppResponse], error)
+	// Signing in to an app that requires it: the address of the app's own sign-in page, which
+	// the client opens in the system browser; it comes back to return_to when done.
+	StartAppLogin(context.Context, *connect.Request[v1.StartAppLoginRequest]) (*connect.Response[v1.StartAppLoginResponse], error)
+	ListAppAccounts(context.Context, *connect.Request[v1.ListAppAccountsRequest]) (*connect.Response[v1.ListAppAccountsResponse], error)
+	SignOutOfApp(context.Context, *connect.Request[v1.SignOutOfAppRequest]) (*connect.Response[v1.SignOutOfAppResponse], error)
 	// Takes an overlay off the camera.
 	ClearOverlay(context.Context, *connect.Request[v1.ClearOverlayRequest]) (*connect.Response[v1.ClearOverlayResponse], error)
 	// Reads every overlay's figures again where they are more than ten minutes old, from where
@@ -239,6 +251,24 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("DisconnectApp")),
 			connect.WithClientOptions(opts...),
 		),
+		startAppLogin: connect.NewClient[v1.StartAppLoginRequest, v1.StartAppLoginResponse](
+			httpClient,
+			baseURL+AiServiceStartAppLoginProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("StartAppLogin")),
+			connect.WithClientOptions(opts...),
+		),
+		listAppAccounts: connect.NewClient[v1.ListAppAccountsRequest, v1.ListAppAccountsResponse](
+			httpClient,
+			baseURL+AiServiceListAppAccountsProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("ListAppAccounts")),
+			connect.WithClientOptions(opts...),
+		),
+		signOutOfApp: connect.NewClient[v1.SignOutOfAppRequest, v1.SignOutOfAppResponse](
+			httpClient,
+			baseURL+AiServiceSignOutOfAppProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("SignOutOfApp")),
+			connect.WithClientOptions(opts...),
+		),
 		clearOverlay: connect.NewClient[v1.ClearOverlayRequest, v1.ClearOverlayResponse](
 			httpClient,
 			baseURL+AiServiceClearOverlayProcedure,
@@ -325,6 +355,9 @@ type aiServiceClient struct {
 	listApps           *connect.Client[v1.ListAppsRequest, v1.ListAppsResponse]
 	connectApp         *connect.Client[v1.ConnectAppRequest, v1.ConnectAppResponse]
 	disconnectApp      *connect.Client[v1.DisconnectAppRequest, v1.DisconnectAppResponse]
+	startAppLogin      *connect.Client[v1.StartAppLoginRequest, v1.StartAppLoginResponse]
+	listAppAccounts    *connect.Client[v1.ListAppAccountsRequest, v1.ListAppAccountsResponse]
+	signOutOfApp       *connect.Client[v1.SignOutOfAppRequest, v1.SignOutOfAppResponse]
 	clearOverlay       *connect.Client[v1.ClearOverlayRequest, v1.ClearOverlayResponse]
 	refreshOverlays    *connect.Client[v1.RefreshOverlaysRequest, v1.RefreshOverlaysResponse]
 	createInvite       *connect.Client[v1.CreateInviteRequest, v1.CreateInviteResponse]
@@ -413,6 +446,21 @@ func (c *aiServiceClient) DisconnectApp(ctx context.Context, req *connect.Reques
 	return c.disconnectApp.CallUnary(ctx, req)
 }
 
+// StartAppLogin calls tank.ai.v1.AiService.StartAppLogin.
+func (c *aiServiceClient) StartAppLogin(ctx context.Context, req *connect.Request[v1.StartAppLoginRequest]) (*connect.Response[v1.StartAppLoginResponse], error) {
+	return c.startAppLogin.CallUnary(ctx, req)
+}
+
+// ListAppAccounts calls tank.ai.v1.AiService.ListAppAccounts.
+func (c *aiServiceClient) ListAppAccounts(ctx context.Context, req *connect.Request[v1.ListAppAccountsRequest]) (*connect.Response[v1.ListAppAccountsResponse], error) {
+	return c.listAppAccounts.CallUnary(ctx, req)
+}
+
+// SignOutOfApp calls tank.ai.v1.AiService.SignOutOfApp.
+func (c *aiServiceClient) SignOutOfApp(ctx context.Context, req *connect.Request[v1.SignOutOfAppRequest]) (*connect.Response[v1.SignOutOfAppResponse], error) {
+	return c.signOutOfApp.CallUnary(ctx, req)
+}
+
 // ClearOverlay calls tank.ai.v1.AiService.ClearOverlay.
 func (c *aiServiceClient) ClearOverlay(ctx context.Context, req *connect.Request[v1.ClearOverlayRequest]) (*connect.Response[v1.ClearOverlayResponse], error) {
 	return c.clearOverlay.CallUnary(ctx, req)
@@ -486,6 +534,11 @@ type AiServiceHandler interface {
 	ListApps(context.Context, *connect.Request[v1.ListAppsRequest]) (*connect.Response[v1.ListAppsResponse], error)
 	ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error)
 	DisconnectApp(context.Context, *connect.Request[v1.DisconnectAppRequest]) (*connect.Response[v1.DisconnectAppResponse], error)
+	// Signing in to an app that requires it: the address of the app's own sign-in page, which
+	// the client opens in the system browser; it comes back to return_to when done.
+	StartAppLogin(context.Context, *connect.Request[v1.StartAppLoginRequest]) (*connect.Response[v1.StartAppLoginResponse], error)
+	ListAppAccounts(context.Context, *connect.Request[v1.ListAppAccountsRequest]) (*connect.Response[v1.ListAppAccountsResponse], error)
+	SignOutOfApp(context.Context, *connect.Request[v1.SignOutOfAppRequest]) (*connect.Response[v1.SignOutOfAppResponse], error)
 	// Takes an overlay off the camera.
 	ClearOverlay(context.Context, *connect.Request[v1.ClearOverlayRequest]) (*connect.Response[v1.ClearOverlayResponse], error)
 	// Reads every overlay's figures again where they are more than ten minutes old, from where
@@ -607,6 +660,24 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("DisconnectApp")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServiceStartAppLoginHandler := connect.NewUnaryHandler(
+		AiServiceStartAppLoginProcedure,
+		svc.StartAppLogin,
+		connect.WithSchema(aiServiceMethods.ByName("StartAppLogin")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceListAppAccountsHandler := connect.NewUnaryHandler(
+		AiServiceListAppAccountsProcedure,
+		svc.ListAppAccounts,
+		connect.WithSchema(aiServiceMethods.ByName("ListAppAccounts")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceSignOutOfAppHandler := connect.NewUnaryHandler(
+		AiServiceSignOutOfAppProcedure,
+		svc.SignOutOfApp,
+		connect.WithSchema(aiServiceMethods.ByName("SignOutOfApp")),
+		connect.WithHandlerOptions(opts...),
+	)
 	aiServiceClearOverlayHandler := connect.NewUnaryHandler(
 		AiServiceClearOverlayProcedure,
 		svc.ClearOverlay,
@@ -705,6 +776,12 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceConnectAppHandler.ServeHTTP(w, r)
 		case AiServiceDisconnectAppProcedure:
 			aiServiceDisconnectAppHandler.ServeHTTP(w, r)
+		case AiServiceStartAppLoginProcedure:
+			aiServiceStartAppLoginHandler.ServeHTTP(w, r)
+		case AiServiceListAppAccountsProcedure:
+			aiServiceListAppAccountsHandler.ServeHTTP(w, r)
+		case AiServiceSignOutOfAppProcedure:
+			aiServiceSignOutOfAppHandler.ServeHTTP(w, r)
 		case AiServiceClearOverlayProcedure:
 			aiServiceClearOverlayHandler.ServeHTTP(w, r)
 		case AiServiceRefreshOverlaysProcedure:
@@ -794,6 +871,18 @@ func (UnimplementedAiServiceHandler) ConnectApp(context.Context, *connect.Reques
 
 func (UnimplementedAiServiceHandler) DisconnectApp(context.Context, *connect.Request[v1.DisconnectAppRequest]) (*connect.Response[v1.DisconnectAppResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.DisconnectApp is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) StartAppLogin(context.Context, *connect.Request[v1.StartAppLoginRequest]) (*connect.Response[v1.StartAppLoginResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.StartAppLogin is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) ListAppAccounts(context.Context, *connect.Request[v1.ListAppAccountsRequest]) (*connect.Response[v1.ListAppAccountsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.ListAppAccounts is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) SignOutOfApp(context.Context, *connect.Request[v1.SignOutOfAppRequest]) (*connect.Response[v1.SignOutOfAppResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.SignOutOfApp is not implemented"))
 }
 
 func (UnimplementedAiServiceHandler) ClearOverlay(context.Context, *connect.Request[v1.ClearOverlayRequest]) (*connect.Response[v1.ClearOverlayResponse], error) {

@@ -50,6 +50,18 @@ message Conversation {
   bool muted = 18;
   // Devices connected to it now, for the row's avatar and the LIVE card.
   repeated ConnectedDevice devices = 19;
+  // Who connected each app, so an app the person signed in to shows whose account it reads
+  // ("Datum · Robby's account"). In a shared conversation such an app answers only the
+  // messages of the person whose account it is.
+  repeated AppConnection app_connections = 20;
+}
+
+message AppConnection {
+  string app_id = 1;
+  string connected_by_id = 2;
+  string connected_by_name = 3;
+  // The app requires login and the person who connected it has not signed in yet.
+  bool needs_login = 4;
 }
 
 message ConnectedDevice {
@@ -329,9 +341,33 @@ message Settings {
   // counts down to launch_at; nothing answers in its place.
   bool available = 3;
   google.protobuf.Timestamp launch_at = 4;
+  // What every new conversation starts with (Robby, 2026-11-11: "if I want datum in every
+  // new conversation, I can select it in settings … same thing for devices and webpages").
+  Defaults defaults = 5;
+}
+message Defaults {
+  // Apps connected to every new conversation by the server when it is made.
+  repeated string app_ids = 1;
+  // Devices the app connects itself when it starts a new conversation, if it can.
+  repeated DefaultDevice devices = 2;
+  // Webpages the app opens in every new conversation (tank.browse.v1.OpenPage).
+  repeated string page_urls = 3;
+}
+message DefaultDevice {
+  // "phone": this phone's own sensors; "bluetooth": a Bluetooth device the app has paired.
+  string kind = 1;
+  // For a phone: which of its sensors ("camera", "location", "motion", ...).
+  repeated string sensors = 2;
+  // For Bluetooth: the id the app knows it by and its name.
+  string bluetooth_id = 3;
+  string name = 4;
 }
 message UpdateSettingsRequest {
   string instructions = 1;
+  // Set defaults (replacing them) only when set_defaults is true, so an older client that
+  // sends only instructions never clears them.
+  Defaults defaults = 2;
+  bool set_defaults = 3;
 }
 message UpdateSettingsResponse {
   Settings settings = 1;
@@ -389,6 +425,11 @@ service AiService {
   rpc ListApps(ListAppsRequest) returns (ListAppsResponse);
   rpc ConnectApp(ConnectAppRequest) returns (ConnectAppResponse);
   rpc DisconnectApp(DisconnectAppRequest) returns (DisconnectAppResponse);
+  // Signing in to an app that requires it: the address of the app's own sign-in page, which
+  // the client opens in the system browser; it comes back to return_to when done.
+  rpc StartAppLogin(StartAppLoginRequest) returns (StartAppLoginResponse);
+  rpc ListAppAccounts(ListAppAccountsRequest) returns (ListAppAccountsResponse);
+  rpc SignOutOfApp(SignOutOfAppRequest) returns (SignOutOfAppResponse);
   // Takes an overlay off the camera.
   rpc ClearOverlay(ClearOverlayRequest) returns (ClearOverlayResponse);
   // Reads every overlay's figures again where they are more than ten minutes old, from where
@@ -537,3 +578,20 @@ message SetMutedRequest {
 message SetMutedResponse {
   Conversation conversation = 1;
 }
+
+message StartAppLoginRequest {
+  string app_id = 1;
+  // Where the browser goes when sign-in finishes: a TANK web address or an app link.
+  string return_to = 2;
+}
+message StartAppLoginResponse {
+  string url = 1;
+}
+message ListAppAccountsRequest {}
+message ListAppAccountsResponse {
+  repeated tank.apps.v1.AppAccount accounts = 1;
+}
+message SignOutOfAppRequest {
+  string app_id = 1;
+}
+message SignOutOfAppResponse {}

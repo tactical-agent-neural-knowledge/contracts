@@ -22,9 +22,10 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17tank/apps/v1/apps.proto\x12\x0ctank.apps.v1\"\x8e\x01\n\x03\x41pp\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12 \n\x0b\x64\x65scription\x18\x03 \x01(\tR\x0b\x64\x65scription\x12\x19\n\x08logo_url\x18\x04 \x01(\tR\x07logoUrl\x12\x10\n\x03url\x18\x05 \x01(\tR\x03url\x12\x14\n\x05maker\x18\x06 \x01(\tR\x05maker\"\x93\x01\n\x04Tool\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12 \n\x0b\x64\x65scription\x18\x02 \x01(\tR\x0b\x64\x65scription\x12*\n\x11input_schema_json\x18\x03 \x01(\tR\x0finputSchemaJson\x12)\n\x05offer\x18\x04 \x01(\x0b\x32\x13.tank.apps.v1.OfferR\x05offer\"G\n\x05Offer\x12\x12\n\x04text\x18\x01 \x01(\tR\x04text\x12\x14\n\x05needs\x18\x02 \x03(\tR\x05needs\x12\x14\n\x05title\x18\x03 \x01(\tR\x05title\"\xb8\x01\n\x04Mark\x12\x12\n\x04kind\x18\x01 \x01(\tR\x04kind\x12\x18\n\x07\x62\x65\x61ring\x18\x02 \x01(\x01R\x07\x62\x65\x61ring\x12\x14\n\x05label\x18\x03 \x01(\tR\x05label\x12\x16\n\x06\x64\x65tail\x18\x04 \x01(\tR\x06\x64\x65tail\x12\x1c\n\televation\x18\x05 \x01(\x01R\televation\x12\x0c\n\x01x\x18\x06 \x01(\x01R\x01x\x12\x0c\n\x01y\x18\x07 \x01(\x01R\x01y\x12\x0c\n\x01w\x18\x08 \x01(\x01R\x01w\x12\x0c\n\x01h\x18\t \x01(\x01R\x01h\"0\n\x06Source\x12\x14\n\x05title\x18\x01 \x01(\tR\x05title\x12\x10\n\x03url\x18\x02 \x01(\tR\x03url\"\'\n\x0fListAppsRequest\x12\x14\n\x05query\x18\x01 \x01(\tR\x05query\"9\n\x10ListAppsResponse\x12%\n\x04\x61pps\x18\x01 \x03(\x0b\x32\x11.tank.apps.v1.AppR\x04\x61pps\"(\n\x0fGetToolsRequest\x12\x15\n\x06\x61pp_id\x18\x01 \x01(\tR\x05\x61ppId\"a\n\x10GetToolsResponse\x12#\n\x03\x61pp\x18\x01 \x01(\x0b\x32\x11.tank.apps.v1.AppR\x03\x61pp\x12(\n\x05tools\x18\x02 \x03(\x0b\x32\x12.tank.apps.v1.ToolR\x05tools\"c\n\x0f\x43\x61llToolRequest\x12\x15\n\x06\x61pp_id\x18\x01 \x01(\tR\x05\x61ppId\x12\x12\n\x04tool\x18\x02 \x01(\tR\x04tool\x12%\n\x0e\x61rguments_json\x18\x03 \x01(\tR\rargumentsJson\"\x9b\x01\n\x10\x43\x61llToolResponse\x12\x12\n\x04text\x18\x01 \x01(\tR\x04text\x12.\n\x07sources\x18\x02 \x03(\x0b\x32\x14.tank.apps.v1.SourceR\x07sources\x12\x19\n\x08is_error\x18\x03 \x01(\x08R\x07isError\x12(\n\x05marks\x18\x04 \x03(\x0b\x32\x12.tank.apps.v1.MarkR\x05marksB\xc0\x01\n\x10\x63om.tank.apps.v1B\tAppsProtoP\x01ZOgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/apps/v1;appsv1\xa2\x02\x03TAX\xaa\x02\x0cTank.Apps.V1\xca\x02\x0cTank\\Apps\\V1\xe2\x02\x18Tank\\Apps\\V1\\GPBMetadata\xea\x02\x0eTank::Apps::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17tank/apps/v1/apps.proto\x12\x0ctank.apps.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb5\x01\n\x03\x41pp\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12 \n\x0b\x64\x65scription\x18\x03 \x01(\tR\x0b\x64\x65scription\x12\x19\n\x08logo_url\x18\x04 \x01(\tR\x07logoUrl\x12\x10\n\x03url\x18\x05 \x01(\tR\x03url\x12\x14\n\x05maker\x18\x06 \x01(\tR\x05maker\x12%\n\x0erequires_login\x18\x07 \x01(\x08R\rrequiresLogin\"\xa3\x01\n\nAppAccount\x12\x15\n\x06\x61pp_id\x18\x01 \x01(\tR\x05\x61ppId\x12\x1b\n\tsigned_in\x18\x02 \x01(\x08R\x08signedIn\x12#\n\raccount_label\x18\x03 \x01(\tR\x0c\x61\x63\x63ountLabel\x12<\n\x0csigned_in_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\nsignedInAt\"\x93\x01\n\x04Tool\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12 \n\x0b\x64\x65scription\x18\x02 \x01(\tR\x0b\x64\x65scription\x12*\n\x11input_schema_json\x18\x03 \x01(\tR\x0finputSchemaJson\x12)\n\x05offer\x18\x04 \x01(\x0b\x32\x13.tank.apps.v1.OfferR\x05offer\"G\n\x05Offer\x12\x12\n\x04text\x18\x01 \x01(\tR\x04text\x12\x14\n\x05needs\x18\x02 \x03(\tR\x05needs\x12\x14\n\x05title\x18\x03 \x01(\tR\x05title\"\xb8\x01\n\x04Mark\x12\x12\n\x04kind\x18\x01 \x01(\tR\x04kind\x12\x18\n\x07\x62\x65\x61ring\x18\x02 \x01(\x01R\x07\x62\x65\x61ring\x12\x14\n\x05label\x18\x03 \x01(\tR\x05label\x12\x16\n\x06\x64\x65tail\x18\x04 \x01(\tR\x06\x64\x65tail\x12\x1c\n\televation\x18\x05 \x01(\x01R\televation\x12\x0c\n\x01x\x18\x06 \x01(\x01R\x01x\x12\x0c\n\x01y\x18\x07 \x01(\x01R\x01y\x12\x0c\n\x01w\x18\x08 \x01(\x01R\x01w\x12\x0c\n\x01h\x18\t \x01(\x01R\x01h\"0\n\x06Source\x12\x14\n\x05title\x18\x01 \x01(\tR\x05title\x12\x10\n\x03url\x18\x02 \x01(\tR\x03url\"\'\n\x0fListAppsRequest\x12\x14\n\x05query\x18\x01 \x01(\tR\x05query\"9\n\x10ListAppsResponse\x12%\n\x04\x61pps\x18\x01 \x03(\x0b\x32\x11.tank.apps.v1.AppR\x04\x61pps\"(\n\x0fGetToolsRequest\x12\x15\n\x06\x61pp_id\x18\x01 \x01(\tR\x05\x61ppId\"a\n\x10GetToolsResponse\x12#\n\x03\x61pp\x18\x01 \x01(\x0b\x32\x11.tank.apps.v1.AppR\x03\x61pp\x12(\n\x05tools\x18\x02 \x03(\x0b\x32\x12.tank.apps.v1.ToolR\x05tools\"|\n\x0f\x43\x61llToolRequest\x12\x15\n\x06\x61pp_id\x18\x01 \x01(\tR\x05\x61ppId\x12\x12\n\x04tool\x18\x02 \x01(\tR\x04tool\x12%\n\x0e\x61rguments_json\x18\x03 \x01(\tR\rargumentsJson\x12\x17\n\x07user_id\x18\x04 \x01(\tR\x06userId\"\x9b\x01\n\x10\x43\x61llToolResponse\x12\x12\n\x04text\x18\x01 \x01(\tR\x04text\x12.\n\x07sources\x18\x02 \x03(\x0b\x32\x14.tank.apps.v1.SourceR\x07sources\x12\x19\n\x08is_error\x18\x03 \x01(\x08R\x07isError\x12(\n\x05marks\x18\x04 \x03(\x0b\x32\x12.tank.apps.v1.MarkR\x05marksB\xc0\x01\n\x10\x63om.tank.apps.v1B\tAppsProtoP\x01ZOgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/apps/v1;appsv1\xa2\x02\x03TAX\xaa\x02\x0cTank.Apps.V1\xca\x02\x0cTank\\Apps\\V1\xe2\x02\x18Tank\\Apps\\V1\\GPBMetadata\xea\x02\x0eTank::Apps::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,26 +33,28 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'tank.apps.v1.apps_pb2', _gl
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\020com.tank.apps.v1B\tAppsProtoP\001ZOgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/apps/v1;appsv1\242\002\003TAX\252\002\014Tank.Apps.V1\312\002\014Tank\\Apps\\V1\342\002\030Tank\\Apps\\V1\\GPBMetadata\352\002\016Tank::Apps::V1'
-  _globals['_APP']._serialized_start=42
-  _globals['_APP']._serialized_end=184
-  _globals['_TOOL']._serialized_start=187
-  _globals['_TOOL']._serialized_end=334
-  _globals['_OFFER']._serialized_start=336
-  _globals['_OFFER']._serialized_end=407
-  _globals['_MARK']._serialized_start=410
-  _globals['_MARK']._serialized_end=594
-  _globals['_SOURCE']._serialized_start=596
-  _globals['_SOURCE']._serialized_end=644
-  _globals['_LISTAPPSREQUEST']._serialized_start=646
-  _globals['_LISTAPPSREQUEST']._serialized_end=685
-  _globals['_LISTAPPSRESPONSE']._serialized_start=687
-  _globals['_LISTAPPSRESPONSE']._serialized_end=744
-  _globals['_GETTOOLSREQUEST']._serialized_start=746
-  _globals['_GETTOOLSREQUEST']._serialized_end=786
-  _globals['_GETTOOLSRESPONSE']._serialized_start=788
-  _globals['_GETTOOLSRESPONSE']._serialized_end=885
-  _globals['_CALLTOOLREQUEST']._serialized_start=887
-  _globals['_CALLTOOLREQUEST']._serialized_end=986
-  _globals['_CALLTOOLRESPONSE']._serialized_start=989
-  _globals['_CALLTOOLRESPONSE']._serialized_end=1144
+  _globals['_APP']._serialized_start=75
+  _globals['_APP']._serialized_end=256
+  _globals['_APPACCOUNT']._serialized_start=259
+  _globals['_APPACCOUNT']._serialized_end=422
+  _globals['_TOOL']._serialized_start=425
+  _globals['_TOOL']._serialized_end=572
+  _globals['_OFFER']._serialized_start=574
+  _globals['_OFFER']._serialized_end=645
+  _globals['_MARK']._serialized_start=648
+  _globals['_MARK']._serialized_end=832
+  _globals['_SOURCE']._serialized_start=834
+  _globals['_SOURCE']._serialized_end=882
+  _globals['_LISTAPPSREQUEST']._serialized_start=884
+  _globals['_LISTAPPSREQUEST']._serialized_end=923
+  _globals['_LISTAPPSRESPONSE']._serialized_start=925
+  _globals['_LISTAPPSRESPONSE']._serialized_end=982
+  _globals['_GETTOOLSREQUEST']._serialized_start=984
+  _globals['_GETTOOLSREQUEST']._serialized_end=1024
+  _globals['_GETTOOLSRESPONSE']._serialized_start=1026
+  _globals['_GETTOOLSRESPONSE']._serialized_end=1123
+  _globals['_CALLTOOLREQUEST']._serialized_start=1125
+  _globals['_CALLTOOLREQUEST']._serialized_end=1249
+  _globals['_CALLTOOLRESPONSE']._serialized_start=1252
+  _globals['_CALLTOOLRESPONSE']._serialized_end=1407
 # @@protoc_insertion_point(module_scope)

@@ -18,7 +18,7 @@ ROLE_USER: Role
 ROLE_ASSISTANT: Role
 
 class Conversation(_message.Message):
-    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps", "overlays", "members", "pages", "last_text", "last_author_id", "last_author_name", "last_role", "last_at", "unread", "muted", "devices")
+    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps", "overlays", "members", "pages", "last_text", "last_author_id", "last_author_name", "last_role", "last_at", "unread", "muted", "devices", "app_connections")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
@@ -38,6 +38,7 @@ class Conversation(_message.Message):
     UNREAD_FIELD_NUMBER: _ClassVar[int]
     MUTED_FIELD_NUMBER: _ClassVar[int]
     DEVICES_FIELD_NUMBER: _ClassVar[int]
+    APP_CONNECTIONS_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     created_at: _timestamp_pb2.Timestamp
@@ -57,7 +58,20 @@ class Conversation(_message.Message):
     unread: int
     muted: bool
     devices: _containers.RepeatedCompositeFieldContainer[ConnectedDevice]
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ..., overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., pages: _Optional[_Iterable[_Union[ConnectedPage, _Mapping]]] = ..., last_text: _Optional[str] = ..., last_author_id: _Optional[str] = ..., last_author_name: _Optional[str] = ..., last_role: _Optional[str] = ..., last_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., unread: _Optional[int] = ..., muted: bool = ..., devices: _Optional[_Iterable[_Union[ConnectedDevice, _Mapping]]] = ...) -> None: ...
+    app_connections: _containers.RepeatedCompositeFieldContainer[AppConnection]
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ..., overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., pages: _Optional[_Iterable[_Union[ConnectedPage, _Mapping]]] = ..., last_text: _Optional[str] = ..., last_author_id: _Optional[str] = ..., last_author_name: _Optional[str] = ..., last_role: _Optional[str] = ..., last_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., unread: _Optional[int] = ..., muted: bool = ..., devices: _Optional[_Iterable[_Union[ConnectedDevice, _Mapping]]] = ..., app_connections: _Optional[_Iterable[_Union[AppConnection, _Mapping]]] = ...) -> None: ...
+
+class AppConnection(_message.Message):
+    __slots__ = ("app_id", "connected_by_id", "connected_by_name", "needs_login")
+    APP_ID_FIELD_NUMBER: _ClassVar[int]
+    CONNECTED_BY_ID_FIELD_NUMBER: _ClassVar[int]
+    CONNECTED_BY_NAME_FIELD_NUMBER: _ClassVar[int]
+    NEEDS_LOGIN_FIELD_NUMBER: _ClassVar[int]
+    app_id: str
+    connected_by_id: str
+    connected_by_name: str
+    needs_login: bool
+    def __init__(self, app_id: _Optional[str] = ..., connected_by_id: _Optional[str] = ..., connected_by_name: _Optional[str] = ..., needs_login: bool = ...) -> None: ...
 
 class ConnectedDevice(_message.Message):
     __slots__ = ("session_id", "name", "transport", "owner_id", "owner_name", "camera")
@@ -396,22 +410,50 @@ class GetSettingsResponse(_message.Message):
     def __init__(self, settings: _Optional[_Union[Settings, _Mapping]] = ...) -> None: ...
 
 class Settings(_message.Message):
-    __slots__ = ("instructions", "model_label", "available", "launch_at")
+    __slots__ = ("instructions", "model_label", "available", "launch_at", "defaults")
     INSTRUCTIONS_FIELD_NUMBER: _ClassVar[int]
     MODEL_LABEL_FIELD_NUMBER: _ClassVar[int]
     AVAILABLE_FIELD_NUMBER: _ClassVar[int]
     LAUNCH_AT_FIELD_NUMBER: _ClassVar[int]
+    DEFAULTS_FIELD_NUMBER: _ClassVar[int]
     instructions: str
     model_label: str
     available: bool
     launch_at: _timestamp_pb2.Timestamp
-    def __init__(self, instructions: _Optional[str] = ..., model_label: _Optional[str] = ..., available: bool = ..., launch_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    defaults: Defaults
+    def __init__(self, instructions: _Optional[str] = ..., model_label: _Optional[str] = ..., available: bool = ..., launch_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., defaults: _Optional[_Union[Defaults, _Mapping]] = ...) -> None: ...
+
+class Defaults(_message.Message):
+    __slots__ = ("app_ids", "devices", "page_urls")
+    APP_IDS_FIELD_NUMBER: _ClassVar[int]
+    DEVICES_FIELD_NUMBER: _ClassVar[int]
+    PAGE_URLS_FIELD_NUMBER: _ClassVar[int]
+    app_ids: _containers.RepeatedScalarFieldContainer[str]
+    devices: _containers.RepeatedCompositeFieldContainer[DefaultDevice]
+    page_urls: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, app_ids: _Optional[_Iterable[str]] = ..., devices: _Optional[_Iterable[_Union[DefaultDevice, _Mapping]]] = ..., page_urls: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class DefaultDevice(_message.Message):
+    __slots__ = ("kind", "sensors", "bluetooth_id", "name")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    SENSORS_FIELD_NUMBER: _ClassVar[int]
+    BLUETOOTH_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    sensors: _containers.RepeatedScalarFieldContainer[str]
+    bluetooth_id: str
+    name: str
+    def __init__(self, kind: _Optional[str] = ..., sensors: _Optional[_Iterable[str]] = ..., bluetooth_id: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
 
 class UpdateSettingsRequest(_message.Message):
-    __slots__ = ("instructions",)
+    __slots__ = ("instructions", "defaults", "set_defaults")
     INSTRUCTIONS_FIELD_NUMBER: _ClassVar[int]
+    DEFAULTS_FIELD_NUMBER: _ClassVar[int]
+    SET_DEFAULTS_FIELD_NUMBER: _ClassVar[int]
     instructions: str
-    def __init__(self, instructions: _Optional[str] = ...) -> None: ...
+    defaults: Defaults
+    set_defaults: bool
+    def __init__(self, instructions: _Optional[str] = ..., defaults: _Optional[_Union[Defaults, _Mapping]] = ..., set_defaults: bool = ...) -> None: ...
 
 class UpdateSettingsResponse(_message.Message):
     __slots__ = ("settings",)
@@ -696,3 +738,37 @@ class SetMutedResponse(_message.Message):
     CONVERSATION_FIELD_NUMBER: _ClassVar[int]
     conversation: Conversation
     def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ...) -> None: ...
+
+class StartAppLoginRequest(_message.Message):
+    __slots__ = ("app_id", "return_to")
+    APP_ID_FIELD_NUMBER: _ClassVar[int]
+    RETURN_TO_FIELD_NUMBER: _ClassVar[int]
+    app_id: str
+    return_to: str
+    def __init__(self, app_id: _Optional[str] = ..., return_to: _Optional[str] = ...) -> None: ...
+
+class StartAppLoginResponse(_message.Message):
+    __slots__ = ("url",)
+    URL_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    def __init__(self, url: _Optional[str] = ...) -> None: ...
+
+class ListAppAccountsRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class ListAppAccountsResponse(_message.Message):
+    __slots__ = ("accounts",)
+    ACCOUNTS_FIELD_NUMBER: _ClassVar[int]
+    accounts: _containers.RepeatedCompositeFieldContainer[_apps_pb2.AppAccount]
+    def __init__(self, accounts: _Optional[_Iterable[_Union[_apps_pb2.AppAccount, _Mapping]]] = ...) -> None: ...
+
+class SignOutOfAppRequest(_message.Message):
+    __slots__ = ("app_id",)
+    APP_ID_FIELD_NUMBER: _ClassVar[int]
+    app_id: str
+    def __init__(self, app_id: _Optional[str] = ...) -> None: ...
+
+class SignOutOfAppResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...

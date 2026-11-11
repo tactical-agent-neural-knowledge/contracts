@@ -1,3 +1,4 @@
+from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
@@ -6,20 +7,34 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class App(_message.Message):
-    __slots__ = ("id", "name", "description", "logo_url", "url", "maker")
+    __slots__ = ("id", "name", "description", "logo_url", "url", "maker", "requires_login")
     ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     LOGO_URL_FIELD_NUMBER: _ClassVar[int]
     URL_FIELD_NUMBER: _ClassVar[int]
     MAKER_FIELD_NUMBER: _ClassVar[int]
+    REQUIRES_LOGIN_FIELD_NUMBER: _ClassVar[int]
     id: str
     name: str
     description: str
     logo_url: str
     url: str
     maker: str
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., logo_url: _Optional[str] = ..., url: _Optional[str] = ..., maker: _Optional[str] = ...) -> None: ...
+    requires_login: bool
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., logo_url: _Optional[str] = ..., url: _Optional[str] = ..., maker: _Optional[str] = ..., requires_login: bool = ...) -> None: ...
+
+class AppAccount(_message.Message):
+    __slots__ = ("app_id", "signed_in", "account_label", "signed_in_at")
+    APP_ID_FIELD_NUMBER: _ClassVar[int]
+    SIGNED_IN_FIELD_NUMBER: _ClassVar[int]
+    ACCOUNT_LABEL_FIELD_NUMBER: _ClassVar[int]
+    SIGNED_IN_AT_FIELD_NUMBER: _ClassVar[int]
+    app_id: str
+    signed_in: bool
+    account_label: str
+    signed_in_at: _timestamp_pb2.Timestamp
+    def __init__(self, app_id: _Optional[str] = ..., signed_in: bool = ..., account_label: _Optional[str] = ..., signed_in_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class Tool(_message.Message):
     __slots__ = ("name", "description", "input_schema_json", "offer")
@@ -100,14 +115,16 @@ class GetToolsResponse(_message.Message):
     def __init__(self, app: _Optional[_Union[App, _Mapping]] = ..., tools: _Optional[_Iterable[_Union[Tool, _Mapping]]] = ...) -> None: ...
 
 class CallToolRequest(_message.Message):
-    __slots__ = ("app_id", "tool", "arguments_json")
+    __slots__ = ("app_id", "tool", "arguments_json", "user_id")
     APP_ID_FIELD_NUMBER: _ClassVar[int]
     TOOL_FIELD_NUMBER: _ClassVar[int]
     ARGUMENTS_JSON_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
     app_id: str
     tool: str
     arguments_json: str
-    def __init__(self, app_id: _Optional[str] = ..., tool: _Optional[str] = ..., arguments_json: _Optional[str] = ...) -> None: ...
+    user_id: str
+    def __init__(self, app_id: _Optional[str] = ..., tool: _Optional[str] = ..., arguments_json: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
 
 class CallToolResponse(_message.Message):
     __slots__ = ("text", "sources", "is_error", "marks")

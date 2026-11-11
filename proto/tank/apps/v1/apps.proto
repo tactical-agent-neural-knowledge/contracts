@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package tank.apps.v1;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/apps/v1;appsv1";
 
 // Apps published to Neural. A product built with TANK publishes itself by declaring
@@ -21,6 +23,19 @@ message App {
   string url = 5;
   // The workspace that built it, by name.
   string maker = 6;
+  // The app needs the person to sign in to it before Neural can read it (tank.yaml
+  // neural_app.login). Its tools then answer for that person's account.
+  bool requires_login = 7;
+}
+
+// AppAccount is the person's sign-in to an app that requires one. TANK keeps the app's token
+// for them (encrypted, in the control plane); Neural never sees it.
+message AppAccount {
+  string app_id = 1;
+  bool signed_in = 2;
+  // How the app names the account ("robby@ketchell.dev"), from the app.
+  string account_label = 3;
+  google.protobuf.Timestamp signed_in_at = 4;
 }
 
 // One thing an app lets Neural read: an MCP tool.
@@ -96,6 +111,9 @@ message CallToolRequest {
   string app_id = 1;
   string tool = 2;
   string arguments_json = 3;
+  // For an app that requires login: whose account the call is made with. The control plane
+  // attaches that person's token; without one the call is refused with "sign in".
+  string user_id = 4;
 }
 message CallToolResponse {
   // At most 8 KB; longer results are cut and say so.
