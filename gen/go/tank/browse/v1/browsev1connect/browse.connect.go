@@ -41,6 +41,8 @@ const (
 	BrowseServiceListPagesProcedure = "/tank.browse.v1.BrowseService/ListPages"
 	// BrowseServiceActProcedure is the fully-qualified name of the BrowseService's Act RPC.
 	BrowseServiceActProcedure = "/tank.browse.v1.BrowseService/Act"
+	// BrowseServiceSetDriverProcedure is the fully-qualified name of the BrowseService's SetDriver RPC.
+	BrowseServiceSetDriverProcedure = "/tank.browse.v1.BrowseService/SetDriver"
 	// BrowseServiceWatchPageProcedure is the fully-qualified name of the BrowseService's WatchPage RPC.
 	BrowseServiceWatchPageProcedure = "/tank.browse.v1.BrowseService/WatchPage"
 )
@@ -52,8 +54,13 @@ type BrowseServiceClient interface {
 	// The conversation's open pages.
 	ListPages(context.Context, *connect.Request[v1.ListPagesRequest]) (*connect.Response[v1.ListPagesResponse], error)
 	// What the person does on the page: tap, type, scroll, back, go to an address. Only the
-	// page's owner may act.
+	// page's current driver may act.
 	Act(context.Context, *connect.Request[v1.ActRequest]) (*connect.Response[v1.ActResponse], error)
+	// Hands control of the page to someone else in the conversation (Robby, 2026-11-11: "allow
+	// them to give control to the other people in the conversation"). The owner may give it to
+	// anyone in the conversation and take it back at any time; the current driver may hand it
+	// back to the owner. An empty user_id gives it back to the owner.
+	SetDriver(context.Context, *connect.Request[v1.SetDriverRequest]) (*connect.Response[v1.SetDriverResponse], error)
 	// The page's screen as it changes (about once a second while it moves), with Neural's
 	// marks on it. Any member of the conversation may watch.
 	WatchPage(context.Context, *connect.Request[v1.WatchPageRequest]) (*connect.ServerStreamForClient[v1.WatchPageResponse], error)
@@ -94,6 +101,12 @@ func NewBrowseServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(browseServiceMethods.ByName("Act")),
 			connect.WithClientOptions(opts...),
 		),
+		setDriver: connect.NewClient[v1.SetDriverRequest, v1.SetDriverResponse](
+			httpClient,
+			baseURL+BrowseServiceSetDriverProcedure,
+			connect.WithSchema(browseServiceMethods.ByName("SetDriver")),
+			connect.WithClientOptions(opts...),
+		),
 		watchPage: connect.NewClient[v1.WatchPageRequest, v1.WatchPageResponse](
 			httpClient,
 			baseURL+BrowseServiceWatchPageProcedure,
@@ -109,6 +122,7 @@ type browseServiceClient struct {
 	closePage *connect.Client[v1.ClosePageRequest, v1.ClosePageResponse]
 	listPages *connect.Client[v1.ListPagesRequest, v1.ListPagesResponse]
 	act       *connect.Client[v1.ActRequest, v1.ActResponse]
+	setDriver *connect.Client[v1.SetDriverRequest, v1.SetDriverResponse]
 	watchPage *connect.Client[v1.WatchPageRequest, v1.WatchPageResponse]
 }
 
@@ -132,6 +146,11 @@ func (c *browseServiceClient) Act(ctx context.Context, req *connect.Request[v1.A
 	return c.act.CallUnary(ctx, req)
 }
 
+// SetDriver calls tank.browse.v1.BrowseService.SetDriver.
+func (c *browseServiceClient) SetDriver(ctx context.Context, req *connect.Request[v1.SetDriverRequest]) (*connect.Response[v1.SetDriverResponse], error) {
+	return c.setDriver.CallUnary(ctx, req)
+}
+
 // WatchPage calls tank.browse.v1.BrowseService.WatchPage.
 func (c *browseServiceClient) WatchPage(ctx context.Context, req *connect.Request[v1.WatchPageRequest]) (*connect.ServerStreamForClient[v1.WatchPageResponse], error) {
 	return c.watchPage.CallServerStream(ctx, req)
@@ -144,8 +163,13 @@ type BrowseServiceHandler interface {
 	// The conversation's open pages.
 	ListPages(context.Context, *connect.Request[v1.ListPagesRequest]) (*connect.Response[v1.ListPagesResponse], error)
 	// What the person does on the page: tap, type, scroll, back, go to an address. Only the
-	// page's owner may act.
+	// page's current driver may act.
 	Act(context.Context, *connect.Request[v1.ActRequest]) (*connect.Response[v1.ActResponse], error)
+	// Hands control of the page to someone else in the conversation (Robby, 2026-11-11: "allow
+	// them to give control to the other people in the conversation"). The owner may give it to
+	// anyone in the conversation and take it back at any time; the current driver may hand it
+	// back to the owner. An empty user_id gives it back to the owner.
+	SetDriver(context.Context, *connect.Request[v1.SetDriverRequest]) (*connect.Response[v1.SetDriverResponse], error)
 	// The page's screen as it changes (about once a second while it moves), with Neural's
 	// marks on it. Any member of the conversation may watch.
 	WatchPage(context.Context, *connect.Request[v1.WatchPageRequest], *connect.ServerStream[v1.WatchPageResponse]) error
@@ -182,6 +206,12 @@ func NewBrowseServiceHandler(svc BrowseServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(browseServiceMethods.ByName("Act")),
 		connect.WithHandlerOptions(opts...),
 	)
+	browseServiceSetDriverHandler := connect.NewUnaryHandler(
+		BrowseServiceSetDriverProcedure,
+		svc.SetDriver,
+		connect.WithSchema(browseServiceMethods.ByName("SetDriver")),
+		connect.WithHandlerOptions(opts...),
+	)
 	browseServiceWatchPageHandler := connect.NewServerStreamHandler(
 		BrowseServiceWatchPageProcedure,
 		svc.WatchPage,
@@ -198,6 +228,8 @@ func NewBrowseServiceHandler(svc BrowseServiceHandler, opts ...connect.HandlerOp
 			browseServiceListPagesHandler.ServeHTTP(w, r)
 		case BrowseServiceActProcedure:
 			browseServiceActHandler.ServeHTTP(w, r)
+		case BrowseServiceSetDriverProcedure:
+			browseServiceSetDriverHandler.ServeHTTP(w, r)
 		case BrowseServiceWatchPageProcedure:
 			browseServiceWatchPageHandler.ServeHTTP(w, r)
 		default:
@@ -223,6 +255,10 @@ func (UnimplementedBrowseServiceHandler) ListPages(context.Context, *connect.Req
 
 func (UnimplementedBrowseServiceHandler) Act(context.Context, *connect.Request[v1.ActRequest]) (*connect.Response[v1.ActResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.browse.v1.BrowseService.Act is not implemented"))
+}
+
+func (UnimplementedBrowseServiceHandler) SetDriver(context.Context, *connect.Request[v1.SetDriverRequest]) (*connect.Response[v1.SetDriverResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.browse.v1.BrowseService.SetDriver is not implemented"))
 }
 
 func (UnimplementedBrowseServiceHandler) WatchPage(context.Context, *connect.Request[v1.WatchPageRequest], *connect.ServerStream[v1.WatchPageResponse]) error {

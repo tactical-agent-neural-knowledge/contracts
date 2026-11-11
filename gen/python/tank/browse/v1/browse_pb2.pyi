@@ -8,7 +8,7 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class Page(_message.Message):
-    __slots__ = ("id", "conversation_id", "url", "title", "owner_id", "owner_name", "opened_at", "state", "reason")
+    __slots__ = ("id", "conversation_id", "url", "title", "owner_id", "owner_name", "opened_at", "state", "reason", "driver_id", "driver_name")
     ID_FIELD_NUMBER: _ClassVar[int]
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
     URL_FIELD_NUMBER: _ClassVar[int]
@@ -18,6 +18,8 @@ class Page(_message.Message):
     OPENED_AT_FIELD_NUMBER: _ClassVar[int]
     STATE_FIELD_NUMBER: _ClassVar[int]
     REASON_FIELD_NUMBER: _ClassVar[int]
+    DRIVER_ID_FIELD_NUMBER: _ClassVar[int]
+    DRIVER_NAME_FIELD_NUMBER: _ClassVar[int]
     id: str
     conversation_id: str
     url: str
@@ -27,7 +29,23 @@ class Page(_message.Message):
     opened_at: _timestamp_pb2.Timestamp
     state: str
     reason: str
-    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., url: _Optional[str] = ..., title: _Optional[str] = ..., owner_id: _Optional[str] = ..., owner_name: _Optional[str] = ..., opened_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., state: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+    driver_id: str
+    driver_name: str
+    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., url: _Optional[str] = ..., title: _Optional[str] = ..., owner_id: _Optional[str] = ..., owner_name: _Optional[str] = ..., opened_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., state: _Optional[str] = ..., reason: _Optional[str] = ..., driver_id: _Optional[str] = ..., driver_name: _Optional[str] = ...) -> None: ...
+
+class SetDriverRequest(_message.Message):
+    __slots__ = ("page_id", "user_id")
+    PAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    page_id: str
+    user_id: str
+    def __init__(self, page_id: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
+
+class SetDriverResponse(_message.Message):
+    __slots__ = ("page",)
+    PAGE_FIELD_NUMBER: _ClassVar[int]
+    page: Page
+    def __init__(self, page: _Optional[_Union[Page, _Mapping]] = ...) -> None: ...
 
 class OpenPageRequest(_message.Message):
     __slots__ = ("conversation_id", "url", "viewport_width", "viewport_height")
