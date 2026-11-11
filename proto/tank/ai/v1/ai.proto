@@ -26,6 +26,31 @@ message Conversation {
   // Apps connected to this conversation ("Connect apps"). Their data joins the answer and
   // is cited; any published app may be connected, from any workspace or none.
   repeated tank.apps.v1.App apps = 8;
+  // What Neural has put over the person's camera in this conversation, oldest first. A
+  // phone connected here draws them on its camera view; ClearOverlay takes one away.
+  repeated Overlay overlays = 9;
+}
+
+// Overlay is a layer Neural drew over the person's camera when they took an offer.
+message Overlay {
+  string id = 1;
+  // "Wind", "Sunset": the overlay's name, from the server.
+  string title = 2;
+  // Who the figures came from, cited on the overlay: an app's name, or "TANK".
+  string source = 3;
+  repeated tank.apps.v1.Mark marks = 4;
+  // When the figures were read.
+  google.protobuf.Timestamp as_of = 5;
+  // The offer it came from.
+  string offer_id = 6;
+}
+
+// Offer is something Neural offers to do with what is connected to the conversation; taking
+// it sends SendMessageRequest.offer_id with the offer's text.
+message Offer {
+  // "app:<app id>/<tool>" for an app's tool, "tank:<name>" for one of TANK's own.
+  string id = 1;
+  string text = 2;
 }
 
 // An attachment a person sends with a message: an image the model can see or a text file
@@ -71,6 +96,9 @@ message Message {
   // the reply and the apps and devices connected to the conversation (Robby, 2026-11-10).
   // Assistant turns only; the clients show them under the latest one.
   repeated string suggestions = 12;
+  // What Neural offers to do next with what is connected (the wind over the camera, where
+  // the sun sets), shown before the suggestions. Assistant turns only, latest one only.
+  repeated Offer offers = 13;
 }
 
 message ListConversationsRequest {
@@ -160,6 +188,9 @@ message SendMessageRequest {
   // For a message that creates the conversation (empty conversation_id): the
   // workspace it acts in, or empty for a personal one. Ignored otherwise.
   string workspace_id = 6;
+  // Taking an offer (Message.offers): text is the offer's text, shown as the person's
+  // message, and the server does what the offer says before it replies.
+  string offer_id = 7;
 }
 message SendMessageResponse {
   oneof event {
@@ -179,11 +210,15 @@ message SendMessageResponse {
     Stage stage = 6;
     // After done: what Neural could do next (Message.suggestions of the message just done).
     Suggestions suggestions = 7;
+    // An offer was taken and its overlay is ready: draw it over the camera now. It is also
+    // in Conversation.overlays from here on.
+    Overlay overlay = 8;
   }
 }
 message Suggestions {
   string message_id = 1;
   repeated string items = 2;
+  repeated Offer offers = 3;
 }
 // Stage is one step of the work before a reply, as the server names it.
 message Stage {
@@ -298,6 +333,11 @@ service AiService {
   rpc ListApps(ListAppsRequest) returns (ListAppsResponse);
   rpc ConnectApp(ConnectAppRequest) returns (ConnectAppResponse);
   rpc DisconnectApp(DisconnectAppRequest) returns (DisconnectAppResponse);
+  // Takes an overlay off the camera.
+  rpc ClearOverlay(ClearOverlayRequest) returns (ClearOverlayResponse);
+  // Reads every overlay's figures again where they are more than ten minutes old, from where
+  // the phone is now. Clients call it while the camera is showing.
+  rpc RefreshOverlays(RefreshOverlaysRequest) returns (RefreshOverlaysResponse);
 }
 
 message ListAppsRequest {
@@ -319,4 +359,18 @@ message DisconnectAppRequest {
 }
 message DisconnectAppResponse {
   Conversation conversation = 1;
+}
+
+message ClearOverlayRequest {
+  string conversation_id = 1;
+  string overlay_id = 2;
+}
+message ClearOverlayResponse {
+  Conversation conversation = 1;
+}
+message RefreshOverlaysRequest {
+  string conversation_id = 1;
+}
+message RefreshOverlaysResponse {
+  repeated Overlay overlays = 1;
 }

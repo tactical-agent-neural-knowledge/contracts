@@ -22,14 +22,38 @@ class App(_message.Message):
     def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., logo_url: _Optional[str] = ..., url: _Optional[str] = ..., maker: _Optional[str] = ...) -> None: ...
 
 class Tool(_message.Message):
-    __slots__ = ("name", "description", "input_schema_json")
+    __slots__ = ("name", "description", "input_schema_json", "offer")
     NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     INPUT_SCHEMA_JSON_FIELD_NUMBER: _ClassVar[int]
+    OFFER_FIELD_NUMBER: _ClassVar[int]
     name: str
     description: str
     input_schema_json: str
-    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., input_schema_json: _Optional[str] = ...) -> None: ...
+    offer: Offer
+    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., input_schema_json: _Optional[str] = ..., offer: _Optional[_Union[Offer, _Mapping]] = ...) -> None: ...
+
+class Offer(_message.Message):
+    __slots__ = ("text", "needs")
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    NEEDS_FIELD_NUMBER: _ClassVar[int]
+    text: str
+    needs: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, text: _Optional[str] = ..., needs: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class Mark(_message.Message):
+    __slots__ = ("kind", "bearing", "label", "detail", "elevation")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    BEARING_FIELD_NUMBER: _ClassVar[int]
+    LABEL_FIELD_NUMBER: _ClassVar[int]
+    DETAIL_FIELD_NUMBER: _ClassVar[int]
+    ELEVATION_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    bearing: float
+    label: str
+    detail: str
+    elevation: float
+    def __init__(self, kind: _Optional[str] = ..., bearing: _Optional[float] = ..., label: _Optional[str] = ..., detail: _Optional[str] = ..., elevation: _Optional[float] = ...) -> None: ...
 
 class Source(_message.Message):
     __slots__ = ("title", "url")
@@ -76,11 +100,13 @@ class CallToolRequest(_message.Message):
     def __init__(self, app_id: _Optional[str] = ..., tool: _Optional[str] = ..., arguments_json: _Optional[str] = ...) -> None: ...
 
 class CallToolResponse(_message.Message):
-    __slots__ = ("text", "sources", "is_error")
+    __slots__ = ("text", "sources", "is_error", "marks")
     TEXT_FIELD_NUMBER: _ClassVar[int]
     SOURCES_FIELD_NUMBER: _ClassVar[int]
     IS_ERROR_FIELD_NUMBER: _ClassVar[int]
+    MARKS_FIELD_NUMBER: _ClassVar[int]
     text: str
     sources: _containers.RepeatedCompositeFieldContainer[Source]
     is_error: bool
-    def __init__(self, text: _Optional[str] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., is_error: bool = ...) -> None: ...
+    marks: _containers.RepeatedCompositeFieldContainer[Mark]
+    def __init__(self, text: _Optional[str] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., is_error: bool = ..., marks: _Optional[_Iterable[_Union[Mark, _Mapping]]] = ...) -> None: ...

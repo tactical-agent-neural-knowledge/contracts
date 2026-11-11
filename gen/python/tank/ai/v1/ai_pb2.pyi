@@ -18,7 +18,7 @@ ROLE_USER: Role
 ROLE_ASSISTANT: Role
 
 class Conversation(_message.Message):
-    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps")
+    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps", "overlays")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
@@ -27,6 +27,7 @@ class Conversation(_message.Message):
     PINNED_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     APPS_FIELD_NUMBER: _ClassVar[int]
+    OVERLAYS_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     created_at: _timestamp_pb2.Timestamp
@@ -35,7 +36,32 @@ class Conversation(_message.Message):
     pinned: bool
     workspace_id: str
     apps: _containers.RepeatedCompositeFieldContainer[_apps_pb2.App]
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ...) -> None: ...
+    overlays: _containers.RepeatedCompositeFieldContainer[Overlay]
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ..., overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ...) -> None: ...
+
+class Overlay(_message.Message):
+    __slots__ = ("id", "title", "source", "marks", "as_of", "offer_id")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    MARKS_FIELD_NUMBER: _ClassVar[int]
+    AS_OF_FIELD_NUMBER: _ClassVar[int]
+    OFFER_ID_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    title: str
+    source: str
+    marks: _containers.RepeatedCompositeFieldContainer[_apps_pb2.Mark]
+    as_of: _timestamp_pb2.Timestamp
+    offer_id: str
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., source: _Optional[str] = ..., marks: _Optional[_Iterable[_Union[_apps_pb2.Mark, _Mapping]]] = ..., as_of: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., offer_id: _Optional[str] = ...) -> None: ...
+
+class Offer(_message.Message):
+    __slots__ = ("id", "text")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    text: str
+    def __init__(self, id: _Optional[str] = ..., text: _Optional[str] = ...) -> None: ...
 
 class Attachment(_message.Message):
     __slots__ = ("id", "name", "mime", "data", "size", "file_id")
@@ -54,7 +80,7 @@ class Attachment(_message.Message):
     def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., data: _Optional[bytes] = ..., size: _Optional[int] = ..., file_id: _Optional[str] = ...) -> None: ...
 
 class Message(_message.Message):
-    __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of", "suggestions")
+    __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of", "suggestions", "offers")
     ID_FIELD_NUMBER: _ClassVar[int]
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
     ROLE_FIELD_NUMBER: _ClassVar[int]
@@ -67,6 +93,7 @@ class Message(_message.Message):
     RATING_FIELD_NUMBER: _ClassVar[int]
     AS_OF_FIELD_NUMBER: _ClassVar[int]
     SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
+    OFFERS_FIELD_NUMBER: _ClassVar[int]
     id: str
     conversation_id: str
     role: Role
@@ -79,7 +106,8 @@ class Message(_message.Message):
     rating: int
     as_of: str
     suggestions: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ..., as_of: _Optional[str] = ..., suggestions: _Optional[_Iterable[str]] = ...) -> None: ...
+    offers: _containers.RepeatedCompositeFieldContainer[Offer]
+    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ..., as_of: _Optional[str] = ..., suggestions: _Optional[_Iterable[str]] = ..., offers: _Optional[_Iterable[_Union[Offer, _Mapping]]] = ...) -> None: ...
 
 class ListConversationsRequest(_message.Message):
     __slots__ = ("query", "limit", "workspace_id")
@@ -186,23 +214,25 @@ class DeleteConversationResponse(_message.Message):
     def __init__(self) -> None: ...
 
 class SendMessageRequest(_message.Message):
-    __slots__ = ("conversation_id", "text", "attachments", "regenerate_message_id", "replace_message_id", "workspace_id")
+    __slots__ = ("conversation_id", "text", "attachments", "regenerate_message_id", "replace_message_id", "workspace_id", "offer_id")
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
     ATTACHMENTS_FIELD_NUMBER: _ClassVar[int]
     REGENERATE_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     REPLACE_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    OFFER_ID_FIELD_NUMBER: _ClassVar[int]
     conversation_id: str
     text: str
     attachments: _containers.RepeatedCompositeFieldContainer[Attachment]
     regenerate_message_id: str
     replace_message_id: str
     workspace_id: str
-    def __init__(self, conversation_id: _Optional[str] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., regenerate_message_id: _Optional[str] = ..., replace_message_id: _Optional[str] = ..., workspace_id: _Optional[str] = ...) -> None: ...
+    offer_id: str
+    def __init__(self, conversation_id: _Optional[str] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., regenerate_message_id: _Optional[str] = ..., replace_message_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., offer_id: _Optional[str] = ...) -> None: ...
 
 class SendMessageResponse(_message.Message):
-    __slots__ = ("started", "delta", "done", "title", "warming", "stage", "suggestions")
+    __slots__ = ("started", "delta", "done", "title", "warming", "stage", "suggestions", "overlay")
     STARTED_FIELD_NUMBER: _ClassVar[int]
     DELTA_FIELD_NUMBER: _ClassVar[int]
     DONE_FIELD_NUMBER: _ClassVar[int]
@@ -210,6 +240,7 @@ class SendMessageResponse(_message.Message):
     WARMING_FIELD_NUMBER: _ClassVar[int]
     STAGE_FIELD_NUMBER: _ClassVar[int]
     SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
+    OVERLAY_FIELD_NUMBER: _ClassVar[int]
     started: Started
     delta: str
     done: Message
@@ -217,15 +248,18 @@ class SendMessageResponse(_message.Message):
     warming: str
     stage: Stage
     suggestions: Suggestions
-    def __init__(self, started: _Optional[_Union[Started, _Mapping]] = ..., delta: _Optional[str] = ..., done: _Optional[_Union[Message, _Mapping]] = ..., title: _Optional[str] = ..., warming: _Optional[str] = ..., stage: _Optional[_Union[Stage, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ...) -> None: ...
+    overlay: Overlay
+    def __init__(self, started: _Optional[_Union[Started, _Mapping]] = ..., delta: _Optional[str] = ..., done: _Optional[_Union[Message, _Mapping]] = ..., title: _Optional[str] = ..., warming: _Optional[str] = ..., stage: _Optional[_Union[Stage, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ..., overlay: _Optional[_Union[Overlay, _Mapping]] = ...) -> None: ...
 
 class Suggestions(_message.Message):
-    __slots__ = ("message_id", "items")
+    __slots__ = ("message_id", "items", "offers")
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     ITEMS_FIELD_NUMBER: _ClassVar[int]
+    OFFERS_FIELD_NUMBER: _ClassVar[int]
     message_id: str
     items: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, message_id: _Optional[str] = ..., items: _Optional[_Iterable[str]] = ...) -> None: ...
+    offers: _containers.RepeatedCompositeFieldContainer[Offer]
+    def __init__(self, message_id: _Optional[str] = ..., items: _Optional[_Iterable[str]] = ..., offers: _Optional[_Iterable[_Union[Offer, _Mapping]]] = ...) -> None: ...
 
 class Stage(_message.Message):
     __slots__ = ("kind", "text", "sources", "outline")
@@ -414,3 +448,29 @@ class DisconnectAppResponse(_message.Message):
     CONVERSATION_FIELD_NUMBER: _ClassVar[int]
     conversation: Conversation
     def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ...) -> None: ...
+
+class ClearOverlayRequest(_message.Message):
+    __slots__ = ("conversation_id", "overlay_id")
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    OVERLAY_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    overlay_id: str
+    def __init__(self, conversation_id: _Optional[str] = ..., overlay_id: _Optional[str] = ...) -> None: ...
+
+class ClearOverlayResponse(_message.Message):
+    __slots__ = ("conversation",)
+    CONVERSATION_FIELD_NUMBER: _ClassVar[int]
+    conversation: Conversation
+    def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ...) -> None: ...
+
+class RefreshOverlaysRequest(_message.Message):
+    __slots__ = ("conversation_id",)
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    def __init__(self, conversation_id: _Optional[str] = ...) -> None: ...
+
+class RefreshOverlaysResponse(_message.Message):
+    __slots__ = ("overlays",)
+    OVERLAYS_FIELD_NUMBER: _ClassVar[int]
+    overlays: _containers.RepeatedCompositeFieldContainer[Overlay]
+    def __init__(self, overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ...) -> None: ...

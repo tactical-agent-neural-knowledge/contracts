@@ -69,6 +69,11 @@ const (
 	AiServiceConnectAppProcedure = "/tank.ai.v1.AiService/ConnectApp"
 	// AiServiceDisconnectAppProcedure is the fully-qualified name of the AiService's DisconnectApp RPC.
 	AiServiceDisconnectAppProcedure = "/tank.ai.v1.AiService/DisconnectApp"
+	// AiServiceClearOverlayProcedure is the fully-qualified name of the AiService's ClearOverlay RPC.
+	AiServiceClearOverlayProcedure = "/tank.ai.v1.AiService/ClearOverlay"
+	// AiServiceRefreshOverlaysProcedure is the fully-qualified name of the AiService's RefreshOverlays
+	// RPC.
+	AiServiceRefreshOverlaysProcedure = "/tank.ai.v1.AiService/RefreshOverlays"
 )
 
 // AiServiceClient is a client for the tank.ai.v1.AiService service.
@@ -89,6 +94,11 @@ type AiServiceClient interface {
 	ListApps(context.Context, *connect.Request[v1.ListAppsRequest]) (*connect.Response[v1.ListAppsResponse], error)
 	ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error)
 	DisconnectApp(context.Context, *connect.Request[v1.DisconnectAppRequest]) (*connect.Response[v1.DisconnectAppResponse], error)
+	// Takes an overlay off the camera.
+	ClearOverlay(context.Context, *connect.Request[v1.ClearOverlayRequest]) (*connect.Response[v1.ClearOverlayResponse], error)
+	// Reads every overlay's figures again where they are more than ten minutes old, from where
+	// the phone is now. Clients call it while the camera is showing.
+	RefreshOverlays(context.Context, *connect.Request[v1.RefreshOverlaysRequest]) (*connect.Response[v1.RefreshOverlaysResponse], error)
 }
 
 // NewAiServiceClient constructs a client for the tank.ai.v1.AiService service. By default, it uses
@@ -192,6 +202,18 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("DisconnectApp")),
 			connect.WithClientOptions(opts...),
 		),
+		clearOverlay: connect.NewClient[v1.ClearOverlayRequest, v1.ClearOverlayResponse](
+			httpClient,
+			baseURL+AiServiceClearOverlayProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("ClearOverlay")),
+			connect.WithClientOptions(opts...),
+		),
+		refreshOverlays: connect.NewClient[v1.RefreshOverlaysRequest, v1.RefreshOverlaysResponse](
+			httpClient,
+			baseURL+AiServiceRefreshOverlaysProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("RefreshOverlays")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -212,6 +234,8 @@ type aiServiceClient struct {
 	listApps           *connect.Client[v1.ListAppsRequest, v1.ListAppsResponse]
 	connectApp         *connect.Client[v1.ConnectAppRequest, v1.ConnectAppResponse]
 	disconnectApp      *connect.Client[v1.DisconnectAppRequest, v1.DisconnectAppResponse]
+	clearOverlay       *connect.Client[v1.ClearOverlayRequest, v1.ClearOverlayResponse]
+	refreshOverlays    *connect.Client[v1.RefreshOverlaysRequest, v1.RefreshOverlaysResponse]
 }
 
 // ListConversations calls tank.ai.v1.AiService.ListConversations.
@@ -289,6 +313,16 @@ func (c *aiServiceClient) DisconnectApp(ctx context.Context, req *connect.Reques
 	return c.disconnectApp.CallUnary(ctx, req)
 }
 
+// ClearOverlay calls tank.ai.v1.AiService.ClearOverlay.
+func (c *aiServiceClient) ClearOverlay(ctx context.Context, req *connect.Request[v1.ClearOverlayRequest]) (*connect.Response[v1.ClearOverlayResponse], error) {
+	return c.clearOverlay.CallUnary(ctx, req)
+}
+
+// RefreshOverlays calls tank.ai.v1.AiService.RefreshOverlays.
+func (c *aiServiceClient) RefreshOverlays(ctx context.Context, req *connect.Request[v1.RefreshOverlaysRequest]) (*connect.Response[v1.RefreshOverlaysResponse], error) {
+	return c.refreshOverlays.CallUnary(ctx, req)
+}
+
 // AiServiceHandler is an implementation of the tank.ai.v1.AiService service.
 type AiServiceHandler interface {
 	ListConversations(context.Context, *connect.Request[v1.ListConversationsRequest]) (*connect.Response[v1.ListConversationsResponse], error)
@@ -307,6 +341,11 @@ type AiServiceHandler interface {
 	ListApps(context.Context, *connect.Request[v1.ListAppsRequest]) (*connect.Response[v1.ListAppsResponse], error)
 	ConnectApp(context.Context, *connect.Request[v1.ConnectAppRequest]) (*connect.Response[v1.ConnectAppResponse], error)
 	DisconnectApp(context.Context, *connect.Request[v1.DisconnectAppRequest]) (*connect.Response[v1.DisconnectAppResponse], error)
+	// Takes an overlay off the camera.
+	ClearOverlay(context.Context, *connect.Request[v1.ClearOverlayRequest]) (*connect.Response[v1.ClearOverlayResponse], error)
+	// Reads every overlay's figures again where they are more than ten minutes old, from where
+	// the phone is now. Clients call it while the camera is showing.
+	RefreshOverlays(context.Context, *connect.Request[v1.RefreshOverlaysRequest]) (*connect.Response[v1.RefreshOverlaysResponse], error)
 }
 
 // NewAiServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -406,6 +445,18 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("DisconnectApp")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServiceClearOverlayHandler := connect.NewUnaryHandler(
+		AiServiceClearOverlayProcedure,
+		svc.ClearOverlay,
+		connect.WithSchema(aiServiceMethods.ByName("ClearOverlay")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceRefreshOverlaysHandler := connect.NewUnaryHandler(
+		AiServiceRefreshOverlaysProcedure,
+		svc.RefreshOverlays,
+		connect.WithSchema(aiServiceMethods.ByName("RefreshOverlays")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.ai.v1.AiService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AiServiceListConversationsProcedure:
@@ -438,6 +489,10 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceConnectAppHandler.ServeHTTP(w, r)
 		case AiServiceDisconnectAppProcedure:
 			aiServiceDisconnectAppHandler.ServeHTTP(w, r)
+		case AiServiceClearOverlayProcedure:
+			aiServiceClearOverlayHandler.ServeHTTP(w, r)
+		case AiServiceRefreshOverlaysProcedure:
+			aiServiceRefreshOverlaysHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -505,4 +560,12 @@ func (UnimplementedAiServiceHandler) ConnectApp(context.Context, *connect.Reques
 
 func (UnimplementedAiServiceHandler) DisconnectApp(context.Context, *connect.Request[v1.DisconnectAppRequest]) (*connect.Response[v1.DisconnectAppResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.DisconnectApp is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) ClearOverlay(context.Context, *connect.Request[v1.ClearOverlayRequest]) (*connect.Response[v1.ClearOverlayResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.ClearOverlay is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) RefreshOverlays(context.Context, *connect.Request[v1.RefreshOverlaysRequest]) (*connect.Response[v1.RefreshOverlaysResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.RefreshOverlays is not implemented"))
 }
