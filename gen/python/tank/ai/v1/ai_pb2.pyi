@@ -18,7 +18,7 @@ ROLE_USER: Role
 ROLE_ASSISTANT: Role
 
 class Conversation(_message.Message):
-    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps", "overlays", "members")
+    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps", "overlays", "members", "pages")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
@@ -29,6 +29,7 @@ class Conversation(_message.Message):
     APPS_FIELD_NUMBER: _ClassVar[int]
     OVERLAYS_FIELD_NUMBER: _ClassVar[int]
     MEMBERS_FIELD_NUMBER: _ClassVar[int]
+    PAGES_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     created_at: _timestamp_pb2.Timestamp
@@ -39,7 +40,22 @@ class Conversation(_message.Message):
     apps: _containers.RepeatedCompositeFieldContainer[_apps_pb2.App]
     overlays: _containers.RepeatedCompositeFieldContainer[Overlay]
     members: _containers.RepeatedCompositeFieldContainer[Member]
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ..., overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ...) -> None: ...
+    pages: _containers.RepeatedCompositeFieldContainer[ConnectedPage]
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ..., overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., pages: _Optional[_Iterable[_Union[ConnectedPage, _Mapping]]] = ...) -> None: ...
+
+class ConnectedPage(_message.Message):
+    __slots__ = ("id", "url", "title", "owner_id", "owner_name")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    OWNER_ID_FIELD_NUMBER: _ClassVar[int]
+    OWNER_NAME_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    url: str
+    title: str
+    owner_id: str
+    owner_name: str
+    def __init__(self, id: _Optional[str] = ..., url: _Optional[str] = ..., title: _Optional[str] = ..., owner_id: _Optional[str] = ..., owner_name: _Optional[str] = ...) -> None: ...
 
 class Member(_message.Message):
     __slots__ = ("user_id", "name", "avatar_url", "role", "joined_at")
@@ -572,7 +588,7 @@ class WatchRequest(_message.Message):
     def __init__(self, conversation_id: _Optional[str] = ...) -> None: ...
 
 class WatchResponse(_message.Message):
-    __slots__ = ("message", "reply_started", "reply_delta", "conversation", "typing", "suggestions", "devices_changed")
+    __slots__ = ("message", "reply_started", "reply_delta", "conversation", "typing", "suggestions", "devices_changed", "pages_changed")
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     REPLY_STARTED_FIELD_NUMBER: _ClassVar[int]
     REPLY_DELTA_FIELD_NUMBER: _ClassVar[int]
@@ -580,6 +596,7 @@ class WatchResponse(_message.Message):
     TYPING_FIELD_NUMBER: _ClassVar[int]
     SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
     DEVICES_CHANGED_FIELD_NUMBER: _ClassVar[int]
+    PAGES_CHANGED_FIELD_NUMBER: _ClassVar[int]
     message: Message
     reply_started: ReplyStarted
     reply_delta: ReplyDelta
@@ -587,7 +604,8 @@ class WatchResponse(_message.Message):
     typing: Typing
     suggestions: Suggestions
     devices_changed: str
-    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ..., reply_started: _Optional[_Union[ReplyStarted, _Mapping]] = ..., reply_delta: _Optional[_Union[ReplyDelta, _Mapping]] = ..., conversation: _Optional[_Union[Conversation, _Mapping]] = ..., typing: _Optional[_Union[Typing, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ..., devices_changed: _Optional[str] = ...) -> None: ...
+    pages_changed: str
+    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ..., reply_started: _Optional[_Union[ReplyStarted, _Mapping]] = ..., reply_delta: _Optional[_Union[ReplyDelta, _Mapping]] = ..., conversation: _Optional[_Union[Conversation, _Mapping]] = ..., typing: _Optional[_Union[Typing, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ..., devices_changed: _Optional[str] = ..., pages_changed: _Optional[str] = ...) -> None: ...
 
 class ReplyStarted(_message.Message):
     __slots__ = ("message_id", "asked_by")

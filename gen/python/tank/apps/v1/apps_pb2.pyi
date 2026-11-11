@@ -44,18 +44,26 @@ class Offer(_message.Message):
     def __init__(self, text: _Optional[str] = ..., needs: _Optional[_Iterable[str]] = ..., title: _Optional[str] = ...) -> None: ...
 
 class Mark(_message.Message):
-    __slots__ = ("kind", "bearing", "label", "detail", "elevation")
+    __slots__ = ("kind", "bearing", "label", "detail", "elevation", "x", "y", "w", "h")
     KIND_FIELD_NUMBER: _ClassVar[int]
     BEARING_FIELD_NUMBER: _ClassVar[int]
     LABEL_FIELD_NUMBER: _ClassVar[int]
     DETAIL_FIELD_NUMBER: _ClassVar[int]
     ELEVATION_FIELD_NUMBER: _ClassVar[int]
+    X_FIELD_NUMBER: _ClassVar[int]
+    Y_FIELD_NUMBER: _ClassVar[int]
+    W_FIELD_NUMBER: _ClassVar[int]
+    H_FIELD_NUMBER: _ClassVar[int]
     kind: str
     bearing: float
     label: str
     detail: str
     elevation: float
-    def __init__(self, kind: _Optional[str] = ..., bearing: _Optional[float] = ..., label: _Optional[str] = ..., detail: _Optional[str] = ..., elevation: _Optional[float] = ...) -> None: ...
+    x: float
+    y: float
+    w: float
+    h: float
+    def __init__(self, kind: _Optional[str] = ..., bearing: _Optional[float] = ..., label: _Optional[str] = ..., detail: _Optional[str] = ..., elevation: _Optional[float] = ..., x: _Optional[float] = ..., y: _Optional[float] = ..., w: _Optional[float] = ..., h: _Optional[float] = ...) -> None: ...
 
 class Source(_message.Message):
     __slots__ = ("title", "url")

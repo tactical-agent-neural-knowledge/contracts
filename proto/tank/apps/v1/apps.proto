@@ -61,6 +61,12 @@ message Mark {
   string detail = 4;
   // Degrees above the horizon, for something in the sky; 0 on the horizon.
   double elevation = 5;
+  // Kind "box": a rectangle on a screen or picture rather than a compass bearing (a webpage's
+  // button, a spot on a camera still), as fractions of the image's width and height (0..1).
+  double x = 6;
+  double y = 7;
+  double w = 8;
+  double h = 9;
 }
 
 // Where a result came from, for the citation.

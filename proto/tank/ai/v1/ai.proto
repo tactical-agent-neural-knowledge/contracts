@@ -33,6 +33,17 @@ message Conversation {
   // the owner first. One member is a personal conversation: Neural answers every message.
   // With more, Neural answers a message that addresses it ("Neural, ...", "@Neural").
   repeated Member members = 10;
+  // Webpages connected to the conversation ("Connect a webpage"), from tank.browse.v1: id,
+  // address and title, so the list and the chat show them without another call.
+  repeated ConnectedPage pages = 11;
+}
+
+message ConnectedPage {
+  string id = 1;
+  string url = 2;
+  string title = 3;
+  string owner_id = 4;
+  string owner_name = 5;
 }
 
 // Member is one person in a conversation.
@@ -465,6 +476,8 @@ message WatchResponse {
     Suggestions suggestions = 6;
     // A device was connected or disconnected; the client reloads the conversation's devices.
     string devices_changed = 7;
+    // A webpage was opened or closed; the client reloads the conversation's pages.
+    string pages_changed = 8;
   }
 }
 message ReplyStarted {
