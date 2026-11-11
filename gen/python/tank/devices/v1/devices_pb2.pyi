@@ -132,7 +132,7 @@ class FieldStats(_message.Message):
     def __init__(self, field: _Optional[str] = ..., last: _Optional[float] = ..., avg_30s: _Optional[float] = ..., avg_5m: _Optional[float] = ..., avg_session: _Optional[float] = ..., min: _Optional[float] = ..., max: _Optional[float] = ..., trend_per_min: _Optional[float] = ..., samples: _Optional[int] = ...) -> None: ...
 
 class Session(_message.Message):
-    __slots__ = ("id", "conversation_id", "device", "state", "identity", "fields", "subscribe", "opened_at", "closed_at", "feedback_rule", "view", "view_at")
+    __slots__ = ("id", "conversation_id", "device", "state", "identity", "fields", "subscribe", "opened_at", "closed_at", "feedback_rule", "view", "view_at", "owner_id", "owner_name")
     ID_FIELD_NUMBER: _ClassVar[int]
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
     DEVICE_FIELD_NUMBER: _ClassVar[int]
@@ -145,6 +145,8 @@ class Session(_message.Message):
     FEEDBACK_RULE_FIELD_NUMBER: _ClassVar[int]
     VIEW_FIELD_NUMBER: _ClassVar[int]
     VIEW_AT_FIELD_NUMBER: _ClassVar[int]
+    OWNER_ID_FIELD_NUMBER: _ClassVar[int]
+    OWNER_NAME_FIELD_NUMBER: _ClassVar[int]
     id: str
     conversation_id: str
     device: Device
@@ -157,7 +159,9 @@ class Session(_message.Message):
     feedback_rule: str
     view: str
     view_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., device: _Optional[_Union[Device, _Mapping]] = ..., state: _Optional[_Union[State, str]] = ..., identity: _Optional[str] = ..., fields: _Optional[_Iterable[_Union[Field, _Mapping]]] = ..., subscribe: _Optional[_Iterable[str]] = ..., opened_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., closed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback_rule: _Optional[str] = ..., view: _Optional[str] = ..., view_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    owner_id: str
+    owner_name: str
+    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., device: _Optional[_Union[Device, _Mapping]] = ..., state: _Optional[_Union[State, str]] = ..., identity: _Optional[str] = ..., fields: _Optional[_Iterable[_Union[Field, _Mapping]]] = ..., subscribe: _Optional[_Iterable[str]] = ..., opened_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., closed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback_rule: _Optional[str] = ..., view: _Optional[str] = ..., view_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., owner_id: _Optional[str] = ..., owner_name: _Optional[str] = ...) -> None: ...
 
 class ListCatalogServicesRequest(_message.Message):
     __slots__ = ()

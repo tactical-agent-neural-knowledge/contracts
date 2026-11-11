@@ -129,6 +129,10 @@ message Session {
   // camera or before the first frame was looked at.
   string view = 11;
   google.protobuf.Timestamp view_at = 12;
+  // Whose device it is. In a conversation with several people everyone sees every connected
+  // device, named by its owner; only the owner may send its data or disconnect it.
+  string owner_id = 13;
+  string owner_name = 14;
 }
 
 message ListCatalogServicesRequest {}
