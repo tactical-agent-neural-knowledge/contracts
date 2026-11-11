@@ -18,7 +18,7 @@ ROLE_USER: Role
 ROLE_ASSISTANT: Role
 
 class Conversation(_message.Message):
-    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps", "overlays")
+    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps", "overlays", "members")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
@@ -28,6 +28,7 @@ class Conversation(_message.Message):
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     APPS_FIELD_NUMBER: _ClassVar[int]
     OVERLAYS_FIELD_NUMBER: _ClassVar[int]
+    MEMBERS_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     created_at: _timestamp_pb2.Timestamp
@@ -37,7 +38,22 @@ class Conversation(_message.Message):
     workspace_id: str
     apps: _containers.RepeatedCompositeFieldContainer[_apps_pb2.App]
     overlays: _containers.RepeatedCompositeFieldContainer[Overlay]
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ..., overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ...) -> None: ...
+    members: _containers.RepeatedCompositeFieldContainer[Member]
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ..., overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ...) -> None: ...
+
+class Member(_message.Message):
+    __slots__ = ("user_id", "name", "avatar_url", "role", "joined_at")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    AVATAR_URL_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    JOINED_AT_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    name: str
+    avatar_url: str
+    role: str
+    joined_at: _timestamp_pb2.Timestamp
+    def __init__(self, user_id: _Optional[str] = ..., name: _Optional[str] = ..., avatar_url: _Optional[str] = ..., role: _Optional[str] = ..., joined_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class Overlay(_message.Message):
     __slots__ = ("id", "title", "source", "marks", "as_of", "offer_id")
@@ -80,7 +96,7 @@ class Attachment(_message.Message):
     def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., data: _Optional[bytes] = ..., size: _Optional[int] = ..., file_id: _Optional[str] = ...) -> None: ...
 
 class Message(_message.Message):
-    __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of", "suggestions", "offers")
+    __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of", "suggestions", "offers", "author_id", "author_name", "author_avatar_url")
     ID_FIELD_NUMBER: _ClassVar[int]
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
     ROLE_FIELD_NUMBER: _ClassVar[int]
@@ -94,6 +110,9 @@ class Message(_message.Message):
     AS_OF_FIELD_NUMBER: _ClassVar[int]
     SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
     OFFERS_FIELD_NUMBER: _ClassVar[int]
+    AUTHOR_ID_FIELD_NUMBER: _ClassVar[int]
+    AUTHOR_NAME_FIELD_NUMBER: _ClassVar[int]
+    AUTHOR_AVATAR_URL_FIELD_NUMBER: _ClassVar[int]
     id: str
     conversation_id: str
     role: Role
@@ -107,7 +126,10 @@ class Message(_message.Message):
     as_of: str
     suggestions: _containers.RepeatedScalarFieldContainer[str]
     offers: _containers.RepeatedCompositeFieldContainer[Offer]
-    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ..., as_of: _Optional[str] = ..., suggestions: _Optional[_Iterable[str]] = ..., offers: _Optional[_Iterable[_Union[Offer, _Mapping]]] = ...) -> None: ...
+    author_id: str
+    author_name: str
+    author_avatar_url: str
+    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ..., as_of: _Optional[str] = ..., suggestions: _Optional[_Iterable[str]] = ..., offers: _Optional[_Iterable[_Union[Offer, _Mapping]]] = ..., author_id: _Optional[str] = ..., author_name: _Optional[str] = ..., author_avatar_url: _Optional[str] = ...) -> None: ...
 
 class ListConversationsRequest(_message.Message):
     __slots__ = ("query", "limit", "workspace_id")
@@ -474,3 +496,129 @@ class RefreshOverlaysResponse(_message.Message):
     OVERLAYS_FIELD_NUMBER: _ClassVar[int]
     overlays: _containers.RepeatedCompositeFieldContainer[Overlay]
     def __init__(self, overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ...) -> None: ...
+
+class CreateInviteRequest(_message.Message):
+    __slots__ = ("conversation_id",)
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    def __init__(self, conversation_id: _Optional[str] = ...) -> None: ...
+
+class CreateInviteResponse(_message.Message):
+    __slots__ = ("url", "expires_at")
+    URL_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    expires_at: _timestamp_pb2.Timestamp
+    def __init__(self, url: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class PreviewInviteRequest(_message.Message):
+    __slots__ = ("token",)
+    TOKEN_FIELD_NUMBER: _ClassVar[int]
+    token: str
+    def __init__(self, token: _Optional[str] = ...) -> None: ...
+
+class PreviewInviteResponse(_message.Message):
+    __slots__ = ("conversation_title", "inviter_name", "member_count", "conversation_id")
+    CONVERSATION_TITLE_FIELD_NUMBER: _ClassVar[int]
+    INVITER_NAME_FIELD_NUMBER: _ClassVar[int]
+    MEMBER_COUNT_FIELD_NUMBER: _ClassVar[int]
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_title: str
+    inviter_name: str
+    member_count: int
+    conversation_id: str
+    def __init__(self, conversation_title: _Optional[str] = ..., inviter_name: _Optional[str] = ..., member_count: _Optional[int] = ..., conversation_id: _Optional[str] = ...) -> None: ...
+
+class JoinConversationRequest(_message.Message):
+    __slots__ = ("token",)
+    TOKEN_FIELD_NUMBER: _ClassVar[int]
+    token: str
+    def __init__(self, token: _Optional[str] = ...) -> None: ...
+
+class JoinConversationResponse(_message.Message):
+    __slots__ = ("conversation",)
+    CONVERSATION_FIELD_NUMBER: _ClassVar[int]
+    conversation: Conversation
+    def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ...) -> None: ...
+
+class LeaveConversationRequest(_message.Message):
+    __slots__ = ("conversation_id",)
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    def __init__(self, conversation_id: _Optional[str] = ...) -> None: ...
+
+class LeaveConversationResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class RemoveMemberRequest(_message.Message):
+    __slots__ = ("conversation_id", "user_id")
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    user_id: str
+    def __init__(self, conversation_id: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
+
+class RemoveMemberResponse(_message.Message):
+    __slots__ = ("conversation",)
+    CONVERSATION_FIELD_NUMBER: _ClassVar[int]
+    conversation: Conversation
+    def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ...) -> None: ...
+
+class WatchRequest(_message.Message):
+    __slots__ = ("conversation_id",)
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    def __init__(self, conversation_id: _Optional[str] = ...) -> None: ...
+
+class WatchResponse(_message.Message):
+    __slots__ = ("message", "reply_started", "reply_delta", "conversation", "typing", "suggestions", "devices_changed")
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    REPLY_STARTED_FIELD_NUMBER: _ClassVar[int]
+    REPLY_DELTA_FIELD_NUMBER: _ClassVar[int]
+    CONVERSATION_FIELD_NUMBER: _ClassVar[int]
+    TYPING_FIELD_NUMBER: _ClassVar[int]
+    SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
+    DEVICES_CHANGED_FIELD_NUMBER: _ClassVar[int]
+    message: Message
+    reply_started: ReplyStarted
+    reply_delta: ReplyDelta
+    conversation: Conversation
+    typing: Typing
+    suggestions: Suggestions
+    devices_changed: str
+    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ..., reply_started: _Optional[_Union[ReplyStarted, _Mapping]] = ..., reply_delta: _Optional[_Union[ReplyDelta, _Mapping]] = ..., conversation: _Optional[_Union[Conversation, _Mapping]] = ..., typing: _Optional[_Union[Typing, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ..., devices_changed: _Optional[str] = ...) -> None: ...
+
+class ReplyStarted(_message.Message):
+    __slots__ = ("message_id", "asked_by")
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    ASKED_BY_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    asked_by: str
+    def __init__(self, message_id: _Optional[str] = ..., asked_by: _Optional[str] = ...) -> None: ...
+
+class ReplyDelta(_message.Message):
+    __slots__ = ("message_id", "text")
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    text: str
+    def __init__(self, message_id: _Optional[str] = ..., text: _Optional[str] = ...) -> None: ...
+
+class Typing(_message.Message):
+    __slots__ = ("user_id", "name")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    name: str
+    def __init__(self, user_id: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
+
+class SetTypingRequest(_message.Message):
+    __slots__ = ("conversation_id",)
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    def __init__(self, conversation_id: _Optional[str] = ...) -> None: ...
+
+class SetTypingResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...

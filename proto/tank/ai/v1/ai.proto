@@ -29,6 +29,20 @@ message Conversation {
   // What Neural has put over the person's camera in this conversation, oldest first. A
   // phone connected here draws them on its camera view; ClearOverlay takes one away.
   repeated Overlay overlays = 9;
+  // The people in the conversation (Robby, 2026-11-11: "the thing we are adding is people"),
+  // the owner first. One member is a personal conversation: Neural answers every message.
+  // With more, Neural answers a message that addresses it ("Neural, ...", "@Neural").
+  repeated Member members = 10;
+}
+
+// Member is one person in a conversation.
+message Member {
+  string user_id = 1;
+  string name = 2;
+  string avatar_url = 3;
+  // "owner" (made it; may remove people and delete it) or "member".
+  string role = 4;
+  google.protobuf.Timestamp joined_at = 5;
 }
 
 // Overlay is a layer Neural drew over the person's camera when they took an offer.
@@ -99,6 +113,10 @@ message Message {
   // What Neural offers to do next with what is connected (the wind over the camera, where
   // the sun sets), shown before the suggestions. Assistant turns only, latest one only.
   repeated Offer offers = 13;
+  // Who wrote a user message, so a conversation with several people shows each person.
+  string author_id = 14;
+  string author_name = 15;
+  string author_avatar_url = 16;
 }
 
 message ListConversationsRequest {
@@ -243,6 +261,8 @@ message Started {
   Conversation conversation = 1;
   Message user_message = 2;
   // The assistant message's id, assigned before the first delta so a stop can name it.
+  // Empty when Neural does not answer this message (a conversation with several people in
+  // which the message does not address Neural): the stream ends after started.
   string assistant_message_id = 3;
 }
 
@@ -338,6 +358,21 @@ service AiService {
   // Reads every overlay's figures again where they are more than ten minutes old, from where
   // the phone is now. Clients call it while the camera is showing.
   rpc RefreshOverlays(RefreshOverlaysRequest) returns (RefreshOverlaysResponse);
+
+  // People (docs/neural-people/PLAN.md). An invite is a link shown once when made; opening it
+  // signed in joins the conversation.
+  rpc CreateInvite(CreateInviteRequest) returns (CreateInviteResponse);
+  // What a link leads to, for the page that asks whether to join.
+  rpc PreviewInvite(PreviewInviteRequest) returns (PreviewInviteResponse);
+  rpc JoinConversation(JoinConversationRequest) returns (JoinConversationResponse);
+  rpc LeaveConversation(LeaveConversationRequest) returns (LeaveConversationResponse);
+  // The owner takes someone out.
+  rpc RemoveMember(RemoveMemberRequest) returns (RemoveMemberResponse);
+  // Everything that happens in a conversation, live, for every member with it open: messages
+  // from anyone, Neural's reply as it is written, people, devices and overlays changing.
+  rpc Watch(WatchRequest) returns (stream WatchResponse);
+  // The caller is typing; the others see it for a few seconds.
+  rpc SetTyping(SetTypingRequest) returns (SetTypingResponse);
 }
 
 message ListAppsRequest {
@@ -374,3 +409,78 @@ message RefreshOverlaysRequest {
 message RefreshOverlaysResponse {
   repeated Overlay overlays = 1;
 }
+
+message CreateInviteRequest {
+  string conversation_id = 1;
+}
+message CreateInviteResponse {
+  // The link to send. It is not stored and cannot be read again.
+  string url = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+message PreviewInviteRequest {
+  // The token from the link.
+  string token = 1;
+}
+message PreviewInviteResponse {
+  string conversation_title = 1;
+  string inviter_name = 2;
+  int32 member_count = 3;
+  // Set when the caller is already in it; the client opens it.
+  string conversation_id = 4;
+}
+message JoinConversationRequest {
+  string token = 1;
+}
+message JoinConversationResponse {
+  Conversation conversation = 1;
+}
+message LeaveConversationRequest {
+  string conversation_id = 1;
+}
+message LeaveConversationResponse {}
+message RemoveMemberRequest {
+  string conversation_id = 1;
+  string user_id = 2;
+}
+message RemoveMemberResponse {
+  Conversation conversation = 1;
+}
+message WatchRequest {
+  string conversation_id = 1;
+}
+message WatchResponse {
+  oneof event {
+    // A stored message: someone's, or Neural's when its reply is done.
+    Message message = 1;
+    // Neural has started a reply; deltas for it follow.
+    ReplyStarted reply_started = 2;
+    // A piece of Neural's reply as it is written.
+    ReplyDelta reply_delta = 3;
+    // The conversation changed: people, apps, overlays or its title.
+    Conversation conversation = 4;
+    // Someone is typing.
+    Typing typing = 5;
+    // Offers and suggestions for a message just done.
+    Suggestions suggestions = 6;
+    // A device was connected or disconnected; the client reloads the conversation's devices.
+    string devices_changed = 7;
+  }
+}
+message ReplyStarted {
+  string message_id = 1;
+  // Who addressed Neural.
+  string asked_by = 2;
+}
+message ReplyDelta {
+  string message_id = 1;
+  string text = 2;
+}
+message Typing {
+  string user_id = 1;
+  string name = 2;
+}
+message SetTypingRequest {
+  string conversation_id = 1;
+}
+message SetTypingResponse {}

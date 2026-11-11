@@ -74,6 +74,22 @@ const (
 	// AiServiceRefreshOverlaysProcedure is the fully-qualified name of the AiService's RefreshOverlays
 	// RPC.
 	AiServiceRefreshOverlaysProcedure = "/tank.ai.v1.AiService/RefreshOverlays"
+	// AiServiceCreateInviteProcedure is the fully-qualified name of the AiService's CreateInvite RPC.
+	AiServiceCreateInviteProcedure = "/tank.ai.v1.AiService/CreateInvite"
+	// AiServicePreviewInviteProcedure is the fully-qualified name of the AiService's PreviewInvite RPC.
+	AiServicePreviewInviteProcedure = "/tank.ai.v1.AiService/PreviewInvite"
+	// AiServiceJoinConversationProcedure is the fully-qualified name of the AiService's
+	// JoinConversation RPC.
+	AiServiceJoinConversationProcedure = "/tank.ai.v1.AiService/JoinConversation"
+	// AiServiceLeaveConversationProcedure is the fully-qualified name of the AiService's
+	// LeaveConversation RPC.
+	AiServiceLeaveConversationProcedure = "/tank.ai.v1.AiService/LeaveConversation"
+	// AiServiceRemoveMemberProcedure is the fully-qualified name of the AiService's RemoveMember RPC.
+	AiServiceRemoveMemberProcedure = "/tank.ai.v1.AiService/RemoveMember"
+	// AiServiceWatchProcedure is the fully-qualified name of the AiService's Watch RPC.
+	AiServiceWatchProcedure = "/tank.ai.v1.AiService/Watch"
+	// AiServiceSetTypingProcedure is the fully-qualified name of the AiService's SetTyping RPC.
+	AiServiceSetTypingProcedure = "/tank.ai.v1.AiService/SetTyping"
 )
 
 // AiServiceClient is a client for the tank.ai.v1.AiService service.
@@ -99,6 +115,20 @@ type AiServiceClient interface {
 	// Reads every overlay's figures again where they are more than ten minutes old, from where
 	// the phone is now. Clients call it while the camera is showing.
 	RefreshOverlays(context.Context, *connect.Request[v1.RefreshOverlaysRequest]) (*connect.Response[v1.RefreshOverlaysResponse], error)
+	// People (docs/neural-people/PLAN.md). An invite is a link shown once when made; opening it
+	// signed in joins the conversation.
+	CreateInvite(context.Context, *connect.Request[v1.CreateInviteRequest]) (*connect.Response[v1.CreateInviteResponse], error)
+	// What a link leads to, for the page that asks whether to join.
+	PreviewInvite(context.Context, *connect.Request[v1.PreviewInviteRequest]) (*connect.Response[v1.PreviewInviteResponse], error)
+	JoinConversation(context.Context, *connect.Request[v1.JoinConversationRequest]) (*connect.Response[v1.JoinConversationResponse], error)
+	LeaveConversation(context.Context, *connect.Request[v1.LeaveConversationRequest]) (*connect.Response[v1.LeaveConversationResponse], error)
+	// The owner takes someone out.
+	RemoveMember(context.Context, *connect.Request[v1.RemoveMemberRequest]) (*connect.Response[v1.RemoveMemberResponse], error)
+	// Everything that happens in a conversation, live, for every member with it open: messages
+	// from anyone, Neural's reply as it is written, people, devices and overlays changing.
+	Watch(context.Context, *connect.Request[v1.WatchRequest]) (*connect.ServerStreamForClient[v1.WatchResponse], error)
+	// The caller is typing; the others see it for a few seconds.
+	SetTyping(context.Context, *connect.Request[v1.SetTypingRequest]) (*connect.Response[v1.SetTypingResponse], error)
 }
 
 // NewAiServiceClient constructs a client for the tank.ai.v1.AiService service. By default, it uses
@@ -214,6 +244,48 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("RefreshOverlays")),
 			connect.WithClientOptions(opts...),
 		),
+		createInvite: connect.NewClient[v1.CreateInviteRequest, v1.CreateInviteResponse](
+			httpClient,
+			baseURL+AiServiceCreateInviteProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("CreateInvite")),
+			connect.WithClientOptions(opts...),
+		),
+		previewInvite: connect.NewClient[v1.PreviewInviteRequest, v1.PreviewInviteResponse](
+			httpClient,
+			baseURL+AiServicePreviewInviteProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("PreviewInvite")),
+			connect.WithClientOptions(opts...),
+		),
+		joinConversation: connect.NewClient[v1.JoinConversationRequest, v1.JoinConversationResponse](
+			httpClient,
+			baseURL+AiServiceJoinConversationProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("JoinConversation")),
+			connect.WithClientOptions(opts...),
+		),
+		leaveConversation: connect.NewClient[v1.LeaveConversationRequest, v1.LeaveConversationResponse](
+			httpClient,
+			baseURL+AiServiceLeaveConversationProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("LeaveConversation")),
+			connect.WithClientOptions(opts...),
+		),
+		removeMember: connect.NewClient[v1.RemoveMemberRequest, v1.RemoveMemberResponse](
+			httpClient,
+			baseURL+AiServiceRemoveMemberProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("RemoveMember")),
+			connect.WithClientOptions(opts...),
+		),
+		watch: connect.NewClient[v1.WatchRequest, v1.WatchResponse](
+			httpClient,
+			baseURL+AiServiceWatchProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("Watch")),
+			connect.WithClientOptions(opts...),
+		),
+		setTyping: connect.NewClient[v1.SetTypingRequest, v1.SetTypingResponse](
+			httpClient,
+			baseURL+AiServiceSetTypingProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("SetTyping")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -236,6 +308,13 @@ type aiServiceClient struct {
 	disconnectApp      *connect.Client[v1.DisconnectAppRequest, v1.DisconnectAppResponse]
 	clearOverlay       *connect.Client[v1.ClearOverlayRequest, v1.ClearOverlayResponse]
 	refreshOverlays    *connect.Client[v1.RefreshOverlaysRequest, v1.RefreshOverlaysResponse]
+	createInvite       *connect.Client[v1.CreateInviteRequest, v1.CreateInviteResponse]
+	previewInvite      *connect.Client[v1.PreviewInviteRequest, v1.PreviewInviteResponse]
+	joinConversation   *connect.Client[v1.JoinConversationRequest, v1.JoinConversationResponse]
+	leaveConversation  *connect.Client[v1.LeaveConversationRequest, v1.LeaveConversationResponse]
+	removeMember       *connect.Client[v1.RemoveMemberRequest, v1.RemoveMemberResponse]
+	watch              *connect.Client[v1.WatchRequest, v1.WatchResponse]
+	setTyping          *connect.Client[v1.SetTypingRequest, v1.SetTypingResponse]
 }
 
 // ListConversations calls tank.ai.v1.AiService.ListConversations.
@@ -323,6 +402,41 @@ func (c *aiServiceClient) RefreshOverlays(ctx context.Context, req *connect.Requ
 	return c.refreshOverlays.CallUnary(ctx, req)
 }
 
+// CreateInvite calls tank.ai.v1.AiService.CreateInvite.
+func (c *aiServiceClient) CreateInvite(ctx context.Context, req *connect.Request[v1.CreateInviteRequest]) (*connect.Response[v1.CreateInviteResponse], error) {
+	return c.createInvite.CallUnary(ctx, req)
+}
+
+// PreviewInvite calls tank.ai.v1.AiService.PreviewInvite.
+func (c *aiServiceClient) PreviewInvite(ctx context.Context, req *connect.Request[v1.PreviewInviteRequest]) (*connect.Response[v1.PreviewInviteResponse], error) {
+	return c.previewInvite.CallUnary(ctx, req)
+}
+
+// JoinConversation calls tank.ai.v1.AiService.JoinConversation.
+func (c *aiServiceClient) JoinConversation(ctx context.Context, req *connect.Request[v1.JoinConversationRequest]) (*connect.Response[v1.JoinConversationResponse], error) {
+	return c.joinConversation.CallUnary(ctx, req)
+}
+
+// LeaveConversation calls tank.ai.v1.AiService.LeaveConversation.
+func (c *aiServiceClient) LeaveConversation(ctx context.Context, req *connect.Request[v1.LeaveConversationRequest]) (*connect.Response[v1.LeaveConversationResponse], error) {
+	return c.leaveConversation.CallUnary(ctx, req)
+}
+
+// RemoveMember calls tank.ai.v1.AiService.RemoveMember.
+func (c *aiServiceClient) RemoveMember(ctx context.Context, req *connect.Request[v1.RemoveMemberRequest]) (*connect.Response[v1.RemoveMemberResponse], error) {
+	return c.removeMember.CallUnary(ctx, req)
+}
+
+// Watch calls tank.ai.v1.AiService.Watch.
+func (c *aiServiceClient) Watch(ctx context.Context, req *connect.Request[v1.WatchRequest]) (*connect.ServerStreamForClient[v1.WatchResponse], error) {
+	return c.watch.CallServerStream(ctx, req)
+}
+
+// SetTyping calls tank.ai.v1.AiService.SetTyping.
+func (c *aiServiceClient) SetTyping(ctx context.Context, req *connect.Request[v1.SetTypingRequest]) (*connect.Response[v1.SetTypingResponse], error) {
+	return c.setTyping.CallUnary(ctx, req)
+}
+
 // AiServiceHandler is an implementation of the tank.ai.v1.AiService service.
 type AiServiceHandler interface {
 	ListConversations(context.Context, *connect.Request[v1.ListConversationsRequest]) (*connect.Response[v1.ListConversationsResponse], error)
@@ -346,6 +460,20 @@ type AiServiceHandler interface {
 	// Reads every overlay's figures again where they are more than ten minutes old, from where
 	// the phone is now. Clients call it while the camera is showing.
 	RefreshOverlays(context.Context, *connect.Request[v1.RefreshOverlaysRequest]) (*connect.Response[v1.RefreshOverlaysResponse], error)
+	// People (docs/neural-people/PLAN.md). An invite is a link shown once when made; opening it
+	// signed in joins the conversation.
+	CreateInvite(context.Context, *connect.Request[v1.CreateInviteRequest]) (*connect.Response[v1.CreateInviteResponse], error)
+	// What a link leads to, for the page that asks whether to join.
+	PreviewInvite(context.Context, *connect.Request[v1.PreviewInviteRequest]) (*connect.Response[v1.PreviewInviteResponse], error)
+	JoinConversation(context.Context, *connect.Request[v1.JoinConversationRequest]) (*connect.Response[v1.JoinConversationResponse], error)
+	LeaveConversation(context.Context, *connect.Request[v1.LeaveConversationRequest]) (*connect.Response[v1.LeaveConversationResponse], error)
+	// The owner takes someone out.
+	RemoveMember(context.Context, *connect.Request[v1.RemoveMemberRequest]) (*connect.Response[v1.RemoveMemberResponse], error)
+	// Everything that happens in a conversation, live, for every member with it open: messages
+	// from anyone, Neural's reply as it is written, people, devices and overlays changing.
+	Watch(context.Context, *connect.Request[v1.WatchRequest], *connect.ServerStream[v1.WatchResponse]) error
+	// The caller is typing; the others see it for a few seconds.
+	SetTyping(context.Context, *connect.Request[v1.SetTypingRequest]) (*connect.Response[v1.SetTypingResponse], error)
 }
 
 // NewAiServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -457,6 +585,48 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("RefreshOverlays")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServiceCreateInviteHandler := connect.NewUnaryHandler(
+		AiServiceCreateInviteProcedure,
+		svc.CreateInvite,
+		connect.WithSchema(aiServiceMethods.ByName("CreateInvite")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServicePreviewInviteHandler := connect.NewUnaryHandler(
+		AiServicePreviewInviteProcedure,
+		svc.PreviewInvite,
+		connect.WithSchema(aiServiceMethods.ByName("PreviewInvite")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceJoinConversationHandler := connect.NewUnaryHandler(
+		AiServiceJoinConversationProcedure,
+		svc.JoinConversation,
+		connect.WithSchema(aiServiceMethods.ByName("JoinConversation")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceLeaveConversationHandler := connect.NewUnaryHandler(
+		AiServiceLeaveConversationProcedure,
+		svc.LeaveConversation,
+		connect.WithSchema(aiServiceMethods.ByName("LeaveConversation")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceRemoveMemberHandler := connect.NewUnaryHandler(
+		AiServiceRemoveMemberProcedure,
+		svc.RemoveMember,
+		connect.WithSchema(aiServiceMethods.ByName("RemoveMember")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceWatchHandler := connect.NewServerStreamHandler(
+		AiServiceWatchProcedure,
+		svc.Watch,
+		connect.WithSchema(aiServiceMethods.ByName("Watch")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceSetTypingHandler := connect.NewUnaryHandler(
+		AiServiceSetTypingProcedure,
+		svc.SetTyping,
+		connect.WithSchema(aiServiceMethods.ByName("SetTyping")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.ai.v1.AiService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AiServiceListConversationsProcedure:
@@ -493,6 +663,20 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceClearOverlayHandler.ServeHTTP(w, r)
 		case AiServiceRefreshOverlaysProcedure:
 			aiServiceRefreshOverlaysHandler.ServeHTTP(w, r)
+		case AiServiceCreateInviteProcedure:
+			aiServiceCreateInviteHandler.ServeHTTP(w, r)
+		case AiServicePreviewInviteProcedure:
+			aiServicePreviewInviteHandler.ServeHTTP(w, r)
+		case AiServiceJoinConversationProcedure:
+			aiServiceJoinConversationHandler.ServeHTTP(w, r)
+		case AiServiceLeaveConversationProcedure:
+			aiServiceLeaveConversationHandler.ServeHTTP(w, r)
+		case AiServiceRemoveMemberProcedure:
+			aiServiceRemoveMemberHandler.ServeHTTP(w, r)
+		case AiServiceWatchProcedure:
+			aiServiceWatchHandler.ServeHTTP(w, r)
+		case AiServiceSetTypingProcedure:
+			aiServiceSetTypingHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -568,4 +752,32 @@ func (UnimplementedAiServiceHandler) ClearOverlay(context.Context, *connect.Requ
 
 func (UnimplementedAiServiceHandler) RefreshOverlays(context.Context, *connect.Request[v1.RefreshOverlaysRequest]) (*connect.Response[v1.RefreshOverlaysResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.RefreshOverlays is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) CreateInvite(context.Context, *connect.Request[v1.CreateInviteRequest]) (*connect.Response[v1.CreateInviteResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.CreateInvite is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) PreviewInvite(context.Context, *connect.Request[v1.PreviewInviteRequest]) (*connect.Response[v1.PreviewInviteResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.PreviewInvite is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) JoinConversation(context.Context, *connect.Request[v1.JoinConversationRequest]) (*connect.Response[v1.JoinConversationResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.JoinConversation is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) LeaveConversation(context.Context, *connect.Request[v1.LeaveConversationRequest]) (*connect.Response[v1.LeaveConversationResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.LeaveConversation is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) RemoveMember(context.Context, *connect.Request[v1.RemoveMemberRequest]) (*connect.Response[v1.RemoveMemberResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.RemoveMember is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) Watch(context.Context, *connect.Request[v1.WatchRequest], *connect.ServerStream[v1.WatchResponse]) error {
+	return connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.Watch is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) SetTyping(context.Context, *connect.Request[v1.SetTypingRequest]) (*connect.Response[v1.SetTypingResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.SetTyping is not implemented"))
 }
