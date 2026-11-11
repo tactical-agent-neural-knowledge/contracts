@@ -90,6 +90,10 @@ const (
 	AiServiceWatchProcedure = "/tank.ai.v1.AiService/Watch"
 	// AiServiceSetTypingProcedure is the fully-qualified name of the AiService's SetTyping RPC.
 	AiServiceSetTypingProcedure = "/tank.ai.v1.AiService/SetTyping"
+	// AiServiceMarkReadProcedure is the fully-qualified name of the AiService's MarkRead RPC.
+	AiServiceMarkReadProcedure = "/tank.ai.v1.AiService/MarkRead"
+	// AiServiceSetMutedProcedure is the fully-qualified name of the AiService's SetMuted RPC.
+	AiServiceSetMutedProcedure = "/tank.ai.v1.AiService/SetMuted"
 )
 
 // AiServiceClient is a client for the tank.ai.v1.AiService service.
@@ -129,6 +133,9 @@ type AiServiceClient interface {
 	Watch(context.Context, *connect.Request[v1.WatchRequest]) (*connect.ServerStreamForClient[v1.WatchResponse], error)
 	// The caller is typing; the others see it for a few seconds.
 	SetTyping(context.Context, *connect.Request[v1.SetTypingRequest]) (*connect.Response[v1.SetTypingResponse], error)
+	// The caller has read the conversation up to now.
+	MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error)
+	SetMuted(context.Context, *connect.Request[v1.SetMutedRequest]) (*connect.Response[v1.SetMutedResponse], error)
 }
 
 // NewAiServiceClient constructs a client for the tank.ai.v1.AiService service. By default, it uses
@@ -286,6 +293,18 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("SetTyping")),
 			connect.WithClientOptions(opts...),
 		),
+		markRead: connect.NewClient[v1.MarkReadRequest, v1.MarkReadResponse](
+			httpClient,
+			baseURL+AiServiceMarkReadProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("MarkRead")),
+			connect.WithClientOptions(opts...),
+		),
+		setMuted: connect.NewClient[v1.SetMutedRequest, v1.SetMutedResponse](
+			httpClient,
+			baseURL+AiServiceSetMutedProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("SetMuted")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -315,6 +334,8 @@ type aiServiceClient struct {
 	removeMember       *connect.Client[v1.RemoveMemberRequest, v1.RemoveMemberResponse]
 	watch              *connect.Client[v1.WatchRequest, v1.WatchResponse]
 	setTyping          *connect.Client[v1.SetTypingRequest, v1.SetTypingResponse]
+	markRead           *connect.Client[v1.MarkReadRequest, v1.MarkReadResponse]
+	setMuted           *connect.Client[v1.SetMutedRequest, v1.SetMutedResponse]
 }
 
 // ListConversations calls tank.ai.v1.AiService.ListConversations.
@@ -437,6 +458,16 @@ func (c *aiServiceClient) SetTyping(ctx context.Context, req *connect.Request[v1
 	return c.setTyping.CallUnary(ctx, req)
 }
 
+// MarkRead calls tank.ai.v1.AiService.MarkRead.
+func (c *aiServiceClient) MarkRead(ctx context.Context, req *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error) {
+	return c.markRead.CallUnary(ctx, req)
+}
+
+// SetMuted calls tank.ai.v1.AiService.SetMuted.
+func (c *aiServiceClient) SetMuted(ctx context.Context, req *connect.Request[v1.SetMutedRequest]) (*connect.Response[v1.SetMutedResponse], error) {
+	return c.setMuted.CallUnary(ctx, req)
+}
+
 // AiServiceHandler is an implementation of the tank.ai.v1.AiService service.
 type AiServiceHandler interface {
 	ListConversations(context.Context, *connect.Request[v1.ListConversationsRequest]) (*connect.Response[v1.ListConversationsResponse], error)
@@ -474,6 +505,9 @@ type AiServiceHandler interface {
 	Watch(context.Context, *connect.Request[v1.WatchRequest], *connect.ServerStream[v1.WatchResponse]) error
 	// The caller is typing; the others see it for a few seconds.
 	SetTyping(context.Context, *connect.Request[v1.SetTypingRequest]) (*connect.Response[v1.SetTypingResponse], error)
+	// The caller has read the conversation up to now.
+	MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error)
+	SetMuted(context.Context, *connect.Request[v1.SetMutedRequest]) (*connect.Response[v1.SetMutedResponse], error)
 }
 
 // NewAiServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -627,6 +661,18 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("SetTyping")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServiceMarkReadHandler := connect.NewUnaryHandler(
+		AiServiceMarkReadProcedure,
+		svc.MarkRead,
+		connect.WithSchema(aiServiceMethods.ByName("MarkRead")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceSetMutedHandler := connect.NewUnaryHandler(
+		AiServiceSetMutedProcedure,
+		svc.SetMuted,
+		connect.WithSchema(aiServiceMethods.ByName("SetMuted")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.ai.v1.AiService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AiServiceListConversationsProcedure:
@@ -677,6 +723,10 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceWatchHandler.ServeHTTP(w, r)
 		case AiServiceSetTypingProcedure:
 			aiServiceSetTypingHandler.ServeHTTP(w, r)
+		case AiServiceMarkReadProcedure:
+			aiServiceMarkReadHandler.ServeHTTP(w, r)
+		case AiServiceSetMutedProcedure:
+			aiServiceSetMutedHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -780,4 +830,12 @@ func (UnimplementedAiServiceHandler) Watch(context.Context, *connect.Request[v1.
 
 func (UnimplementedAiServiceHandler) SetTyping(context.Context, *connect.Request[v1.SetTypingRequest]) (*connect.Response[v1.SetTypingResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.SetTyping is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.MarkRead is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) SetMuted(context.Context, *connect.Request[v1.SetMutedRequest]) (*connect.Response[v1.SetMutedResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.SetMuted is not implemented"))
 }

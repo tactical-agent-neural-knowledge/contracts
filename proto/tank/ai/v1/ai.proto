@@ -36,6 +36,31 @@ message Conversation {
   // Webpages connected to the conversation ("Connect a webpage"), from tank.browse.v1: id,
   // address and title, so the list and the chat show them without another call.
   repeated ConnectedPage pages = 11;
+  // For the chat list (Robby's redesign, 2026-11-11): the newest message, who wrote it and
+  // when, so a row reads "Sam: …" with its time.
+  string last_text = 12;
+  string last_author_id = 13;
+  string last_author_name = 14;
+  // "user" or "assistant".
+  string last_role = 15;
+  google.protobuf.Timestamp last_at = 16;
+  // Messages after the caller last read the conversation; 0 when read.
+  int32 unread = 17;
+  // The caller has muted it: no pushes.
+  bool muted = 18;
+  // Devices connected to it now, for the row's avatar and the LIVE card.
+  repeated ConnectedDevice devices = 19;
+}
+
+message ConnectedDevice {
+  string session_id = 1;
+  // What Neural says it is, or its own name.
+  string name = 2;
+  // "phone" or "bluetooth".
+  string transport = 3;
+  string owner_id = 4;
+  string owner_name = 5;
+  bool camera = 6;
 }
 
 message ConnectedPage {
@@ -384,6 +409,9 @@ service AiService {
   rpc Watch(WatchRequest) returns (stream WatchResponse);
   // The caller is typing; the others see it for a few seconds.
   rpc SetTyping(SetTypingRequest) returns (SetTypingResponse);
+  // The caller has read the conversation up to now.
+  rpc MarkRead(MarkReadRequest) returns (MarkReadResponse);
+  rpc SetMuted(SetMutedRequest) returns (SetMutedResponse);
 }
 
 message ListAppsRequest {
@@ -497,3 +525,15 @@ message SetTypingRequest {
   string conversation_id = 1;
 }
 message SetTypingResponse {}
+
+message MarkReadRequest {
+  string conversation_id = 1;
+}
+message MarkReadResponse {}
+message SetMutedRequest {
+  string conversation_id = 1;
+  bool muted = 2;
+}
+message SetMutedResponse {
+  Conversation conversation = 1;
+}

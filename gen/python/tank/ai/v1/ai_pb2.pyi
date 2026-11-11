@@ -18,7 +18,7 @@ ROLE_USER: Role
 ROLE_ASSISTANT: Role
 
 class Conversation(_message.Message):
-    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps", "overlays", "members", "pages")
+    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps", "overlays", "members", "pages", "last_text", "last_author_id", "last_author_name", "last_role", "last_at", "unread", "muted", "devices")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
@@ -30,6 +30,14 @@ class Conversation(_message.Message):
     OVERLAYS_FIELD_NUMBER: _ClassVar[int]
     MEMBERS_FIELD_NUMBER: _ClassVar[int]
     PAGES_FIELD_NUMBER: _ClassVar[int]
+    LAST_TEXT_FIELD_NUMBER: _ClassVar[int]
+    LAST_AUTHOR_ID_FIELD_NUMBER: _ClassVar[int]
+    LAST_AUTHOR_NAME_FIELD_NUMBER: _ClassVar[int]
+    LAST_ROLE_FIELD_NUMBER: _ClassVar[int]
+    LAST_AT_FIELD_NUMBER: _ClassVar[int]
+    UNREAD_FIELD_NUMBER: _ClassVar[int]
+    MUTED_FIELD_NUMBER: _ClassVar[int]
+    DEVICES_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     created_at: _timestamp_pb2.Timestamp
@@ -41,7 +49,31 @@ class Conversation(_message.Message):
     overlays: _containers.RepeatedCompositeFieldContainer[Overlay]
     members: _containers.RepeatedCompositeFieldContainer[Member]
     pages: _containers.RepeatedCompositeFieldContainer[ConnectedPage]
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ..., overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., pages: _Optional[_Iterable[_Union[ConnectedPage, _Mapping]]] = ...) -> None: ...
+    last_text: str
+    last_author_id: str
+    last_author_name: str
+    last_role: str
+    last_at: _timestamp_pb2.Timestamp
+    unread: int
+    muted: bool
+    devices: _containers.RepeatedCompositeFieldContainer[ConnectedDevice]
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ..., overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., pages: _Optional[_Iterable[_Union[ConnectedPage, _Mapping]]] = ..., last_text: _Optional[str] = ..., last_author_id: _Optional[str] = ..., last_author_name: _Optional[str] = ..., last_role: _Optional[str] = ..., last_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., unread: _Optional[int] = ..., muted: bool = ..., devices: _Optional[_Iterable[_Union[ConnectedDevice, _Mapping]]] = ...) -> None: ...
+
+class ConnectedDevice(_message.Message):
+    __slots__ = ("session_id", "name", "transport", "owner_id", "owner_name", "camera")
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    TRANSPORT_FIELD_NUMBER: _ClassVar[int]
+    OWNER_ID_FIELD_NUMBER: _ClassVar[int]
+    OWNER_NAME_FIELD_NUMBER: _ClassVar[int]
+    CAMERA_FIELD_NUMBER: _ClassVar[int]
+    session_id: str
+    name: str
+    transport: str
+    owner_id: str
+    owner_name: str
+    camera: bool
+    def __init__(self, session_id: _Optional[str] = ..., name: _Optional[str] = ..., transport: _Optional[str] = ..., owner_id: _Optional[str] = ..., owner_name: _Optional[str] = ..., camera: bool = ...) -> None: ...
 
 class ConnectedPage(_message.Message):
     __slots__ = ("id", "url", "title", "owner_id", "owner_name")
@@ -640,3 +672,27 @@ class SetTypingRequest(_message.Message):
 class SetTypingResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class MarkReadRequest(_message.Message):
+    __slots__ = ("conversation_id",)
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    def __init__(self, conversation_id: _Optional[str] = ...) -> None: ...
+
+class MarkReadResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class SetMutedRequest(_message.Message):
+    __slots__ = ("conversation_id", "muted")
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    MUTED_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    muted: bool
+    def __init__(self, conversation_id: _Optional[str] = ..., muted: bool = ...) -> None: ...
+
+class SetMutedResponse(_message.Message):
+    __slots__ = ("conversation",)
+    CONVERSATION_FIELD_NUMBER: _ClassVar[int]
+    conversation: Conversation
+    def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ...) -> None: ...
