@@ -260,6 +260,15 @@ const (
 	// ControlServiceCallNeuralAppToolProcedure is the fully-qualified name of the ControlService's
 	// CallNeuralAppTool RPC.
 	ControlServiceCallNeuralAppToolProcedure = "/tank.agentctl.v1.ControlService/CallNeuralAppTool"
+	// ControlServiceStartNeuralAppLoginProcedure is the fully-qualified name of the ControlService's
+	// StartNeuralAppLogin RPC.
+	ControlServiceStartNeuralAppLoginProcedure = "/tank.agentctl.v1.ControlService/StartNeuralAppLogin"
+	// ControlServiceListNeuralAppAccountsProcedure is the fully-qualified name of the ControlService's
+	// ListNeuralAppAccounts RPC.
+	ControlServiceListNeuralAppAccountsProcedure = "/tank.agentctl.v1.ControlService/ListNeuralAppAccounts"
+	// ControlServiceSignOutOfNeuralAppProcedure is the fully-qualified name of the ControlService's
+	// SignOutOfNeuralApp RPC.
+	ControlServiceSignOutOfNeuralAppProcedure = "/tank.agentctl.v1.ControlService/SignOutOfNeuralApp"
 	// ControlServiceListInfraConnectionsProcedure is the fully-qualified name of the ControlService's
 	// ListInfraConnections RPC.
 	ControlServiceListInfraConnectionsProcedure = "/tank.agentctl.v1.ControlService/ListInfraConnections"
@@ -2313,6 +2322,12 @@ type ControlServiceClient interface {
 	ListNeuralApps(context.Context, *connect.Request[v1.ListNeuralAppsRequest]) (*connect.Response[v1.ListNeuralAppsResponse], error)
 	GetNeuralAppTools(context.Context, *connect.Request[v1.GetNeuralAppToolsRequest]) (*connect.Response[v1.GetNeuralAppToolsResponse], error)
 	CallNeuralAppTool(context.Context, *connect.Request[v1.CallNeuralAppToolRequest]) (*connect.Response[v1.CallNeuralAppToolResponse], error)
+	// Signing in to an app that requires it (App.requires_login). The control plane is the
+	// OAuth client (authorization code + PKCE), keeps each person's app token encrypted and
+	// never returns it; the api passes the person and decides who may ask.
+	StartNeuralAppLogin(context.Context, *connect.Request[v1.StartNeuralAppLoginRequest]) (*connect.Response[v1.StartNeuralAppLoginResponse], error)
+	ListNeuralAppAccounts(context.Context, *connect.Request[v1.ListNeuralAppAccountsRequest]) (*connect.Response[v1.ListNeuralAppAccountsResponse], error)
+	SignOutOfNeuralApp(context.Context, *connect.Request[v1.SignOutOfNeuralAppRequest]) (*connect.Response[v1.SignOutOfNeuralAppResponse], error)
 	ListInfraConnections(context.Context, *connect.Request[v1.ListInfraConnectionsRequest]) (*connect.Response[v1.ListInfraConnectionsResponse], error)
 	GetInfraConnection(context.Context, *connect.Request[v1.GetInfraConnectionRequest]) (*connect.Response[v1.GetInfraConnectionResponse], error)
 	CreateInfraConnection(context.Context, *connect.Request[v1.CreateInfraConnectionRequest]) (*connect.Response[v1.CreateInfraConnectionResponse], error)
@@ -2486,6 +2501,24 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+ControlServiceCallNeuralAppToolProcedure,
 			connect.WithSchema(controlServiceMethods.ByName("CallNeuralAppTool")),
+			connect.WithClientOptions(opts...),
+		),
+		startNeuralAppLogin: connect.NewClient[v1.StartNeuralAppLoginRequest, v1.StartNeuralAppLoginResponse](
+			httpClient,
+			baseURL+ControlServiceStartNeuralAppLoginProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("StartNeuralAppLogin")),
+			connect.WithClientOptions(opts...),
+		),
+		listNeuralAppAccounts: connect.NewClient[v1.ListNeuralAppAccountsRequest, v1.ListNeuralAppAccountsResponse](
+			httpClient,
+			baseURL+ControlServiceListNeuralAppAccountsProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListNeuralAppAccounts")),
+			connect.WithClientOptions(opts...),
+		),
+		signOutOfNeuralApp: connect.NewClient[v1.SignOutOfNeuralAppRequest, v1.SignOutOfNeuralAppResponse](
+			httpClient,
+			baseURL+ControlServiceSignOutOfNeuralAppProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("SignOutOfNeuralApp")),
 			connect.WithClientOptions(opts...),
 		),
 		listInfraConnections: connect.NewClient[v1.ListInfraConnectionsRequest, v1.ListInfraConnectionsResponse](
@@ -2827,6 +2860,9 @@ type controlServiceClient struct {
 	listNeuralApps              *connect.Client[v1.ListNeuralAppsRequest, v1.ListNeuralAppsResponse]
 	getNeuralAppTools           *connect.Client[v1.GetNeuralAppToolsRequest, v1.GetNeuralAppToolsResponse]
 	callNeuralAppTool           *connect.Client[v1.CallNeuralAppToolRequest, v1.CallNeuralAppToolResponse]
+	startNeuralAppLogin         *connect.Client[v1.StartNeuralAppLoginRequest, v1.StartNeuralAppLoginResponse]
+	listNeuralAppAccounts       *connect.Client[v1.ListNeuralAppAccountsRequest, v1.ListNeuralAppAccountsResponse]
+	signOutOfNeuralApp          *connect.Client[v1.SignOutOfNeuralAppRequest, v1.SignOutOfNeuralAppResponse]
 	listInfraConnections        *connect.Client[v1.ListInfraConnectionsRequest, v1.ListInfraConnectionsResponse]
 	getInfraConnection          *connect.Client[v1.GetInfraConnectionRequest, v1.GetInfraConnectionResponse]
 	createInfraConnection       *connect.Client[v1.CreateInfraConnectionRequest, v1.CreateInfraConnectionResponse]
@@ -2931,6 +2967,21 @@ func (c *controlServiceClient) GetNeuralAppTools(ctx context.Context, req *conne
 // CallNeuralAppTool calls tank.agentctl.v1.ControlService.CallNeuralAppTool.
 func (c *controlServiceClient) CallNeuralAppTool(ctx context.Context, req *connect.Request[v1.CallNeuralAppToolRequest]) (*connect.Response[v1.CallNeuralAppToolResponse], error) {
 	return c.callNeuralAppTool.CallUnary(ctx, req)
+}
+
+// StartNeuralAppLogin calls tank.agentctl.v1.ControlService.StartNeuralAppLogin.
+func (c *controlServiceClient) StartNeuralAppLogin(ctx context.Context, req *connect.Request[v1.StartNeuralAppLoginRequest]) (*connect.Response[v1.StartNeuralAppLoginResponse], error) {
+	return c.startNeuralAppLogin.CallUnary(ctx, req)
+}
+
+// ListNeuralAppAccounts calls tank.agentctl.v1.ControlService.ListNeuralAppAccounts.
+func (c *controlServiceClient) ListNeuralAppAccounts(ctx context.Context, req *connect.Request[v1.ListNeuralAppAccountsRequest]) (*connect.Response[v1.ListNeuralAppAccountsResponse], error) {
+	return c.listNeuralAppAccounts.CallUnary(ctx, req)
+}
+
+// SignOutOfNeuralApp calls tank.agentctl.v1.ControlService.SignOutOfNeuralApp.
+func (c *controlServiceClient) SignOutOfNeuralApp(ctx context.Context, req *connect.Request[v1.SignOutOfNeuralAppRequest]) (*connect.Response[v1.SignOutOfNeuralAppResponse], error) {
+	return c.signOutOfNeuralApp.CallUnary(ctx, req)
 }
 
 // ListInfraConnections calls tank.agentctl.v1.ControlService.ListInfraConnections.
@@ -3225,6 +3276,12 @@ type ControlServiceHandler interface {
 	ListNeuralApps(context.Context, *connect.Request[v1.ListNeuralAppsRequest]) (*connect.Response[v1.ListNeuralAppsResponse], error)
 	GetNeuralAppTools(context.Context, *connect.Request[v1.GetNeuralAppToolsRequest]) (*connect.Response[v1.GetNeuralAppToolsResponse], error)
 	CallNeuralAppTool(context.Context, *connect.Request[v1.CallNeuralAppToolRequest]) (*connect.Response[v1.CallNeuralAppToolResponse], error)
+	// Signing in to an app that requires it (App.requires_login). The control plane is the
+	// OAuth client (authorization code + PKCE), keeps each person's app token encrypted and
+	// never returns it; the api passes the person and decides who may ask.
+	StartNeuralAppLogin(context.Context, *connect.Request[v1.StartNeuralAppLoginRequest]) (*connect.Response[v1.StartNeuralAppLoginResponse], error)
+	ListNeuralAppAccounts(context.Context, *connect.Request[v1.ListNeuralAppAccountsRequest]) (*connect.Response[v1.ListNeuralAppAccountsResponse], error)
+	SignOutOfNeuralApp(context.Context, *connect.Request[v1.SignOutOfNeuralAppRequest]) (*connect.Response[v1.SignOutOfNeuralAppResponse], error)
 	ListInfraConnections(context.Context, *connect.Request[v1.ListInfraConnectionsRequest]) (*connect.Response[v1.ListInfraConnectionsResponse], error)
 	GetInfraConnection(context.Context, *connect.Request[v1.GetInfraConnectionRequest]) (*connect.Response[v1.GetInfraConnectionResponse], error)
 	CreateInfraConnection(context.Context, *connect.Request[v1.CreateInfraConnectionRequest]) (*connect.Response[v1.CreateInfraConnectionResponse], error)
@@ -3394,6 +3451,24 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		ControlServiceCallNeuralAppToolProcedure,
 		svc.CallNeuralAppTool,
 		connect.WithSchema(controlServiceMethods.ByName("CallNeuralAppTool")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceStartNeuralAppLoginHandler := connect.NewUnaryHandler(
+		ControlServiceStartNeuralAppLoginProcedure,
+		svc.StartNeuralAppLogin,
+		connect.WithSchema(controlServiceMethods.ByName("StartNeuralAppLogin")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceListNeuralAppAccountsHandler := connect.NewUnaryHandler(
+		ControlServiceListNeuralAppAccountsProcedure,
+		svc.ListNeuralAppAccounts,
+		connect.WithSchema(controlServiceMethods.ByName("ListNeuralAppAccounts")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceSignOutOfNeuralAppHandler := connect.NewUnaryHandler(
+		ControlServiceSignOutOfNeuralAppProcedure,
+		svc.SignOutOfNeuralApp,
+		connect.WithSchema(controlServiceMethods.ByName("SignOutOfNeuralApp")),
 		connect.WithHandlerOptions(opts...),
 	)
 	controlServiceListInfraConnectionsHandler := connect.NewUnaryHandler(
@@ -3742,6 +3817,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceGetNeuralAppToolsHandler.ServeHTTP(w, r)
 		case ControlServiceCallNeuralAppToolProcedure:
 			controlServiceCallNeuralAppToolHandler.ServeHTTP(w, r)
+		case ControlServiceStartNeuralAppLoginProcedure:
+			controlServiceStartNeuralAppLoginHandler.ServeHTTP(w, r)
+		case ControlServiceListNeuralAppAccountsProcedure:
+			controlServiceListNeuralAppAccountsHandler.ServeHTTP(w, r)
+		case ControlServiceSignOutOfNeuralAppProcedure:
+			controlServiceSignOutOfNeuralAppHandler.ServeHTTP(w, r)
 		case ControlServiceListInfraConnectionsProcedure:
 			controlServiceListInfraConnectionsHandler.ServeHTTP(w, r)
 		case ControlServiceGetInfraConnectionProcedure:
@@ -3897,6 +3978,18 @@ func (UnimplementedControlServiceHandler) GetNeuralAppTools(context.Context, *co
 
 func (UnimplementedControlServiceHandler) CallNeuralAppTool(context.Context, *connect.Request[v1.CallNeuralAppToolRequest]) (*connect.Response[v1.CallNeuralAppToolResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.CallNeuralAppTool is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) StartNeuralAppLogin(context.Context, *connect.Request[v1.StartNeuralAppLoginRequest]) (*connect.Response[v1.StartNeuralAppLoginResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.StartNeuralAppLogin is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListNeuralAppAccounts(context.Context, *connect.Request[v1.ListNeuralAppAccountsRequest]) (*connect.Response[v1.ListNeuralAppAccountsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListNeuralAppAccounts is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) SignOutOfNeuralApp(context.Context, *connect.Request[v1.SignOutOfNeuralAppRequest]) (*connect.Response[v1.SignOutOfNeuralAppResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.SignOutOfNeuralApp is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) ListInfraConnections(context.Context, *connect.Request[v1.ListInfraConnectionsRequest]) (*connect.Response[v1.ListInfraConnectionsResponse], error) {
