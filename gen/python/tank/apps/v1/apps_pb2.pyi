@@ -34,12 +34,14 @@ class Tool(_message.Message):
     def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., input_schema_json: _Optional[str] = ..., offer: _Optional[_Union[Offer, _Mapping]] = ...) -> None: ...
 
 class Offer(_message.Message):
-    __slots__ = ("text", "needs")
+    __slots__ = ("text", "needs", "title")
     TEXT_FIELD_NUMBER: _ClassVar[int]
     NEEDS_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
     text: str
     needs: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, text: _Optional[str] = ..., needs: _Optional[_Iterable[str]] = ...) -> None: ...
+    title: str
+    def __init__(self, text: _Optional[str] = ..., needs: _Optional[_Iterable[str]] = ..., title: _Optional[str] = ...) -> None: ...
 
 class Mark(_message.Message):
     __slots__ = ("kind", "bearing", "label", "detail", "elevation")

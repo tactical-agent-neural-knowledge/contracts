@@ -43,6 +43,8 @@ message Offer {
   // What the conversation must have for the offer to make sense: "camera" (a phone camera
   // connected), "location" (a position from a connected device). Unknown needs are never met.
   repeated string needs = 2;
+  // What the overlay it draws is called, shown on the camera with the app's name: "Wind".
+  string title = 3;
 }
 
 // Mark is one thing drawn over the person's camera, placed by compass bearing. The phone
