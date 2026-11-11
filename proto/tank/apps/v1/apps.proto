@@ -122,4 +122,8 @@ message CallToolResponse {
   bool is_error = 3;
   // What the result draws over the camera (the kit's _meta "chat.tank/marks"), at most 12.
   repeated Mark marks = 4;
+  // The app requires login and the person has no working sign-in to it (never signed in,
+  // signed out, or the app ended it). is_error is set and text says "<App> needs you to sign
+  // in."; a client offers Sign in (StartAppLogin) rather than showing it as a failure.
+  bool needs_login = 5;
 }

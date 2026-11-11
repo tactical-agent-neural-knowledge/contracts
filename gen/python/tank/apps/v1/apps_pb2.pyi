@@ -127,13 +127,15 @@ class CallToolRequest(_message.Message):
     def __init__(self, app_id: _Optional[str] = ..., tool: _Optional[str] = ..., arguments_json: _Optional[str] = ..., user_id: _Optional[str] = ...) -> None: ...
 
 class CallToolResponse(_message.Message):
-    __slots__ = ("text", "sources", "is_error", "marks")
+    __slots__ = ("text", "sources", "is_error", "marks", "needs_login")
     TEXT_FIELD_NUMBER: _ClassVar[int]
     SOURCES_FIELD_NUMBER: _ClassVar[int]
     IS_ERROR_FIELD_NUMBER: _ClassVar[int]
     MARKS_FIELD_NUMBER: _ClassVar[int]
+    NEEDS_LOGIN_FIELD_NUMBER: _ClassVar[int]
     text: str
     sources: _containers.RepeatedCompositeFieldContainer[Source]
     is_error: bool
     marks: _containers.RepeatedCompositeFieldContainer[Mark]
-    def __init__(self, text: _Optional[str] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., is_error: bool = ..., marks: _Optional[_Iterable[_Union[Mark, _Mapping]]] = ...) -> None: ...
+    needs_login: bool
+    def __init__(self, text: _Optional[str] = ..., sources: _Optional[_Iterable[_Union[Source, _Mapping]]] = ..., is_error: bool = ..., marks: _Optional[_Iterable[_Union[Mark, _Mapping]]] = ..., needs_login: bool = ...) -> None: ...
