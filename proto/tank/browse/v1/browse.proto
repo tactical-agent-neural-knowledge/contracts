@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package tank.browse.v1;
+
+import "google/protobuf/timestamp.proto";
+import "tank/apps/v1/apps.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/browse/v1;browsev1";
+
+// Connect a webpage (Robby, 2026-11-11): a page opened in a Neural conversation, run by TANK in
+// an isolated browser that reaches only the public internet, and shown in the chat the way a
+// phone camera is. Neural reads it, points at things on it ("show me how to find these
+// settings") and navigates it: links, scrolling, back, typing into a search box. Anything
+// that submits or changes something (signing in, saving, buying, deleting, sending) Neural
+// marks and waits for the person to tap. Nothing a person types is stored; the browser and
+// its cookies are gone when the page is closed. In a shared conversation everyone sees the
+// page and only the person who opened it drives it.
+service BrowseService {
+  rpc OpenPage(OpenPageRequest) returns (OpenPageResponse);
+  rpc ClosePage(ClosePageRequest) returns (ClosePageResponse);
+  // The conversation's open pages.
+  rpc ListPages(ListPagesRequest) returns (ListPagesResponse);
+  // What the person does on the page: tap, type, scroll, back, go to an address. Only the
+  // page's owner may act.
+  rpc Act(ActRequest) returns (ActResponse);
+  // The page's screen as it changes (about once a second while it moves), with Neural's
+  // marks on it. Any member of the conversation may watch.
+  rpc WatchPage(WatchPageRequest) returns (stream WatchPageResponse);
+}
+
+message Page {
+  string id = 1;
+  string conversation_id = 2;
+  string url = 3;
+  string title = 4;
+  string owner_id = 5;
+  string owner_name = 6;
+  google.protobuf.Timestamp opened_at = 7;
+  // "loading", "ready", "closed", or "failed" (with reason).
+  string state = 8;
+  string reason = 9;
+}
+
+message OpenPageRequest {
+  string conversation_id = 1;
+  // An http(s) address on the public internet.
+  string url = 2;
+  // The person's screen, so the page is laid out for it: a phone gets the phone site.
+  int32 viewport_width = 3;
+  int32 viewport_height = 4;
+}
+message OpenPageResponse {
+  Page page = 1;
+}
+message ClosePageRequest {
+  string page_id = 1;
+}
+message ClosePageResponse {}
+message ListPagesRequest {
+  string conversation_id = 1;
+}
+message ListPagesResponse {
+  repeated Page pages = 1;
+}
+
+message ActRequest {
+  string page_id = 1;
+  oneof action {
+    // Where on the frame, as fractions of its width and height (0..1).
+    Point tap = 2;
+    // Text typed into whatever has focus.
+    string type = 3;
+    // "Enter", "Tab", "Escape", "Backspace".
+    string key = 4;
+    // Pixels down (negative is up), in the page's own pixels.
+    int32 scroll = 5;
+    bool back = 6;
+    bool forward = 7;
+    string navigate = 8;
+    bool reload = 9;
+  }
+}
+message Point {
+  double x = 1;
+  double y = 2;
+}
+message ActResponse {
+  Page page = 1;
+}
+
+message WatchPageRequest {
+  string page_id = 1;
+}
+message WatchPageResponse {
+  oneof event {
+    Frame frame = 1;
+    // The page itself changed (address, title, state).
+    Page page = 2;
+  }
+}
+// Frame is the page's screen at one moment.
+message Frame {
+  bytes jpeg = 1;
+  int32 width = 2;
+  int32 height = 3;
+  string url = 4;
+  string title = 5;
+  google.protobuf.Timestamp at = 6;
+  // Neural's marks on this frame: kind "box" (x, y, w, h set) rings what to look at or tap.
+  repeated tank.apps.v1.Mark marks = 7;
+  // Neural is waiting for the person to tap the marked box (it would submit or change
+  // something), with the sentence to show.
+  string waiting_for_tap = 8;
+}
