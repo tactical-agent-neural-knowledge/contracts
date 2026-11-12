@@ -14,6 +14,12 @@ message RichTextBlock {
     RichTextCode code = 2;
     RichTextQuote quote = 3;
     RichTextList list = 4;
+    // Added 2026-11-12 so an agent's Markdown (headings, GitHub tables, rules) has a
+    // shape. A client that predates them sees an unset kind and draws nothing, so
+    // the server only emits them once every client renders them.
+    RichTextHeading heading = 5;
+    RichTextTable table = 6;
+    RichTextDivider divider = 7;
   }
 }
 
@@ -97,3 +103,35 @@ message RichTextList {
   int32 indent = 2;
   repeated RichTextSection items = 3;
 }
+
+// A heading line; level 1 to 6, as in Markdown's # to ######.
+message RichTextHeading {
+  int32 level = 1;
+  repeated RichTextElement elements = 2;
+}
+
+enum TableAlign {
+  TABLE_ALIGN_UNSPECIFIED = 0;
+  TABLE_ALIGN_LEFT = 1;
+  TABLE_ALIGN_CENTER = 2;
+  TABLE_ALIGN_RIGHT = 3;
+}
+
+// A table: a header row, the rows under it, and each column's alignment
+// (align[i] is column i; a missing entry is unspecified, drawn as left).
+message RichTextTable {
+  RichTextTableRow header = 1;
+  repeated RichTextTableRow rows = 2;
+  repeated TableAlign align = 3;
+}
+
+message RichTextTableRow {
+  repeated RichTextTableCell cells = 1;
+}
+
+message RichTextTableCell {
+  repeated RichTextElement elements = 1;
+}
+
+// A horizontal rule between blocks.
+message RichTextDivider {}
