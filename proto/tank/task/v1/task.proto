@@ -1,0 +1,220 @@
+syntax = "proto3";
+
+package tank.task.v1;
+
+import "google/protobuf/timestamp.proto";
+import "tank/channel/v1/channel.proto";
+
+// Tasks: one piece of work somebody asked for, in a Tread, moving through stages
+// (docs/tasks/PLAN.md, 2026-11-12). Runs move tasks; people add, start, confirm,
+// send back and retry. A task never reaches DONE without a person.
+
+enum TaskStage {
+  TASK_STAGE_UNSPECIFIED = 0;
+  TASK_STAGE_QUEUED = 1;
+  TASK_STAGE_IN_PROGRESS = 2;
+  TASK_STAGE_READY_TO_CHECK = 3;
+  TASK_STAGE_DONE = 4;
+  TASK_STAGE_STUCK = 5;
+}
+
+// One line of the checklist against the ask, with whether TANK's record says it was met.
+message ProofCheck {
+  string text = 1;
+  bool met = 2;
+}
+
+// What the run showed when it said it was finished: a live link or a screenshot and a
+// checklist against the ask. Never the model's word alone.
+message TaskProof {
+  string live_url = 1;           // the page TANK opened, when the product is hosted
+  string screenshot_file_id = 2; // a picture the run took, readable by the Tread
+  repeated ProofCheck checklist = 3;
+  string pull_request_url = 4;
+  google.protobuf.Timestamp at = 5;
+}
+
+// Who hears about a task when it reaches a stage.
+message TaskNotify {
+  TaskStage stage = 1;
+  string user_id = 2;
+  // Set on read: the rule comes from Settings → Tasks and cannot be removed here.
+  bool from_workspace = 3;
+}
+
+message Task {
+  string id = 1;
+  string workspace_id = 2;
+  string channel_id = 3;
+  // The thread the task's conversation and runs live in; empty until it starts.
+  string thread_root_id = 4;
+  string title = 5;   // the ask, in the asker's words
+  string details = 6;
+  TaskStage stage = 7;
+  string created_by = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+  // When it entered its stage.
+  google.protobuf.Timestamp stage_at = 11;
+  string run_id = 12;   // the newest run on it, the core's id
+  // One plain line while IN_PROGRESS ("Working on the login page · 3 of 5").
+  string progress = 13;
+  TaskProof proof = 14; // READY_TO_CHECK and DONE
+  string checked_by = 15;
+  google.protobuf.Timestamp checked_at = 16;
+  string stuck_reason = 17; // STUCK: one sentence
+  // The task's own picks plus the workspace's rules (from_workspace).
+  repeated TaskNotify notify = 18;
+  // The asker hears about READY_TO_CHECK and STUCK unless they turned it off.
+  bool asker_muted = 19;
+  // For Command: the Tread's name, so a card can say where it lives.
+  string channel_name = 20;
+}
+
+
+message ListTasksRequest {
+  string workspace_id = 1;
+  string channel_id = 2;  // one Tread; empty = every Tread the caller can see (Command)
+  repeated TaskStage stages = 3; // empty = all
+  string asked_by = 4;    // only tasks this person asked for
+  int32 limit = 5;        // 0 = 500
+}
+message ListTasksResponse {
+  repeated Task tasks = 1;
+  // The workspace has an agent, so Start does something. Free workspaces add and
+  // track tasks; only an agent moves them.
+  bool has_agent = 2;
+  int32 ready_to_check = 3; // count for Home's badge, independent of filters
+}
+
+message GetTaskRequest {
+  string task_id = 1;
+}
+message GetTaskResponse {
+  Task task = 1;
+}
+
+message CreateTaskRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string title = 3;
+  string details = 4;
+  bool start_now = 5;
+  repeated TaskNotify notify = 6;
+}
+message CreateTaskResponse {
+  Task task = 1;
+}
+
+// Command's Add task: a new Tread whose goal is the title, with the task in it and the
+// caller as its first member.
+message CreateTaskWithChannelRequest {
+  string workspace_id = 1;
+  string title = 2;
+  string details = 3;
+  bool start_now = 4;
+  repeated TaskNotify notify = 5;
+}
+message CreateTaskWithChannelResponse {
+  Task task = 1;
+  tank.channel.v1.Channel channel = 2;
+}
+
+message StartTaskRequest {
+  string task_id = 1;
+}
+message StartTaskResponse {
+  Task task = 1;
+}
+
+// Looks right: READY_TO_CHECK → DONE, by anyone in the Tread.
+message ConfirmTaskRequest {
+  string task_id = 1;
+}
+message ConfirmTaskResponse {
+  Task task = 1;
+}
+
+// Not yet: one sentence, posted in the task's thread as the caller, steers or continues
+// the run, and the task goes back to IN_PROGRESS.
+message SendBackTaskRequest {
+  string task_id = 1;
+  string text = 2;
+}
+message SendBackTaskResponse {
+  Task task = 1;
+}
+
+// Try again on STUCK: a continuation of the run that stopped.
+message RetryTaskRequest {
+  string task_id = 1;
+}
+message RetryTaskResponse {
+  Task task = 1;
+}
+
+// Replace the task's own picks (workspace rules are not affected).
+message SetTaskNotifyRequest {
+  string task_id = 1;
+  repeated TaskNotify notify = 2;
+  optional bool asker_muted = 3;
+}
+message SetTaskNotifyResponse {
+  Task task = 1;
+}
+
+// Settings → Tasks: rules every task in the workspace follows.
+message GetTaskSettingsRequest {
+  string workspace_id = 1;
+}
+message GetTaskSettingsResponse {
+  repeated TaskNotify notify = 1;
+  bool can_manage = 2; // owner or admin
+}
+message SetTaskSettingsRequest {
+  string workspace_id = 1;
+  repeated TaskNotify notify = 2;
+}
+message SetTaskSettingsResponse {
+  repeated TaskNotify notify = 1;
+}
+
+// What a run did to its task, from the control plane.
+enum TaskRunEvent {
+  TASK_RUN_EVENT_UNSPECIFIED = 0;
+  TASK_RUN_EVENT_STARTED = 1;  // → IN_PROGRESS (creates the task for an @tank ask)
+  TASK_RUN_EVENT_WAITING = 2;  // the Tread asks before building: → QUEUED until a yes
+  TASK_RUN_EVENT_PROGRESS = 3; // the progress line changed
+  TASK_RUN_EVENT_READY = 4;    // finished with proof: → READY_TO_CHECK
+  TASK_RUN_EVENT_STUCK = 5;    // failed, stopped, out of agent time, or at a guardrail
+}
+
+// Control plane only: the run's own token or the control plane's bot token with
+// agent:run, authorised as AgentService.SetStatus is.
+message RecordTaskRunRequest {
+  string run_id = 1;  // the core's run id
+  string task_id = 2; // empty: the thread's open task, or a new one made from `ask`
+  TaskRunEvent event = 3;
+  string ask = 4;     // STARTED/WAITING with no task: the person's words, as the title
+  TaskProof proof = 5;
+  string reason = 6;  // STUCK: one sentence a person reads
+  string progress = 7;
+}
+message RecordTaskRunResponse {
+  Task task = 1;
+}
+
+service TaskService {
+  rpc ListTasks(ListTasksRequest) returns (ListTasksResponse);
+  rpc GetTask(GetTaskRequest) returns (GetTaskResponse);
+  rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse);
+  rpc CreateTaskWithChannel(CreateTaskWithChannelRequest) returns (CreateTaskWithChannelResponse);
+  rpc StartTask(StartTaskRequest) returns (StartTaskResponse);
+  rpc ConfirmTask(ConfirmTaskRequest) returns (ConfirmTaskResponse);
+  rpc SendBackTask(SendBackTaskRequest) returns (SendBackTaskResponse);
+  rpc RetryTask(RetryTaskRequest) returns (RetryTaskResponse);
+  rpc SetTaskNotify(SetTaskNotifyRequest) returns (SetTaskNotifyResponse);
+  rpc GetTaskSettings(GetTaskSettingsRequest) returns (GetTaskSettingsResponse);
+  rpc SetTaskSettings(SetTaskSettingsRequest) returns (SetTaskSettingsResponse);
+  rpc RecordTaskRun(RecordTaskRunRequest) returns (RecordTaskRunResponse);
+}

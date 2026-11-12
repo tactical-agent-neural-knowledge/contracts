@@ -1656,7 +1656,7 @@ class PollInboxResponse(_message.Message):
     def __init__(self, items: _Optional[_Iterable[_Union[InboxItem, _Mapping]]] = ...) -> None: ...
 
 class StartRunRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "instructions", "mode", "repo", "skip_neural_knowledge", "envelope_usd")
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "instructions", "mode", "repo", "skip_neural_knowledge", "envelope_usd", "task_id", "continue_run_id", "note")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
@@ -1667,6 +1667,9 @@ class StartRunRequest(_message.Message):
     REPO_FIELD_NUMBER: _ClassVar[int]
     SKIP_NEURAL_KNOWLEDGE_FIELD_NUMBER: _ClassVar[int]
     ENVELOPE_USD_FIELD_NUMBER: _ClassVar[int]
+    TASK_ID_FIELD_NUMBER: _ClassVar[int]
+    CONTINUE_RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     thread_root_id: str
@@ -1677,7 +1680,10 @@ class StartRunRequest(_message.Message):
     repo: str
     skip_neural_knowledge: bool
     envelope_usd: float
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., instructions: _Optional[str] = ..., mode: _Optional[str] = ..., repo: _Optional[str] = ..., skip_neural_knowledge: bool = ..., envelope_usd: _Optional[float] = ...) -> None: ...
+    task_id: str
+    continue_run_id: str
+    note: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., instructions: _Optional[str] = ..., mode: _Optional[str] = ..., repo: _Optional[str] = ..., skip_neural_knowledge: bool = ..., envelope_usd: _Optional[float] = ..., task_id: _Optional[str] = ..., continue_run_id: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
 
 class StartRunResponse(_message.Message):
     __slots__ = ("run",)
