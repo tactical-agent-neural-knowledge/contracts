@@ -641,13 +641,25 @@ message BooksRecordExpenseRequest {
   int64 amount_cents = 3;
   string notes = 4;
   string receipt_file_id = 5;                    // from list_attachments, when it came from a receipt
+  string date = 6;                               // YYYY-MM-DD the money went out (a receipt)
+  string period_start = 7;                       // YYYY-MM-DD, first day a bill or usage figure covers
+  string period_end = 8;                         // YYYY-MM-DD, last day it covers (inclusive)
+  string source = 9;                             // e.g. aws-cost-explorer; with period + category, the revise key
 }
-message BooksRecordExpenseResponse { tank.books.v1.Expense expense = 1; }
+message BooksRecordExpenseResponse {
+  tank.books.v1.Expense expense = 1;
+  string outcome = 2;                            // booked | revised | unchanged
+}
+message BooksListExpensesRequest {
+  int32 days = 1;                                // 0 = 90
+}
+message BooksListExpensesResponse { repeated tank.books.v1.Expense expenses = 1; }
 message BooksRecordPaymentRequest {
   string invoice_number = 1;                     // e.g. INV-0007
   int64 amount_cents = 2;                        // 0 = what is still due
   string method = 3;
   string reference = 4;
+  string evidence_message_id = 5;                // the thread message where a person said the money arrived
 }
 message BooksRecordPaymentResponse { tank.books.v1.Invoice invoice = 1; }
 message BooksReportRequest {
@@ -1118,6 +1130,7 @@ service RunnerService {
   rpc BooksCreateInvoice(BooksCreateInvoiceRequest) returns (BooksCreateInvoiceResponse);
   rpc BooksRecordExpense(BooksRecordExpenseRequest) returns (BooksRecordExpenseResponse);
   rpc BooksRecordPayment(BooksRecordPaymentRequest) returns (BooksRecordPaymentResponse);
+  rpc BooksListExpenses(BooksListExpensesRequest) returns (BooksListExpensesResponse);
   rpc BooksReport(BooksReportRequest) returns (BooksReportResponse);
   rpc SocialAccounts(SocialAccountsRequest) returns (SocialAccountsResponse);
   rpc SocialCreatePost(SocialCreatePostRequest) returns (SocialCreatePostResponse);
