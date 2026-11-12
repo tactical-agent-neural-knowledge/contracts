@@ -410,18 +410,20 @@ class GetSettingsResponse(_message.Message):
     def __init__(self, settings: _Optional[_Union[Settings, _Mapping]] = ...) -> None: ...
 
 class Settings(_message.Message):
-    __slots__ = ("instructions", "model_label", "available", "launch_at", "defaults")
+    __slots__ = ("instructions", "model_label", "available", "launch_at", "defaults", "training")
     INSTRUCTIONS_FIELD_NUMBER: _ClassVar[int]
     MODEL_LABEL_FIELD_NUMBER: _ClassVar[int]
     AVAILABLE_FIELD_NUMBER: _ClassVar[int]
     LAUNCH_AT_FIELD_NUMBER: _ClassVar[int]
     DEFAULTS_FIELD_NUMBER: _ClassVar[int]
+    TRAINING_FIELD_NUMBER: _ClassVar[int]
     instructions: str
     model_label: str
     available: bool
     launch_at: _timestamp_pb2.Timestamp
     defaults: Defaults
-    def __init__(self, instructions: _Optional[str] = ..., model_label: _Optional[str] = ..., available: bool = ..., launch_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., defaults: _Optional[_Union[Defaults, _Mapping]] = ...) -> None: ...
+    training: bool
+    def __init__(self, instructions: _Optional[str] = ..., model_label: _Optional[str] = ..., available: bool = ..., launch_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., defaults: _Optional[_Union[Defaults, _Mapping]] = ..., training: bool = ...) -> None: ...
 
 class Defaults(_message.Message):
     __slots__ = ("app_ids", "devices", "page_urls")
@@ -446,14 +448,16 @@ class DefaultDevice(_message.Message):
     def __init__(self, kind: _Optional[str] = ..., sensors: _Optional[_Iterable[str]] = ..., bluetooth_id: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
 
 class UpdateSettingsRequest(_message.Message):
-    __slots__ = ("instructions", "defaults", "set_defaults")
+    __slots__ = ("instructions", "defaults", "set_defaults", "training")
     INSTRUCTIONS_FIELD_NUMBER: _ClassVar[int]
     DEFAULTS_FIELD_NUMBER: _ClassVar[int]
     SET_DEFAULTS_FIELD_NUMBER: _ClassVar[int]
+    TRAINING_FIELD_NUMBER: _ClassVar[int]
     instructions: str
     defaults: Defaults
     set_defaults: bool
-    def __init__(self, instructions: _Optional[str] = ..., defaults: _Optional[_Union[Defaults, _Mapping]] = ..., set_defaults: bool = ...) -> None: ...
+    training: bool
+    def __init__(self, instructions: _Optional[str] = ..., defaults: _Optional[_Union[Defaults, _Mapping]] = ..., set_defaults: bool = ..., training: bool = ...) -> None: ...
 
 class UpdateSettingsResponse(_message.Message):
     __slots__ = ("settings",)

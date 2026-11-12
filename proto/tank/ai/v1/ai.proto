@@ -344,6 +344,9 @@ message Settings {
   // What every new conversation starts with (Robby, 2026-11-11: "if I want datum in every
   // new conversation, I can select it in settings … same thing for devices and webpages").
   Defaults defaults = 5;
+  // Whether this person's Neural chats may help train TANK Neural (ai_settings.training). On
+  // unless they turn it off.
+  bool training = 6;
 }
 message Defaults {
   // Apps connected to every new conversation by the server when it is made.
@@ -368,6 +371,8 @@ message UpdateSettingsRequest {
   // sends only instructions never clears them.
   Defaults defaults = 2;
   bool set_defaults = 3;
+  // Changes training consent only when present, so an older client never turns it off.
+  optional bool training = 4;
 }
 message UpdateSettingsResponse {
   Settings settings = 1;
