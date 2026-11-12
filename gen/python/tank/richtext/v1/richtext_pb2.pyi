@@ -157,14 +157,16 @@ class RichTextQuote(_message.Message):
     def __init__(self, elements: _Optional[_Iterable[_Union[RichTextElement, _Mapping]]] = ...) -> None: ...
 
 class RichTextList(_message.Message):
-    __slots__ = ("ordered", "indent", "items")
+    __slots__ = ("ordered", "indent", "items", "start")
     ORDERED_FIELD_NUMBER: _ClassVar[int]
     INDENT_FIELD_NUMBER: _ClassVar[int]
     ITEMS_FIELD_NUMBER: _ClassVar[int]
+    START_FIELD_NUMBER: _ClassVar[int]
     ordered: bool
     indent: int
     items: _containers.RepeatedCompositeFieldContainer[RichTextSection]
-    def __init__(self, ordered: bool = ..., indent: _Optional[int] = ..., items: _Optional[_Iterable[_Union[RichTextSection, _Mapping]]] = ...) -> None: ...
+    start: int
+    def __init__(self, ordered: bool = ..., indent: _Optional[int] = ..., items: _Optional[_Iterable[_Union[RichTextSection, _Mapping]]] = ..., start: _Optional[int] = ...) -> None: ...
 
 class RichTextHeading(_message.Message):
     __slots__ = ("level", "elements")

@@ -102,6 +102,9 @@ message RichTextList {
   bool ordered = 1;
   int32 indent = 2;
   repeated RichTextSection items = 3;
+  // The first item's number in an ordered list; 0 means 1. A Markdown list
+  // that a nested list splits into several blocks keeps counting through it.
+  int32 start = 4;
 }
 
 // A heading line; level 1 to 6, as in Markdown's # to ######.
