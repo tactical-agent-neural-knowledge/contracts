@@ -101,6 +101,8 @@ const (
 	AiServiceMarkReadProcedure = "/tank.ai.v1.AiService/MarkRead"
 	// AiServiceSetMutedProcedure is the fully-qualified name of the AiService's SetMuted RPC.
 	AiServiceSetMutedProcedure = "/tank.ai.v1.AiService/SetMuted"
+	// AiServiceTranscribeProcedure is the fully-qualified name of the AiService's Transcribe RPC.
+	AiServiceTranscribeProcedure = "/tank.ai.v1.AiService/Transcribe"
 )
 
 // AiServiceClient is a client for the tank.ai.v1.AiService service.
@@ -148,6 +150,10 @@ type AiServiceClient interface {
 	// The caller has read the conversation up to now.
 	MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error)
 	SetMuted(context.Context, *connect.Request[v1.SetMutedRequest]) (*connect.Response[v1.SetMutedResponse], error)
+	// Voice in the composer: a short recording the person made, written out as text by TANK's
+	// own hearing model (never another company's, never the device's dictation). The words go
+	// back into the composer for the person to edit and send; nothing is sent or kept.
+	Transcribe(context.Context, *connect.Request[v1.TranscribeRequest]) (*connect.Response[v1.TranscribeResponse], error)
 }
 
 // NewAiServiceClient constructs a client for the tank.ai.v1.AiService service. By default, it uses
@@ -335,6 +341,12 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("SetMuted")),
 			connect.WithClientOptions(opts...),
 		),
+		transcribe: connect.NewClient[v1.TranscribeRequest, v1.TranscribeResponse](
+			httpClient,
+			baseURL+AiServiceTranscribeProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("Transcribe")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -369,6 +381,7 @@ type aiServiceClient struct {
 	setTyping          *connect.Client[v1.SetTypingRequest, v1.SetTypingResponse]
 	markRead           *connect.Client[v1.MarkReadRequest, v1.MarkReadResponse]
 	setMuted           *connect.Client[v1.SetMutedRequest, v1.SetMutedResponse]
+	transcribe         *connect.Client[v1.TranscribeRequest, v1.TranscribeResponse]
 }
 
 // ListConversations calls tank.ai.v1.AiService.ListConversations.
@@ -516,6 +529,11 @@ func (c *aiServiceClient) SetMuted(ctx context.Context, req *connect.Request[v1.
 	return c.setMuted.CallUnary(ctx, req)
 }
 
+// Transcribe calls tank.ai.v1.AiService.Transcribe.
+func (c *aiServiceClient) Transcribe(ctx context.Context, req *connect.Request[v1.TranscribeRequest]) (*connect.Response[v1.TranscribeResponse], error) {
+	return c.transcribe.CallUnary(ctx, req)
+}
+
 // AiServiceHandler is an implementation of the tank.ai.v1.AiService service.
 type AiServiceHandler interface {
 	ListConversations(context.Context, *connect.Request[v1.ListConversationsRequest]) (*connect.Response[v1.ListConversationsResponse], error)
@@ -561,6 +579,10 @@ type AiServiceHandler interface {
 	// The caller has read the conversation up to now.
 	MarkRead(context.Context, *connect.Request[v1.MarkReadRequest]) (*connect.Response[v1.MarkReadResponse], error)
 	SetMuted(context.Context, *connect.Request[v1.SetMutedRequest]) (*connect.Response[v1.SetMutedResponse], error)
+	// Voice in the composer: a short recording the person made, written out as text by TANK's
+	// own hearing model (never another company's, never the device's dictation). The words go
+	// back into the composer for the person to edit and send; nothing is sent or kept.
+	Transcribe(context.Context, *connect.Request[v1.TranscribeRequest]) (*connect.Response[v1.TranscribeResponse], error)
 }
 
 // NewAiServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -744,6 +766,12 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("SetMuted")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServiceTranscribeHandler := connect.NewUnaryHandler(
+		AiServiceTranscribeProcedure,
+		svc.Transcribe,
+		connect.WithSchema(aiServiceMethods.ByName("Transcribe")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.ai.v1.AiService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AiServiceListConversationsProcedure:
@@ -804,6 +832,8 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceMarkReadHandler.ServeHTTP(w, r)
 		case AiServiceSetMutedProcedure:
 			aiServiceSetMutedHandler.ServeHTTP(w, r)
+		case AiServiceTranscribeProcedure:
+			aiServiceTranscribeHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -927,4 +957,8 @@ func (UnimplementedAiServiceHandler) MarkRead(context.Context, *connect.Request[
 
 func (UnimplementedAiServiceHandler) SetMuted(context.Context, *connect.Request[v1.SetMutedRequest]) (*connect.Response[v1.SetMutedResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.SetMuted is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) Transcribe(context.Context, *connect.Request[v1.TranscribeRequest]) (*connect.Response[v1.TranscribeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.Transcribe is not implemented"))
 }

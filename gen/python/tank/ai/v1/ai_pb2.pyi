@@ -521,6 +521,24 @@ class GetUsageResponse(_message.Message):
     model_label: str
     def __init__(self, days: _Optional[_Iterable[_Union[UsageDay, _Mapping]]] = ..., messages: _Optional[int] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., cost_micro_usd: _Optional[int] = ..., today_messages: _Optional[int] = ..., month_cost_micro_usd: _Optional[int] = ..., all_time_messages: _Optional[int] = ..., conversations: _Optional[_Iterable[_Union[ConversationUsage, _Mapping]]] = ..., model_label: _Optional[str] = ...) -> None: ...
 
+class TranscribeRequest(_message.Message):
+    __slots__ = ("audio", "mime_type", "language")
+    AUDIO_FIELD_NUMBER: _ClassVar[int]
+    MIME_TYPE_FIELD_NUMBER: _ClassVar[int]
+    LANGUAGE_FIELD_NUMBER: _ClassVar[int]
+    audio: bytes
+    mime_type: str
+    language: str
+    def __init__(self, audio: _Optional[bytes] = ..., mime_type: _Optional[str] = ..., language: _Optional[str] = ...) -> None: ...
+
+class TranscribeResponse(_message.Message):
+    __slots__ = ("text", "duration_ms")
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    DURATION_MS_FIELD_NUMBER: _ClassVar[int]
+    text: str
+    duration_ms: int
+    def __init__(self, text: _Optional[str] = ..., duration_ms: _Optional[int] = ...) -> None: ...
+
 class ListAppsRequest(_message.Message):
     __slots__ = ("query",)
     QUERY_FIELD_NUMBER: _ClassVar[int]
