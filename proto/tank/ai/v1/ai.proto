@@ -165,6 +165,27 @@ message Message {
   string author_id = 14;
   string author_name = 15;
   string author_avatar_url = 16;
+  // Emoji people put on the message, people's and Neural's alike, in the order each emoji was
+  // first used (Robby, 2026-11-12: "I need to be able to add an emoji as a reaction").
+  repeated Reaction reactions = 17;
+}
+
+// Reaction is one emoji on a message and who put it there, as reactions show in Treads.
+message Reaction {
+  // A standard emoji ("👍"), or a workspace's custom emoji as ":name:" in a workspace's
+  // conversation.
+  string emoji = 1;
+  int32 count = 2;
+  // The caller put it there. On a Watch event it is worked out for each person watching.
+  bool mine = 3;
+  // Everyone who put it there, in the order they did.
+  repeated string user_ids = 4;
+}
+
+// MessageReactions is a message's reactions as they are now, after someone changed them.
+message MessageReactions {
+  string message_id = 1;
+  repeated Reaction reactions = 2;
 }
 
 message ListConversationsRequest {
@@ -466,6 +487,27 @@ service AiService {
   // own hearing model (never another company's, never the device's dictation). The words go
   // back into the composer for the person to edit and send; nothing is sent or kept.
   rpc Transcribe(TranscribeRequest) returns (TranscribeResponse);
+  // Emoji reactions on any message in a conversation the caller is in. A reaction is quiet: it
+  // never asks Neural for a reply and never sends a notification. Everyone watching gets
+  // WatchResponse.reactions. Adding one already there, or removing one that is not, is no error.
+  rpc AddReaction(AddReactionRequest) returns (AddReactionResponse);
+  rpc RemoveReaction(RemoveReactionRequest) returns (RemoveReactionResponse);
+}
+
+message AddReactionRequest {
+  string message_id = 1;
+  string emoji = 2;
+}
+message AddReactionResponse {
+  // The message's reactions after the change.
+  repeated Reaction reactions = 1;
+}
+message RemoveReactionRequest {
+  string message_id = 1;
+  string emoji = 2;
+}
+message RemoveReactionResponse {
+  repeated Reaction reactions = 1;
 }
 
 // TranscribeRequest is one recording from the composer's microphone, at most two minutes
@@ -582,6 +624,8 @@ message WatchResponse {
     // session id. Everyone in the conversation sees every device's figures and what its camera
     // shows: a client showing that session reads it again (tank.devices.v1 GetSession).
     string device_updated = 9;
+    // Someone added or removed a reaction; the message's reactions as they are now.
+    MessageReactions reactions = 10;
   }
 }
 message ReplyStarted {

@@ -103,6 +103,11 @@ const (
 	AiServiceSetMutedProcedure = "/tank.ai.v1.AiService/SetMuted"
 	// AiServiceTranscribeProcedure is the fully-qualified name of the AiService's Transcribe RPC.
 	AiServiceTranscribeProcedure = "/tank.ai.v1.AiService/Transcribe"
+	// AiServiceAddReactionProcedure is the fully-qualified name of the AiService's AddReaction RPC.
+	AiServiceAddReactionProcedure = "/tank.ai.v1.AiService/AddReaction"
+	// AiServiceRemoveReactionProcedure is the fully-qualified name of the AiService's RemoveReaction
+	// RPC.
+	AiServiceRemoveReactionProcedure = "/tank.ai.v1.AiService/RemoveReaction"
 )
 
 // AiServiceClient is a client for the tank.ai.v1.AiService service.
@@ -154,6 +159,11 @@ type AiServiceClient interface {
 	// own hearing model (never another company's, never the device's dictation). The words go
 	// back into the composer for the person to edit and send; nothing is sent or kept.
 	Transcribe(context.Context, *connect.Request[v1.TranscribeRequest]) (*connect.Response[v1.TranscribeResponse], error)
+	// Emoji reactions on any message in a conversation the caller is in. A reaction is quiet: it
+	// never asks Neural for a reply and never sends a notification. Everyone watching gets
+	// WatchResponse.reactions. Adding one already there, or removing one that is not, is no error.
+	AddReaction(context.Context, *connect.Request[v1.AddReactionRequest]) (*connect.Response[v1.AddReactionResponse], error)
+	RemoveReaction(context.Context, *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error)
 }
 
 // NewAiServiceClient constructs a client for the tank.ai.v1.AiService service. By default, it uses
@@ -347,6 +357,18 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("Transcribe")),
 			connect.WithClientOptions(opts...),
 		),
+		addReaction: connect.NewClient[v1.AddReactionRequest, v1.AddReactionResponse](
+			httpClient,
+			baseURL+AiServiceAddReactionProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("AddReaction")),
+			connect.WithClientOptions(opts...),
+		),
+		removeReaction: connect.NewClient[v1.RemoveReactionRequest, v1.RemoveReactionResponse](
+			httpClient,
+			baseURL+AiServiceRemoveReactionProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("RemoveReaction")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -382,6 +404,8 @@ type aiServiceClient struct {
 	markRead           *connect.Client[v1.MarkReadRequest, v1.MarkReadResponse]
 	setMuted           *connect.Client[v1.SetMutedRequest, v1.SetMutedResponse]
 	transcribe         *connect.Client[v1.TranscribeRequest, v1.TranscribeResponse]
+	addReaction        *connect.Client[v1.AddReactionRequest, v1.AddReactionResponse]
+	removeReaction     *connect.Client[v1.RemoveReactionRequest, v1.RemoveReactionResponse]
 }
 
 // ListConversations calls tank.ai.v1.AiService.ListConversations.
@@ -534,6 +558,16 @@ func (c *aiServiceClient) Transcribe(ctx context.Context, req *connect.Request[v
 	return c.transcribe.CallUnary(ctx, req)
 }
 
+// AddReaction calls tank.ai.v1.AiService.AddReaction.
+func (c *aiServiceClient) AddReaction(ctx context.Context, req *connect.Request[v1.AddReactionRequest]) (*connect.Response[v1.AddReactionResponse], error) {
+	return c.addReaction.CallUnary(ctx, req)
+}
+
+// RemoveReaction calls tank.ai.v1.AiService.RemoveReaction.
+func (c *aiServiceClient) RemoveReaction(ctx context.Context, req *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error) {
+	return c.removeReaction.CallUnary(ctx, req)
+}
+
 // AiServiceHandler is an implementation of the tank.ai.v1.AiService service.
 type AiServiceHandler interface {
 	ListConversations(context.Context, *connect.Request[v1.ListConversationsRequest]) (*connect.Response[v1.ListConversationsResponse], error)
@@ -583,6 +617,11 @@ type AiServiceHandler interface {
 	// own hearing model (never another company's, never the device's dictation). The words go
 	// back into the composer for the person to edit and send; nothing is sent or kept.
 	Transcribe(context.Context, *connect.Request[v1.TranscribeRequest]) (*connect.Response[v1.TranscribeResponse], error)
+	// Emoji reactions on any message in a conversation the caller is in. A reaction is quiet: it
+	// never asks Neural for a reply and never sends a notification. Everyone watching gets
+	// WatchResponse.reactions. Adding one already there, or removing one that is not, is no error.
+	AddReaction(context.Context, *connect.Request[v1.AddReactionRequest]) (*connect.Response[v1.AddReactionResponse], error)
+	RemoveReaction(context.Context, *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error)
 }
 
 // NewAiServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -772,6 +811,18 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("Transcribe")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServiceAddReactionHandler := connect.NewUnaryHandler(
+		AiServiceAddReactionProcedure,
+		svc.AddReaction,
+		connect.WithSchema(aiServiceMethods.ByName("AddReaction")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceRemoveReactionHandler := connect.NewUnaryHandler(
+		AiServiceRemoveReactionProcedure,
+		svc.RemoveReaction,
+		connect.WithSchema(aiServiceMethods.ByName("RemoveReaction")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.ai.v1.AiService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AiServiceListConversationsProcedure:
@@ -834,6 +885,10 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceSetMutedHandler.ServeHTTP(w, r)
 		case AiServiceTranscribeProcedure:
 			aiServiceTranscribeHandler.ServeHTTP(w, r)
+		case AiServiceAddReactionProcedure:
+			aiServiceAddReactionHandler.ServeHTTP(w, r)
+		case AiServiceRemoveReactionProcedure:
+			aiServiceRemoveReactionHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -961,4 +1016,12 @@ func (UnimplementedAiServiceHandler) SetMuted(context.Context, *connect.Request[
 
 func (UnimplementedAiServiceHandler) Transcribe(context.Context, *connect.Request[v1.TranscribeRequest]) (*connect.Response[v1.TranscribeResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.Transcribe is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) AddReaction(context.Context, *connect.Request[v1.AddReactionRequest]) (*connect.Response[v1.AddReactionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.AddReaction is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) RemoveReaction(context.Context, *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.RemoveReaction is not implemented"))
 }
