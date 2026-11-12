@@ -453,6 +453,28 @@ service AiService {
   // The caller has read the conversation up to now.
   rpc MarkRead(MarkReadRequest) returns (MarkReadResponse);
   rpc SetMuted(SetMutedRequest) returns (SetMutedResponse);
+  // Voice in the composer: a short recording the person made, written out as text by TANK's
+  // own hearing model (never another company's, never the device's dictation). The words go
+  // back into the composer for the person to edit and send; nothing is sent or kept.
+  rpc Transcribe(TranscribeRequest) returns (TranscribeResponse);
+}
+
+// TranscribeRequest is one recording from the composer's microphone, at most two minutes
+// and 10 MB (larger is refused with invalid_argument).
+message TranscribeRequest {
+  // The recording as the client made it: audio/webm or audio/ogg (browsers), audio/mp4 or
+  // audio/m4a (iOS, Safari), audio/wav, audio/3gpp or audio/aac (Android).
+  bytes audio = 1;
+  string mime_type = 2;
+  // A hint for the hearing model, BCP 47 ("en", "en-US"); empty lets it tell.
+  string language = 3;
+}
+
+message TranscribeResponse {
+  // What was said; empty when nothing could be heard.
+  string text = 1;
+  // How long the recording was, in milliseconds, as the server measured it.
+  int32 duration_ms = 2;
 }
 
 message ListAppsRequest {
