@@ -158,7 +158,7 @@ class Attachment(_message.Message):
     def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., data: _Optional[bytes] = ..., size: _Optional[int] = ..., file_id: _Optional[str] = ...) -> None: ...
 
 class Message(_message.Message):
-    __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of", "suggestions", "offers", "author_id", "author_name", "author_avatar_url")
+    __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of", "suggestions", "offers", "author_id", "author_name", "author_avatar_url", "reactions")
     ID_FIELD_NUMBER: _ClassVar[int]
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
     ROLE_FIELD_NUMBER: _ClassVar[int]
@@ -175,6 +175,7 @@ class Message(_message.Message):
     AUTHOR_ID_FIELD_NUMBER: _ClassVar[int]
     AUTHOR_NAME_FIELD_NUMBER: _ClassVar[int]
     AUTHOR_AVATAR_URL_FIELD_NUMBER: _ClassVar[int]
+    REACTIONS_FIELD_NUMBER: _ClassVar[int]
     id: str
     conversation_id: str
     role: Role
@@ -191,7 +192,28 @@ class Message(_message.Message):
     author_id: str
     author_name: str
     author_avatar_url: str
-    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ..., as_of: _Optional[str] = ..., suggestions: _Optional[_Iterable[str]] = ..., offers: _Optional[_Iterable[_Union[Offer, _Mapping]]] = ..., author_id: _Optional[str] = ..., author_name: _Optional[str] = ..., author_avatar_url: _Optional[str] = ...) -> None: ...
+    reactions: _containers.RepeatedCompositeFieldContainer[Reaction]
+    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ..., as_of: _Optional[str] = ..., suggestions: _Optional[_Iterable[str]] = ..., offers: _Optional[_Iterable[_Union[Offer, _Mapping]]] = ..., author_id: _Optional[str] = ..., author_name: _Optional[str] = ..., author_avatar_url: _Optional[str] = ..., reactions: _Optional[_Iterable[_Union[Reaction, _Mapping]]] = ...) -> None: ...
+
+class Reaction(_message.Message):
+    __slots__ = ("emoji", "count", "mine", "user_ids")
+    EMOJI_FIELD_NUMBER: _ClassVar[int]
+    COUNT_FIELD_NUMBER: _ClassVar[int]
+    MINE_FIELD_NUMBER: _ClassVar[int]
+    USER_IDS_FIELD_NUMBER: _ClassVar[int]
+    emoji: str
+    count: int
+    mine: bool
+    user_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, emoji: _Optional[str] = ..., count: _Optional[int] = ..., mine: bool = ..., user_ids: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class MessageReactions(_message.Message):
+    __slots__ = ("message_id", "reactions")
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    REACTIONS_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    reactions: _containers.RepeatedCompositeFieldContainer[Reaction]
+    def __init__(self, message_id: _Optional[str] = ..., reactions: _Optional[_Iterable[_Union[Reaction, _Mapping]]] = ...) -> None: ...
 
 class ListConversationsRequest(_message.Message):
     __slots__ = ("query", "limit", "workspace_id")
@@ -527,6 +549,34 @@ class GetUsageResponse(_message.Message):
     model_label: str
     def __init__(self, days: _Optional[_Iterable[_Union[UsageDay, _Mapping]]] = ..., messages: _Optional[int] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., cost_micro_usd: _Optional[int] = ..., today_messages: _Optional[int] = ..., month_cost_micro_usd: _Optional[int] = ..., all_time_messages: _Optional[int] = ..., conversations: _Optional[_Iterable[_Union[ConversationUsage, _Mapping]]] = ..., model_label: _Optional[str] = ...) -> None: ...
 
+class AddReactionRequest(_message.Message):
+    __slots__ = ("message_id", "emoji")
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    EMOJI_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    emoji: str
+    def __init__(self, message_id: _Optional[str] = ..., emoji: _Optional[str] = ...) -> None: ...
+
+class AddReactionResponse(_message.Message):
+    __slots__ = ("reactions",)
+    REACTIONS_FIELD_NUMBER: _ClassVar[int]
+    reactions: _containers.RepeatedCompositeFieldContainer[Reaction]
+    def __init__(self, reactions: _Optional[_Iterable[_Union[Reaction, _Mapping]]] = ...) -> None: ...
+
+class RemoveReactionRequest(_message.Message):
+    __slots__ = ("message_id", "emoji")
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    EMOJI_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    emoji: str
+    def __init__(self, message_id: _Optional[str] = ..., emoji: _Optional[str] = ...) -> None: ...
+
+class RemoveReactionResponse(_message.Message):
+    __slots__ = ("reactions",)
+    REACTIONS_FIELD_NUMBER: _ClassVar[int]
+    reactions: _containers.RepeatedCompositeFieldContainer[Reaction]
+    def __init__(self, reactions: _Optional[_Iterable[_Union[Reaction, _Mapping]]] = ...) -> None: ...
+
 class TranscribeRequest(_message.Message):
     __slots__ = ("audio", "mime_type", "language")
     AUDIO_FIELD_NUMBER: _ClassVar[int]
@@ -686,7 +736,7 @@ class WatchRequest(_message.Message):
     def __init__(self, conversation_id: _Optional[str] = ...) -> None: ...
 
 class WatchResponse(_message.Message):
-    __slots__ = ("message", "reply_started", "reply_delta", "conversation", "typing", "suggestions", "devices_changed", "pages_changed", "device_updated")
+    __slots__ = ("message", "reply_started", "reply_delta", "conversation", "typing", "suggestions", "devices_changed", "pages_changed", "device_updated", "reactions")
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     REPLY_STARTED_FIELD_NUMBER: _ClassVar[int]
     REPLY_DELTA_FIELD_NUMBER: _ClassVar[int]
@@ -696,6 +746,7 @@ class WatchResponse(_message.Message):
     DEVICES_CHANGED_FIELD_NUMBER: _ClassVar[int]
     PAGES_CHANGED_FIELD_NUMBER: _ClassVar[int]
     DEVICE_UPDATED_FIELD_NUMBER: _ClassVar[int]
+    REACTIONS_FIELD_NUMBER: _ClassVar[int]
     message: Message
     reply_started: ReplyStarted
     reply_delta: ReplyDelta
@@ -705,7 +756,8 @@ class WatchResponse(_message.Message):
     devices_changed: str
     pages_changed: str
     device_updated: str
-    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ..., reply_started: _Optional[_Union[ReplyStarted, _Mapping]] = ..., reply_delta: _Optional[_Union[ReplyDelta, _Mapping]] = ..., conversation: _Optional[_Union[Conversation, _Mapping]] = ..., typing: _Optional[_Union[Typing, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ..., devices_changed: _Optional[str] = ..., pages_changed: _Optional[str] = ..., device_updated: _Optional[str] = ...) -> None: ...
+    reactions: MessageReactions
+    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ..., reply_started: _Optional[_Union[ReplyStarted, _Mapping]] = ..., reply_delta: _Optional[_Union[ReplyDelta, _Mapping]] = ..., conversation: _Optional[_Union[Conversation, _Mapping]] = ..., typing: _Optional[_Union[Typing, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ..., devices_changed: _Optional[str] = ..., pages_changed: _Optional[str] = ..., device_updated: _Optional[str] = ..., reactions: _Optional[_Union[MessageReactions, _Mapping]] = ...) -> None: ...
 
 class ReplyStarted(_message.Message):
     __slots__ = ("message_id", "asked_by")
