@@ -321,6 +321,12 @@ message AgentUsage {
   // newest first. 1.5 is the starting rate; it grows with what Neural Knowledge saves.
   double rate = 12;
   repeated RateMonth rate_history = 13;
+  // Prepaid agent time (tankctl agent-time prepaid), the same figures as Billing's GetAgentTime.
+  // When prepaid is true the cap no longer applies: runs stop when available reaches zero.
+  bool prepaid = 14;
+  int64 balance_cents = 15;                    // purchased time left; may dip a little below zero
+  int64 available_cents = 16;                  // what runs can still spend: included left + balance
+  int64 included_left_cents = 17;              // of this month's included amount, what is left
 }
 
 // One month's rate for a workspace, locked on the 1st from the month before's measured runs.

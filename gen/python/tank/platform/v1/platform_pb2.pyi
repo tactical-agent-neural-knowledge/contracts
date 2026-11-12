@@ -475,7 +475,7 @@ class AgentRunRow(_message.Message):
     def __init__(self, id: _Optional[str] = ..., agent_name: _Optional[str] = ..., state: _Optional[str] = ..., started_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., ended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., minutes: _Optional[int] = ..., cost_usd: _Optional[float] = ...) -> None: ...
 
 class AgentUsage(_message.Message):
-    __slots__ = ("runs_30d", "failed_30d", "minutes_30d", "cost_usd_30d", "cost_usd_month", "billed_cents_month", "cap_cents", "recent", "agents", "neural_saved_raw_usd_month", "neural_saved_customer_usd_month", "rate", "rate_history")
+    __slots__ = ("runs_30d", "failed_30d", "minutes_30d", "cost_usd_30d", "cost_usd_month", "billed_cents_month", "cap_cents", "recent", "agents", "neural_saved_raw_usd_month", "neural_saved_customer_usd_month", "rate", "rate_history", "prepaid", "balance_cents", "available_cents", "included_left_cents")
     RUNS_30D_FIELD_NUMBER: _ClassVar[int]
     FAILED_30D_FIELD_NUMBER: _ClassVar[int]
     MINUTES_30D_FIELD_NUMBER: _ClassVar[int]
@@ -489,6 +489,10 @@ class AgentUsage(_message.Message):
     NEURAL_SAVED_CUSTOMER_USD_MONTH_FIELD_NUMBER: _ClassVar[int]
     RATE_FIELD_NUMBER: _ClassVar[int]
     RATE_HISTORY_FIELD_NUMBER: _ClassVar[int]
+    PREPAID_FIELD_NUMBER: _ClassVar[int]
+    BALANCE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    AVAILABLE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    INCLUDED_LEFT_CENTS_FIELD_NUMBER: _ClassVar[int]
     runs_30d: int
     failed_30d: int
     minutes_30d: int
@@ -502,7 +506,11 @@ class AgentUsage(_message.Message):
     neural_saved_customer_usd_month: float
     rate: float
     rate_history: _containers.RepeatedCompositeFieldContainer[RateMonth]
-    def __init__(self, runs_30d: _Optional[int] = ..., failed_30d: _Optional[int] = ..., minutes_30d: _Optional[int] = ..., cost_usd_30d: _Optional[float] = ..., cost_usd_month: _Optional[float] = ..., billed_cents_month: _Optional[int] = ..., cap_cents: _Optional[int] = ..., recent: _Optional[_Iterable[_Union[AgentRunRow, _Mapping]]] = ..., agents: _Optional[_Iterable[str]] = ..., neural_saved_raw_usd_month: _Optional[float] = ..., neural_saved_customer_usd_month: _Optional[float] = ..., rate: _Optional[float] = ..., rate_history: _Optional[_Iterable[_Union[RateMonth, _Mapping]]] = ...) -> None: ...
+    prepaid: bool
+    balance_cents: int
+    available_cents: int
+    included_left_cents: int
+    def __init__(self, runs_30d: _Optional[int] = ..., failed_30d: _Optional[int] = ..., minutes_30d: _Optional[int] = ..., cost_usd_30d: _Optional[float] = ..., cost_usd_month: _Optional[float] = ..., billed_cents_month: _Optional[int] = ..., cap_cents: _Optional[int] = ..., recent: _Optional[_Iterable[_Union[AgentRunRow, _Mapping]]] = ..., agents: _Optional[_Iterable[str]] = ..., neural_saved_raw_usd_month: _Optional[float] = ..., neural_saved_customer_usd_month: _Optional[float] = ..., rate: _Optional[float] = ..., rate_history: _Optional[_Iterable[_Union[RateMonth, _Mapping]]] = ..., prepaid: bool = ..., balance_cents: _Optional[int] = ..., available_cents: _Optional[int] = ..., included_left_cents: _Optional[int] = ...) -> None: ...
 
 class RateMonth(_message.Message):
     __slots__ = ("month", "rate", "baseline_usd", "actual_usd", "measured_runs", "saved_usd")
