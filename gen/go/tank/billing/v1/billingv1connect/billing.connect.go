@@ -74,6 +74,9 @@ const (
 	// BillingServiceSetAutoRefillProcedure is the fully-qualified name of the BillingService's
 	// SetAutoRefill RPC.
 	BillingServiceSetAutoRefillProcedure = "/tank.billing.v1.BillingService/SetAutoRefill"
+	// BillingServiceListBillingHistoryProcedure is the fully-qualified name of the BillingService's
+	// ListBillingHistory RPC.
+	BillingServiceListBillingHistoryProcedure = "/tank.billing.v1.BillingService/ListBillingHistory"
 )
 
 // BillingServiceClient is a client for the tank.billing.v1.BillingService service.
@@ -98,6 +101,9 @@ type BillingServiceClient interface {
 	GetAgentTime(context.Context, *connect.Request[v1.GetAgentTimeRequest]) (*connect.Response[v1.GetAgentTimeResponse], error)
 	StartAgentTimeCheckout(context.Context, *connect.Request[v1.StartAgentTimeCheckoutRequest]) (*connect.Response[v1.StartAgentTimeCheckoutResponse], error)
 	SetAutoRefill(context.Context, *connect.Request[v1.SetAutoRefillRequest]) (*connect.Response[v1.SetAutoRefillResponse], error)
+	// Billing history (2026-11-12): every invoice and charge, newest first, from TANK's
+	// own record that the provider's webhooks and hand entries keep. Admins only.
+	ListBillingHistory(context.Context, *connect.Request[v1.ListBillingHistoryRequest]) (*connect.Response[v1.ListBillingHistoryResponse], error)
 }
 
 // NewBillingServiceClient constructs a client for the tank.billing.v1.BillingService service. By
@@ -195,6 +201,12 @@ func NewBillingServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(billingServiceMethods.ByName("SetAutoRefill")),
 			connect.WithClientOptions(opts...),
 		),
+		listBillingHistory: connect.NewClient[v1.ListBillingHistoryRequest, v1.ListBillingHistoryResponse](
+			httpClient,
+			baseURL+BillingServiceListBillingHistoryProcedure,
+			connect.WithSchema(billingServiceMethods.ByName("ListBillingHistory")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -214,6 +226,7 @@ type billingServiceClient struct {
 	getAgentTime             *connect.Client[v1.GetAgentTimeRequest, v1.GetAgentTimeResponse]
 	startAgentTimeCheckout   *connect.Client[v1.StartAgentTimeCheckoutRequest, v1.StartAgentTimeCheckoutResponse]
 	setAutoRefill            *connect.Client[v1.SetAutoRefillRequest, v1.SetAutoRefillResponse]
+	listBillingHistory       *connect.Client[v1.ListBillingHistoryRequest, v1.ListBillingHistoryResponse]
 }
 
 // GetPrice calls tank.billing.v1.BillingService.GetPrice.
@@ -286,6 +299,11 @@ func (c *billingServiceClient) SetAutoRefill(ctx context.Context, req *connect.R
 	return c.setAutoRefill.CallUnary(ctx, req)
 }
 
+// ListBillingHistory calls tank.billing.v1.BillingService.ListBillingHistory.
+func (c *billingServiceClient) ListBillingHistory(ctx context.Context, req *connect.Request[v1.ListBillingHistoryRequest]) (*connect.Response[v1.ListBillingHistoryResponse], error) {
+	return c.listBillingHistory.CallUnary(ctx, req)
+}
+
 // BillingServiceHandler is an implementation of the tank.billing.v1.BillingService service.
 type BillingServiceHandler interface {
 	GetPrice(context.Context, *connect.Request[v1.GetPriceRequest]) (*connect.Response[v1.GetPriceResponse], error)
@@ -308,6 +326,9 @@ type BillingServiceHandler interface {
 	GetAgentTime(context.Context, *connect.Request[v1.GetAgentTimeRequest]) (*connect.Response[v1.GetAgentTimeResponse], error)
 	StartAgentTimeCheckout(context.Context, *connect.Request[v1.StartAgentTimeCheckoutRequest]) (*connect.Response[v1.StartAgentTimeCheckoutResponse], error)
 	SetAutoRefill(context.Context, *connect.Request[v1.SetAutoRefillRequest]) (*connect.Response[v1.SetAutoRefillResponse], error)
+	// Billing history (2026-11-12): every invoice and charge, newest first, from TANK's
+	// own record that the provider's webhooks and hand entries keep. Admins only.
+	ListBillingHistory(context.Context, *connect.Request[v1.ListBillingHistoryRequest]) (*connect.Response[v1.ListBillingHistoryResponse], error)
 }
 
 // NewBillingServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -401,6 +422,12 @@ func NewBillingServiceHandler(svc BillingServiceHandler, opts ...connect.Handler
 		connect.WithSchema(billingServiceMethods.ByName("SetAutoRefill")),
 		connect.WithHandlerOptions(opts...),
 	)
+	billingServiceListBillingHistoryHandler := connect.NewUnaryHandler(
+		BillingServiceListBillingHistoryProcedure,
+		svc.ListBillingHistory,
+		connect.WithSchema(billingServiceMethods.ByName("ListBillingHistory")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.billing.v1.BillingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BillingServiceGetPriceProcedure:
@@ -431,6 +458,8 @@ func NewBillingServiceHandler(svc BillingServiceHandler, opts ...connect.Handler
 			billingServiceStartAgentTimeCheckoutHandler.ServeHTTP(w, r)
 		case BillingServiceSetAutoRefillProcedure:
 			billingServiceSetAutoRefillHandler.ServeHTTP(w, r)
+		case BillingServiceListBillingHistoryProcedure:
+			billingServiceListBillingHistoryHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -494,4 +523,8 @@ func (UnimplementedBillingServiceHandler) StartAgentTimeCheckout(context.Context
 
 func (UnimplementedBillingServiceHandler) SetAutoRefill(context.Context, *connect.Request[v1.SetAutoRefillRequest]) (*connect.Response[v1.SetAutoRefillResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.SetAutoRefill is not implemented"))
+}
+
+func (UnimplementedBillingServiceHandler) ListBillingHistory(context.Context, *connect.Request[v1.ListBillingHistoryRequest]) (*connect.Response[v1.ListBillingHistoryResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.billing.v1.BillingService.ListBillingHistory is not implemented"))
 }
