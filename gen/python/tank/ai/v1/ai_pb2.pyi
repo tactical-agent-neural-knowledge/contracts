@@ -684,7 +684,7 @@ class WatchRequest(_message.Message):
     def __init__(self, conversation_id: _Optional[str] = ...) -> None: ...
 
 class WatchResponse(_message.Message):
-    __slots__ = ("message", "reply_started", "reply_delta", "conversation", "typing", "suggestions", "devices_changed", "pages_changed")
+    __slots__ = ("message", "reply_started", "reply_delta", "conversation", "typing", "suggestions", "devices_changed", "pages_changed", "device_updated")
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     REPLY_STARTED_FIELD_NUMBER: _ClassVar[int]
     REPLY_DELTA_FIELD_NUMBER: _ClassVar[int]
@@ -693,6 +693,7 @@ class WatchResponse(_message.Message):
     SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
     DEVICES_CHANGED_FIELD_NUMBER: _ClassVar[int]
     PAGES_CHANGED_FIELD_NUMBER: _ClassVar[int]
+    DEVICE_UPDATED_FIELD_NUMBER: _ClassVar[int]
     message: Message
     reply_started: ReplyStarted
     reply_delta: ReplyDelta
@@ -701,7 +702,8 @@ class WatchResponse(_message.Message):
     suggestions: Suggestions
     devices_changed: str
     pages_changed: str
-    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ..., reply_started: _Optional[_Union[ReplyStarted, _Mapping]] = ..., reply_delta: _Optional[_Union[ReplyDelta, _Mapping]] = ..., conversation: _Optional[_Union[Conversation, _Mapping]] = ..., typing: _Optional[_Union[Typing, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ..., devices_changed: _Optional[str] = ..., pages_changed: _Optional[str] = ...) -> None: ...
+    device_updated: str
+    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ..., reply_started: _Optional[_Union[ReplyStarted, _Mapping]] = ..., reply_delta: _Optional[_Union[ReplyDelta, _Mapping]] = ..., conversation: _Optional[_Union[Conversation, _Mapping]] = ..., typing: _Optional[_Union[Typing, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ..., devices_changed: _Optional[str] = ..., pages_changed: _Optional[str] = ..., device_updated: _Optional[str] = ...) -> None: ...
 
 class ReplyStarted(_message.Message):
     __slots__ = ("message_id", "asked_by")
