@@ -946,36 +946,60 @@ class BooksCreateInvoiceResponse(_message.Message):
     def __init__(self, invoice: _Optional[_Union[_books_pb2.Invoice, _Mapping]] = ...) -> None: ...
 
 class BooksRecordExpenseRequest(_message.Message):
-    __slots__ = ("vendor", "category", "amount_cents", "notes", "receipt_file_id")
+    __slots__ = ("vendor", "category", "amount_cents", "notes", "receipt_file_id", "date", "period_start", "period_end", "source")
     VENDOR_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
     AMOUNT_CENTS_FIELD_NUMBER: _ClassVar[int]
     NOTES_FIELD_NUMBER: _ClassVar[int]
     RECEIPT_FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    DATE_FIELD_NUMBER: _ClassVar[int]
+    PERIOD_START_FIELD_NUMBER: _ClassVar[int]
+    PERIOD_END_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
     vendor: str
     category: str
     amount_cents: int
     notes: str
     receipt_file_id: str
-    def __init__(self, vendor: _Optional[str] = ..., category: _Optional[str] = ..., amount_cents: _Optional[int] = ..., notes: _Optional[str] = ..., receipt_file_id: _Optional[str] = ...) -> None: ...
+    date: str
+    period_start: str
+    period_end: str
+    source: str
+    def __init__(self, vendor: _Optional[str] = ..., category: _Optional[str] = ..., amount_cents: _Optional[int] = ..., notes: _Optional[str] = ..., receipt_file_id: _Optional[str] = ..., date: _Optional[str] = ..., period_start: _Optional[str] = ..., period_end: _Optional[str] = ..., source: _Optional[str] = ...) -> None: ...
 
 class BooksRecordExpenseResponse(_message.Message):
-    __slots__ = ("expense",)
+    __slots__ = ("expense", "outcome")
     EXPENSE_FIELD_NUMBER: _ClassVar[int]
+    OUTCOME_FIELD_NUMBER: _ClassVar[int]
     expense: _books_pb2.Expense
-    def __init__(self, expense: _Optional[_Union[_books_pb2.Expense, _Mapping]] = ...) -> None: ...
+    outcome: str
+    def __init__(self, expense: _Optional[_Union[_books_pb2.Expense, _Mapping]] = ..., outcome: _Optional[str] = ...) -> None: ...
+
+class BooksListExpensesRequest(_message.Message):
+    __slots__ = ("days",)
+    DAYS_FIELD_NUMBER: _ClassVar[int]
+    days: int
+    def __init__(self, days: _Optional[int] = ...) -> None: ...
+
+class BooksListExpensesResponse(_message.Message):
+    __slots__ = ("expenses",)
+    EXPENSES_FIELD_NUMBER: _ClassVar[int]
+    expenses: _containers.RepeatedCompositeFieldContainer[_books_pb2.Expense]
+    def __init__(self, expenses: _Optional[_Iterable[_Union[_books_pb2.Expense, _Mapping]]] = ...) -> None: ...
 
 class BooksRecordPaymentRequest(_message.Message):
-    __slots__ = ("invoice_number", "amount_cents", "method", "reference")
+    __slots__ = ("invoice_number", "amount_cents", "method", "reference", "evidence_message_id")
     INVOICE_NUMBER_FIELD_NUMBER: _ClassVar[int]
     AMOUNT_CENTS_FIELD_NUMBER: _ClassVar[int]
     METHOD_FIELD_NUMBER: _ClassVar[int]
     REFERENCE_FIELD_NUMBER: _ClassVar[int]
+    EVIDENCE_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     invoice_number: str
     amount_cents: int
     method: str
     reference: str
-    def __init__(self, invoice_number: _Optional[str] = ..., amount_cents: _Optional[int] = ..., method: _Optional[str] = ..., reference: _Optional[str] = ...) -> None: ...
+    evidence_message_id: str
+    def __init__(self, invoice_number: _Optional[str] = ..., amount_cents: _Optional[int] = ..., method: _Optional[str] = ..., reference: _Optional[str] = ..., evidence_message_id: _Optional[str] = ...) -> None: ...
 
 class BooksRecordPaymentResponse(_message.Message):
     __slots__ = ("invoice",)

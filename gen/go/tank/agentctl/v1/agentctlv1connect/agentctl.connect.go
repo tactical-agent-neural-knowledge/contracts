@@ -145,6 +145,9 @@ const (
 	// RunnerServiceBooksRecordPaymentProcedure is the fully-qualified name of the RunnerService's
 	// BooksRecordPayment RPC.
 	RunnerServiceBooksRecordPaymentProcedure = "/tank.agentctl.v1.RunnerService/BooksRecordPayment"
+	// RunnerServiceBooksListExpensesProcedure is the fully-qualified name of the RunnerService's
+	// BooksListExpenses RPC.
+	RunnerServiceBooksListExpensesProcedure = "/tank.agentctl.v1.RunnerService/BooksListExpenses"
 	// RunnerServiceBooksReportProcedure is the fully-qualified name of the RunnerService's BooksReport
 	// RPC.
 	RunnerServiceBooksReportProcedure = "/tank.agentctl.v1.RunnerService/BooksReport"
@@ -484,6 +487,7 @@ type RunnerServiceClient interface {
 	BooksCreateInvoice(context.Context, *connect.Request[v1.BooksCreateInvoiceRequest]) (*connect.Response[v1.BooksCreateInvoiceResponse], error)
 	BooksRecordExpense(context.Context, *connect.Request[v1.BooksRecordExpenseRequest]) (*connect.Response[v1.BooksRecordExpenseResponse], error)
 	BooksRecordPayment(context.Context, *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error)
+	BooksListExpenses(context.Context, *connect.Request[v1.BooksListExpensesRequest]) (*connect.Response[v1.BooksListExpensesResponse], error)
 	BooksReport(context.Context, *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error)
 	SocialAccounts(context.Context, *connect.Request[v1.SocialAccountsRequest]) (*connect.Response[v1.SocialAccountsResponse], error)
 	SocialCreatePost(context.Context, *connect.Request[v1.SocialCreatePostRequest]) (*connect.Response[v1.SocialCreatePostResponse], error)
@@ -763,6 +767,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("BooksRecordPayment")),
 			connect.WithClientOptions(opts...),
 		),
+		booksListExpenses: connect.NewClient[v1.BooksListExpensesRequest, v1.BooksListExpensesResponse](
+			httpClient,
+			baseURL+RunnerServiceBooksListExpensesProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("BooksListExpenses")),
+			connect.WithClientOptions(opts...),
+		),
 		booksReport: connect.NewClient[v1.BooksReportRequest, v1.BooksReportResponse](
 			httpClient,
 			baseURL+RunnerServiceBooksReportProcedure,
@@ -987,6 +997,7 @@ type runnerServiceClient struct {
 	booksCreateInvoice       *connect.Client[v1.BooksCreateInvoiceRequest, v1.BooksCreateInvoiceResponse]
 	booksRecordExpense       *connect.Client[v1.BooksRecordExpenseRequest, v1.BooksRecordExpenseResponse]
 	booksRecordPayment       *connect.Client[v1.BooksRecordPaymentRequest, v1.BooksRecordPaymentResponse]
+	booksListExpenses        *connect.Client[v1.BooksListExpensesRequest, v1.BooksListExpensesResponse]
 	booksReport              *connect.Client[v1.BooksReportRequest, v1.BooksReportResponse]
 	socialAccounts           *connect.Client[v1.SocialAccountsRequest, v1.SocialAccountsResponse]
 	socialCreatePost         *connect.Client[v1.SocialCreatePostRequest, v1.SocialCreatePostResponse]
@@ -1214,6 +1225,11 @@ func (c *runnerServiceClient) BooksRecordPayment(ctx context.Context, req *conne
 	return c.booksRecordPayment.CallUnary(ctx, req)
 }
 
+// BooksListExpenses calls tank.agentctl.v1.RunnerService.BooksListExpenses.
+func (c *runnerServiceClient) BooksListExpenses(ctx context.Context, req *connect.Request[v1.BooksListExpensesRequest]) (*connect.Response[v1.BooksListExpensesResponse], error) {
+	return c.booksListExpenses.CallUnary(ctx, req)
+}
+
 // BooksReport calls tank.agentctl.v1.RunnerService.BooksReport.
 func (c *runnerServiceClient) BooksReport(ctx context.Context, req *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error) {
 	return c.booksReport.CallUnary(ctx, req)
@@ -1420,6 +1436,7 @@ type RunnerServiceHandler interface {
 	BooksCreateInvoice(context.Context, *connect.Request[v1.BooksCreateInvoiceRequest]) (*connect.Response[v1.BooksCreateInvoiceResponse], error)
 	BooksRecordExpense(context.Context, *connect.Request[v1.BooksRecordExpenseRequest]) (*connect.Response[v1.BooksRecordExpenseResponse], error)
 	BooksRecordPayment(context.Context, *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error)
+	BooksListExpenses(context.Context, *connect.Request[v1.BooksListExpensesRequest]) (*connect.Response[v1.BooksListExpensesResponse], error)
 	BooksReport(context.Context, *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error)
 	SocialAccounts(context.Context, *connect.Request[v1.SocialAccountsRequest]) (*connect.Response[v1.SocialAccountsResponse], error)
 	SocialCreatePost(context.Context, *connect.Request[v1.SocialCreatePostRequest]) (*connect.Response[v1.SocialCreatePostResponse], error)
@@ -1695,6 +1712,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("BooksRecordPayment")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceBooksListExpensesHandler := connect.NewUnaryHandler(
+		RunnerServiceBooksListExpensesProcedure,
+		svc.BooksListExpenses,
+		connect.WithSchema(runnerServiceMethods.ByName("BooksListExpenses")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServiceBooksReportHandler := connect.NewUnaryHandler(
 		RunnerServiceBooksReportProcedure,
 		svc.BooksReport,
@@ -1955,6 +1978,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceBooksRecordExpenseHandler.ServeHTTP(w, r)
 		case RunnerServiceBooksRecordPaymentProcedure:
 			runnerServiceBooksRecordPaymentHandler.ServeHTTP(w, r)
+		case RunnerServiceBooksListExpensesProcedure:
+			runnerServiceBooksListExpensesHandler.ServeHTTP(w, r)
 		case RunnerServiceBooksReportProcedure:
 			runnerServiceBooksReportHandler.ServeHTTP(w, r)
 		case RunnerServiceSocialAccountsProcedure:
@@ -2178,6 +2203,10 @@ func (UnimplementedRunnerServiceHandler) BooksRecordExpense(context.Context, *co
 
 func (UnimplementedRunnerServiceHandler) BooksRecordPayment(context.Context, *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BooksRecordPayment is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) BooksListExpenses(context.Context, *connect.Request[v1.BooksListExpensesRequest]) (*connect.Response[v1.BooksListExpensesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BooksListExpenses is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) BooksReport(context.Context, *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error) {

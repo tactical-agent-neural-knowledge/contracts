@@ -108,6 +108,13 @@ message Expense {
   string receipt_file_id = 7;  // a TANK file, when it came from a receipt
   string booked_by = 8;        // user id, or "agent"
   google.protobuf.Timestamp created_at = 9;
+  // The period a bill or a usage figure covers (a cloud bill for October: Oct 1 to
+  // Oct 31, both inclusive, at midnight UTC). Unset for a one-off purchase.
+  google.protobuf.Timestamp period_start = 10;
+  google.protobuf.Timestamp period_end = 11;
+  // Where the figure came from, e.g. "aws-cost-explorer". With the period and the
+  // category it is the key a repeated collection revises instead of duplicating.
+  string source = 12;
 }
 
 // The numbers a person asks for first, with nothing to click into.
@@ -191,6 +198,10 @@ message RecordPaymentRequest {
   string method = 4;
   string reference = 5;
   google.protobuf.Timestamp at = 6;
+  // When the agent records a payment: the message in its thread where a person said
+  // the money arrived. A payment is money received, never a charge or a receivable,
+  // so an agent's payment without one is refused. A person's own call needs none.
+  string evidence_message_id = 7;
 }
 message RecordPaymentResponse {
   Invoice invoice = 1;
@@ -216,8 +227,17 @@ message RecordExpenseRequest {
   google.protobuf.Timestamp at = 5;
   string notes = 6;
   string receipt_file_id = 7;
+  // The period the expense covers. Required with a source; the expense is dated at
+  // the period's end. Booking the same source, category and period start again
+  // revises that expense (amount, end) rather than adding a second one.
+  google.protobuf.Timestamp period_start = 8;
+  google.protobuf.Timestamp period_end = 9;
+  string source = 10;
 }
-message RecordExpenseResponse { Expense expense = 1; }
+message RecordExpenseResponse {
+  Expense expense = 1;
+  string outcome = 2;          // booked | revised | unchanged
+}
 
 message GetCashSummaryRequest { string workspace_id = 1; }
 message GetCashSummaryResponse { CashSummary summary = 1; }

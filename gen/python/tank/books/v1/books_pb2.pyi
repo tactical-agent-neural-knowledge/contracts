@@ -145,7 +145,7 @@ class Payment(_message.Message):
     def __init__(self, id: _Optional[str] = ..., invoice_id: _Optional[str] = ..., amount_cents: _Optional[int] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., method: _Optional[str] = ..., reference: _Optional[str] = ...) -> None: ...
 
 class Expense(_message.Message):
-    __slots__ = ("id", "vendor", "category", "amount_cents", "at", "notes", "receipt_file_id", "booked_by", "created_at")
+    __slots__ = ("id", "vendor", "category", "amount_cents", "at", "notes", "receipt_file_id", "booked_by", "created_at", "period_start", "period_end", "source")
     ID_FIELD_NUMBER: _ClassVar[int]
     VENDOR_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
@@ -155,6 +155,9 @@ class Expense(_message.Message):
     RECEIPT_FILE_ID_FIELD_NUMBER: _ClassVar[int]
     BOOKED_BY_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    PERIOD_START_FIELD_NUMBER: _ClassVar[int]
+    PERIOD_END_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
     id: str
     vendor: str
     category: str
@@ -164,7 +167,10 @@ class Expense(_message.Message):
     receipt_file_id: str
     booked_by: str
     created_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., vendor: _Optional[str] = ..., category: _Optional[str] = ..., amount_cents: _Optional[int] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., notes: _Optional[str] = ..., receipt_file_id: _Optional[str] = ..., booked_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    period_start: _timestamp_pb2.Timestamp
+    period_end: _timestamp_pb2.Timestamp
+    source: str
+    def __init__(self, id: _Optional[str] = ..., vendor: _Optional[str] = ..., category: _Optional[str] = ..., amount_cents: _Optional[int] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., notes: _Optional[str] = ..., receipt_file_id: _Optional[str] = ..., booked_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., period_start: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., period_end: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., source: _Optional[str] = ...) -> None: ...
 
 class CashSummary(_message.Message):
     __slots__ = ("as_of", "currency", "owed_cents", "overdue_cents", "open_invoices", "overdue_invoices", "received_30d_cents", "spent_30d_cents", "expected_30d_cents", "expected_6w_cents")
@@ -325,20 +331,22 @@ class SendInvoiceResponse(_message.Message):
     def __init__(self, invoice: _Optional[_Union[Invoice, _Mapping]] = ...) -> None: ...
 
 class RecordPaymentRequest(_message.Message):
-    __slots__ = ("workspace_id", "invoice_id", "amount_cents", "method", "reference", "at")
+    __slots__ = ("workspace_id", "invoice_id", "amount_cents", "method", "reference", "at", "evidence_message_id")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     INVOICE_ID_FIELD_NUMBER: _ClassVar[int]
     AMOUNT_CENTS_FIELD_NUMBER: _ClassVar[int]
     METHOD_FIELD_NUMBER: _ClassVar[int]
     REFERENCE_FIELD_NUMBER: _ClassVar[int]
     AT_FIELD_NUMBER: _ClassVar[int]
+    EVIDENCE_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     invoice_id: str
     amount_cents: int
     method: str
     reference: str
     at: _timestamp_pb2.Timestamp
-    def __init__(self, workspace_id: _Optional[str] = ..., invoice_id: _Optional[str] = ..., amount_cents: _Optional[int] = ..., method: _Optional[str] = ..., reference: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    evidence_message_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., invoice_id: _Optional[str] = ..., amount_cents: _Optional[int] = ..., method: _Optional[str] = ..., reference: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., evidence_message_id: _Optional[str] = ...) -> None: ...
 
 class RecordPaymentResponse(_message.Message):
     __slots__ = ("invoice", "payment")
@@ -379,7 +387,7 @@ class ListExpensesResponse(_message.Message):
     def __init__(self, expenses: _Optional[_Iterable[_Union[Expense, _Mapping]]] = ...) -> None: ...
 
 class RecordExpenseRequest(_message.Message):
-    __slots__ = ("workspace_id", "vendor", "category", "amount_cents", "at", "notes", "receipt_file_id")
+    __slots__ = ("workspace_id", "vendor", "category", "amount_cents", "at", "notes", "receipt_file_id", "period_start", "period_end", "source")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     VENDOR_FIELD_NUMBER: _ClassVar[int]
     CATEGORY_FIELD_NUMBER: _ClassVar[int]
@@ -387,6 +395,9 @@ class RecordExpenseRequest(_message.Message):
     AT_FIELD_NUMBER: _ClassVar[int]
     NOTES_FIELD_NUMBER: _ClassVar[int]
     RECEIPT_FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    PERIOD_START_FIELD_NUMBER: _ClassVar[int]
+    PERIOD_END_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     vendor: str
     category: str
@@ -394,13 +405,18 @@ class RecordExpenseRequest(_message.Message):
     at: _timestamp_pb2.Timestamp
     notes: str
     receipt_file_id: str
-    def __init__(self, workspace_id: _Optional[str] = ..., vendor: _Optional[str] = ..., category: _Optional[str] = ..., amount_cents: _Optional[int] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., notes: _Optional[str] = ..., receipt_file_id: _Optional[str] = ...) -> None: ...
+    period_start: _timestamp_pb2.Timestamp
+    period_end: _timestamp_pb2.Timestamp
+    source: str
+    def __init__(self, workspace_id: _Optional[str] = ..., vendor: _Optional[str] = ..., category: _Optional[str] = ..., amount_cents: _Optional[int] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., notes: _Optional[str] = ..., receipt_file_id: _Optional[str] = ..., period_start: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., period_end: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., source: _Optional[str] = ...) -> None: ...
 
 class RecordExpenseResponse(_message.Message):
-    __slots__ = ("expense",)
+    __slots__ = ("expense", "outcome")
     EXPENSE_FIELD_NUMBER: _ClassVar[int]
+    OUTCOME_FIELD_NUMBER: _ClassVar[int]
     expense: Expense
-    def __init__(self, expense: _Optional[_Union[Expense, _Mapping]] = ...) -> None: ...
+    outcome: str
+    def __init__(self, expense: _Optional[_Union[Expense, _Mapping]] = ..., outcome: _Optional[str] = ...) -> None: ...
 
 class GetCashSummaryRequest(_message.Message):
     __slots__ = ("workspace_id",)
