@@ -933,3 +933,21 @@ class SetWorkspaceNoChargeRequest(_message.Message):
 class SetWorkspaceNoChargeResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class CreateWorkspaceRequest(_message.Message):
+    __slots__ = ("name", "slug", "plan", "no_charge")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    PLAN_FIELD_NUMBER: _ClassVar[int]
+    NO_CHARGE_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    slug: str
+    plan: str
+    no_charge: bool
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., plan: _Optional[str] = ..., no_charge: bool = ...) -> None: ...
+
+class CreateWorkspaceResponse(_message.Message):
+    __slots__ = ("workspace",)
+    WORKSPACE_FIELD_NUMBER: _ClassVar[int]
+    workspace: WorkspaceRow
+    def __init__(self, workspace: _Optional[_Union[WorkspaceRow, _Mapping]] = ...) -> None: ...
