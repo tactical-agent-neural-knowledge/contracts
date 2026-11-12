@@ -236,6 +236,7 @@ message WorkspaceRow {
   int64 agent_billed_cents_month = 13;         // what it is charged this month
   google.protobuf.Timestamp suspended_at = 14; // unset when the workspace is not suspended
   string suspended_reason = 15;
+  bool no_charge = 16;                         // pays nothing; its raw agent cost still shows here
 }
 
 message SearchWorkspacesRequest {
@@ -576,6 +577,17 @@ message SuspendUserRequest {
 }
 message SuspendUserResponse {}
 
+// SetWorkspaceNoCharge marks a workspace that will never pay (Robby, 2026-11-12: ones
+// he uses himself). It pays no fees and its agent time is never stopped or sold; its
+// raw agent cost still shows on the console. Distinct from a waived fee, which still
+// pays for agent time. Recorded as workspace.no_charge.changed.
+message SetWorkspaceNoChargeRequest {
+  string workspace_id = 1;
+  bool no_charge = 2;
+  string reason = 3;                           // kept in the audit log
+}
+message SetWorkspaceNoChargeResponse {}
+
 service PlatformService {
   rpc ListAgentures(ListAgenturesRequest) returns (ListAgenturesResponse);
   rpc SetAllocation(SetAllocationRequest) returns (SetAllocationResponse);
@@ -600,4 +612,5 @@ service PlatformService {
   rpc SetWorkspaceAddon(SetWorkspaceAddonRequest) returns (SetWorkspaceAddonResponse);
   rpc SuspendWorkspace(SuspendWorkspaceRequest) returns (SuspendWorkspaceResponse);
   rpc SuspendUser(SuspendUserRequest) returns (SuspendUserResponse);
+  rpc SetWorkspaceNoCharge(SetWorkspaceNoChargeRequest) returns (SetWorkspaceNoChargeResponse);
 }

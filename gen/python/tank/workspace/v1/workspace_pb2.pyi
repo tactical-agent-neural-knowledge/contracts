@@ -168,7 +168,7 @@ class GetBootstrapResponse(_message.Message):
     def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ..., me: _Optional[_Union[Member, _Mapping]] = ..., channels: _Optional[_Iterable[_Union[_channel_pb2.Channel, _Mapping]]] = ..., read_states: _Optional[_Iterable[_Union[_channel_pb2.ChannelReadState, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., custom_emoji_hash: _Optional[str] = ..., unread_notification_count: _Optional[int] = ..., preferences: _Optional[_Union[Preferences, _Mapping]] = ..., user_groups: _Optional[_Iterable[_Union[UserGroup, _Mapping]]] = ..., entitlements: _Optional[_Union[Entitlements, _Mapping]] = ..., thread_read_states: _Optional[_Iterable[_Union[_channel_pb2.ThreadReadState, _Mapping]]] = ...) -> None: ...
 
 class Entitlements(_message.Message):
-    __slots__ = ("plan", "agent_runs", "neural_vault", "agent_runs_used", "agent_runs_limit", "vault_queries_used", "vault_queries_limit", "contact_email", "conditional_sends", "addons", "agent_usage_cents", "agent_cap_cents")
+    __slots__ = ("plan", "agent_runs", "neural_vault", "agent_runs_used", "agent_runs_limit", "vault_queries_used", "vault_queries_limit", "contact_email", "conditional_sends", "addons", "agent_usage_cents", "agent_cap_cents", "payment_state")
     PLAN_FIELD_NUMBER: _ClassVar[int]
     AGENT_RUNS_FIELD_NUMBER: _ClassVar[int]
     NEURAL_VAULT_FIELD_NUMBER: _ClassVar[int]
@@ -181,6 +181,7 @@ class Entitlements(_message.Message):
     ADDONS_FIELD_NUMBER: _ClassVar[int]
     AGENT_USAGE_CENTS_FIELD_NUMBER: _ClassVar[int]
     AGENT_CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
+    PAYMENT_STATE_FIELD_NUMBER: _ClassVar[int]
     plan: str
     agent_runs: bool
     neural_vault: bool
@@ -193,7 +194,8 @@ class Entitlements(_message.Message):
     addons: _containers.RepeatedScalarFieldContainer[str]
     agent_usage_cents: int
     agent_cap_cents: int
-    def __init__(self, plan: _Optional[str] = ..., agent_runs: bool = ..., neural_vault: bool = ..., agent_runs_used: _Optional[int] = ..., agent_runs_limit: _Optional[int] = ..., vault_queries_used: _Optional[int] = ..., vault_queries_limit: _Optional[int] = ..., contact_email: _Optional[str] = ..., conditional_sends: bool = ..., addons: _Optional[_Iterable[str]] = ..., agent_usage_cents: _Optional[int] = ..., agent_cap_cents: _Optional[int] = ...) -> None: ...
+    payment_state: str
+    def __init__(self, plan: _Optional[str] = ..., agent_runs: bool = ..., neural_vault: bool = ..., agent_runs_used: _Optional[int] = ..., agent_runs_limit: _Optional[int] = ..., vault_queries_used: _Optional[int] = ..., vault_queries_limit: _Optional[int] = ..., contact_email: _Optional[str] = ..., conditional_sends: bool = ..., addons: _Optional[_Iterable[str]] = ..., agent_usage_cents: _Optional[int] = ..., agent_cap_cents: _Optional[int] = ..., payment_state: _Optional[str] = ...) -> None: ...
 
 class ListMembersRequest(_message.Message):
     __slots__ = ("workspace_id", "cursor", "limit", "query", "user_ids")

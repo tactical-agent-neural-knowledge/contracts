@@ -62,6 +62,25 @@ message Subscription {
   string provider = 13;
   // How many seats premium covers; the first ten are the flat price.
   int32 seats = 14;
+  // Premium and each add-on that is on with no payment behind it, because somebody at
+  // TANK turned it on by hand (the platform console or tankctl). Waived fees stay
+  // waived until it is turned off; there is no expiry. Agent time is still paid for.
+  repeated Waiver waivers = 15;
+  // The workspace pays nothing at all (a super admin's switch): no fees, and its agent
+  // time is never stopped, sold or refilled.
+  bool no_charge = 16;
+  // A recurring payment that failed. "" none; "failing" while the provider retries it
+  // (about two weeks); "paused" once the retries are over: agent runs and add-ons are
+  // paused until it is paid, and Treads, messages and files keep working.
+  string payment_state = 17;
+  google.protobuf.Timestamp payment_failed_at = 18;
+}
+
+// Waiver is one product whose fee is waived, and who turned it on.
+message Waiver {
+  string product = 1;                     // premium | shield | books | blueprint | atlas | neuron | agentops
+  string by_name = 2;                     // the person's name, or "TANK" when no person is on record
+  google.protobuf.Timestamp at = 3;       // unset when the record does not say
 }
 
 message GetSubscriptionRequest { string workspace_id = 1; }
@@ -133,7 +152,29 @@ service BillingService {
   rpc GetAgentTime(GetAgentTimeRequest) returns (GetAgentTimeResponse);
   rpc StartAgentTimeCheckout(StartAgentTimeCheckoutRequest) returns (StartAgentTimeCheckoutResponse);
   rpc SetAutoRefill(SetAutoRefillRequest) returns (SetAutoRefillResponse);
+
+  // Billing history (2026-11-12): every invoice and charge, newest first, from TANK's
+  // own record that the provider's webhooks and hand entries keep. Admins only.
+  rpc ListBillingHistory(ListBillingHistoryRequest) returns (ListBillingHistoryResponse);
 }
+
+// BillingRecord is one invoice or charge as the Billing page lists it.
+message BillingRecord {
+  string id = 1;
+  google.protobuf.Timestamp at = 2;
+  string description = 3;
+  int64 amount_cents = 4;
+  string status = 5;                      // paid | open | failed | waived | void
+  string url = 6;                         // the receipt, or the page to pay it; empty when there is none
+  string kind = 7;                        // invoice | subscription | agent_time | auto_refill | adjustment
+  string number = 8;                      // the invoice number, when there is one
+}
+
+message ListBillingHistoryRequest {
+  string workspace_id = 1;
+  int32 limit = 2;                        // 0 is 50; at most 200
+}
+message ListBillingHistoryResponse { repeated BillingRecord records = 1; }
 
 // AgentTime is a workspace's prepaid agent time. Every amount is in cents of what
 // the workspace pays (agent usage is priced at cost x 2 before it reaches here).
@@ -151,6 +192,7 @@ message AgentTime {
   int64 min_custom_cents = 11;            // the smallest custom amount
   bool can_manage = 12;                   // the caller may buy and change auto-refill
   bool prepaid = 13;                      // false: the workspace is not on prepaid agent time yet
+  bool no_charge = 14;                    // the workspace pays nothing: never blocked, nothing to buy
 }
 
 message AutoRefill {

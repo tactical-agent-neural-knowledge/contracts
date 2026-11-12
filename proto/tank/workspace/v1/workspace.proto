@@ -137,6 +137,9 @@ message Entitlements {
   // meter on Home, and the sentence a refused run carries.
   int64 agent_usage_cents = 11;
   int64 agent_cap_cents = 12;
+  // A recurring payment that failed: "" none, "failing" while it is retried, "paused"
+  // once paid features are paused. Admins see a banner with Fix payment.
+  string payment_state = 13;
 }
 
 message ListMembersRequest {

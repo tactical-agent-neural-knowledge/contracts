@@ -53,7 +53,7 @@ class StartClaimCheckoutResponse(_message.Message):
     def __init__(self, checkout_url: _Optional[str] = ..., held_until: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class Subscription(_message.Message):
-    __slots__ = ("workspace_id", "plan", "status", "monthly_cents", "agent_minute_cents", "agent_minutes_this_period", "agent_fees_cents_this_period", "period_end", "has_agents", "addons", "agent_usage_cents_this_month", "agent_cap_cents", "provider", "seats")
+    __slots__ = ("workspace_id", "plan", "status", "monthly_cents", "agent_minute_cents", "agent_minutes_this_period", "agent_fees_cents_this_period", "period_end", "has_agents", "addons", "agent_usage_cents_this_month", "agent_cap_cents", "provider", "seats", "waivers", "no_charge", "payment_state", "payment_failed_at")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     PLAN_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
@@ -68,6 +68,10 @@ class Subscription(_message.Message):
     AGENT_CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
     PROVIDER_FIELD_NUMBER: _ClassVar[int]
     SEATS_FIELD_NUMBER: _ClassVar[int]
+    WAIVERS_FIELD_NUMBER: _ClassVar[int]
+    NO_CHARGE_FIELD_NUMBER: _ClassVar[int]
+    PAYMENT_STATE_FIELD_NUMBER: _ClassVar[int]
+    PAYMENT_FAILED_AT_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     plan: str
     status: str
@@ -82,7 +86,21 @@ class Subscription(_message.Message):
     agent_cap_cents: int
     provider: str
     seats: int
-    def __init__(self, workspace_id: _Optional[str] = ..., plan: _Optional[str] = ..., status: _Optional[str] = ..., monthly_cents: _Optional[int] = ..., agent_minute_cents: _Optional[int] = ..., agent_minutes_this_period: _Optional[int] = ..., agent_fees_cents_this_period: _Optional[int] = ..., period_end: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., has_agents: bool = ..., addons: _Optional[_Iterable[str]] = ..., agent_usage_cents_this_month: _Optional[int] = ..., agent_cap_cents: _Optional[int] = ..., provider: _Optional[str] = ..., seats: _Optional[int] = ...) -> None: ...
+    waivers: _containers.RepeatedCompositeFieldContainer[Waiver]
+    no_charge: bool
+    payment_state: str
+    payment_failed_at: _timestamp_pb2.Timestamp
+    def __init__(self, workspace_id: _Optional[str] = ..., plan: _Optional[str] = ..., status: _Optional[str] = ..., monthly_cents: _Optional[int] = ..., agent_minute_cents: _Optional[int] = ..., agent_minutes_this_period: _Optional[int] = ..., agent_fees_cents_this_period: _Optional[int] = ..., period_end: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., has_agents: bool = ..., addons: _Optional[_Iterable[str]] = ..., agent_usage_cents_this_month: _Optional[int] = ..., agent_cap_cents: _Optional[int] = ..., provider: _Optional[str] = ..., seats: _Optional[int] = ..., waivers: _Optional[_Iterable[_Union[Waiver, _Mapping]]] = ..., no_charge: bool = ..., payment_state: _Optional[str] = ..., payment_failed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class Waiver(_message.Message):
+    __slots__ = ("product", "by_name", "at")
+    PRODUCT_FIELD_NUMBER: _ClassVar[int]
+    BY_NAME_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    product: str
+    by_name: str
+    at: _timestamp_pb2.Timestamp
+    def __init__(self, product: _Optional[str] = ..., by_name: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class GetSubscriptionRequest(_message.Message):
     __slots__ = ("workspace_id",)
@@ -158,8 +176,42 @@ class SetAgentCapResponse(_message.Message):
     agent_cap_cents: int
     def __init__(self, agent_cap_cents: _Optional[int] = ...) -> None: ...
 
+class BillingRecord(_message.Message):
+    __slots__ = ("id", "at", "description", "amount_cents", "status", "url", "kind", "number")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    AMOUNT_CENTS_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    NUMBER_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    at: _timestamp_pb2.Timestamp
+    description: str
+    amount_cents: int
+    status: str
+    url: str
+    kind: str
+    number: str
+    def __init__(self, id: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., description: _Optional[str] = ..., amount_cents: _Optional[int] = ..., status: _Optional[str] = ..., url: _Optional[str] = ..., kind: _Optional[str] = ..., number: _Optional[str] = ...) -> None: ...
+
+class ListBillingHistoryRequest(_message.Message):
+    __slots__ = ("workspace_id", "limit")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    limit: int
+    def __init__(self, workspace_id: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListBillingHistoryResponse(_message.Message):
+    __slots__ = ("records",)
+    RECORDS_FIELD_NUMBER: _ClassVar[int]
+    records: _containers.RepeatedCompositeFieldContainer[BillingRecord]
+    def __init__(self, records: _Optional[_Iterable[_Union[BillingRecord, _Mapping]]] = ...) -> None: ...
+
 class AgentTime(_message.Message):
-    __slots__ = ("balance_cents", "included_cents", "included_left_cents", "used_this_month_cents", "blocked", "auto_refill", "auto_refilled_this_month_cents", "has_payment_method", "history", "pack_cents", "min_custom_cents", "can_manage", "prepaid")
+    __slots__ = ("balance_cents", "included_cents", "included_left_cents", "used_this_month_cents", "blocked", "auto_refill", "auto_refilled_this_month_cents", "has_payment_method", "history", "pack_cents", "min_custom_cents", "can_manage", "prepaid", "no_charge")
     BALANCE_CENTS_FIELD_NUMBER: _ClassVar[int]
     INCLUDED_CENTS_FIELD_NUMBER: _ClassVar[int]
     INCLUDED_LEFT_CENTS_FIELD_NUMBER: _ClassVar[int]
@@ -173,6 +225,7 @@ class AgentTime(_message.Message):
     MIN_CUSTOM_CENTS_FIELD_NUMBER: _ClassVar[int]
     CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
     PREPAID_FIELD_NUMBER: _ClassVar[int]
+    NO_CHARGE_FIELD_NUMBER: _ClassVar[int]
     balance_cents: int
     included_cents: int
     included_left_cents: int
@@ -186,7 +239,8 @@ class AgentTime(_message.Message):
     min_custom_cents: int
     can_manage: bool
     prepaid: bool
-    def __init__(self, balance_cents: _Optional[int] = ..., included_cents: _Optional[int] = ..., included_left_cents: _Optional[int] = ..., used_this_month_cents: _Optional[int] = ..., blocked: bool = ..., auto_refill: _Optional[_Union[AutoRefill, _Mapping]] = ..., auto_refilled_this_month_cents: _Optional[int] = ..., has_payment_method: bool = ..., history: _Optional[_Iterable[_Union[AgentTimeEntry, _Mapping]]] = ..., pack_cents: _Optional[_Iterable[int]] = ..., min_custom_cents: _Optional[int] = ..., can_manage: bool = ..., prepaid: bool = ...) -> None: ...
+    no_charge: bool
+    def __init__(self, balance_cents: _Optional[int] = ..., included_cents: _Optional[int] = ..., included_left_cents: _Optional[int] = ..., used_this_month_cents: _Optional[int] = ..., blocked: bool = ..., auto_refill: _Optional[_Union[AutoRefill, _Mapping]] = ..., auto_refilled_this_month_cents: _Optional[int] = ..., has_payment_method: bool = ..., history: _Optional[_Iterable[_Union[AgentTimeEntry, _Mapping]]] = ..., pack_cents: _Optional[_Iterable[int]] = ..., min_custom_cents: _Optional[int] = ..., can_manage: bool = ..., prepaid: bool = ..., no_charge: bool = ...) -> None: ...
 
 class AutoRefill(_message.Message):
     __slots__ = ("enabled", "below_cents", "amount_cents", "monthly_cap_cents", "last_error")

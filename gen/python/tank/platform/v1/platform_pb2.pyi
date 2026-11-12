@@ -333,7 +333,7 @@ class GetUserResponse(_message.Message):
     def __init__(self, user: _Optional[_Union[UserRow, _Mapping]] = ..., memberships: _Optional[_Iterable[_Union[Membership, _Mapping]]] = ..., logins: _Optional[_Iterable[_Union[LoginRow, _Mapping]]] = ...) -> None: ...
 
 class WorkspaceRow(_message.Message):
-    __slots__ = ("id", "slug", "name", "kind", "plan", "addons", "people", "created_at", "last_active_at", "owner_email", "agent_runs_30d", "agent_cost_usd_30d", "agent_billed_cents_month", "suspended_at", "suspended_reason")
+    __slots__ = ("id", "slug", "name", "kind", "plan", "addons", "people", "created_at", "last_active_at", "owner_email", "agent_runs_30d", "agent_cost_usd_30d", "agent_billed_cents_month", "suspended_at", "suspended_reason", "no_charge")
     ID_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -349,6 +349,7 @@ class WorkspaceRow(_message.Message):
     AGENT_BILLED_CENTS_MONTH_FIELD_NUMBER: _ClassVar[int]
     SUSPENDED_AT_FIELD_NUMBER: _ClassVar[int]
     SUSPENDED_REASON_FIELD_NUMBER: _ClassVar[int]
+    NO_CHARGE_FIELD_NUMBER: _ClassVar[int]
     id: str
     slug: str
     name: str
@@ -364,7 +365,8 @@ class WorkspaceRow(_message.Message):
     agent_billed_cents_month: int
     suspended_at: _timestamp_pb2.Timestamp
     suspended_reason: str
-    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., kind: _Optional[str] = ..., plan: _Optional[str] = ..., addons: _Optional[_Iterable[str]] = ..., people: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_active_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., owner_email: _Optional[str] = ..., agent_runs_30d: _Optional[int] = ..., agent_cost_usd_30d: _Optional[float] = ..., agent_billed_cents_month: _Optional[int] = ..., suspended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., suspended_reason: _Optional[str] = ...) -> None: ...
+    no_charge: bool
+    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., kind: _Optional[str] = ..., plan: _Optional[str] = ..., addons: _Optional[_Iterable[str]] = ..., people: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_active_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., owner_email: _Optional[str] = ..., agent_runs_30d: _Optional[int] = ..., agent_cost_usd_30d: _Optional[float] = ..., agent_billed_cents_month: _Optional[int] = ..., suspended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., suspended_reason: _Optional[str] = ..., no_charge: bool = ...) -> None: ...
 
 class SearchWorkspacesRequest(_message.Message):
     __slots__ = ("query", "limit", "offset", "sort", "kind", "plan")
@@ -915,5 +917,19 @@ class SuspendUserRequest(_message.Message):
     def __init__(self, user_id: _Optional[str] = ..., suspended: bool = ..., reason: _Optional[str] = ...) -> None: ...
 
 class SuspendUserResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class SetWorkspaceNoChargeRequest(_message.Message):
+    __slots__ = ("workspace_id", "no_charge", "reason")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    NO_CHARGE_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    no_charge: bool
+    reason: str
+    def __init__(self, workspace_id: _Optional[str] = ..., no_charge: bool = ..., reason: _Optional[str] = ...) -> None: ...
+
+class SetWorkspaceNoChargeResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
