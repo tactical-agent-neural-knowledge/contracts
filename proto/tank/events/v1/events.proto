@@ -15,6 +15,7 @@ import "tank/huddle/v1/huddle.proto";
 import "tank/message/v1/message.proto";
 import "tank/monitor/v1/monitor.proto";
 import "tank/presence/v1/presence.proto";
+import "tank/task/v1/task.proto";
 import "tank/topo/v1/topo.proto";
 import "tank/workspace/v1/workspace.proto";
 
@@ -315,4 +316,11 @@ message BoardPointer {
   bool left = 6;
   // "user" | "agent", so the agent's cursor can be drawn as its own thing.
   string kind = 7;
+}
+
+// task.changed on evt.{ws}.ch.{channel}, and on evt.{ws}.ws for a public Tread, so a
+// Tread's strip and Command move without a refresh.
+message TaskChanged {
+  tank.task.v1.Task task = 1;
+  string actor_id = 2;
 }

@@ -1177,6 +1177,13 @@ message StartRunRequest {
   bool skip_neural_knowledge = 9;
   // For a run the platform starts on a team's behalf (a shift): the envelope in dollars.
   double envelope_usd = 10;
+  // The task this run works on (tank.task.v1), so the run moves it.
+  string task_id = 11;
+  // Carry on from this run (the core's run id): Try again on a stuck task, or Not yet
+  // after the run ended. The new run starts from its branch and checkpoints.
+  string continue_run_id = 12;
+  // What a person said when sending the work back, verbatim.
+  string note = 13;
 }
 message StartRunResponse {
   tank.agent.v1.Run run = 1;

@@ -11,6 +11,7 @@ from tank.huddle.v1 import huddle_pb2 as _huddle_pb2
 from tank.message.v1 import message_pb2 as _message_pb2
 from tank.monitor.v1 import monitor_pb2 as _monitor_pb2
 from tank.presence.v1 import presence_pb2 as _presence_pb2
+from tank.task.v1 import task_pb2 as _task_pb2
 from tank.topo.v1 import topo_pb2 as _topo_pb2
 from tank.workspace.v1 import workspace_pb2 as _workspace_pb2
 from google.protobuf.internal import containers as _containers
@@ -463,3 +464,11 @@ class BoardPointer(_message.Message):
     left: bool
     kind: str
     def __init__(self, board_id: _Optional[str] = ..., user_id: _Optional[str] = ..., x: _Optional[float] = ..., y: _Optional[float] = ..., selected_ids: _Optional[_Iterable[str]] = ..., left: bool = ..., kind: _Optional[str] = ...) -> None: ...
+
+class TaskChanged(_message.Message):
+    __slots__ = ("task", "actor_id")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    task: _task_pb2.Task
+    actor_id: str
+    def __init__(self, task: _Optional[_Union[_task_pb2.Task, _Mapping]] = ..., actor_id: _Optional[str] = ...) -> None: ...

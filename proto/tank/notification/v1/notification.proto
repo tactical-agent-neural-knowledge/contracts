@@ -3,10 +3,11 @@ syntax = "proto3";
 package tank.notification.v1;
 
 import "google/protobuf/timestamp.proto";
+import "tank/task/v1/task.proto";
 
 // A notification is written by the core's notify worker from bus events and
 // read back here. kind: mention | dm | thread_reply | reaction |
-// channel_invite | agent_needs_input | shared.
+// channel_invite | agent_needs_input | shared | task.
 message Notification {
   string id = 1;
   string workspace_id = 2;
@@ -23,6 +24,8 @@ message Notification {
   string item_kind = 10;
   string item_id = 11;
   string item_title = 12;
+  // kind task (item_kind task): the stage the task reached.
+  tank.task.v1.TaskStage task_stage = 13;
 }
 
 message ListNotificationsRequest {

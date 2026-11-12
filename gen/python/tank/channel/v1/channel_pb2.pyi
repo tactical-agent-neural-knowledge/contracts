@@ -16,6 +16,12 @@ class ChannelType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     CHANNEL_TYPE_MPDM: _ClassVar[ChannelType]
     CHANNEL_TYPE_MONITOR: _ClassVar[ChannelType]
 
+class ChannelView(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    CHANNEL_VIEW_UNSPECIFIED: _ClassVar[ChannelView]
+    CHANNEL_VIEW_BUILDER: _ClassVar[ChannelView]
+    CHANNEL_VIEW_SIMPLE: _ClassVar[ChannelView]
+
 class NotifyPref(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     NOTIFY_PREF_UNSPECIFIED: _ClassVar[NotifyPref]
@@ -28,6 +34,9 @@ CHANNEL_TYPE_PRIVATE: ChannelType
 CHANNEL_TYPE_DM: ChannelType
 CHANNEL_TYPE_MPDM: ChannelType
 CHANNEL_TYPE_MONITOR: ChannelType
+CHANNEL_VIEW_UNSPECIFIED: ChannelView
+CHANNEL_VIEW_BUILDER: ChannelView
+CHANNEL_VIEW_SIMPLE: ChannelView
 NOTIFY_PREF_UNSPECIFIED: NotifyPref
 NOTIFY_PREF_ALL: NotifyPref
 NOTIFY_PREF_MENTIONS: NotifyPref
@@ -48,7 +57,7 @@ class TreadGoal(_message.Message):
     def __init__(self, goal: _Optional[str] = ..., assignee_ids: _Optional[_Iterable[str]] = ..., pipeline_status: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ...) -> None: ...
 
 class Channel(_message.Message):
-    __slots__ = ("id", "workspace_id", "type", "name", "topic", "purpose", "last_seq", "member_count", "last_message_at", "archived_at", "created_at", "goal", "member_ids", "joined", "icon_file_id", "read_receipts", "system")
+    __slots__ = ("id", "workspace_id", "type", "name", "topic", "purpose", "last_seq", "member_count", "last_message_at", "archived_at", "created_at", "goal", "member_ids", "joined", "icon_file_id", "read_receipts", "system", "default_view")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     TYPE_FIELD_NUMBER: _ClassVar[int]
@@ -66,6 +75,7 @@ class Channel(_message.Message):
     ICON_FILE_ID_FIELD_NUMBER: _ClassVar[int]
     READ_RECEIPTS_FIELD_NUMBER: _ClassVar[int]
     SYSTEM_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_VIEW_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     type: ChannelType
@@ -83,7 +93,8 @@ class Channel(_message.Message):
     icon_file_id: str
     read_receipts: bool
     system: str
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., type: _Optional[_Union[ChannelType, str]] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., last_seq: _Optional[int] = ..., member_count: _Optional[int] = ..., last_message_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., archived_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., goal: _Optional[_Union[TreadGoal, _Mapping]] = ..., member_ids: _Optional[_Iterable[str]] = ..., joined: bool = ..., icon_file_id: _Optional[str] = ..., read_receipts: bool = ..., system: _Optional[str] = ...) -> None: ...
+    default_view: ChannelView
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., type: _Optional[_Union[ChannelType, str]] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., last_seq: _Optional[int] = ..., member_count: _Optional[int] = ..., last_message_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., archived_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., goal: _Optional[_Union[TreadGoal, _Mapping]] = ..., member_ids: _Optional[_Iterable[str]] = ..., joined: bool = ..., icon_file_id: _Optional[str] = ..., read_receipts: bool = ..., system: _Optional[str] = ..., default_view: _Optional[_Union[ChannelView, str]] = ...) -> None: ...
 
 class ThreadReadState(_message.Message):
     __slots__ = ("thread_root_id", "last_read_thread_seq")
@@ -94,7 +105,7 @@ class ThreadReadState(_message.Message):
     def __init__(self, thread_root_id: _Optional[str] = ..., last_read_thread_seq: _Optional[int] = ...) -> None: ...
 
 class ChannelReadState(_message.Message):
-    __slots__ = ("channel_id", "last_read_seq", "mention_count", "muted", "starred", "notify_pref", "unread_count")
+    __slots__ = ("channel_id", "last_read_seq", "mention_count", "muted", "starred", "notify_pref", "unread_count", "view")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     LAST_READ_SEQ_FIELD_NUMBER: _ClassVar[int]
     MENTION_COUNT_FIELD_NUMBER: _ClassVar[int]
@@ -102,6 +113,7 @@ class ChannelReadState(_message.Message):
     STARRED_FIELD_NUMBER: _ClassVar[int]
     NOTIFY_PREF_FIELD_NUMBER: _ClassVar[int]
     UNREAD_COUNT_FIELD_NUMBER: _ClassVar[int]
+    VIEW_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
     last_read_seq: int
     mention_count: int
@@ -109,7 +121,8 @@ class ChannelReadState(_message.Message):
     starred: bool
     notify_pref: NotifyPref
     unread_count: int
-    def __init__(self, channel_id: _Optional[str] = ..., last_read_seq: _Optional[int] = ..., mention_count: _Optional[int] = ..., muted: bool = ..., starred: bool = ..., notify_pref: _Optional[_Union[NotifyPref, str]] = ..., unread_count: _Optional[int] = ...) -> None: ...
+    view: ChannelView
+    def __init__(self, channel_id: _Optional[str] = ..., last_read_seq: _Optional[int] = ..., mention_count: _Optional[int] = ..., muted: bool = ..., starred: bool = ..., notify_pref: _Optional[_Union[NotifyPref, str]] = ..., unread_count: _Optional[int] = ..., view: _Optional[_Union[ChannelView, str]] = ...) -> None: ...
 
 class CreateChannelRequest(_message.Message):
     __slots__ = ("workspace_id", "type", "name", "purpose", "member_ids")
@@ -304,18 +317,20 @@ class ListChannelMembersResponse(_message.Message):
     def __init__(self, member_ids: _Optional[_Iterable[str]] = ..., next_cursor: _Optional[str] = ...) -> None: ...
 
 class UpdateChannelRequest(_message.Message):
-    __slots__ = ("channel_id", "name", "topic", "purpose", "read_receipts")
+    __slots__ = ("channel_id", "name", "topic", "purpose", "read_receipts", "default_view")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     TOPIC_FIELD_NUMBER: _ClassVar[int]
     PURPOSE_FIELD_NUMBER: _ClassVar[int]
     READ_RECEIPTS_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_VIEW_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
     name: str
     topic: str
     purpose: str
     read_receipts: bool
-    def __init__(self, channel_id: _Optional[str] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., read_receipts: bool = ...) -> None: ...
+    default_view: ChannelView
+    def __init__(self, channel_id: _Optional[str] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., read_receipts: bool = ..., default_view: _Optional[_Union[ChannelView, str]] = ...) -> None: ...
 
 class UpdateChannelResponse(_message.Message):
     __slots__ = ("channel",)
@@ -360,16 +375,18 @@ class UnarchiveChannelResponse(_message.Message):
     def __init__(self, channel: _Optional[_Union[Channel, _Mapping]] = ...) -> None: ...
 
 class SetChannelPreferenceRequest(_message.Message):
-    __slots__ = ("channel_id", "notify_pref", "muted", "starred")
+    __slots__ = ("channel_id", "notify_pref", "muted", "starred", "view")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     NOTIFY_PREF_FIELD_NUMBER: _ClassVar[int]
     MUTED_FIELD_NUMBER: _ClassVar[int]
     STARRED_FIELD_NUMBER: _ClassVar[int]
+    VIEW_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
     notify_pref: NotifyPref
     muted: bool
     starred: bool
-    def __init__(self, channel_id: _Optional[str] = ..., notify_pref: _Optional[_Union[NotifyPref, str]] = ..., muted: bool = ..., starred: bool = ...) -> None: ...
+    view: ChannelView
+    def __init__(self, channel_id: _Optional[str] = ..., notify_pref: _Optional[_Union[NotifyPref, str]] = ..., muted: bool = ..., starred: bool = ..., view: _Optional[_Union[ChannelView, str]] = ...) -> None: ...
 
 class SetChannelPreferenceResponse(_message.Message):
     __slots__ = ("read_state",)
