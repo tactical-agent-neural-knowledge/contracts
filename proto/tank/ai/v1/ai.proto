@@ -574,6 +574,10 @@ message WatchResponse {
     string devices_changed = 7;
     // A webpage was opened or closed; the client reloads the conversation's pages.
     string pages_changed = 8;
+    // A connected device sent new figures, or its camera was looked at again; the value is its
+    // session id. Everyone in the conversation sees every device's figures and what its camera
+    // shows: a client showing that session reads it again (tank.devices.v1 GetSession).
+    string device_updated = 9;
   }
 }
 message ReplyStarted {
