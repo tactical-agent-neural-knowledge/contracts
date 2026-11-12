@@ -12,10 +12,21 @@ class Broadcast(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     BROADCAST_HERE: _ClassVar[Broadcast]
     BROADCAST_CHANNEL: _ClassVar[Broadcast]
     BROADCAST_EVERYONE: _ClassVar[Broadcast]
+
+class TableAlign(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    TABLE_ALIGN_UNSPECIFIED: _ClassVar[TableAlign]
+    TABLE_ALIGN_LEFT: _ClassVar[TableAlign]
+    TABLE_ALIGN_CENTER: _ClassVar[TableAlign]
+    TABLE_ALIGN_RIGHT: _ClassVar[TableAlign]
 BROADCAST_UNSPECIFIED: Broadcast
 BROADCAST_HERE: Broadcast
 BROADCAST_CHANNEL: Broadcast
 BROADCAST_EVERYONE: Broadcast
+TABLE_ALIGN_UNSPECIFIED: TableAlign
+TABLE_ALIGN_LEFT: TableAlign
+TABLE_ALIGN_CENTER: TableAlign
+TABLE_ALIGN_RIGHT: TableAlign
 
 class RichText(_message.Message):
     __slots__ = ("blocks",)
@@ -24,16 +35,22 @@ class RichText(_message.Message):
     def __init__(self, blocks: _Optional[_Iterable[_Union[RichTextBlock, _Mapping]]] = ...) -> None: ...
 
 class RichTextBlock(_message.Message):
-    __slots__ = ("section", "code", "quote", "list")
+    __slots__ = ("section", "code", "quote", "list", "heading", "table", "divider")
     SECTION_FIELD_NUMBER: _ClassVar[int]
     CODE_FIELD_NUMBER: _ClassVar[int]
     QUOTE_FIELD_NUMBER: _ClassVar[int]
     LIST_FIELD_NUMBER: _ClassVar[int]
+    HEADING_FIELD_NUMBER: _ClassVar[int]
+    TABLE_FIELD_NUMBER: _ClassVar[int]
+    DIVIDER_FIELD_NUMBER: _ClassVar[int]
     section: RichTextSection
     code: RichTextCode
     quote: RichTextQuote
     list: RichTextList
-    def __init__(self, section: _Optional[_Union[RichTextSection, _Mapping]] = ..., code: _Optional[_Union[RichTextCode, _Mapping]] = ..., quote: _Optional[_Union[RichTextQuote, _Mapping]] = ..., list: _Optional[_Union[RichTextList, _Mapping]] = ...) -> None: ...
+    heading: RichTextHeading
+    table: RichTextTable
+    divider: RichTextDivider
+    def __init__(self, section: _Optional[_Union[RichTextSection, _Mapping]] = ..., code: _Optional[_Union[RichTextCode, _Mapping]] = ..., quote: _Optional[_Union[RichTextQuote, _Mapping]] = ..., list: _Optional[_Union[RichTextList, _Mapping]] = ..., heading: _Optional[_Union[RichTextHeading, _Mapping]] = ..., table: _Optional[_Union[RichTextTable, _Mapping]] = ..., divider: _Optional[_Union[RichTextDivider, _Mapping]] = ...) -> None: ...
 
 class Style(_message.Message):
     __slots__ = ("bold", "italic", "strike", "code")
@@ -140,11 +157,47 @@ class RichTextQuote(_message.Message):
     def __init__(self, elements: _Optional[_Iterable[_Union[RichTextElement, _Mapping]]] = ...) -> None: ...
 
 class RichTextList(_message.Message):
-    __slots__ = ("ordered", "indent", "items")
+    __slots__ = ("ordered", "indent", "items", "start")
     ORDERED_FIELD_NUMBER: _ClassVar[int]
     INDENT_FIELD_NUMBER: _ClassVar[int]
     ITEMS_FIELD_NUMBER: _ClassVar[int]
+    START_FIELD_NUMBER: _ClassVar[int]
     ordered: bool
     indent: int
     items: _containers.RepeatedCompositeFieldContainer[RichTextSection]
-    def __init__(self, ordered: bool = ..., indent: _Optional[int] = ..., items: _Optional[_Iterable[_Union[RichTextSection, _Mapping]]] = ...) -> None: ...
+    start: int
+    def __init__(self, ordered: bool = ..., indent: _Optional[int] = ..., items: _Optional[_Iterable[_Union[RichTextSection, _Mapping]]] = ..., start: _Optional[int] = ...) -> None: ...
+
+class RichTextHeading(_message.Message):
+    __slots__ = ("level", "elements")
+    LEVEL_FIELD_NUMBER: _ClassVar[int]
+    ELEMENTS_FIELD_NUMBER: _ClassVar[int]
+    level: int
+    elements: _containers.RepeatedCompositeFieldContainer[RichTextElement]
+    def __init__(self, level: _Optional[int] = ..., elements: _Optional[_Iterable[_Union[RichTextElement, _Mapping]]] = ...) -> None: ...
+
+class RichTextTable(_message.Message):
+    __slots__ = ("header", "rows", "align")
+    HEADER_FIELD_NUMBER: _ClassVar[int]
+    ROWS_FIELD_NUMBER: _ClassVar[int]
+    ALIGN_FIELD_NUMBER: _ClassVar[int]
+    header: RichTextTableRow
+    rows: _containers.RepeatedCompositeFieldContainer[RichTextTableRow]
+    align: _containers.RepeatedScalarFieldContainer[TableAlign]
+    def __init__(self, header: _Optional[_Union[RichTextTableRow, _Mapping]] = ..., rows: _Optional[_Iterable[_Union[RichTextTableRow, _Mapping]]] = ..., align: _Optional[_Iterable[_Union[TableAlign, str]]] = ...) -> None: ...
+
+class RichTextTableRow(_message.Message):
+    __slots__ = ("cells",)
+    CELLS_FIELD_NUMBER: _ClassVar[int]
+    cells: _containers.RepeatedCompositeFieldContainer[RichTextTableCell]
+    def __init__(self, cells: _Optional[_Iterable[_Union[RichTextTableCell, _Mapping]]] = ...) -> None: ...
+
+class RichTextTableCell(_message.Message):
+    __slots__ = ("elements",)
+    ELEMENTS_FIELD_NUMBER: _ClassVar[int]
+    elements: _containers.RepeatedCompositeFieldContainer[RichTextElement]
+    def __init__(self, elements: _Optional[_Iterable[_Union[RichTextElement, _Mapping]]] = ...) -> None: ...
+
+class RichTextDivider(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
