@@ -256,10 +256,12 @@ class AddToAtlasResponse(_message.Message):
     def __init__(self, page: _Optional[_Union[AtlasPage, _Mapping]] = ...) -> None: ...
 
 class CreateConversationRequest(_message.Message):
-    __slots__ = ("workspace_id",)
+    __slots__ = ("workspace_id", "member_ids")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    MEMBER_IDS_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
-    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+    member_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, workspace_id: _Optional[str] = ..., member_ids: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class CreateConversationResponse(_message.Message):
     __slots__ = ("conversation",)
