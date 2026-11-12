@@ -217,6 +217,10 @@ message AddToAtlasResponse {
 message CreateConversationRequest {
   // Empty for a personal conversation (see Conversation.workspace_id).
   string workspace_id = 1;
+  // People added as members when it is made (the chat list's strip: a person you already talk
+  // with, Robby 2026-11-12). Each must already share a conversation or a workspace with the
+  // caller; anyone else is refused, so an id alone never reaches a stranger.
+  repeated string member_ids = 2;
 }
 message CreateConversationResponse {
   Conversation conversation = 1;
