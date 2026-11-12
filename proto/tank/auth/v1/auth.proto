@@ -236,6 +236,50 @@ message CompleteSsoResponse {
   string workspace_id = 5;
 }
 
+// ---- The signed-in person's own account -------------------------------------
+
+// The person's name and photo, which are theirs everywhere (every workspace and every Neural
+// conversation). Unlike workspace.v1.UpdateProfile it names no workspace, so the Neural app,
+// which belongs to none, can set them. Unset fields are unchanged.
+message UpdateMeRequest {
+  optional string display_name = 1;
+  // A new photo: JPEG or PNG bytes, at most 1 MB. It replaces any uploaded avatar.
+  bytes avatar = 2;
+  string avatar_mime = 3;
+  // Removes the photo (initials are shown instead).
+  bool clear_avatar = 4;
+}
+message UpdateMeResponse {
+  Principal me = 1;
+}
+
+// A workspace named by an account deletion: one that blocks it, or one that closes with it.
+message AccountWorkspace {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+}
+
+// What deleting this account would do, read before asking the person to confirm.
+message GetAccountDeletionRequest {}
+message GetAccountDeletionResponse {
+  // Workspaces where this person is the only owner and other people are still members.
+  // Deletion is refused while any are listed: ownership has to move first.
+  repeated AccountWorkspace blocking = 1;
+  // Workspaces nobody else is in. They close with the account.
+  repeated AccountWorkspace closing = 2;
+  // The text the person types to confirm (DeleteAccountRequest.confirm).
+  string confirm_text = 3;
+}
+
+// Deletes the signed-in person's account (App Store guideline 5.1.1(v)). Refused with
+// FailedPrecondition while GetAccountDeletionResponse.blocking is not empty, and with
+// InvalidArgument unless confirm matches confirm_text. Every session and token ends.
+message DeleteAccountRequest {
+  string confirm = 1;
+}
+message DeleteAccountResponse {}
+
 service AuthService {
   rpc StartMagicLink(StartMagicLinkRequest) returns (StartMagicLinkResponse);
   rpc CompleteMagicLink(CompleteMagicLinkRequest) returns (CompleteMagicLinkResponse);
@@ -253,4 +297,7 @@ service AuthService {
   rpc SetSsoConfig(SetSsoConfigRequest) returns (SetSsoConfigResponse);
   rpc StartSso(StartSsoRequest) returns (StartSsoResponse);
   rpc CompleteSso(CompleteSsoRequest) returns (CompleteSsoResponse);
+  rpc UpdateMe(UpdateMeRequest) returns (UpdateMeResponse);
+  rpc GetAccountDeletion(GetAccountDeletionRequest) returns (GetAccountDeletionResponse);
+  rpc DeleteAccount(DeleteAccountRequest) returns (DeleteAccountResponse);
 }

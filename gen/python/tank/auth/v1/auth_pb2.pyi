@@ -344,3 +344,55 @@ class CompleteSsoResponse(_message.Message):
     access_expires_at: _timestamp_pb2.Timestamp
     workspace_id: str
     def __init__(self, me: _Optional[_Union[Principal, _Mapping]] = ..., access_token: _Optional[str] = ..., refresh_token: _Optional[str] = ..., access_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., workspace_id: _Optional[str] = ...) -> None: ...
+
+class UpdateMeRequest(_message.Message):
+    __slots__ = ("display_name", "avatar", "avatar_mime", "clear_avatar")
+    DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
+    AVATAR_FIELD_NUMBER: _ClassVar[int]
+    AVATAR_MIME_FIELD_NUMBER: _ClassVar[int]
+    CLEAR_AVATAR_FIELD_NUMBER: _ClassVar[int]
+    display_name: str
+    avatar: bytes
+    avatar_mime: str
+    clear_avatar: bool
+    def __init__(self, display_name: _Optional[str] = ..., avatar: _Optional[bytes] = ..., avatar_mime: _Optional[str] = ..., clear_avatar: bool = ...) -> None: ...
+
+class UpdateMeResponse(_message.Message):
+    __slots__ = ("me",)
+    ME_FIELD_NUMBER: _ClassVar[int]
+    me: Principal
+    def __init__(self, me: _Optional[_Union[Principal, _Mapping]] = ...) -> None: ...
+
+class AccountWorkspace(_message.Message):
+    __slots__ = ("id", "name", "slug")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    SLUG_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    name: str
+    slug: str
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., slug: _Optional[str] = ...) -> None: ...
+
+class GetAccountDeletionRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class GetAccountDeletionResponse(_message.Message):
+    __slots__ = ("blocking", "closing", "confirm_text")
+    BLOCKING_FIELD_NUMBER: _ClassVar[int]
+    CLOSING_FIELD_NUMBER: _ClassVar[int]
+    CONFIRM_TEXT_FIELD_NUMBER: _ClassVar[int]
+    blocking: _containers.RepeatedCompositeFieldContainer[AccountWorkspace]
+    closing: _containers.RepeatedCompositeFieldContainer[AccountWorkspace]
+    confirm_text: str
+    def __init__(self, blocking: _Optional[_Iterable[_Union[AccountWorkspace, _Mapping]]] = ..., closing: _Optional[_Iterable[_Union[AccountWorkspace, _Mapping]]] = ..., confirm_text: _Optional[str] = ...) -> None: ...
+
+class DeleteAccountRequest(_message.Message):
+    __slots__ = ("confirm",)
+    CONFIRM_FIELD_NUMBER: _ClassVar[int]
+    confirm: str
+    def __init__(self, confirm: _Optional[str] = ...) -> None: ...
+
+class DeleteAccountResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...

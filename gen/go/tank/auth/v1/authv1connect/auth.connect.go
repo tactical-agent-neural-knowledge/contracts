@@ -76,6 +76,14 @@ const (
 	AuthServiceStartSsoProcedure = "/tank.auth.v1.AuthService/StartSso"
 	// AuthServiceCompleteSsoProcedure is the fully-qualified name of the AuthService's CompleteSso RPC.
 	AuthServiceCompleteSsoProcedure = "/tank.auth.v1.AuthService/CompleteSso"
+	// AuthServiceUpdateMeProcedure is the fully-qualified name of the AuthService's UpdateMe RPC.
+	AuthServiceUpdateMeProcedure = "/tank.auth.v1.AuthService/UpdateMe"
+	// AuthServiceGetAccountDeletionProcedure is the fully-qualified name of the AuthService's
+	// GetAccountDeletion RPC.
+	AuthServiceGetAccountDeletionProcedure = "/tank.auth.v1.AuthService/GetAccountDeletion"
+	// AuthServiceDeleteAccountProcedure is the fully-qualified name of the AuthService's DeleteAccount
+	// RPC.
+	AuthServiceDeleteAccountProcedure = "/tank.auth.v1.AuthService/DeleteAccount"
 )
 
 // AuthServiceClient is a client for the tank.auth.v1.AuthService service.
@@ -96,6 +104,9 @@ type AuthServiceClient interface {
 	SetSsoConfig(context.Context, *connect.Request[v1.SetSsoConfigRequest]) (*connect.Response[v1.SetSsoConfigResponse], error)
 	StartSso(context.Context, *connect.Request[v1.StartSsoRequest]) (*connect.Response[v1.StartSsoResponse], error)
 	CompleteSso(context.Context, *connect.Request[v1.CompleteSsoRequest]) (*connect.Response[v1.CompleteSsoResponse], error)
+	UpdateMe(context.Context, *connect.Request[v1.UpdateMeRequest]) (*connect.Response[v1.UpdateMeResponse], error)
+	GetAccountDeletion(context.Context, *connect.Request[v1.GetAccountDeletionRequest]) (*connect.Response[v1.GetAccountDeletionResponse], error)
+	DeleteAccount(context.Context, *connect.Request[v1.DeleteAccountRequest]) (*connect.Response[v1.DeleteAccountResponse], error)
 }
 
 // NewAuthServiceClient constructs a client for the tank.auth.v1.AuthService service. By default, it
@@ -205,6 +216,24 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(authServiceMethods.ByName("CompleteSso")),
 			connect.WithClientOptions(opts...),
 		),
+		updateMe: connect.NewClient[v1.UpdateMeRequest, v1.UpdateMeResponse](
+			httpClient,
+			baseURL+AuthServiceUpdateMeProcedure,
+			connect.WithSchema(authServiceMethods.ByName("UpdateMe")),
+			connect.WithClientOptions(opts...),
+		),
+		getAccountDeletion: connect.NewClient[v1.GetAccountDeletionRequest, v1.GetAccountDeletionResponse](
+			httpClient,
+			baseURL+AuthServiceGetAccountDeletionProcedure,
+			connect.WithSchema(authServiceMethods.ByName("GetAccountDeletion")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteAccount: connect.NewClient[v1.DeleteAccountRequest, v1.DeleteAccountResponse](
+			httpClient,
+			baseURL+AuthServiceDeleteAccountProcedure,
+			connect.WithSchema(authServiceMethods.ByName("DeleteAccount")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -226,6 +255,9 @@ type authServiceClient struct {
 	setSsoConfig            *connect.Client[v1.SetSsoConfigRequest, v1.SetSsoConfigResponse]
 	startSso                *connect.Client[v1.StartSsoRequest, v1.StartSsoResponse]
 	completeSso             *connect.Client[v1.CompleteSsoRequest, v1.CompleteSsoResponse]
+	updateMe                *connect.Client[v1.UpdateMeRequest, v1.UpdateMeResponse]
+	getAccountDeletion      *connect.Client[v1.GetAccountDeletionRequest, v1.GetAccountDeletionResponse]
+	deleteAccount           *connect.Client[v1.DeleteAccountRequest, v1.DeleteAccountResponse]
 }
 
 // StartMagicLink calls tank.auth.v1.AuthService.StartMagicLink.
@@ -308,6 +340,21 @@ func (c *authServiceClient) CompleteSso(ctx context.Context, req *connect.Reques
 	return c.completeSso.CallUnary(ctx, req)
 }
 
+// UpdateMe calls tank.auth.v1.AuthService.UpdateMe.
+func (c *authServiceClient) UpdateMe(ctx context.Context, req *connect.Request[v1.UpdateMeRequest]) (*connect.Response[v1.UpdateMeResponse], error) {
+	return c.updateMe.CallUnary(ctx, req)
+}
+
+// GetAccountDeletion calls tank.auth.v1.AuthService.GetAccountDeletion.
+func (c *authServiceClient) GetAccountDeletion(ctx context.Context, req *connect.Request[v1.GetAccountDeletionRequest]) (*connect.Response[v1.GetAccountDeletionResponse], error) {
+	return c.getAccountDeletion.CallUnary(ctx, req)
+}
+
+// DeleteAccount calls tank.auth.v1.AuthService.DeleteAccount.
+func (c *authServiceClient) DeleteAccount(ctx context.Context, req *connect.Request[v1.DeleteAccountRequest]) (*connect.Response[v1.DeleteAccountResponse], error) {
+	return c.deleteAccount.CallUnary(ctx, req)
+}
+
 // AuthServiceHandler is an implementation of the tank.auth.v1.AuthService service.
 type AuthServiceHandler interface {
 	StartMagicLink(context.Context, *connect.Request[v1.StartMagicLinkRequest]) (*connect.Response[v1.StartMagicLinkResponse], error)
@@ -326,6 +373,9 @@ type AuthServiceHandler interface {
 	SetSsoConfig(context.Context, *connect.Request[v1.SetSsoConfigRequest]) (*connect.Response[v1.SetSsoConfigResponse], error)
 	StartSso(context.Context, *connect.Request[v1.StartSsoRequest]) (*connect.Response[v1.StartSsoResponse], error)
 	CompleteSso(context.Context, *connect.Request[v1.CompleteSsoRequest]) (*connect.Response[v1.CompleteSsoResponse], error)
+	UpdateMe(context.Context, *connect.Request[v1.UpdateMeRequest]) (*connect.Response[v1.UpdateMeResponse], error)
+	GetAccountDeletion(context.Context, *connect.Request[v1.GetAccountDeletionRequest]) (*connect.Response[v1.GetAccountDeletionResponse], error)
+	DeleteAccount(context.Context, *connect.Request[v1.DeleteAccountRequest]) (*connect.Response[v1.DeleteAccountResponse], error)
 }
 
 // NewAuthServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -431,6 +481,24 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(authServiceMethods.ByName("CompleteSso")),
 		connect.WithHandlerOptions(opts...),
 	)
+	authServiceUpdateMeHandler := connect.NewUnaryHandler(
+		AuthServiceUpdateMeProcedure,
+		svc.UpdateMe,
+		connect.WithSchema(authServiceMethods.ByName("UpdateMe")),
+		connect.WithHandlerOptions(opts...),
+	)
+	authServiceGetAccountDeletionHandler := connect.NewUnaryHandler(
+		AuthServiceGetAccountDeletionProcedure,
+		svc.GetAccountDeletion,
+		connect.WithSchema(authServiceMethods.ByName("GetAccountDeletion")),
+		connect.WithHandlerOptions(opts...),
+	)
+	authServiceDeleteAccountHandler := connect.NewUnaryHandler(
+		AuthServiceDeleteAccountProcedure,
+		svc.DeleteAccount,
+		connect.WithSchema(authServiceMethods.ByName("DeleteAccount")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.auth.v1.AuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AuthServiceStartMagicLinkProcedure:
@@ -465,6 +533,12 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 			authServiceStartSsoHandler.ServeHTTP(w, r)
 		case AuthServiceCompleteSsoProcedure:
 			authServiceCompleteSsoHandler.ServeHTTP(w, r)
+		case AuthServiceUpdateMeProcedure:
+			authServiceUpdateMeHandler.ServeHTTP(w, r)
+		case AuthServiceGetAccountDeletionProcedure:
+			authServiceGetAccountDeletionHandler.ServeHTTP(w, r)
+		case AuthServiceDeleteAccountProcedure:
+			authServiceDeleteAccountHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -536,4 +610,16 @@ func (UnimplementedAuthServiceHandler) StartSso(context.Context, *connect.Reques
 
 func (UnimplementedAuthServiceHandler) CompleteSso(context.Context, *connect.Request[v1.CompleteSsoRequest]) (*connect.Response[v1.CompleteSsoResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.CompleteSso is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) UpdateMe(context.Context, *connect.Request[v1.UpdateMeRequest]) (*connect.Response[v1.UpdateMeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.UpdateMe is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) GetAccountDeletion(context.Context, *connect.Request[v1.GetAccountDeletionRequest]) (*connect.Response[v1.GetAccountDeletionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.GetAccountDeletion is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) DeleteAccount(context.Context, *connect.Request[v1.DeleteAccountRequest]) (*connect.Response[v1.DeleteAccountResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.DeleteAccount is not implemented"))
 }
