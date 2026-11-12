@@ -18,7 +18,7 @@ ROLE_USER: Role
 ROLE_ASSISTANT: Role
 
 class Conversation(_message.Message):
-    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps", "overlays", "members", "pages", "last_text", "last_author_id", "last_author_name", "last_role", "last_at", "unread", "muted", "devices", "app_connections")
+    __slots__ = ("id", "title", "created_at", "updated_at", "preview", "pinned", "workspace_id", "apps", "overlays", "members", "pages", "last_text", "last_author_id", "last_author_name", "last_role", "last_at", "unread", "muted", "devices", "app_connections", "read_receipts", "last_message_id")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
@@ -39,6 +39,8 @@ class Conversation(_message.Message):
     MUTED_FIELD_NUMBER: _ClassVar[int]
     DEVICES_FIELD_NUMBER: _ClassVar[int]
     APP_CONNECTIONS_FIELD_NUMBER: _ClassVar[int]
+    READ_RECEIPTS_FIELD_NUMBER: _ClassVar[int]
+    LAST_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     created_at: _timestamp_pb2.Timestamp
@@ -59,7 +61,9 @@ class Conversation(_message.Message):
     muted: bool
     devices: _containers.RepeatedCompositeFieldContainer[ConnectedDevice]
     app_connections: _containers.RepeatedCompositeFieldContainer[AppConnection]
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ..., overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., pages: _Optional[_Iterable[_Union[ConnectedPage, _Mapping]]] = ..., last_text: _Optional[str] = ..., last_author_id: _Optional[str] = ..., last_author_name: _Optional[str] = ..., last_role: _Optional[str] = ..., last_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., unread: _Optional[int] = ..., muted: bool = ..., devices: _Optional[_Iterable[_Union[ConnectedDevice, _Mapping]]] = ..., app_connections: _Optional[_Iterable[_Union[AppConnection, _Mapping]]] = ...) -> None: ...
+    read_receipts: bool
+    last_message_id: str
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., preview: _Optional[str] = ..., pinned: bool = ..., workspace_id: _Optional[str] = ..., apps: _Optional[_Iterable[_Union[_apps_pb2.App, _Mapping]]] = ..., overlays: _Optional[_Iterable[_Union[Overlay, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., pages: _Optional[_Iterable[_Union[ConnectedPage, _Mapping]]] = ..., last_text: _Optional[str] = ..., last_author_id: _Optional[str] = ..., last_author_name: _Optional[str] = ..., last_role: _Optional[str] = ..., last_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., unread: _Optional[int] = ..., muted: bool = ..., devices: _Optional[_Iterable[_Union[ConnectedDevice, _Mapping]]] = ..., app_connections: _Optional[_Iterable[_Union[AppConnection, _Mapping]]] = ..., read_receipts: bool = ..., last_message_id: _Optional[str] = ...) -> None: ...
 
 class AppConnection(_message.Message):
     __slots__ = ("app_id", "connected_by_id", "connected_by_name", "needs_login")
@@ -104,18 +108,22 @@ class ConnectedPage(_message.Message):
     def __init__(self, id: _Optional[str] = ..., url: _Optional[str] = ..., title: _Optional[str] = ..., owner_id: _Optional[str] = ..., owner_name: _Optional[str] = ...) -> None: ...
 
 class Member(_message.Message):
-    __slots__ = ("user_id", "name", "avatar_url", "role", "joined_at")
+    __slots__ = ("user_id", "name", "avatar_url", "role", "joined_at", "read_message_id", "read_at")
     USER_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     AVATAR_URL_FIELD_NUMBER: _ClassVar[int]
     ROLE_FIELD_NUMBER: _ClassVar[int]
     JOINED_AT_FIELD_NUMBER: _ClassVar[int]
+    READ_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    READ_AT_FIELD_NUMBER: _ClassVar[int]
     user_id: str
     name: str
     avatar_url: str
     role: str
     joined_at: _timestamp_pb2.Timestamp
-    def __init__(self, user_id: _Optional[str] = ..., name: _Optional[str] = ..., avatar_url: _Optional[str] = ..., role: _Optional[str] = ..., joined_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    read_message_id: str
+    read_at: _timestamp_pb2.Timestamp
+    def __init__(self, user_id: _Optional[str] = ..., name: _Optional[str] = ..., avatar_url: _Optional[str] = ..., role: _Optional[str] = ..., joined_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., read_message_id: _Optional[str] = ..., read_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class Overlay(_message.Message):
     __slots__ = ("id", "title", "source", "marks", "as_of", "offer_id")
@@ -158,7 +166,7 @@ class Attachment(_message.Message):
     def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., data: _Optional[bytes] = ..., size: _Optional[int] = ..., file_id: _Optional[str] = ...) -> None: ...
 
 class Message(_message.Message):
-    __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of", "suggestions", "offers", "author_id", "author_name", "author_avatar_url", "reactions")
+    __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of", "suggestions", "offers", "author_id", "author_name", "author_avatar_url", "reactions", "receipts")
     ID_FIELD_NUMBER: _ClassVar[int]
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
     ROLE_FIELD_NUMBER: _ClassVar[int]
@@ -176,6 +184,7 @@ class Message(_message.Message):
     AUTHOR_NAME_FIELD_NUMBER: _ClassVar[int]
     AUTHOR_AVATAR_URL_FIELD_NUMBER: _ClassVar[int]
     REACTIONS_FIELD_NUMBER: _ClassVar[int]
+    RECEIPTS_FIELD_NUMBER: _ClassVar[int]
     id: str
     conversation_id: str
     role: Role
@@ -193,7 +202,44 @@ class Message(_message.Message):
     author_name: str
     author_avatar_url: str
     reactions: _containers.RepeatedCompositeFieldContainer[Reaction]
-    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ..., as_of: _Optional[str] = ..., suggestions: _Optional[_Iterable[str]] = ..., offers: _Optional[_Iterable[_Union[Offer, _Mapping]]] = ..., author_id: _Optional[str] = ..., author_name: _Optional[str] = ..., author_avatar_url: _Optional[str] = ..., reactions: _Optional[_Iterable[_Union[Reaction, _Mapping]]] = ...) -> None: ...
+    receipts: Receipts
+    def __init__(self, id: _Optional[str] = ..., conversation_id: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stop_reason: _Optional[str] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., rating: _Optional[int] = ..., as_of: _Optional[str] = ..., suggestions: _Optional[_Iterable[str]] = ..., offers: _Optional[_Iterable[_Union[Offer, _Mapping]]] = ..., author_id: _Optional[str] = ..., author_name: _Optional[str] = ..., author_avatar_url: _Optional[str] = ..., reactions: _Optional[_Iterable[_Union[Reaction, _Mapping]]] = ..., receipts: _Optional[_Union[Receipts, _Mapping]] = ...) -> None: ...
+
+class Receipts(_message.Message):
+    __slots__ = ("state", "members")
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    MEMBERS_FIELD_NUMBER: _ClassVar[int]
+    state: str
+    members: _containers.RepeatedCompositeFieldContainer[MemberReceipt]
+    def __init__(self, state: _Optional[str] = ..., members: _Optional[_Iterable[_Union[MemberReceipt, _Mapping]]] = ...) -> None: ...
+
+class MemberReceipt(_message.Message):
+    __slots__ = ("user_id", "name", "avatar_url", "delivered_at", "read_at")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    AVATAR_URL_FIELD_NUMBER: _ClassVar[int]
+    DELIVERED_AT_FIELD_NUMBER: _ClassVar[int]
+    READ_AT_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    name: str
+    avatar_url: str
+    delivered_at: _timestamp_pb2.Timestamp
+    read_at: _timestamp_pb2.Timestamp
+    def __init__(self, user_id: _Optional[str] = ..., name: _Optional[str] = ..., avatar_url: _Optional[str] = ..., delivered_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., read_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class MessageReceipts(_message.Message):
+    __slots__ = ("message_id", "receipts")
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    RECEIPTS_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    receipts: Receipts
+    def __init__(self, message_id: _Optional[str] = ..., receipts: _Optional[_Union[Receipts, _Mapping]] = ...) -> None: ...
+
+class ReceiptsChanged(_message.Message):
+    __slots__ = ("messages",)
+    MESSAGES_FIELD_NUMBER: _ClassVar[int]
+    messages: _containers.RepeatedCompositeFieldContainer[MessageReceipts]
+    def __init__(self, messages: _Optional[_Iterable[_Union[MessageReceipts, _Mapping]]] = ...) -> None: ...
 
 class Reaction(_message.Message):
     __slots__ = ("emoji", "count", "mine", "user_ids")
@@ -549,6 +595,38 @@ class GetUsageResponse(_message.Message):
     model_label: str
     def __init__(self, days: _Optional[_Iterable[_Union[UsageDay, _Mapping]]] = ..., messages: _Optional[int] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., cost_micro_usd: _Optional[int] = ..., today_messages: _Optional[int] = ..., month_cost_micro_usd: _Optional[int] = ..., all_time_messages: _Optional[int] = ..., conversations: _Optional[_Iterable[_Union[ConversationUsage, _Mapping]]] = ..., model_label: _Optional[str] = ...) -> None: ...
 
+class SetReadReceiptsRequest(_message.Message):
+    __slots__ = ("conversation_id", "on")
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    ON_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    on: bool
+    def __init__(self, conversation_id: _Optional[str] = ..., on: bool = ...) -> None: ...
+
+class SetReadReceiptsResponse(_message.Message):
+    __slots__ = ("conversation",)
+    CONVERSATION_FIELD_NUMBER: _ClassVar[int]
+    conversation: Conversation
+    def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ...) -> None: ...
+
+class MarkDeliveredRequest(_message.Message):
+    __slots__ = ("delivered",)
+    DELIVERED_FIELD_NUMBER: _ClassVar[int]
+    delivered: _containers.RepeatedCompositeFieldContainer[Delivered]
+    def __init__(self, delivered: _Optional[_Iterable[_Union[Delivered, _Mapping]]] = ...) -> None: ...
+
+class Delivered(_message.Message):
+    __slots__ = ("conversation_id", "message_id")
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    message_id: str
+    def __init__(self, conversation_id: _Optional[str] = ..., message_id: _Optional[str] = ...) -> None: ...
+
+class MarkDeliveredResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class AddReactionRequest(_message.Message):
     __slots__ = ("message_id", "emoji")
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
@@ -736,7 +814,7 @@ class WatchRequest(_message.Message):
     def __init__(self, conversation_id: _Optional[str] = ...) -> None: ...
 
 class WatchResponse(_message.Message):
-    __slots__ = ("message", "reply_started", "reply_delta", "conversation", "typing", "suggestions", "devices_changed", "pages_changed", "device_updated", "reactions")
+    __slots__ = ("message", "reply_started", "reply_delta", "conversation", "typing", "suggestions", "devices_changed", "pages_changed", "device_updated", "reactions", "receipts")
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     REPLY_STARTED_FIELD_NUMBER: _ClassVar[int]
     REPLY_DELTA_FIELD_NUMBER: _ClassVar[int]
@@ -747,6 +825,7 @@ class WatchResponse(_message.Message):
     PAGES_CHANGED_FIELD_NUMBER: _ClassVar[int]
     DEVICE_UPDATED_FIELD_NUMBER: _ClassVar[int]
     REACTIONS_FIELD_NUMBER: _ClassVar[int]
+    RECEIPTS_FIELD_NUMBER: _ClassVar[int]
     message: Message
     reply_started: ReplyStarted
     reply_delta: ReplyDelta
@@ -757,7 +836,8 @@ class WatchResponse(_message.Message):
     pages_changed: str
     device_updated: str
     reactions: MessageReactions
-    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ..., reply_started: _Optional[_Union[ReplyStarted, _Mapping]] = ..., reply_delta: _Optional[_Union[ReplyDelta, _Mapping]] = ..., conversation: _Optional[_Union[Conversation, _Mapping]] = ..., typing: _Optional[_Union[Typing, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ..., devices_changed: _Optional[str] = ..., pages_changed: _Optional[str] = ..., device_updated: _Optional[str] = ..., reactions: _Optional[_Union[MessageReactions, _Mapping]] = ...) -> None: ...
+    receipts: ReceiptsChanged
+    def __init__(self, message: _Optional[_Union[Message, _Mapping]] = ..., reply_started: _Optional[_Union[ReplyStarted, _Mapping]] = ..., reply_delta: _Optional[_Union[ReplyDelta, _Mapping]] = ..., conversation: _Optional[_Union[Conversation, _Mapping]] = ..., typing: _Optional[_Union[Typing, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ..., devices_changed: _Optional[str] = ..., pages_changed: _Optional[str] = ..., device_updated: _Optional[str] = ..., reactions: _Optional[_Union[MessageReactions, _Mapping]] = ..., receipts: _Optional[_Union[ReceiptsChanged, _Mapping]] = ...) -> None: ...
 
 class ReplyStarted(_message.Message):
     __slots__ = ("message_id", "asked_by")
