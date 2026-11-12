@@ -108,6 +108,11 @@ const (
 	// AiServiceRemoveReactionProcedure is the fully-qualified name of the AiService's RemoveReaction
 	// RPC.
 	AiServiceRemoveReactionProcedure = "/tank.ai.v1.AiService/RemoveReaction"
+	// AiServiceSetReadReceiptsProcedure is the fully-qualified name of the AiService's SetReadReceipts
+	// RPC.
+	AiServiceSetReadReceiptsProcedure = "/tank.ai.v1.AiService/SetReadReceipts"
+	// AiServiceMarkDeliveredProcedure is the fully-qualified name of the AiService's MarkDelivered RPC.
+	AiServiceMarkDeliveredProcedure = "/tank.ai.v1.AiService/MarkDelivered"
 )
 
 // AiServiceClient is a client for the tank.ai.v1.AiService service.
@@ -164,6 +169,14 @@ type AiServiceClient interface {
 	// WatchResponse.reactions. Adding one already there, or removing one that is not, is no error.
 	AddReaction(context.Context, *connect.Request[v1.AddReactionRequest]) (*connect.Response[v1.AddReactionResponse], error)
 	RemoveReaction(context.Context, *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error)
+	// The caller's read receipts switch for one conversation (Conversation.read_receipts). Off by
+	// default, for every member of every conversation. Turning it on shares only what happens from
+	// then on: nothing read while it was off is ever shown as read.
+	SetReadReceipts(context.Context, *connect.Request[v1.SetReadReceiptsRequest]) (*connect.Response[v1.SetReadReceiptsResponse], error)
+	// The client has received messages (in the chat list, say): the newest it has in each
+	// conversation. Reading implies it (MarkRead, and a Watch that delivers a message), so a
+	// conversation on screen needs no call. A conversation the caller is not in is skipped.
+	MarkDelivered(context.Context, *connect.Request[v1.MarkDeliveredRequest]) (*connect.Response[v1.MarkDeliveredResponse], error)
 }
 
 // NewAiServiceClient constructs a client for the tank.ai.v1.AiService service. By default, it uses
@@ -369,6 +382,18 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("RemoveReaction")),
 			connect.WithClientOptions(opts...),
 		),
+		setReadReceipts: connect.NewClient[v1.SetReadReceiptsRequest, v1.SetReadReceiptsResponse](
+			httpClient,
+			baseURL+AiServiceSetReadReceiptsProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("SetReadReceipts")),
+			connect.WithClientOptions(opts...),
+		),
+		markDelivered: connect.NewClient[v1.MarkDeliveredRequest, v1.MarkDeliveredResponse](
+			httpClient,
+			baseURL+AiServiceMarkDeliveredProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("MarkDelivered")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -406,6 +431,8 @@ type aiServiceClient struct {
 	transcribe         *connect.Client[v1.TranscribeRequest, v1.TranscribeResponse]
 	addReaction        *connect.Client[v1.AddReactionRequest, v1.AddReactionResponse]
 	removeReaction     *connect.Client[v1.RemoveReactionRequest, v1.RemoveReactionResponse]
+	setReadReceipts    *connect.Client[v1.SetReadReceiptsRequest, v1.SetReadReceiptsResponse]
+	markDelivered      *connect.Client[v1.MarkDeliveredRequest, v1.MarkDeliveredResponse]
 }
 
 // ListConversations calls tank.ai.v1.AiService.ListConversations.
@@ -568,6 +595,16 @@ func (c *aiServiceClient) RemoveReaction(ctx context.Context, req *connect.Reque
 	return c.removeReaction.CallUnary(ctx, req)
 }
 
+// SetReadReceipts calls tank.ai.v1.AiService.SetReadReceipts.
+func (c *aiServiceClient) SetReadReceipts(ctx context.Context, req *connect.Request[v1.SetReadReceiptsRequest]) (*connect.Response[v1.SetReadReceiptsResponse], error) {
+	return c.setReadReceipts.CallUnary(ctx, req)
+}
+
+// MarkDelivered calls tank.ai.v1.AiService.MarkDelivered.
+func (c *aiServiceClient) MarkDelivered(ctx context.Context, req *connect.Request[v1.MarkDeliveredRequest]) (*connect.Response[v1.MarkDeliveredResponse], error) {
+	return c.markDelivered.CallUnary(ctx, req)
+}
+
 // AiServiceHandler is an implementation of the tank.ai.v1.AiService service.
 type AiServiceHandler interface {
 	ListConversations(context.Context, *connect.Request[v1.ListConversationsRequest]) (*connect.Response[v1.ListConversationsResponse], error)
@@ -622,6 +659,14 @@ type AiServiceHandler interface {
 	// WatchResponse.reactions. Adding one already there, or removing one that is not, is no error.
 	AddReaction(context.Context, *connect.Request[v1.AddReactionRequest]) (*connect.Response[v1.AddReactionResponse], error)
 	RemoveReaction(context.Context, *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error)
+	// The caller's read receipts switch for one conversation (Conversation.read_receipts). Off by
+	// default, for every member of every conversation. Turning it on shares only what happens from
+	// then on: nothing read while it was off is ever shown as read.
+	SetReadReceipts(context.Context, *connect.Request[v1.SetReadReceiptsRequest]) (*connect.Response[v1.SetReadReceiptsResponse], error)
+	// The client has received messages (in the chat list, say): the newest it has in each
+	// conversation. Reading implies it (MarkRead, and a Watch that delivers a message), so a
+	// conversation on screen needs no call. A conversation the caller is not in is skipped.
+	MarkDelivered(context.Context, *connect.Request[v1.MarkDeliveredRequest]) (*connect.Response[v1.MarkDeliveredResponse], error)
 }
 
 // NewAiServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -823,6 +868,18 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("RemoveReaction")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServiceSetReadReceiptsHandler := connect.NewUnaryHandler(
+		AiServiceSetReadReceiptsProcedure,
+		svc.SetReadReceipts,
+		connect.WithSchema(aiServiceMethods.ByName("SetReadReceipts")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aiServiceMarkDeliveredHandler := connect.NewUnaryHandler(
+		AiServiceMarkDeliveredProcedure,
+		svc.MarkDelivered,
+		connect.WithSchema(aiServiceMethods.ByName("MarkDelivered")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.ai.v1.AiService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AiServiceListConversationsProcedure:
@@ -889,6 +946,10 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceAddReactionHandler.ServeHTTP(w, r)
 		case AiServiceRemoveReactionProcedure:
 			aiServiceRemoveReactionHandler.ServeHTTP(w, r)
+		case AiServiceSetReadReceiptsProcedure:
+			aiServiceSetReadReceiptsHandler.ServeHTTP(w, r)
+		case AiServiceMarkDeliveredProcedure:
+			aiServiceMarkDeliveredHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -1024,4 +1085,12 @@ func (UnimplementedAiServiceHandler) AddReaction(context.Context, *connect.Reque
 
 func (UnimplementedAiServiceHandler) RemoveReaction(context.Context, *connect.Request[v1.RemoveReactionRequest]) (*connect.Response[v1.RemoveReactionResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.RemoveReaction is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) SetReadReceipts(context.Context, *connect.Request[v1.SetReadReceiptsRequest]) (*connect.Response[v1.SetReadReceiptsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.SetReadReceipts is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) MarkDelivered(context.Context, *connect.Request[v1.MarkDeliveredRequest]) (*connect.Response[v1.MarkDeliveredResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.MarkDelivered is not implemented"))
 }

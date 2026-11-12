@@ -54,6 +54,13 @@ message Conversation {
   // ("Datum · Robby's account"). In a shared conversation such an app answers only the
   // messages of the person whose account it is.
   repeated AppConnection app_connections = 20;
+  // The caller's own read receipts switch for this conversation (Robby, 2026-11-12: "the option
+  // to turn on read receipts per conversation. Defaults to off"). On, the caller's deliveries and
+  // reads are shared with others whose switch is on, and the caller sees theirs: ticks on the
+  // caller's own messages (Message.receipts) and Member.read_message_id. Off, neither way.
+  bool read_receipts = 21;
+  // The newest message's id, so a client that has received it can say so (MarkDelivered).
+  string last_message_id = 22;
 }
 
 message AppConnection {
@@ -91,6 +98,10 @@ message Member {
   // "owner" (made it; may remove people and delete it) or "member".
   string role = 4;
   google.protobuf.Timestamp joined_at = 5;
+  // How far this member has read and when they reached it, only when the caller's read receipts
+  // and this member's are both on; empty otherwise, and always empty for the caller.
+  string read_message_id = 6;
+  google.protobuf.Timestamp read_at = 7;
 }
 
 // Overlay is a layer Neural drew over the person's camera when they took an offer.
@@ -168,6 +179,39 @@ message Message {
   // Emoji people put on the message, people's and Neural's alike, in the order each emoji was
   // first used (Robby, 2026-11-12: "I need to be able to add an emoji as a reaction").
   repeated Reaction reactions = 17;
+  // Ticks, on the caller's own messages only, when the caller's read receipts are on and someone
+  // else was in the conversation when it was sent. Unset otherwise.
+  Receipts receipts = 18;
+}
+
+// Receipts is how far one of the caller's messages has got, worked out by the server.
+message Receipts {
+  // "sent"; "delivered" once it is on a device of every other member who was in the conversation
+  // when it was sent; "read" once every one of them has read it. A member whose read receipts are
+  // off counts as neither, as in WhatsApp.
+  string state = 1;
+  // Each of those members whose read receipts are on, with when it reached them and when they
+  // read it (either unset until it happens), in the order they joined.
+  repeated MemberReceipt members = 2;
+}
+
+message MemberReceipt {
+  string user_id = 1;
+  string name = 2;
+  string avatar_url = 3;
+  google.protobuf.Timestamp delivered_at = 4;
+  google.protobuf.Timestamp read_at = 5;
+}
+
+// MessageReceipts is one message's receipts as they are now.
+message MessageReceipts {
+  string message_id = 1;
+  Receipts receipts = 2;
+}
+
+// ReceiptsChanged is the watcher's own messages whose receipts changed.
+message ReceiptsChanged {
+  repeated MessageReceipts messages = 1;
 }
 
 // Reaction is one emoji on a message and who put it there, as reactions show in Treads.
@@ -492,7 +536,32 @@ service AiService {
   // WatchResponse.reactions. Adding one already there, or removing one that is not, is no error.
   rpc AddReaction(AddReactionRequest) returns (AddReactionResponse);
   rpc RemoveReaction(RemoveReactionRequest) returns (RemoveReactionResponse);
+  // The caller's read receipts switch for one conversation (Conversation.read_receipts). Off by
+  // default, for every member of every conversation. Turning it on shares only what happens from
+  // then on: nothing read while it was off is ever shown as read.
+  rpc SetReadReceipts(SetReadReceiptsRequest) returns (SetReadReceiptsResponse);
+  // The client has received messages (in the chat list, say): the newest it has in each
+  // conversation. Reading implies it (MarkRead, and a Watch that delivers a message), so a
+  // conversation on screen needs no call. A conversation the caller is not in is skipped.
+  rpc MarkDelivered(MarkDeliveredRequest) returns (MarkDeliveredResponse);
 }
+
+message SetReadReceiptsRequest {
+  string conversation_id = 1;
+  bool on = 2;
+}
+message SetReadReceiptsResponse {
+  Conversation conversation = 1;
+}
+message MarkDeliveredRequest {
+  // At most 200.
+  repeated Delivered delivered = 1;
+}
+message Delivered {
+  string conversation_id = 1;
+  string message_id = 2;
+}
+message MarkDeliveredResponse {}
 
 message AddReactionRequest {
   string message_id = 1;
@@ -626,6 +695,9 @@ message WatchResponse {
     string device_updated = 9;
     // Someone added or removed a reaction; the message's reactions as they are now.
     MessageReactions reactions = 10;
+    // The watcher's own messages whose ticks changed (someone received or read them, or turned
+    // their read receipts on or off). Only ever sent to a watcher whose read receipts are on.
+    ReceiptsChanged receipts = 11;
   }
 }
 message ReplyStarted {
