@@ -110,6 +110,15 @@ const (
 	// RunnerServiceRunRunbookProcedure is the fully-qualified name of the RunnerService's RunRunbook
 	// RPC.
 	RunnerServiceRunRunbookProcedure = "/tank.agentctl.v1.RunnerService/RunRunbook"
+	// RunnerServiceTestLoginOpenProcedure is the fully-qualified name of the RunnerService's
+	// TestLoginOpen RPC.
+	RunnerServiceTestLoginOpenProcedure = "/tank.agentctl.v1.RunnerService/TestLoginOpen"
+	// RunnerServiceTestLoginActProcedure is the fully-qualified name of the RunnerService's
+	// TestLoginAct RPC.
+	RunnerServiceTestLoginActProcedure = "/tank.agentctl.v1.RunnerService/TestLoginAct"
+	// RunnerServiceTestLoginCloseProcedure is the fully-qualified name of the RunnerService's
+	// TestLoginClose RPC.
+	RunnerServiceTestLoginCloseProcedure = "/tank.agentctl.v1.RunnerService/TestLoginClose"
 	// RunnerServiceReadProductProcedure is the fully-qualified name of the RunnerService's ReadProduct
 	// RPC.
 	RunnerServiceReadProductProcedure = "/tank.agentctl.v1.RunnerService/ReadProduct"
@@ -474,6 +483,12 @@ type RunnerServiceClient interface {
 	// Asks to run a runbook: opens a gate a workspace admin decides; the outcome of the
 	// workflow arrives on the inbox.
 	RunRunbook(context.Context, *connect.Request[v1.RunRunbookRequest]) (*connect.Response[v1.RunRunbookResponse], error)
+	// Test logins (2026-11-13): TANK's own browser signs in to one of the workspace's apps with
+	// a login kept in the Lockbox Agent vault, and the run drives that page by steps. The
+	// password and one-time code never reach the run: it gets screenshots and the page's text.
+	TestLoginOpen(context.Context, *connect.Request[v1.TestLoginOpenRequest]) (*connect.Response[v1.TestLoginOpenResponse], error)
+	TestLoginAct(context.Context, *connect.Request[v1.TestLoginActRequest]) (*connect.Response[v1.TestLoginActResponse], error)
+	TestLoginClose(context.Context, *connect.Request[v1.TestLoginCloseRequest]) (*connect.Response[v1.TestLoginCloseResponse], error)
 	// The product TANK runs for this run's repository, as its operator sees it: whether it
 	// is up, how often it has restarted and why, recent cluster events and its log. So an
 	// agent can see the product it built fail instead of hearing about it from a person.
@@ -697,6 +712,24 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServiceRunRunbookProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("RunRunbook")),
+			connect.WithClientOptions(opts...),
+		),
+		testLoginOpen: connect.NewClient[v1.TestLoginOpenRequest, v1.TestLoginOpenResponse](
+			httpClient,
+			baseURL+RunnerServiceTestLoginOpenProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("TestLoginOpen")),
+			connect.WithClientOptions(opts...),
+		),
+		testLoginAct: connect.NewClient[v1.TestLoginActRequest, v1.TestLoginActResponse](
+			httpClient,
+			baseURL+RunnerServiceTestLoginActProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("TestLoginAct")),
+			connect.WithClientOptions(opts...),
+		),
+		testLoginClose: connect.NewClient[v1.TestLoginCloseRequest, v1.TestLoginCloseResponse](
+			httpClient,
+			baseURL+RunnerServiceTestLoginCloseProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("TestLoginClose")),
 			connect.WithClientOptions(opts...),
 		),
 		readProduct: connect.NewClient[v1.ReadProductRequest, v1.ReadProductResponse](
@@ -995,6 +1028,9 @@ type runnerServiceClient struct {
 	infraCosts               *connect.Client[v1.InfraCostsRequest, v1.InfraCostsResponse]
 	listRunbooks             *connect.Client[v1.ListRunbooksRequest, v1.ListRunbooksResponse]
 	runRunbook               *connect.Client[v1.RunRunbookRequest, v1.RunRunbookResponse]
+	testLoginOpen            *connect.Client[v1.TestLoginOpenRequest, v1.TestLoginOpenResponse]
+	testLoginAct             *connect.Client[v1.TestLoginActRequest, v1.TestLoginActResponse]
+	testLoginClose           *connect.Client[v1.TestLoginCloseRequest, v1.TestLoginCloseResponse]
 	readProduct              *connect.Client[v1.ReadProductRequest, v1.ReadProductResponse]
 	validateSpec             *connect.Client[v1.ValidateSpecRequest, v1.ValidateSpecResponse]
 	readThread               *connect.Client[v1.ReadThreadRequest, v1.ReadThreadResponse]
@@ -1174,6 +1210,21 @@ func (c *runnerServiceClient) ListRunbooks(ctx context.Context, req *connect.Req
 // RunRunbook calls tank.agentctl.v1.RunnerService.RunRunbook.
 func (c *runnerServiceClient) RunRunbook(ctx context.Context, req *connect.Request[v1.RunRunbookRequest]) (*connect.Response[v1.RunRunbookResponse], error) {
 	return c.runRunbook.CallUnary(ctx, req)
+}
+
+// TestLoginOpen calls tank.agentctl.v1.RunnerService.TestLoginOpen.
+func (c *runnerServiceClient) TestLoginOpen(ctx context.Context, req *connect.Request[v1.TestLoginOpenRequest]) (*connect.Response[v1.TestLoginOpenResponse], error) {
+	return c.testLoginOpen.CallUnary(ctx, req)
+}
+
+// TestLoginAct calls tank.agentctl.v1.RunnerService.TestLoginAct.
+func (c *runnerServiceClient) TestLoginAct(ctx context.Context, req *connect.Request[v1.TestLoginActRequest]) (*connect.Response[v1.TestLoginActResponse], error) {
+	return c.testLoginAct.CallUnary(ctx, req)
+}
+
+// TestLoginClose calls tank.agentctl.v1.RunnerService.TestLoginClose.
+func (c *runnerServiceClient) TestLoginClose(ctx context.Context, req *connect.Request[v1.TestLoginCloseRequest]) (*connect.Response[v1.TestLoginCloseResponse], error) {
+	return c.testLoginClose.CallUnary(ctx, req)
 }
 
 // ReadProduct calls tank.agentctl.v1.RunnerService.ReadProduct.
@@ -1436,6 +1487,12 @@ type RunnerServiceHandler interface {
 	// Asks to run a runbook: opens a gate a workspace admin decides; the outcome of the
 	// workflow arrives on the inbox.
 	RunRunbook(context.Context, *connect.Request[v1.RunRunbookRequest]) (*connect.Response[v1.RunRunbookResponse], error)
+	// Test logins (2026-11-13): TANK's own browser signs in to one of the workspace's apps with
+	// a login kept in the Lockbox Agent vault, and the run drives that page by steps. The
+	// password and one-time code never reach the run: it gets screenshots and the page's text.
+	TestLoginOpen(context.Context, *connect.Request[v1.TestLoginOpenRequest]) (*connect.Response[v1.TestLoginOpenResponse], error)
+	TestLoginAct(context.Context, *connect.Request[v1.TestLoginActRequest]) (*connect.Response[v1.TestLoginActResponse], error)
+	TestLoginClose(context.Context, *connect.Request[v1.TestLoginCloseRequest]) (*connect.Response[v1.TestLoginCloseResponse], error)
 	// The product TANK runs for this run's repository, as its operator sees it: whether it
 	// is up, how often it has restarted and why, recent cluster events and its log. So an
 	// agent can see the product it built fail instead of hearing about it from a person.
@@ -1655,6 +1712,24 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceRunRunbookProcedure,
 		svc.RunRunbook,
 		connect.WithSchema(runnerServiceMethods.ByName("RunRunbook")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceTestLoginOpenHandler := connect.NewUnaryHandler(
+		RunnerServiceTestLoginOpenProcedure,
+		svc.TestLoginOpen,
+		connect.WithSchema(runnerServiceMethods.ByName("TestLoginOpen")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceTestLoginActHandler := connect.NewUnaryHandler(
+		RunnerServiceTestLoginActProcedure,
+		svc.TestLoginAct,
+		connect.WithSchema(runnerServiceMethods.ByName("TestLoginAct")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceTestLoginCloseHandler := connect.NewUnaryHandler(
+		RunnerServiceTestLoginCloseProcedure,
+		svc.TestLoginClose,
+		connect.WithSchema(runnerServiceMethods.ByName("TestLoginClose")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServiceReadProductHandler := connect.NewUnaryHandler(
@@ -1977,6 +2052,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceListRunbooksHandler.ServeHTTP(w, r)
 		case RunnerServiceRunRunbookProcedure:
 			runnerServiceRunRunbookHandler.ServeHTTP(w, r)
+		case RunnerServiceTestLoginOpenProcedure:
+			runnerServiceTestLoginOpenHandler.ServeHTTP(w, r)
+		case RunnerServiceTestLoginActProcedure:
+			runnerServiceTestLoginActHandler.ServeHTTP(w, r)
+		case RunnerServiceTestLoginCloseProcedure:
+			runnerServiceTestLoginCloseHandler.ServeHTTP(w, r)
 		case RunnerServiceReadProductProcedure:
 			runnerServiceReadProductHandler.ServeHTTP(w, r)
 		case RunnerServiceValidateSpecProcedure:
@@ -2180,6 +2261,18 @@ func (UnimplementedRunnerServiceHandler) ListRunbooks(context.Context, *connect.
 
 func (UnimplementedRunnerServiceHandler) RunRunbook(context.Context, *connect.Request[v1.RunRunbookRequest]) (*connect.Response[v1.RunRunbookResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.RunRunbook is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) TestLoginOpen(context.Context, *connect.Request[v1.TestLoginOpenRequest]) (*connect.Response[v1.TestLoginOpenResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.TestLoginOpen is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) TestLoginAct(context.Context, *connect.Request[v1.TestLoginActRequest]) (*connect.Response[v1.TestLoginActResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.TestLoginAct is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) TestLoginClose(context.Context, *connect.Request[v1.TestLoginCloseRequest]) (*connect.Response[v1.TestLoginCloseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.TestLoginClose is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) ReadProduct(context.Context, *connect.Request[v1.ReadProductRequest]) (*connect.Response[v1.ReadProductResponse], error) {
