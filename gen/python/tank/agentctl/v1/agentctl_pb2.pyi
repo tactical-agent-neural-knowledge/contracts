@@ -3027,6 +3027,42 @@ class TestLoginCloseResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class BrowserRecordStartRequest(_message.Message):
+    __slots__ = ("session_id",)
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    session_id: str
+    def __init__(self, session_id: _Optional[str] = ...) -> None: ...
+
+class BrowserRecordStartResponse(_message.Message):
+    __slots__ = ("refused", "max_seconds")
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
+    MAX_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    refused: str
+    max_seconds: int
+    def __init__(self, refused: _Optional[str] = ..., max_seconds: _Optional[int] = ...) -> None: ...
+
+class BrowserRecordStopRequest(_message.Message):
+    __slots__ = ("session_id", "caption")
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    CAPTION_FIELD_NUMBER: _ClassVar[int]
+    session_id: str
+    caption: str
+    def __init__(self, session_id: _Optional[str] = ..., caption: _Optional[str] = ...) -> None: ...
+
+class BrowserRecordStopResponse(_message.Message):
+    __slots__ = ("file_id", "duration_ms", "frames", "refused", "error")
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    DURATION_MS_FIELD_NUMBER: _ClassVar[int]
+    FRAMES_FIELD_NUMBER: _ClassVar[int]
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    file_id: str
+    duration_ms: int
+    frames: int
+    refused: str
+    error: str
+    def __init__(self, file_id: _Optional[str] = ..., duration_ms: _Optional[int] = ..., frames: _Optional[int] = ..., refused: _Optional[str] = ..., error: _Optional[str] = ...) -> None: ...
+
 class InfraRunRequest(_message.Message):
     __slots__ = ("connection", "command", "cluster", "reason")
     CONNECTION_FIELD_NUMBER: _ClassVar[int]

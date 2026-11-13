@@ -32,6 +32,9 @@ message TaskProof {
   repeated ProofCheck checklist = 3;
   string pull_request_url = 4;
   google.protobuf.Timestamp at = 5;
+  // A recording TANK's browser made of the run doing the thing (video/mp4), posted in the
+  // task's Tread (2026-11-13). Shown under "What TANK showed".
+  string video_file_id = 6;
 }
 
 // Who hears about a task when it reaches a stage.
