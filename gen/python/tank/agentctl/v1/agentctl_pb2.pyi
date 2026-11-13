@@ -1157,6 +1157,26 @@ class ReadCanvasResponse(_message.Message):
     canvas: _canvas_pb2.Canvas
     def __init__(self, canvas: _Optional[_Union[_canvas_pb2.Canvas, _Mapping]] = ...) -> None: ...
 
+class CreatePageRequest(_message.Message):
+    __slots__ = ("title", "markdown")
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    MARKDOWN_FIELD_NUMBER: _ClassVar[int]
+    title: str
+    markdown: str
+    def __init__(self, title: _Optional[str] = ..., markdown: _Optional[str] = ...) -> None: ...
+
+class CreatePageResponse(_message.Message):
+    __slots__ = ("canvas_id", "title", "blocks", "url")
+    CANVAS_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    BLOCKS_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    canvas_id: str
+    title: str
+    blocks: int
+    url: str
+    def __init__(self, canvas_id: _Optional[str] = ..., title: _Optional[str] = ..., blocks: _Optional[int] = ..., url: _Optional[str] = ...) -> None: ...
+
 class AskCanvasRequest(_message.Message):
     __slots__ = ("question", "limit")
     QUESTION_FIELD_NUMBER: _ClassVar[int]

@@ -171,6 +171,9 @@ const (
 	RunnerServiceWriteOnCanvasProcedure = "/tank.agentctl.v1.RunnerService/WriteOnCanvas"
 	// RunnerServiceAskCanvasProcedure is the fully-qualified name of the RunnerService's AskCanvas RPC.
 	RunnerServiceAskCanvasProcedure = "/tank.agentctl.v1.RunnerService/AskCanvas"
+	// RunnerServiceCreatePageProcedure is the fully-qualified name of the RunnerService's CreatePage
+	// RPC.
+	RunnerServiceCreatePageProcedure = "/tank.agentctl.v1.RunnerService/CreatePage"
 	// RunnerServiceListApiKeysProcedure is the fully-qualified name of the RunnerService's ListApiKeys
 	// RPC.
 	RunnerServiceListApiKeysProcedure = "/tank.agentctl.v1.RunnerService/ListApiKeys"
@@ -496,6 +499,7 @@ type RunnerServiceClient interface {
 	ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error)
 	WriteOnCanvas(context.Context, *connect.Request[v1.WriteOnCanvasRequest]) (*connect.Response[v1.WriteOnCanvasResponse], error)
 	AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error)
+	CreatePage(context.Context, *connect.Request[v1.CreatePageRequest]) (*connect.Response[v1.CreatePageResponse], error)
 	ListApiKeys(context.Context, *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error)
 	CreateApiKey(context.Context, *connect.Request[v1.CreateApiKeyRequest]) (*connect.Response[v1.CreateApiKeyResponse], error)
 	RevokeApiKey(context.Context, *connect.Request[v1.RevokeApiKeyRequest]) (*connect.Response[v1.RevokeApiKeyResponse], error)
@@ -821,6 +825,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("AskCanvas")),
 			connect.WithClientOptions(opts...),
 		),
+		createPage: connect.NewClient[v1.CreatePageRequest, v1.CreatePageResponse](
+			httpClient,
+			baseURL+RunnerServiceCreatePageProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("CreatePage")),
+			connect.WithClientOptions(opts...),
+		),
 		listApiKeys: connect.NewClient[v1.ListApiKeysRequest, v1.ListApiKeysResponse](
 			httpClient,
 			baseURL+RunnerServiceListApiKeysProcedure,
@@ -1006,6 +1016,7 @@ type runnerServiceClient struct {
 	readCanvas               *connect.Client[v1.ReadCanvasRequest, v1.ReadCanvasResponse]
 	writeOnCanvas            *connect.Client[v1.WriteOnCanvasRequest, v1.WriteOnCanvasResponse]
 	askCanvas                *connect.Client[v1.AskCanvasRequest, v1.AskCanvasResponse]
+	createPage               *connect.Client[v1.CreatePageRequest, v1.CreatePageResponse]
 	listApiKeys              *connect.Client[v1.ListApiKeysRequest, v1.ListApiKeysResponse]
 	createApiKey             *connect.Client[v1.CreateApiKeyRequest, v1.CreateApiKeyResponse]
 	revokeApiKey             *connect.Client[v1.RevokeApiKeyRequest, v1.RevokeApiKeyResponse]
@@ -1270,6 +1281,11 @@ func (c *runnerServiceClient) AskCanvas(ctx context.Context, req *connect.Reques
 	return c.askCanvas.CallUnary(ctx, req)
 }
 
+// CreatePage calls tank.agentctl.v1.RunnerService.CreatePage.
+func (c *runnerServiceClient) CreatePage(ctx context.Context, req *connect.Request[v1.CreatePageRequest]) (*connect.Response[v1.CreatePageResponse], error) {
+	return c.createPage.CallUnary(ctx, req)
+}
+
 // ListApiKeys calls tank.agentctl.v1.RunnerService.ListApiKeys.
 func (c *runnerServiceClient) ListApiKeys(ctx context.Context, req *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error) {
 	return c.listApiKeys.CallUnary(ctx, req)
@@ -1445,6 +1461,7 @@ type RunnerServiceHandler interface {
 	ReadCanvas(context.Context, *connect.Request[v1.ReadCanvasRequest]) (*connect.Response[v1.ReadCanvasResponse], error)
 	WriteOnCanvas(context.Context, *connect.Request[v1.WriteOnCanvasRequest]) (*connect.Response[v1.WriteOnCanvasResponse], error)
 	AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error)
+	CreatePage(context.Context, *connect.Request[v1.CreatePageRequest]) (*connect.Response[v1.CreatePageResponse], error)
 	ListApiKeys(context.Context, *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error)
 	CreateApiKey(context.Context, *connect.Request[v1.CreateApiKeyRequest]) (*connect.Response[v1.CreateApiKeyResponse], error)
 	RevokeApiKey(context.Context, *connect.Request[v1.RevokeApiKeyRequest]) (*connect.Response[v1.RevokeApiKeyResponse], error)
@@ -1766,6 +1783,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("AskCanvas")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceCreatePageHandler := connect.NewUnaryHandler(
+		RunnerServiceCreatePageProcedure,
+		svc.CreatePage,
+		connect.WithSchema(runnerServiceMethods.ByName("CreatePage")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServiceListApiKeysHandler := connect.NewUnaryHandler(
 		RunnerServiceListApiKeysProcedure,
 		svc.ListApiKeys,
@@ -1996,6 +2019,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceWriteOnCanvasHandler.ServeHTTP(w, r)
 		case RunnerServiceAskCanvasProcedure:
 			runnerServiceAskCanvasHandler.ServeHTTP(w, r)
+		case RunnerServiceCreatePageProcedure:
+			runnerServiceCreatePageHandler.ServeHTTP(w, r)
 		case RunnerServiceListApiKeysProcedure:
 			runnerServiceListApiKeysHandler.ServeHTTP(w, r)
 		case RunnerServiceCreateApiKeyProcedure:
@@ -2239,6 +2264,10 @@ func (UnimplementedRunnerServiceHandler) WriteOnCanvas(context.Context, *connect
 
 func (UnimplementedRunnerServiceHandler) AskCanvas(context.Context, *connect.Request[v1.AskCanvasRequest]) (*connect.Response[v1.AskCanvasResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.AskCanvas is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) CreatePage(context.Context, *connect.Request[v1.CreatePageRequest]) (*connect.Response[v1.CreatePageResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.CreatePage is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) ListApiKeys(context.Context, *connect.Request[v1.ListApiKeysRequest]) (*connect.Response[v1.ListApiKeysResponse], error) {

@@ -739,6 +739,19 @@ message WriteOnCanvasResponse {
 message ReadCanvasResponse {
   tank.canvas.v1.Canvas canvas = 1;
 }
+// A new Atlas page in the run's Tread, written from markdown: how a run hands over a
+// report, forecast, summary or any document meant to be read, instead of uploading a
+// .txt or .md file. The api's Atlas add-on gate applies as it does to a person.
+message CreatePageRequest {
+  string title = 1;    // empty takes the markdown's first heading
+  string markdown = 2;
+}
+message CreatePageResponse {
+  string canvas_id = 1;
+  string title = 2;
+  int32 blocks = 3;
+  string url = 4;      // the page inside TANK, for the run to link in the thread
+}
 message AskCanvasRequest {
   string question = 1;
   int32 limit = 2;
@@ -1139,6 +1152,7 @@ service RunnerService {
   rpc ReadCanvas(ReadCanvasRequest) returns (ReadCanvasResponse);
   rpc WriteOnCanvas(WriteOnCanvasRequest) returns (WriteOnCanvasResponse);
   rpc AskCanvas(AskCanvasRequest) returns (AskCanvasResponse);
+  rpc CreatePage(CreatePageRequest) returns (CreatePageResponse);
   rpc ListApiKeys(ListApiKeysRequest) returns (ListApiKeysResponse);
   rpc CreateApiKey(CreateApiKeyRequest) returns (CreateApiKeyResponse);
   rpc RevokeApiKey(RevokeApiKeyRequest) returns (RevokeApiKeyResponse);
