@@ -27,6 +27,11 @@ enum RunState {
   // Stopped at a guardrail it cannot meet, waiting for the guardrail to change or the run
   // to be stopped. Not terminal: the run's branch and session are kept.
   RUN_STATE_BLOCKED = 19;
+  // Held for an answer to a question the agent asked in the thread. Not terminal: the
+  // answer goes in the thread and the run carries on. Before this value the control plane
+  // reported such a run as RUN_STATE_AWAITING_PLAN_APPROVAL, so a client read "waiting for
+  // your go on the plan" for a run that had no plan waiting.
+  RUN_STATE_AWAITING_ANSWER = 20;
 }
 
 message Agent {
