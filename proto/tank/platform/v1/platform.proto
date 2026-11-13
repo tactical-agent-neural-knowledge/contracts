@@ -588,6 +588,22 @@ message SetWorkspaceNoChargeRequest {
 }
 message SetWorkspaceNoChargeResponse {}
 
+// CreateWorkspace makes a workspace owned by the calling super admin (Robby, 2026-11-12:
+// workspaces he uses himself, made from the console rather than tankctl). It is made
+// exactly as the app makes one (its owner and #general), then given its plan (premium
+// provisions its agent, as SetWorkspacePlan does) and, when asked, marked no charge.
+// Recorded as operator.workspace.created in the new workspace's log and the platform's.
+// A slug already in use is ALREADY_EXISTS.
+message CreateWorkspaceRequest {
+  string name = 1;
+  string slug = 2;                             // empty makes one from the name
+  string plan = 3;                             // free | premium; empty is free
+  bool no_charge = 4;                          // as SetWorkspaceNoCharge
+}
+message CreateWorkspaceResponse {
+  WorkspaceRow workspace = 1;
+}
+
 service PlatformService {
   rpc ListAgentures(ListAgenturesRequest) returns (ListAgenturesResponse);
   rpc SetAllocation(SetAllocationRequest) returns (SetAllocationResponse);
@@ -613,4 +629,5 @@ service PlatformService {
   rpc SuspendWorkspace(SuspendWorkspaceRequest) returns (SuspendWorkspaceResponse);
   rpc SuspendUser(SuspendUserRequest) returns (SuspendUserResponse);
   rpc SetWorkspaceNoCharge(SetWorkspaceNoChargeRequest) returns (SetWorkspaceNoChargeResponse);
+  rpc CreateWorkspace(CreateWorkspaceRequest) returns (CreateWorkspaceResponse);
 }
