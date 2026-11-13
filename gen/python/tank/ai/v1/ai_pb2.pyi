@@ -142,12 +142,16 @@ class Overlay(_message.Message):
     def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., source: _Optional[str] = ..., marks: _Optional[_Iterable[_Union[_apps_pb2.Mark, _Mapping]]] = ..., as_of: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., offer_id: _Optional[str] = ...) -> None: ...
 
 class Offer(_message.Message):
-    __slots__ = ("id", "text")
+    __slots__ = ("id", "text", "action", "app_id")
     ID_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
+    ACTION_FIELD_NUMBER: _ClassVar[int]
+    APP_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
     text: str
-    def __init__(self, id: _Optional[str] = ..., text: _Optional[str] = ...) -> None: ...
+    action: str
+    app_id: str
+    def __init__(self, id: _Optional[str] = ..., text: _Optional[str] = ..., action: _Optional[str] = ..., app_id: _Optional[str] = ...) -> None: ...
 
 class Attachment(_message.Message):
     __slots__ = ("id", "name", "mime", "data", "size", "file_id")
@@ -386,7 +390,7 @@ class SendMessageRequest(_message.Message):
     def __init__(self, conversation_id: _Optional[str] = ..., text: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., regenerate_message_id: _Optional[str] = ..., replace_message_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., offer_id: _Optional[str] = ...) -> None: ...
 
 class SendMessageResponse(_message.Message):
-    __slots__ = ("started", "delta", "done", "title", "warming", "stage", "suggestions", "overlay")
+    __slots__ = ("started", "delta", "done", "title", "warming", "stage", "suggestions", "overlay", "conversation")
     STARTED_FIELD_NUMBER: _ClassVar[int]
     DELTA_FIELD_NUMBER: _ClassVar[int]
     DONE_FIELD_NUMBER: _ClassVar[int]
@@ -395,6 +399,7 @@ class SendMessageResponse(_message.Message):
     STAGE_FIELD_NUMBER: _ClassVar[int]
     SUGGESTIONS_FIELD_NUMBER: _ClassVar[int]
     OVERLAY_FIELD_NUMBER: _ClassVar[int]
+    CONVERSATION_FIELD_NUMBER: _ClassVar[int]
     started: Started
     delta: str
     done: Message
@@ -403,7 +408,8 @@ class SendMessageResponse(_message.Message):
     stage: Stage
     suggestions: Suggestions
     overlay: Overlay
-    def __init__(self, started: _Optional[_Union[Started, _Mapping]] = ..., delta: _Optional[str] = ..., done: _Optional[_Union[Message, _Mapping]] = ..., title: _Optional[str] = ..., warming: _Optional[str] = ..., stage: _Optional[_Union[Stage, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ..., overlay: _Optional[_Union[Overlay, _Mapping]] = ...) -> None: ...
+    conversation: Conversation
+    def __init__(self, started: _Optional[_Union[Started, _Mapping]] = ..., delta: _Optional[str] = ..., done: _Optional[_Union[Message, _Mapping]] = ..., title: _Optional[str] = ..., warming: _Optional[str] = ..., stage: _Optional[_Union[Stage, _Mapping]] = ..., suggestions: _Optional[_Union[Suggestions, _Mapping]] = ..., overlay: _Optional[_Union[Overlay, _Mapping]] = ..., conversation: _Optional[_Union[Conversation, _Mapping]] = ...) -> None: ...
 
 class Suggestions(_message.Message):
     __slots__ = ("message_id", "items", "offers")
