@@ -360,6 +360,18 @@ message GetWorkspaceResponse {
   AgentUsage agent_usage = 5;
   repeated DailyCount days = 6;                // the last 30, oldest first
   WorkspaceCounts counts = 7;
+  Claude5Spend claude5 = 8;
+}
+
+// Claude5Spend is a workspace's spend on the Claude 5 family this calendar month (UTC),
+// at what the model costs TANK, against the cap a super admin set (2026-11-12). At or
+// over the cap the gateway answers that workspace's Claude 5 requests with Claude Sonnet
+// 4.6 on Amazon Bedrock instead of refusing them. Raw cost: console only.
+message Claude5Spend {
+  bool capped = 1;                             // a cap is set; false = no cap
+  int64 cap_cents = 2;                         // the cap, meaningful when capped
+  int64 month_cents = 3;                       // Claude 5 spend this month so far
+  bool over_cap = 4;                           // month_cents >= cap_cents while capped
 }
 
 message GetOverviewRequest {}
@@ -588,6 +600,19 @@ message SetWorkspaceNoChargeRequest {
 }
 message SetWorkspaceNoChargeResponse {}
 
+// SetWorkspaceClaude5Cap sets or clears a workspace's monthly cap on Claude 5 spend, in
+// cents of raw model cost (see Claude5Spend). capped false clears it (no cap). Recorded
+// as workspace.claude5_cap.changed.
+message SetWorkspaceClaude5CapRequest {
+  string workspace_id = 1;
+  bool capped = 2;
+  int64 cap_cents = 3;                         // > 0 when capped
+  string reason = 4;                           // kept in the audit log
+}
+message SetWorkspaceClaude5CapResponse {
+  Claude5Spend claude5 = 1;
+}
+
 // CreateWorkspace makes a workspace owned by the calling super admin (Robby, 2026-11-12:
 // workspaces he uses himself, made from the console rather than tankctl). It is made
 // exactly as the app makes one (its owner and #general), then given its plan (premium
@@ -630,4 +655,5 @@ service PlatformService {
   rpc SuspendUser(SuspendUserRequest) returns (SuspendUserResponse);
   rpc SetWorkspaceNoCharge(SetWorkspaceNoChargeRequest) returns (SetWorkspaceNoChargeResponse);
   rpc CreateWorkspace(CreateWorkspaceRequest) returns (CreateWorkspaceResponse);
+  rpc SetWorkspaceClaude5Cap(SetWorkspaceClaude5CapRequest) returns (SetWorkspaceClaude5CapResponse);
 }

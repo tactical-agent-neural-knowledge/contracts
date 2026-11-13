@@ -97,6 +97,9 @@ const (
 	// PlatformServiceCreateWorkspaceProcedure is the fully-qualified name of the PlatformService's
 	// CreateWorkspace RPC.
 	PlatformServiceCreateWorkspaceProcedure = "/tank.platform.v1.PlatformService/CreateWorkspace"
+	// PlatformServiceSetWorkspaceClaude5CapProcedure is the fully-qualified name of the
+	// PlatformService's SetWorkspaceClaude5Cap RPC.
+	PlatformServiceSetWorkspaceClaude5CapProcedure = "/tank.platform.v1.PlatformService/SetWorkspaceClaude5Cap"
 )
 
 // PlatformServiceClient is a client for the tank.platform.v1.PlatformService service.
@@ -123,6 +126,7 @@ type PlatformServiceClient interface {
 	SuspendUser(context.Context, *connect.Request[v1.SuspendUserRequest]) (*connect.Response[v1.SuspendUserResponse], error)
 	SetWorkspaceNoCharge(context.Context, *connect.Request[v1.SetWorkspaceNoChargeRequest]) (*connect.Response[v1.SetWorkspaceNoChargeResponse], error)
 	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
+	SetWorkspaceClaude5Cap(context.Context, *connect.Request[v1.SetWorkspaceClaude5CapRequest]) (*connect.Response[v1.SetWorkspaceClaude5CapResponse], error)
 }
 
 // NewPlatformServiceClient constructs a client for the tank.platform.v1.PlatformService service. By
@@ -268,33 +272,40 @@ func NewPlatformServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(platformServiceMethods.ByName("CreateWorkspace")),
 			connect.WithClientOptions(opts...),
 		),
+		setWorkspaceClaude5Cap: connect.NewClient[v1.SetWorkspaceClaude5CapRequest, v1.SetWorkspaceClaude5CapResponse](
+			httpClient,
+			baseURL+PlatformServiceSetWorkspaceClaude5CapProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("SetWorkspaceClaude5Cap")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // platformServiceClient implements PlatformServiceClient.
 type platformServiceClient struct {
-	listAgentures        *connect.Client[v1.ListAgenturesRequest, v1.ListAgenturesResponse]
-	setAllocation        *connect.Client[v1.SetAllocationRequest, v1.SetAllocationResponse]
-	setBoardSettings     *connect.Client[v1.SetBoardSettingsRequest, v1.SetBoardSettingsResponse]
-	stopRun              *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
-	listMerges           *connect.Client[v1.ListMergesRequest, v1.ListMergesResponse]
-	decideMerge          *connect.Client[v1.DecideMergeRequest, v1.DecideMergeResponse]
-	listDropCandidates   *connect.Client[v1.ListDropCandidatesRequest, v1.ListDropCandidatesResponse]
-	getOverview          *connect.Client[v1.GetOverviewRequest, v1.GetOverviewResponse]
-	searchUsers          *connect.Client[v1.SearchUsersRequest, v1.SearchUsersResponse]
-	getUser              *connect.Client[v1.GetUserRequest, v1.GetUserResponse]
-	searchWorkspaces     *connect.Client[v1.SearchWorkspacesRequest, v1.SearchWorkspacesResponse]
-	getWorkspace         *connect.Client[v1.GetWorkspaceRequest, v1.GetWorkspaceResponse]
-	listSuperAdmins      *connect.Client[v1.ListSuperAdminsRequest, v1.ListSuperAdminsResponse]
-	addSuperAdmin        *connect.Client[v1.AddSuperAdminRequest, v1.AddSuperAdminResponse]
-	removeSuperAdmin     *connect.Client[v1.RemoveSuperAdminRequest, v1.RemoveSuperAdminResponse]
-	getNeural            *connect.Client[v1.GetNeuralRequest, v1.GetNeuralResponse]
-	setWorkspacePlan     *connect.Client[v1.SetWorkspacePlanRequest, v1.SetWorkspacePlanResponse]
-	setWorkspaceAddon    *connect.Client[v1.SetWorkspaceAddonRequest, v1.SetWorkspaceAddonResponse]
-	suspendWorkspace     *connect.Client[v1.SuspendWorkspaceRequest, v1.SuspendWorkspaceResponse]
-	suspendUser          *connect.Client[v1.SuspendUserRequest, v1.SuspendUserResponse]
-	setWorkspaceNoCharge *connect.Client[v1.SetWorkspaceNoChargeRequest, v1.SetWorkspaceNoChargeResponse]
-	createWorkspace      *connect.Client[v1.CreateWorkspaceRequest, v1.CreateWorkspaceResponse]
+	listAgentures          *connect.Client[v1.ListAgenturesRequest, v1.ListAgenturesResponse]
+	setAllocation          *connect.Client[v1.SetAllocationRequest, v1.SetAllocationResponse]
+	setBoardSettings       *connect.Client[v1.SetBoardSettingsRequest, v1.SetBoardSettingsResponse]
+	stopRun                *connect.Client[v1.StopRunRequest, v1.StopRunResponse]
+	listMerges             *connect.Client[v1.ListMergesRequest, v1.ListMergesResponse]
+	decideMerge            *connect.Client[v1.DecideMergeRequest, v1.DecideMergeResponse]
+	listDropCandidates     *connect.Client[v1.ListDropCandidatesRequest, v1.ListDropCandidatesResponse]
+	getOverview            *connect.Client[v1.GetOverviewRequest, v1.GetOverviewResponse]
+	searchUsers            *connect.Client[v1.SearchUsersRequest, v1.SearchUsersResponse]
+	getUser                *connect.Client[v1.GetUserRequest, v1.GetUserResponse]
+	searchWorkspaces       *connect.Client[v1.SearchWorkspacesRequest, v1.SearchWorkspacesResponse]
+	getWorkspace           *connect.Client[v1.GetWorkspaceRequest, v1.GetWorkspaceResponse]
+	listSuperAdmins        *connect.Client[v1.ListSuperAdminsRequest, v1.ListSuperAdminsResponse]
+	addSuperAdmin          *connect.Client[v1.AddSuperAdminRequest, v1.AddSuperAdminResponse]
+	removeSuperAdmin       *connect.Client[v1.RemoveSuperAdminRequest, v1.RemoveSuperAdminResponse]
+	getNeural              *connect.Client[v1.GetNeuralRequest, v1.GetNeuralResponse]
+	setWorkspacePlan       *connect.Client[v1.SetWorkspacePlanRequest, v1.SetWorkspacePlanResponse]
+	setWorkspaceAddon      *connect.Client[v1.SetWorkspaceAddonRequest, v1.SetWorkspaceAddonResponse]
+	suspendWorkspace       *connect.Client[v1.SuspendWorkspaceRequest, v1.SuspendWorkspaceResponse]
+	suspendUser            *connect.Client[v1.SuspendUserRequest, v1.SuspendUserResponse]
+	setWorkspaceNoCharge   *connect.Client[v1.SetWorkspaceNoChargeRequest, v1.SetWorkspaceNoChargeResponse]
+	createWorkspace        *connect.Client[v1.CreateWorkspaceRequest, v1.CreateWorkspaceResponse]
+	setWorkspaceClaude5Cap *connect.Client[v1.SetWorkspaceClaude5CapRequest, v1.SetWorkspaceClaude5CapResponse]
 }
 
 // ListAgentures calls tank.platform.v1.PlatformService.ListAgentures.
@@ -407,6 +418,11 @@ func (c *platformServiceClient) CreateWorkspace(ctx context.Context, req *connec
 	return c.createWorkspace.CallUnary(ctx, req)
 }
 
+// SetWorkspaceClaude5Cap calls tank.platform.v1.PlatformService.SetWorkspaceClaude5Cap.
+func (c *platformServiceClient) SetWorkspaceClaude5Cap(ctx context.Context, req *connect.Request[v1.SetWorkspaceClaude5CapRequest]) (*connect.Response[v1.SetWorkspaceClaude5CapResponse], error) {
+	return c.setWorkspaceClaude5Cap.CallUnary(ctx, req)
+}
+
 // PlatformServiceHandler is an implementation of the tank.platform.v1.PlatformService service.
 type PlatformServiceHandler interface {
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
@@ -431,6 +447,7 @@ type PlatformServiceHandler interface {
 	SuspendUser(context.Context, *connect.Request[v1.SuspendUserRequest]) (*connect.Response[v1.SuspendUserResponse], error)
 	SetWorkspaceNoCharge(context.Context, *connect.Request[v1.SetWorkspaceNoChargeRequest]) (*connect.Response[v1.SetWorkspaceNoChargeResponse], error)
 	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
+	SetWorkspaceClaude5Cap(context.Context, *connect.Request[v1.SetWorkspaceClaude5CapRequest]) (*connect.Response[v1.SetWorkspaceClaude5CapResponse], error)
 }
 
 // NewPlatformServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -572,6 +589,12 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 		connect.WithSchema(platformServiceMethods.ByName("CreateWorkspace")),
 		connect.WithHandlerOptions(opts...),
 	)
+	platformServiceSetWorkspaceClaude5CapHandler := connect.NewUnaryHandler(
+		PlatformServiceSetWorkspaceClaude5CapProcedure,
+		svc.SetWorkspaceClaude5Cap,
+		connect.WithSchema(platformServiceMethods.ByName("SetWorkspaceClaude5Cap")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.platform.v1.PlatformService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PlatformServiceListAgenturesProcedure:
@@ -618,6 +641,8 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 			platformServiceSetWorkspaceNoChargeHandler.ServeHTTP(w, r)
 		case PlatformServiceCreateWorkspaceProcedure:
 			platformServiceCreateWorkspaceHandler.ServeHTTP(w, r)
+		case PlatformServiceSetWorkspaceClaude5CapProcedure:
+			platformServiceSetWorkspaceClaude5CapHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -713,4 +738,8 @@ func (UnimplementedPlatformServiceHandler) SetWorkspaceNoCharge(context.Context,
 
 func (UnimplementedPlatformServiceHandler) CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.CreateWorkspace is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) SetWorkspaceClaude5Cap(context.Context, *connect.Request[v1.SetWorkspaceClaude5CapRequest]) (*connect.Response[v1.SetWorkspaceClaude5CapResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.SetWorkspaceClaude5Cap is not implemented"))
 }
