@@ -456,6 +456,12 @@ message WorkspaceSpend {
   // What Neural Knowledge saved this workspace this month, at what it pays: its share of the
   // saving (Robby, 2026-11-10: TANK keeps half). The rate behind it is never shown.
   double neural_saved_month_usd = 15;
+  // The workspace's Claude 5 spend this month against its Claude 5 cap, when one is set
+  // (2026-11-12), at the Tread rate like every dollar here. Past the cap its agents carry on
+  // on Claude Sonnet 4.6. claude5_capped false = no cap, and the page shows neither.
+  bool claude5_capped = 16;
+  double claude5_month_usd = 17;
+  double claude5_cap_month_usd = 18;
 }
 // One UTC day of agent runs (Neural chats excluded: a reply is not a run). Dollars at the
 // Tread rate. cost_per_run_usd is the day's spend over its runs, 0 on a day with none;

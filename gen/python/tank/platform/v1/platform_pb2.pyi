@@ -553,7 +553,7 @@ class GetWorkspaceRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ...) -> None: ...
 
 class GetWorkspaceResponse(_message.Message):
-    __slots__ = ("workspace", "members", "features", "subscriptions", "agent_usage", "days", "counts")
+    __slots__ = ("workspace", "members", "features", "subscriptions", "agent_usage", "days", "counts", "claude5")
     WORKSPACE_FIELD_NUMBER: _ClassVar[int]
     MEMBERS_FIELD_NUMBER: _ClassVar[int]
     FEATURES_FIELD_NUMBER: _ClassVar[int]
@@ -561,6 +561,7 @@ class GetWorkspaceResponse(_message.Message):
     AGENT_USAGE_FIELD_NUMBER: _ClassVar[int]
     DAYS_FIELD_NUMBER: _ClassVar[int]
     COUNTS_FIELD_NUMBER: _ClassVar[int]
+    CLAUDE5_FIELD_NUMBER: _ClassVar[int]
     workspace: WorkspaceRow
     members: _containers.RepeatedCompositeFieldContainer[MemberRow]
     features: _containers.RepeatedCompositeFieldContainer[Feature]
@@ -568,7 +569,20 @@ class GetWorkspaceResponse(_message.Message):
     agent_usage: AgentUsage
     days: _containers.RepeatedCompositeFieldContainer[DailyCount]
     counts: WorkspaceCounts
-    def __init__(self, workspace: _Optional[_Union[WorkspaceRow, _Mapping]] = ..., members: _Optional[_Iterable[_Union[MemberRow, _Mapping]]] = ..., features: _Optional[_Iterable[_Union[Feature, _Mapping]]] = ..., subscriptions: _Optional[_Iterable[_Union[Subscription, _Mapping]]] = ..., agent_usage: _Optional[_Union[AgentUsage, _Mapping]] = ..., days: _Optional[_Iterable[_Union[DailyCount, _Mapping]]] = ..., counts: _Optional[_Union[WorkspaceCounts, _Mapping]] = ...) -> None: ...
+    claude5: Claude5Spend
+    def __init__(self, workspace: _Optional[_Union[WorkspaceRow, _Mapping]] = ..., members: _Optional[_Iterable[_Union[MemberRow, _Mapping]]] = ..., features: _Optional[_Iterable[_Union[Feature, _Mapping]]] = ..., subscriptions: _Optional[_Iterable[_Union[Subscription, _Mapping]]] = ..., agent_usage: _Optional[_Union[AgentUsage, _Mapping]] = ..., days: _Optional[_Iterable[_Union[DailyCount, _Mapping]]] = ..., counts: _Optional[_Union[WorkspaceCounts, _Mapping]] = ..., claude5: _Optional[_Union[Claude5Spend, _Mapping]] = ...) -> None: ...
+
+class Claude5Spend(_message.Message):
+    __slots__ = ("capped", "cap_cents", "month_cents", "over_cap")
+    CAPPED_FIELD_NUMBER: _ClassVar[int]
+    CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
+    MONTH_CENTS_FIELD_NUMBER: _ClassVar[int]
+    OVER_CAP_FIELD_NUMBER: _ClassVar[int]
+    capped: bool
+    cap_cents: int
+    month_cents: int
+    over_cap: bool
+    def __init__(self, capped: bool = ..., cap_cents: _Optional[int] = ..., month_cents: _Optional[int] = ..., over_cap: bool = ...) -> None: ...
 
 class GetOverviewRequest(_message.Message):
     __slots__ = ()
@@ -933,6 +947,24 @@ class SetWorkspaceNoChargeRequest(_message.Message):
 class SetWorkspaceNoChargeResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class SetWorkspaceClaude5CapRequest(_message.Message):
+    __slots__ = ("workspace_id", "capped", "cap_cents", "reason")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CAPPED_FIELD_NUMBER: _ClassVar[int]
+    CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    capped: bool
+    cap_cents: int
+    reason: str
+    def __init__(self, workspace_id: _Optional[str] = ..., capped: bool = ..., cap_cents: _Optional[int] = ..., reason: _Optional[str] = ...) -> None: ...
+
+class SetWorkspaceClaude5CapResponse(_message.Message):
+    __slots__ = ("claude5",)
+    CLAUDE5_FIELD_NUMBER: _ClassVar[int]
+    claude5: Claude5Spend
+    def __init__(self, claude5: _Optional[_Union[Claude5Spend, _Mapping]] = ...) -> None: ...
 
 class CreateWorkspaceRequest(_message.Message):
     __slots__ = ("name", "slug", "plan", "no_charge")
