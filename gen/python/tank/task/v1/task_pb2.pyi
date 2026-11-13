@@ -47,18 +47,20 @@ class ProofCheck(_message.Message):
     def __init__(self, text: _Optional[str] = ..., met: bool = ...) -> None: ...
 
 class TaskProof(_message.Message):
-    __slots__ = ("live_url", "screenshot_file_id", "checklist", "pull_request_url", "at")
+    __slots__ = ("live_url", "screenshot_file_id", "checklist", "pull_request_url", "at", "video_file_id")
     LIVE_URL_FIELD_NUMBER: _ClassVar[int]
     SCREENSHOT_FILE_ID_FIELD_NUMBER: _ClassVar[int]
     CHECKLIST_FIELD_NUMBER: _ClassVar[int]
     PULL_REQUEST_URL_FIELD_NUMBER: _ClassVar[int]
     AT_FIELD_NUMBER: _ClassVar[int]
+    VIDEO_FILE_ID_FIELD_NUMBER: _ClassVar[int]
     live_url: str
     screenshot_file_id: str
     checklist: _containers.RepeatedCompositeFieldContainer[ProofCheck]
     pull_request_url: str
     at: _timestamp_pb2.Timestamp
-    def __init__(self, live_url: _Optional[str] = ..., screenshot_file_id: _Optional[str] = ..., checklist: _Optional[_Iterable[_Union[ProofCheck, _Mapping]]] = ..., pull_request_url: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    video_file_id: str
+    def __init__(self, live_url: _Optional[str] = ..., screenshot_file_id: _Optional[str] = ..., checklist: _Optional[_Iterable[_Union[ProofCheck, _Mapping]]] = ..., pull_request_url: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., video_file_id: _Optional[str] = ...) -> None: ...
 
 class TaskNotify(_message.Message):
     __slots__ = ("stage", "user_id", "from_workspace")

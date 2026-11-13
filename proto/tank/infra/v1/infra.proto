@@ -27,6 +27,12 @@ enum Provider {
   // its own network; the password is kept in the Lockbox Agent vault and handed to the relay
   // with each query, never to an agent.
   PROVIDER_DATABASE = 6;
+  // A test login (2026-11-13): an account on one of the workspace's own apps that TANK's own
+  // browser signs in with, so an agent can check logged-in pages itself. The password and the
+  // one-time-code seed are kept in the Lockbox Agent vault and typed by TANK's browser, never
+  // given to an agent, a sandbox or a log. The agent drives the signed-in page and sees only
+  // screenshots and the page's text.
+  PROVIDER_TEST_LOGIN = 7;
 }
 
 enum DatabaseEngine {
@@ -105,6 +111,26 @@ message DatabaseConfig {
   string ssl_mode = 6; // require (default), verify-full, disable
 }
 
+// A test login's settings. Nothing in it is secret: the password and the one-time-code seed
+// are write only (CreateConnectionRequest.secret and totp_seed).
+message TestLoginConfig {
+  // Where the sign-in form is: https://…
+  string login_url = 1;
+  // The hosts TANK's browser may open while signed in with it (the app, and the sign-in
+  // provider's host when it is a different one). The login URL's host is always one.
+  repeated string app_hosts = 2;
+  // The account's username or email. Not secret: an agent may read it.
+  string username = 3;
+  // A one-time-code (TOTP) seed is stored. Read only for clients.
+  bool has_totp = 4;
+  // Repositories (owner/name) whose runs may use it; empty means any run its Treads allow.
+  repeated string repos = 5;
+  // CSS selectors for a sign-in form TANK cannot work out by itself; empty works it out.
+  string username_selector = 6;
+  string password_selector = 7;
+  string submit_selector = 8;
+}
+
 message Connection {
   string id = 1;
   string workspace_id = 2;
@@ -133,6 +159,7 @@ message Connection {
   // A token is stored for it in the Lockbox Agent vault (Kubernetes token, API, database password).
   bool has_secret = 21;
   DatabaseConfig database = 22;
+  TestLoginConfig test_login = 23;
 }
 
 // One step of the setup a person follows to grant TANK access, with the exact script
@@ -152,7 +179,7 @@ message Use {
   string run_id = 4;
   string channel_id = 5;
   string user_id = 6;
-  string kind = 7; // command | http | runbook | test | costs
+  string kind = 7; // command | http | runbook | test | costs | login (a test login opened) | browse (a step on its page)
   string command = 8; // redacted
   int32 exit_code = 9;
   string refused = 10; // why it was refused, when it was
@@ -229,6 +256,8 @@ message CreateConnectionRequest {
   string secret = 3;
   // Set by the server from the caller; ignored when a client sends it.
   string requested_by = 4;
+  // A test login's one-time-code (TOTP) seed, base32 or an otpauth:// URI; write only.
+  string totp_seed = 5;
 }
 message CreateConnectionResponse {
   Connection connection = 1;
@@ -239,6 +268,10 @@ message UpdateConnectionRequest {
   Connection connection = 2;
   string secret = 3; // empty keeps the stored one
   string requested_by = 4;
+  // A test login's one-time-code seed; empty keeps the stored one.
+  string totp_seed = 5;
+  // Forget a test login's stored one-time-code seed.
+  bool remove_totp = 6;
 }
 message UpdateConnectionResponse {
   Connection connection = 1;

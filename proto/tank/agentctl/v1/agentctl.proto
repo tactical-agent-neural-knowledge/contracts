@@ -170,6 +170,9 @@ message RunContext {
   // The workspace's infrastructure connections this Tread may use (names, what each is
   // for, regions and clusters), never a credential. Read them with infra_run.
   repeated InfraConnectionBrief infra_connections = 40;
+  // The workspace's test logins this run may use (2026-11-13): accounts on the workspace's
+  // own apps that TANK's browser signs in with (test_login_open). Never a password.
+  repeated TestLoginBrief test_logins = 41;
 }
 
 // An Ops team as a run sees it (tank.agentops.v1 holds the full record).
@@ -1127,6 +1130,18 @@ service RunnerService {
   // Asks to run a runbook: opens a gate a workspace admin decides; the outcome of the
   // workflow arrives on the inbox.
   rpc RunRunbook(RunRunbookRequest) returns (RunRunbookResponse);
+  // Test logins (2026-11-13): TANK's own browser signs in to one of the workspace's apps with
+  // a login kept in the Lockbox Agent vault, and the run drives that page by steps. The
+  // password and one-time code never reach the run: it gets screenshots and the page's text.
+  rpc TestLoginOpen(TestLoginOpenRequest) returns (TestLoginOpenResponse);
+  rpc TestLoginAct(TestLoginActRequest) returns (TestLoginActResponse);
+  rpc TestLoginClose(TestLoginCloseRequest) returns (TestLoginCloseResponse);
+  // Recording (2026-11-13): what the run does on a page in TANK's browser (a test login's, or
+  // a public page opened with TestLoginOpen and no login) as a video, posted in the thread as
+  // proof. Starts only after any sign-in has finished; password fields are blanked while it
+  // records. Capped at 60 seconds.
+  rpc BrowserRecordStart(BrowserRecordStartRequest) returns (BrowserRecordStartResponse);
+  rpc BrowserRecordStop(BrowserRecordStopRequest) returns (BrowserRecordStopResponse);
   // The product TANK runs for this run's repository, as its operator sees it: whether it
   // is up, how often it has restarted and why, recent cluster events and its log. So an
   // agent can see the product it built fail instead of hearing about it from a person.
@@ -2020,6 +2035,109 @@ message InfraConnectionBrief {
   repeated string tools = 6;
   // For an API connection, where its paths are relative to.
   string base_url = 7;
+}
+
+// What a run is told about one test login: enough to choose it, never its password.
+message TestLoginBrief {
+  string name = 1;
+  string login_url = 2;
+  // The hosts TANK's browser opens with it; anything else is refused.
+  repeated string app_hosts = 3;
+  string username = 4;
+  // What it is for, in the admin's words ("a guide account on staging").
+  string description = 5;
+  bool has_totp = 6;
+}
+
+// One look at a test-login page, after a step. Nothing in it is a credential: every value of
+// the login is masked out of the text before it leaves TANK's browser and again here.
+message TestLoginPage {
+  string session_id = 1;
+  string url = 2;
+  string title = 3;
+  // The page as it looks now (JPEG).
+  bytes screenshot = 4;
+  // The page's main text.
+  string text = 5;
+  // What can be used on the page, one per line ("12 button \"Save\""): the numbers are what
+  // click and fill take.
+  string elements = 6;
+  // A sentence when the step did not work.
+  string error = 7;
+  // Why TANK would not do it (an undeclared host, a session that is not this run's).
+  string refused = 8;
+  // With attach: the screenshot as one of this run's files, for a card or report_completion.
+  string file_id = 9;
+  // Open only: no sign-in form is left on the page, so TANK believes the sign-in worked.
+  bool signed_in = 10;
+}
+
+message TestLoginOpenRequest {
+  // The test login's name. Empty opens url as a public page with no login (any public site;
+  // private addresses are refused as everywhere in TANK's browser).
+  string login = 1;
+  // Where to go once signed in: an https address on one of the login's hosts. Empty stays
+  // wherever signing in lands. Required when login is empty.
+  string url = 2;
+  // The browser's size in CSS pixels; 1280x800 when zero (393x852 is a phone).
+  int32 width = 3;
+  int32 height = 4;
+  // One line: why, recorded with the use.
+  string reason = 5;
+  bool attach = 6;
+  string caption = 7;
+}
+message TestLoginOpenResponse {
+  TestLoginPage page = 1;
+}
+
+message TestLoginActRequest {
+  string session_id = 1;
+  // navigate (url) | click (element) | fill (element, text, enter) | type (text) | key (key:
+  // Enter, Tab, Escape, Backspace) | scroll (dy) | back | forward | reload | look (a fresh
+  // screenshot and the page's text).
+  string action = 2;
+  string url = 3;
+  int32 element = 4;
+  string text = 5;
+  string key = 6;
+  int32 dy = 7;
+  bool enter = 8;
+  // Keep this step's screenshot as one of the run's files (TestLoginPage.file_id), as proof.
+  bool attach = 9;
+  string caption = 10;
+}
+message TestLoginActResponse {
+  TestLoginPage page = 1;
+}
+
+message TestLoginCloseRequest {
+  string session_id = 1;
+}
+message TestLoginCloseResponse {}
+
+message BrowserRecordStartRequest {
+  string session_id = 1;
+}
+message BrowserRecordStartResponse {
+  // Why it did not start (another recording running, a sign-in still going, no such page).
+  string refused = 1;
+  // How long it may run before it stops by itself, in seconds.
+  int32 max_seconds = 2;
+}
+
+message BrowserRecordStopRequest {
+  string session_id = 1;
+  // Said with the clip in the thread: what it shows.
+  string caption = 2;
+}
+message BrowserRecordStopResponse {
+  // The clip (video/mp4), posted in the thread; the task's proof shows it.
+  string file_id = 1;
+  int64 duration_ms = 2;
+  int32 frames = 3;
+  string refused = 4;
+  string error = 5;
 }
 
 message InfraRunRequest {

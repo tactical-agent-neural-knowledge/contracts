@@ -16,6 +16,7 @@ class Provider(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     PROVIDER_KUBERNETES: _ClassVar[Provider]
     PROVIDER_API: _ClassVar[Provider]
     PROVIDER_DATABASE: _ClassVar[Provider]
+    PROVIDER_TEST_LOGIN: _ClassVar[Provider]
 
 class DatabaseEngine(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -41,6 +42,7 @@ PROVIDER_AZURE: Provider
 PROVIDER_KUBERNETES: Provider
 PROVIDER_API: Provider
 PROVIDER_DATABASE: Provider
+PROVIDER_TEST_LOGIN: Provider
 DATABASE_ENGINE_UNSPECIFIED: DatabaseEngine
 DATABASE_ENGINE_POSTGRES: DatabaseEngine
 CONNECTION_STATE_UNSPECIFIED: ConnectionState
@@ -131,8 +133,28 @@ class DatabaseConfig(_message.Message):
     ssl_mode: str
     def __init__(self, engine: _Optional[_Union[DatabaseEngine, str]] = ..., host: _Optional[str] = ..., port: _Optional[int] = ..., database: _Optional[str] = ..., user: _Optional[str] = ..., ssl_mode: _Optional[str] = ...) -> None: ...
 
+class TestLoginConfig(_message.Message):
+    __slots__ = ("login_url", "app_hosts", "username", "has_totp", "repos", "username_selector", "password_selector", "submit_selector")
+    LOGIN_URL_FIELD_NUMBER: _ClassVar[int]
+    APP_HOSTS_FIELD_NUMBER: _ClassVar[int]
+    USERNAME_FIELD_NUMBER: _ClassVar[int]
+    HAS_TOTP_FIELD_NUMBER: _ClassVar[int]
+    REPOS_FIELD_NUMBER: _ClassVar[int]
+    USERNAME_SELECTOR_FIELD_NUMBER: _ClassVar[int]
+    PASSWORD_SELECTOR_FIELD_NUMBER: _ClassVar[int]
+    SUBMIT_SELECTOR_FIELD_NUMBER: _ClassVar[int]
+    login_url: str
+    app_hosts: _containers.RepeatedScalarFieldContainer[str]
+    username: str
+    has_totp: bool
+    repos: _containers.RepeatedScalarFieldContainer[str]
+    username_selector: str
+    password_selector: str
+    submit_selector: str
+    def __init__(self, login_url: _Optional[str] = ..., app_hosts: _Optional[_Iterable[str]] = ..., username: _Optional[str] = ..., has_totp: bool = ..., repos: _Optional[_Iterable[str]] = ..., username_selector: _Optional[str] = ..., password_selector: _Optional[str] = ..., submit_selector: _Optional[str] = ...) -> None: ...
+
 class Connection(_message.Message):
-    __slots__ = ("id", "workspace_id", "name", "provider", "description", "aws", "gcp", "azure", "kubernetes", "api", "channel_ids", "via_relay", "relay_id", "state", "last_error", "last_checked_at", "created_by", "created_at", "updated_at", "subject", "has_secret", "database")
+    __slots__ = ("id", "workspace_id", "name", "provider", "description", "aws", "gcp", "azure", "kubernetes", "api", "channel_ids", "via_relay", "relay_id", "state", "last_error", "last_checked_at", "created_by", "created_at", "updated_at", "subject", "has_secret", "database", "test_login")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -155,6 +177,7 @@ class Connection(_message.Message):
     SUBJECT_FIELD_NUMBER: _ClassVar[int]
     HAS_SECRET_FIELD_NUMBER: _ClassVar[int]
     DATABASE_FIELD_NUMBER: _ClassVar[int]
+    TEST_LOGIN_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     name: str
@@ -177,7 +200,8 @@ class Connection(_message.Message):
     subject: str
     has_secret: bool
     database: DatabaseConfig
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., provider: _Optional[_Union[Provider, str]] = ..., description: _Optional[str] = ..., aws: _Optional[_Union[AwsConfig, _Mapping]] = ..., gcp: _Optional[_Union[GcpConfig, _Mapping]] = ..., azure: _Optional[_Union[AzureConfig, _Mapping]] = ..., kubernetes: _Optional[_Union[KubernetesConfig, _Mapping]] = ..., api: _Optional[_Union[ApiConfig, _Mapping]] = ..., channel_ids: _Optional[_Iterable[str]] = ..., via_relay: bool = ..., relay_id: _Optional[str] = ..., state: _Optional[_Union[ConnectionState, str]] = ..., last_error: _Optional[str] = ..., last_checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., subject: _Optional[str] = ..., has_secret: bool = ..., database: _Optional[_Union[DatabaseConfig, _Mapping]] = ...) -> None: ...
+    test_login: TestLoginConfig
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., provider: _Optional[_Union[Provider, str]] = ..., description: _Optional[str] = ..., aws: _Optional[_Union[AwsConfig, _Mapping]] = ..., gcp: _Optional[_Union[GcpConfig, _Mapping]] = ..., azure: _Optional[_Union[AzureConfig, _Mapping]] = ..., kubernetes: _Optional[_Union[KubernetesConfig, _Mapping]] = ..., api: _Optional[_Union[ApiConfig, _Mapping]] = ..., channel_ids: _Optional[_Iterable[str]] = ..., via_relay: bool = ..., relay_id: _Optional[str] = ..., state: _Optional[_Union[ConnectionState, str]] = ..., last_error: _Optional[str] = ..., last_checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., subject: _Optional[str] = ..., has_secret: bool = ..., database: _Optional[_Union[DatabaseConfig, _Mapping]] = ..., test_login: _Optional[_Union[TestLoginConfig, _Mapping]] = ...) -> None: ...
 
 class SetupStep(_message.Message):
     __slots__ = ("title", "text", "code", "code_language", "download_name")
@@ -326,16 +350,18 @@ class GetConnectionResponse(_message.Message):
     def __init__(self, connection: _Optional[_Union[Connection, _Mapping]] = ...) -> None: ...
 
 class CreateConnectionRequest(_message.Message):
-    __slots__ = ("workspace_id", "connection", "secret", "requested_by")
+    __slots__ = ("workspace_id", "connection", "secret", "requested_by", "totp_seed")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CONNECTION_FIELD_NUMBER: _ClassVar[int]
     SECRET_FIELD_NUMBER: _ClassVar[int]
     REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    TOTP_SEED_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     connection: Connection
     secret: str
     requested_by: str
-    def __init__(self, workspace_id: _Optional[str] = ..., connection: _Optional[_Union[Connection, _Mapping]] = ..., secret: _Optional[str] = ..., requested_by: _Optional[str] = ...) -> None: ...
+    totp_seed: str
+    def __init__(self, workspace_id: _Optional[str] = ..., connection: _Optional[_Union[Connection, _Mapping]] = ..., secret: _Optional[str] = ..., requested_by: _Optional[str] = ..., totp_seed: _Optional[str] = ...) -> None: ...
 
 class CreateConnectionResponse(_message.Message):
     __slots__ = ("connection",)
@@ -344,16 +370,20 @@ class CreateConnectionResponse(_message.Message):
     def __init__(self, connection: _Optional[_Union[Connection, _Mapping]] = ...) -> None: ...
 
 class UpdateConnectionRequest(_message.Message):
-    __slots__ = ("workspace_id", "connection", "secret", "requested_by")
+    __slots__ = ("workspace_id", "connection", "secret", "requested_by", "totp_seed", "remove_totp")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CONNECTION_FIELD_NUMBER: _ClassVar[int]
     SECRET_FIELD_NUMBER: _ClassVar[int]
     REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    TOTP_SEED_FIELD_NUMBER: _ClassVar[int]
+    REMOVE_TOTP_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     connection: Connection
     secret: str
     requested_by: str
-    def __init__(self, workspace_id: _Optional[str] = ..., connection: _Optional[_Union[Connection, _Mapping]] = ..., secret: _Optional[str] = ..., requested_by: _Optional[str] = ...) -> None: ...
+    totp_seed: str
+    remove_totp: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., connection: _Optional[_Union[Connection, _Mapping]] = ..., secret: _Optional[str] = ..., requested_by: _Optional[str] = ..., totp_seed: _Optional[str] = ..., remove_totp: bool = ...) -> None: ...
 
 class UpdateConnectionResponse(_message.Message):
     __slots__ = ("connection",)

@@ -136,7 +136,7 @@ class ApprovedPlan(_message.Message):
     def __init__(self, plan_hash: _Optional[str] = ..., summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[_blocks_pb2.PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., approved_by: _Optional[str] = ..., approved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback: _Optional[str] = ...) -> None: ...
 
 class RunContext(_message.Message):
-    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan", "mode", "team", "parent_run_id", "handoff", "envelope_left", "git_proxy_url", "guardrails", "infra_connections")
+    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan", "mode", "team", "parent_run_id", "handoff", "envelope_left", "git_proxy_url", "guardrails", "infra_connections", "test_logins")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -177,6 +177,7 @@ class RunContext(_message.Message):
     GIT_PROXY_URL_FIELD_NUMBER: _ClassVar[int]
     GUARDRAILS_FIELD_NUMBER: _ClassVar[int]
     INFRA_CONNECTIONS_FIELD_NUMBER: _ClassVar[int]
+    TEST_LOGINS_FIELD_NUMBER: _ClassVar[int]
     run_id: str
     workspace_id: str
     channel_id: str
@@ -217,7 +218,8 @@ class RunContext(_message.Message):
     git_proxy_url: str
     guardrails: _containers.RepeatedCompositeFieldContainer[_guardrails_pb2.Guardrail]
     infra_connections: _containers.RepeatedCompositeFieldContainer[InfraConnectionBrief]
-    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ..., git_proxy_url: _Optional[str] = ..., guardrails: _Optional[_Iterable[_Union[_guardrails_pb2.Guardrail, _Mapping]]] = ..., infra_connections: _Optional[_Iterable[_Union[InfraConnectionBrief, _Mapping]]] = ...) -> None: ...
+    test_logins: _containers.RepeatedCompositeFieldContainer[TestLoginBrief]
+    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ..., git_proxy_url: _Optional[str] = ..., guardrails: _Optional[_Iterable[_Union[_guardrails_pb2.Guardrail, _Mapping]]] = ..., infra_connections: _Optional[_Iterable[_Union[InfraConnectionBrief, _Mapping]]] = ..., test_logins: _Optional[_Iterable[_Union[TestLoginBrief, _Mapping]]] = ...) -> None: ...
 
 class TeamContext(_message.Message):
     __slots__ = ("team_id", "name", "handle", "purpose", "members", "member_id", "coordinator", "board_id", "paused", "cap_note", "memory")
@@ -2920,6 +2922,146 @@ class InfraConnectionBrief(_message.Message):
     tools: _containers.RepeatedScalarFieldContainer[str]
     base_url: str
     def __init__(self, name: _Optional[str] = ..., provider: _Optional[_Union[_infra_pb2.Provider, str]] = ..., description: _Optional[str] = ..., regions: _Optional[_Iterable[str]] = ..., clusters: _Optional[_Iterable[str]] = ..., tools: _Optional[_Iterable[str]] = ..., base_url: _Optional[str] = ...) -> None: ...
+
+class TestLoginBrief(_message.Message):
+    __slots__ = ("name", "login_url", "app_hosts", "username", "description", "has_totp")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    LOGIN_URL_FIELD_NUMBER: _ClassVar[int]
+    APP_HOSTS_FIELD_NUMBER: _ClassVar[int]
+    USERNAME_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    HAS_TOTP_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    login_url: str
+    app_hosts: _containers.RepeatedScalarFieldContainer[str]
+    username: str
+    description: str
+    has_totp: bool
+    def __init__(self, name: _Optional[str] = ..., login_url: _Optional[str] = ..., app_hosts: _Optional[_Iterable[str]] = ..., username: _Optional[str] = ..., description: _Optional[str] = ..., has_totp: bool = ...) -> None: ...
+
+class TestLoginPage(_message.Message):
+    __slots__ = ("session_id", "url", "title", "screenshot", "text", "elements", "error", "refused", "file_id", "signed_in")
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    SCREENSHOT_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    ELEMENTS_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    SIGNED_IN_FIELD_NUMBER: _ClassVar[int]
+    session_id: str
+    url: str
+    title: str
+    screenshot: bytes
+    text: str
+    elements: str
+    error: str
+    refused: str
+    file_id: str
+    signed_in: bool
+    def __init__(self, session_id: _Optional[str] = ..., url: _Optional[str] = ..., title: _Optional[str] = ..., screenshot: _Optional[bytes] = ..., text: _Optional[str] = ..., elements: _Optional[str] = ..., error: _Optional[str] = ..., refused: _Optional[str] = ..., file_id: _Optional[str] = ..., signed_in: bool = ...) -> None: ...
+
+class TestLoginOpenRequest(_message.Message):
+    __slots__ = ("login", "url", "width", "height", "reason", "attach", "caption")
+    LOGIN_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    WIDTH_FIELD_NUMBER: _ClassVar[int]
+    HEIGHT_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    ATTACH_FIELD_NUMBER: _ClassVar[int]
+    CAPTION_FIELD_NUMBER: _ClassVar[int]
+    login: str
+    url: str
+    width: int
+    height: int
+    reason: str
+    attach: bool
+    caption: str
+    def __init__(self, login: _Optional[str] = ..., url: _Optional[str] = ..., width: _Optional[int] = ..., height: _Optional[int] = ..., reason: _Optional[str] = ..., attach: bool = ..., caption: _Optional[str] = ...) -> None: ...
+
+class TestLoginOpenResponse(_message.Message):
+    __slots__ = ("page",)
+    PAGE_FIELD_NUMBER: _ClassVar[int]
+    page: TestLoginPage
+    def __init__(self, page: _Optional[_Union[TestLoginPage, _Mapping]] = ...) -> None: ...
+
+class TestLoginActRequest(_message.Message):
+    __slots__ = ("session_id", "action", "url", "element", "text", "key", "dy", "enter", "attach", "caption")
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    ACTION_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    ELEMENT_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    KEY_FIELD_NUMBER: _ClassVar[int]
+    DY_FIELD_NUMBER: _ClassVar[int]
+    ENTER_FIELD_NUMBER: _ClassVar[int]
+    ATTACH_FIELD_NUMBER: _ClassVar[int]
+    CAPTION_FIELD_NUMBER: _ClassVar[int]
+    session_id: str
+    action: str
+    url: str
+    element: int
+    text: str
+    key: str
+    dy: int
+    enter: bool
+    attach: bool
+    caption: str
+    def __init__(self, session_id: _Optional[str] = ..., action: _Optional[str] = ..., url: _Optional[str] = ..., element: _Optional[int] = ..., text: _Optional[str] = ..., key: _Optional[str] = ..., dy: _Optional[int] = ..., enter: bool = ..., attach: bool = ..., caption: _Optional[str] = ...) -> None: ...
+
+class TestLoginActResponse(_message.Message):
+    __slots__ = ("page",)
+    PAGE_FIELD_NUMBER: _ClassVar[int]
+    page: TestLoginPage
+    def __init__(self, page: _Optional[_Union[TestLoginPage, _Mapping]] = ...) -> None: ...
+
+class TestLoginCloseRequest(_message.Message):
+    __slots__ = ("session_id",)
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    session_id: str
+    def __init__(self, session_id: _Optional[str] = ...) -> None: ...
+
+class TestLoginCloseResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class BrowserRecordStartRequest(_message.Message):
+    __slots__ = ("session_id",)
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    session_id: str
+    def __init__(self, session_id: _Optional[str] = ...) -> None: ...
+
+class BrowserRecordStartResponse(_message.Message):
+    __slots__ = ("refused", "max_seconds")
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
+    MAX_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    refused: str
+    max_seconds: int
+    def __init__(self, refused: _Optional[str] = ..., max_seconds: _Optional[int] = ...) -> None: ...
+
+class BrowserRecordStopRequest(_message.Message):
+    __slots__ = ("session_id", "caption")
+    SESSION_ID_FIELD_NUMBER: _ClassVar[int]
+    CAPTION_FIELD_NUMBER: _ClassVar[int]
+    session_id: str
+    caption: str
+    def __init__(self, session_id: _Optional[str] = ..., caption: _Optional[str] = ...) -> None: ...
+
+class BrowserRecordStopResponse(_message.Message):
+    __slots__ = ("file_id", "duration_ms", "frames", "refused", "error")
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    DURATION_MS_FIELD_NUMBER: _ClassVar[int]
+    FRAMES_FIELD_NUMBER: _ClassVar[int]
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    file_id: str
+    duration_ms: int
+    frames: int
+    refused: str
+    error: str
+    def __init__(self, file_id: _Optional[str] = ..., duration_ms: _Optional[int] = ..., frames: _Optional[int] = ..., refused: _Optional[str] = ..., error: _Optional[str] = ...) -> None: ...
 
 class InfraRunRequest(_message.Message):
     __slots__ = ("connection", "command", "cluster", "reason")
