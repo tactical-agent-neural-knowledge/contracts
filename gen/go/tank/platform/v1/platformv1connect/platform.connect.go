@@ -94,6 +94,9 @@ const (
 	// PlatformServiceSetWorkspaceNoChargeProcedure is the fully-qualified name of the PlatformService's
 	// SetWorkspaceNoCharge RPC.
 	PlatformServiceSetWorkspaceNoChargeProcedure = "/tank.platform.v1.PlatformService/SetWorkspaceNoCharge"
+	// PlatformServiceCreateWorkspaceProcedure is the fully-qualified name of the PlatformService's
+	// CreateWorkspace RPC.
+	PlatformServiceCreateWorkspaceProcedure = "/tank.platform.v1.PlatformService/CreateWorkspace"
 )
 
 // PlatformServiceClient is a client for the tank.platform.v1.PlatformService service.
@@ -119,6 +122,7 @@ type PlatformServiceClient interface {
 	SuspendWorkspace(context.Context, *connect.Request[v1.SuspendWorkspaceRequest]) (*connect.Response[v1.SuspendWorkspaceResponse], error)
 	SuspendUser(context.Context, *connect.Request[v1.SuspendUserRequest]) (*connect.Response[v1.SuspendUserResponse], error)
 	SetWorkspaceNoCharge(context.Context, *connect.Request[v1.SetWorkspaceNoChargeRequest]) (*connect.Response[v1.SetWorkspaceNoChargeResponse], error)
+	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
 }
 
 // NewPlatformServiceClient constructs a client for the tank.platform.v1.PlatformService service. By
@@ -258,6 +262,12 @@ func NewPlatformServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(platformServiceMethods.ByName("SetWorkspaceNoCharge")),
 			connect.WithClientOptions(opts...),
 		),
+		createWorkspace: connect.NewClient[v1.CreateWorkspaceRequest, v1.CreateWorkspaceResponse](
+			httpClient,
+			baseURL+PlatformServiceCreateWorkspaceProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("CreateWorkspace")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -284,6 +294,7 @@ type platformServiceClient struct {
 	suspendWorkspace     *connect.Client[v1.SuspendWorkspaceRequest, v1.SuspendWorkspaceResponse]
 	suspendUser          *connect.Client[v1.SuspendUserRequest, v1.SuspendUserResponse]
 	setWorkspaceNoCharge *connect.Client[v1.SetWorkspaceNoChargeRequest, v1.SetWorkspaceNoChargeResponse]
+	createWorkspace      *connect.Client[v1.CreateWorkspaceRequest, v1.CreateWorkspaceResponse]
 }
 
 // ListAgentures calls tank.platform.v1.PlatformService.ListAgentures.
@@ -391,6 +402,11 @@ func (c *platformServiceClient) SetWorkspaceNoCharge(ctx context.Context, req *c
 	return c.setWorkspaceNoCharge.CallUnary(ctx, req)
 }
 
+// CreateWorkspace calls tank.platform.v1.PlatformService.CreateWorkspace.
+func (c *platformServiceClient) CreateWorkspace(ctx context.Context, req *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error) {
+	return c.createWorkspace.CallUnary(ctx, req)
+}
+
 // PlatformServiceHandler is an implementation of the tank.platform.v1.PlatformService service.
 type PlatformServiceHandler interface {
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
@@ -414,6 +430,7 @@ type PlatformServiceHandler interface {
 	SuspendWorkspace(context.Context, *connect.Request[v1.SuspendWorkspaceRequest]) (*connect.Response[v1.SuspendWorkspaceResponse], error)
 	SuspendUser(context.Context, *connect.Request[v1.SuspendUserRequest]) (*connect.Response[v1.SuspendUserResponse], error)
 	SetWorkspaceNoCharge(context.Context, *connect.Request[v1.SetWorkspaceNoChargeRequest]) (*connect.Response[v1.SetWorkspaceNoChargeResponse], error)
+	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
 }
 
 // NewPlatformServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -549,6 +566,12 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 		connect.WithSchema(platformServiceMethods.ByName("SetWorkspaceNoCharge")),
 		connect.WithHandlerOptions(opts...),
 	)
+	platformServiceCreateWorkspaceHandler := connect.NewUnaryHandler(
+		PlatformServiceCreateWorkspaceProcedure,
+		svc.CreateWorkspace,
+		connect.WithSchema(platformServiceMethods.ByName("CreateWorkspace")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.platform.v1.PlatformService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PlatformServiceListAgenturesProcedure:
@@ -593,6 +616,8 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 			platformServiceSuspendUserHandler.ServeHTTP(w, r)
 		case PlatformServiceSetWorkspaceNoChargeProcedure:
 			platformServiceSetWorkspaceNoChargeHandler.ServeHTTP(w, r)
+		case PlatformServiceCreateWorkspaceProcedure:
+			platformServiceCreateWorkspaceHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -684,4 +709,8 @@ func (UnimplementedPlatformServiceHandler) SuspendUser(context.Context, *connect
 
 func (UnimplementedPlatformServiceHandler) SetWorkspaceNoCharge(context.Context, *connect.Request[v1.SetWorkspaceNoChargeRequest]) (*connect.Response[v1.SetWorkspaceNoChargeResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.SetWorkspaceNoCharge is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.CreateWorkspace is not implemented"))
 }
