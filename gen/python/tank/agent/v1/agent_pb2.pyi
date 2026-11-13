@@ -29,6 +29,7 @@ class RunState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     RUN_STATE_TIMED_OUT: _ClassVar[RunState]
     RUN_STATE_APPROVAL_EXPIRED: _ClassVar[RunState]
     RUN_STATE_BLOCKED: _ClassVar[RunState]
+    RUN_STATE_AWAITING_ANSWER: _ClassVar[RunState]
 
 class PlanItemStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -58,6 +59,7 @@ RUN_STATE_BUDGET_EXHAUSTED: RunState
 RUN_STATE_TIMED_OUT: RunState
 RUN_STATE_APPROVAL_EXPIRED: RunState
 RUN_STATE_BLOCKED: RunState
+RUN_STATE_AWAITING_ANSWER: RunState
 PLAN_ITEM_STATUS_UNSPECIFIED: PlanItemStatus
 PLAN_ITEM_STATUS_TODO: PlanItemStatus
 PLAN_ITEM_STATUS_DOING: PlanItemStatus
