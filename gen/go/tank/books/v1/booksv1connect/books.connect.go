@@ -104,6 +104,15 @@ const (
 	// BooksServiceListTransactionsProcedure is the fully-qualified name of the BooksService's
 	// ListTransactions RPC.
 	BooksServiceListTransactionsProcedure = "/tank.books.v1.BooksService/ListTransactions"
+	// BooksServiceListRecurringProcedure is the fully-qualified name of the BooksService's
+	// ListRecurring RPC.
+	BooksServiceListRecurringProcedure = "/tank.books.v1.BooksService/ListRecurring"
+	// BooksServiceUpsertRecurringProcedure is the fully-qualified name of the BooksService's
+	// UpsertRecurring RPC.
+	BooksServiceUpsertRecurringProcedure = "/tank.books.v1.BooksService/UpsertRecurring"
+	// BooksServiceSetRecurringStatusProcedure is the fully-qualified name of the BooksService's
+	// SetRecurringStatus RPC.
+	BooksServiceSetRecurringStatusProcedure = "/tank.books.v1.BooksService/SetRecurringStatus"
 )
 
 // BooksServiceClient is a client for the tank.books.v1.BooksService service.
@@ -133,6 +142,9 @@ type BooksServiceClient interface {
 	PayExpense(context.Context, *connect.Request[v1.PayExpenseRequest]) (*connect.Response[v1.PayExpenseResponse], error)
 	GetStatement(context.Context, *connect.Request[v1.GetStatementRequest]) (*connect.Response[v1.GetStatementResponse], error)
 	ListTransactions(context.Context, *connect.Request[v1.ListTransactionsRequest]) (*connect.Response[v1.ListTransactionsResponse], error)
+	ListRecurring(context.Context, *connect.Request[v1.ListRecurringRequest]) (*connect.Response[v1.ListRecurringResponse], error)
+	UpsertRecurring(context.Context, *connect.Request[v1.UpsertRecurringRequest]) (*connect.Response[v1.UpsertRecurringResponse], error)
+	SetRecurringStatus(context.Context, *connect.Request[v1.SetRecurringStatusRequest]) (*connect.Response[v1.SetRecurringStatusResponse], error)
 }
 
 // NewBooksServiceClient constructs a client for the tank.books.v1.BooksService service. By default,
@@ -296,6 +308,24 @@ func NewBooksServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(booksServiceMethods.ByName("ListTransactions")),
 			connect.WithClientOptions(opts...),
 		),
+		listRecurring: connect.NewClient[v1.ListRecurringRequest, v1.ListRecurringResponse](
+			httpClient,
+			baseURL+BooksServiceListRecurringProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("ListRecurring")),
+			connect.WithClientOptions(opts...),
+		),
+		upsertRecurring: connect.NewClient[v1.UpsertRecurringRequest, v1.UpsertRecurringResponse](
+			httpClient,
+			baseURL+BooksServiceUpsertRecurringProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("UpsertRecurring")),
+			connect.WithClientOptions(opts...),
+		),
+		setRecurringStatus: connect.NewClient[v1.SetRecurringStatusRequest, v1.SetRecurringStatusResponse](
+			httpClient,
+			baseURL+BooksServiceSetRecurringStatusProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("SetRecurringStatus")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -326,6 +356,9 @@ type booksServiceClient struct {
 	payExpense             *connect.Client[v1.PayExpenseRequest, v1.PayExpenseResponse]
 	getStatement           *connect.Client[v1.GetStatementRequest, v1.GetStatementResponse]
 	listTransactions       *connect.Client[v1.ListTransactionsRequest, v1.ListTransactionsResponse]
+	listRecurring          *connect.Client[v1.ListRecurringRequest, v1.ListRecurringResponse]
+	upsertRecurring        *connect.Client[v1.UpsertRecurringRequest, v1.UpsertRecurringResponse]
+	setRecurringStatus     *connect.Client[v1.SetRecurringStatusRequest, v1.SetRecurringStatusResponse]
 }
 
 // GetSettings calls tank.books.v1.BooksService.GetSettings.
@@ -453,6 +486,21 @@ func (c *booksServiceClient) ListTransactions(ctx context.Context, req *connect.
 	return c.listTransactions.CallUnary(ctx, req)
 }
 
+// ListRecurring calls tank.books.v1.BooksService.ListRecurring.
+func (c *booksServiceClient) ListRecurring(ctx context.Context, req *connect.Request[v1.ListRecurringRequest]) (*connect.Response[v1.ListRecurringResponse], error) {
+	return c.listRecurring.CallUnary(ctx, req)
+}
+
+// UpsertRecurring calls tank.books.v1.BooksService.UpsertRecurring.
+func (c *booksServiceClient) UpsertRecurring(ctx context.Context, req *connect.Request[v1.UpsertRecurringRequest]) (*connect.Response[v1.UpsertRecurringResponse], error) {
+	return c.upsertRecurring.CallUnary(ctx, req)
+}
+
+// SetRecurringStatus calls tank.books.v1.BooksService.SetRecurringStatus.
+func (c *booksServiceClient) SetRecurringStatus(ctx context.Context, req *connect.Request[v1.SetRecurringStatusRequest]) (*connect.Response[v1.SetRecurringStatusResponse], error) {
+	return c.setRecurringStatus.CallUnary(ctx, req)
+}
+
 // BooksServiceHandler is an implementation of the tank.books.v1.BooksService service.
 type BooksServiceHandler interface {
 	GetSettings(context.Context, *connect.Request[v1.GetSettingsRequest]) (*connect.Response[v1.GetSettingsResponse], error)
@@ -480,6 +528,9 @@ type BooksServiceHandler interface {
 	PayExpense(context.Context, *connect.Request[v1.PayExpenseRequest]) (*connect.Response[v1.PayExpenseResponse], error)
 	GetStatement(context.Context, *connect.Request[v1.GetStatementRequest]) (*connect.Response[v1.GetStatementResponse], error)
 	ListTransactions(context.Context, *connect.Request[v1.ListTransactionsRequest]) (*connect.Response[v1.ListTransactionsResponse], error)
+	ListRecurring(context.Context, *connect.Request[v1.ListRecurringRequest]) (*connect.Response[v1.ListRecurringResponse], error)
+	UpsertRecurring(context.Context, *connect.Request[v1.UpsertRecurringRequest]) (*connect.Response[v1.UpsertRecurringResponse], error)
+	SetRecurringStatus(context.Context, *connect.Request[v1.SetRecurringStatusRequest]) (*connect.Response[v1.SetRecurringStatusResponse], error)
 }
 
 // NewBooksServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -639,6 +690,24 @@ func NewBooksServiceHandler(svc BooksServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(booksServiceMethods.ByName("ListTransactions")),
 		connect.WithHandlerOptions(opts...),
 	)
+	booksServiceListRecurringHandler := connect.NewUnaryHandler(
+		BooksServiceListRecurringProcedure,
+		svc.ListRecurring,
+		connect.WithSchema(booksServiceMethods.ByName("ListRecurring")),
+		connect.WithHandlerOptions(opts...),
+	)
+	booksServiceUpsertRecurringHandler := connect.NewUnaryHandler(
+		BooksServiceUpsertRecurringProcedure,
+		svc.UpsertRecurring,
+		connect.WithSchema(booksServiceMethods.ByName("UpsertRecurring")),
+		connect.WithHandlerOptions(opts...),
+	)
+	booksServiceSetRecurringStatusHandler := connect.NewUnaryHandler(
+		BooksServiceSetRecurringStatusProcedure,
+		svc.SetRecurringStatus,
+		connect.WithSchema(booksServiceMethods.ByName("SetRecurringStatus")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.books.v1.BooksService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BooksServiceGetSettingsProcedure:
@@ -691,6 +760,12 @@ func NewBooksServiceHandler(svc BooksServiceHandler, opts ...connect.HandlerOpti
 			booksServiceGetStatementHandler.ServeHTTP(w, r)
 		case BooksServiceListTransactionsProcedure:
 			booksServiceListTransactionsHandler.ServeHTTP(w, r)
+		case BooksServiceListRecurringProcedure:
+			booksServiceListRecurringHandler.ServeHTTP(w, r)
+		case BooksServiceUpsertRecurringProcedure:
+			booksServiceUpsertRecurringHandler.ServeHTTP(w, r)
+		case BooksServiceSetRecurringStatusProcedure:
+			booksServiceSetRecurringStatusHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -798,4 +873,16 @@ func (UnimplementedBooksServiceHandler) GetStatement(context.Context, *connect.R
 
 func (UnimplementedBooksServiceHandler) ListTransactions(context.Context, *connect.Request[v1.ListTransactionsRequest]) (*connect.Response[v1.ListTransactionsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.ListTransactions is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) ListRecurring(context.Context, *connect.Request[v1.ListRecurringRequest]) (*connect.Response[v1.ListRecurringResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.ListRecurring is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) UpsertRecurring(context.Context, *connect.Request[v1.UpsertRecurringRequest]) (*connect.Response[v1.UpsertRecurringResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.UpsertRecurring is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) SetRecurringStatus(context.Context, *connect.Request[v1.SetRecurringStatusRequest]) (*connect.Response[v1.SetRecurringStatusResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.SetRecurringStatus is not implemented"))
 }

@@ -492,12 +492,19 @@ message StatementPeriod {
 }
 
 // One figure. What the cell shows is actual + expected; budget is beside it.
-// Expected and budget are zero until forecasts (phase 2) and budgets (phase 3).
+// Expected comes from the forecast (recurring items, TANK's charges, open invoices and
+// unpaid bills) in the current and future periods, through the end of next fiscal
+// year. Budget is zero until budgets (phase 3).
 message StatementCell {
   int64 actual_cents = 1;
   int64 expected_cents = 2;
   int64 budget_cents = 3;
   CellState state = 4;
+  // Expected and not seen: recurring items due in this period whose matching window
+  // (seven days either side) closed with no actual to match. Not in expected_cents;
+  // shown beside the figure so a person can see what went missing.
+  int64 missed_cents = 5;
+  int32 missed_count = 6;
 }
 
 message StatementRow {
@@ -519,7 +526,7 @@ message GetStatementRequest {
   StatementBasis basis = 3;
   // The range, by period key ("2026-04", "FY2027-Q1", "FY2027") of any grain, or by
   // dates: every period that overlaps [from, to) is a column. Nothing given = this
-  // fiscal year (year grain: the last two fiscal years and this one).
+  // fiscal year and next (year grain: the last two fiscal years, this one and next).
   string from_period = 4;
   string to_period = 5;
   google.protobuf.Timestamp from = 6;
@@ -547,7 +554,133 @@ message GetStatementResponse {
   StatementRow ending_cash = 11;
   bool has_opening_balance = 12;
   CashBalance opening_balance = 13;   // the latest one set, when there is one
+  // How long cash lasts at this rate, by month through the end of next fiscal year.
+  // Unset without an opening balance.
+  Runway runway = 14;
 }
+
+// ---------------------------------------------------------------- forecast
+
+enum Cadence {
+  CADENCE_UNSPECIFIED = 0;
+  CADENCE_WEEKLY = 1;
+  CADENCE_MONTHLY = 2;
+  CADENCE_QUARTERLY = 3;            // every three months from starts_on's month
+  CADENCE_YEARLY = 4;
+}
+
+enum RecurringSource {
+  RECURRING_SOURCE_UNSPECIFIED = 0;
+  RECURRING_SOURCE_PERSON = 1;      // a person added it
+  RECURRING_SOURCE_DETECTED = 2;    // Books found the repeat and proposed it
+  RECURRING_SOURCE_TANK = 3;        // what TANK itself charges: read-only, computed on read
+  RECURRING_SOURCE_AGENT = 4;       // an agent proposed it
+}
+
+enum RecurringStatus {
+  RECURRING_STATUS_UNSPECIFIED = 0;
+  RECURRING_STATUS_ACTIVE = 1;      // in the forecast
+  RECURRING_STATUS_PROPOSED = 2;    // waiting for a person to accept, change or dismiss
+  RECURRING_STATUS_PAUSED = 3;      // kept, not forecast
+  RECURRING_STATUS_DISMISSED = 4;   // gone; a dismissed detected repeat is never proposed again
+}
+
+// Money that comes in or goes out on a cadence: rent, payroll, a retainer, a contract
+// with an end date. Each occurrence is matched to an actual (same vendor, customer or
+// category; amount within 15%; date within seven days) so nothing counts twice.
+message Recurring {
+  // A Snowflake id; a TANK rule's is a stable name instead ("tank:fee:premium",
+  // "tank:agents").
+  string id = 1;
+  CategoryKind kind = 2;
+  string category_id = 3;
+  string customer_id = 4;          // income: who pays it, when known
+  string customer_name = 5;
+  string vendor = 6;               // expense: who is paid, when known
+  string name = 7;                 // what people call it, e.g. "Office rent"; may be empty
+  int64 amount_cents = 8;          // each occurrence; a TANK agents rule: the month's projection
+  Cadence cadence = 9;
+  // Weekly: ISO weekday, 1 (Monday) to 7. Otherwise the day of the month, 1 to 31; a
+  // month shorter than that has it on its last day (the 31st is Feb 28).
+  int32 anchor_day = 10;
+  // Days, at midnight in the books' timezone. ends_on inclusive; unset = no end.
+  google.protobuf.Timestamp starts_on = 11;
+  google.protobuf.Timestamp ends_on = 12;
+  // How many days after it is earned the cash moves (an invoice paid 30 days later).
+  int32 basis_offset_days = 13;
+  RecurringSource source = 14;
+  RecurringStatus status = 15;
+  string created_by = 16;          // user id, "agent", "books" (detected) or "tank"
+  google.protobuf.Timestamp created_at = 17;
+  bool read_only = 18;             // a TANK rule: it follows TANK's billing, nobody edits it
+  // What a detected repeat was found from: how many times it was seen and since when.
+  int32 seen_count = 19;
+  google.protobuf.Timestamp seen_since = 20;
+  // The next occurrence on or after today; unset when it has ended.
+  google.protobuf.Timestamp next_on = 21;
+  // A TANK agents rule: the trailing 30-day daily average it projects from, and
+  // whether the workspace's monthly cap holds the projection down.
+  int64 daily_average_cents = 22;
+  bool capped = 23;
+  int64 cap_cents = 24;
+}
+
+// One occurrence of a recurring item.
+message Occurrence {
+  string recurring_id = 1;
+  google.protobuf.Timestamp on = 2;  // the day it was due, midnight in the books' timezone
+  int64 amount_cents = 3;
+  CategoryKind kind = 4;
+  string category_id = 5;
+  // The rule's own words, for the list: its name, else the vendor or customer.
+  string name = 6;
+}
+
+// How long cash lasts at the forecast's rate.
+message Runway {
+  // The first month ending below zero ("2027-03"); empty when cash stays at or above
+  // zero through horizon_month.
+  string runs_out_month = 1;
+  google.protobuf.Timestamp runs_out_at = 2;   // that month's start
+  string horizon_month = 3;                    // the last month looked at: the end of next fiscal year
+  int64 lowest_cents = 4;                      // the lowest month-end cash in the horizon
+  string lowest_month = 5;
+}
+
+message ListRecurringRequest {
+  string workspace_id = 1;
+}
+message ListRecurringResponse {
+  // People's and accepted rules (person, detected, agent), active and paused.
+  repeated Recurring rules = 1;
+  // Waiting for a person: detected repeats and agents' proposals.
+  repeated Recurring proposals = 2;
+  // From TANK: the subscriptions and the agents' projected spend. Read-only.
+  repeated Recurring tank = 3;
+  // Expected and not seen, latest first: occurrences whose window closed with no actual.
+  repeated Occurrence not_seen = 4;
+  Runway runway = 5;                 // unset without an opening balance
+  bool can_edit = 6;                 // the caller may add, change and accept rules
+  string currency = 7;
+}
+
+message UpsertRecurringRequest {
+  string workspace_id = 1;
+  // id empty to add one. Read from it: kind, category_id, customer_id, vendor, name,
+  // amount_cents, cadence, anchor_day (0 = from starts_on), starts_on (unset = today),
+  // ends_on, basis_offset_days. A person saving a proposal accepts it; anything an
+  // agent saves is a proposal.
+  Recurring rule = 2;
+}
+message UpsertRecurringResponse { Recurring rule = 1; }
+
+message SetRecurringStatusRequest {
+  string workspace_id = 1;
+  string id = 2;
+  // ACTIVE accepts a proposal or resumes a paused rule; PAUSED; DISMISSED.
+  RecurringStatus status = 3;
+}
+message SetRecurringStatusResponse { Recurring rule = 1; }
 
 // What is behind one cell: the invoices, payments and expenses in a category and a
 // period, on a basis.
@@ -601,4 +734,7 @@ service BooksService {
   rpc PayExpense(PayExpenseRequest) returns (PayExpenseResponse);
   rpc GetStatement(GetStatementRequest) returns (GetStatementResponse);
   rpc ListTransactions(ListTransactionsRequest) returns (ListTransactionsResponse);
+  rpc ListRecurring(ListRecurringRequest) returns (ListRecurringResponse);
+  rpc UpsertRecurring(UpsertRecurringRequest) returns (UpsertRecurringResponse);
+  rpc SetRecurringStatus(SetRecurringStatusRequest) returns (SetRecurringStatusResponse);
 }
