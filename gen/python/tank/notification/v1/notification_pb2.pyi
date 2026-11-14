@@ -20,7 +20,7 @@ PUSH_PLATFORM_FCM: PushPlatform
 PUSH_PLATFORM_WEB: PushPlatform
 
 class Notification(_message.Message):
-    __slots__ = ("id", "workspace_id", "user_id", "kind", "message_id", "channel_id", "actor_id", "read_at", "created_at", "item_kind", "item_id", "item_title", "task_stage")
+    __slots__ = ("id", "workspace_id", "user_id", "kind", "message_id", "channel_id", "actor_id", "read_at", "created_at", "item_kind", "item_id", "item_title", "task_stage", "note")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
@@ -34,6 +34,7 @@ class Notification(_message.Message):
     ITEM_ID_FIELD_NUMBER: _ClassVar[int]
     ITEM_TITLE_FIELD_NUMBER: _ClassVar[int]
     TASK_STAGE_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     user_id: str
@@ -47,7 +48,8 @@ class Notification(_message.Message):
     item_id: str
     item_title: str
     task_stage: _task_pb2.TaskStage
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., user_id: _Optional[str] = ..., kind: _Optional[str] = ..., message_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., actor_id: _Optional[str] = ..., read_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., item_kind: _Optional[str] = ..., item_id: _Optional[str] = ..., item_title: _Optional[str] = ..., task_stage: _Optional[_Union[_task_pb2.TaskStage, str]] = ...) -> None: ...
+    note: str
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., user_id: _Optional[str] = ..., kind: _Optional[str] = ..., message_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., actor_id: _Optional[str] = ..., read_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., item_kind: _Optional[str] = ..., item_id: _Optional[str] = ..., item_title: _Optional[str] = ..., task_stage: _Optional[_Union[_task_pb2.TaskStage, str]] = ..., note: _Optional[str] = ...) -> None: ...
 
 class ListNotificationsRequest(_message.Message):
     __slots__ = ("workspace_id", "unread_only", "cursor", "limit")
