@@ -113,6 +113,8 @@ const (
 	AiServiceSetReadReceiptsProcedure = "/tank.ai.v1.AiService/SetReadReceipts"
 	// AiServiceMarkDeliveredProcedure is the fully-qualified name of the AiService's MarkDelivered RPC.
 	AiServiceMarkDeliveredProcedure = "/tank.ai.v1.AiService/MarkDelivered"
+	// AiServiceListMessagesProcedure is the fully-qualified name of the AiService's ListMessages RPC.
+	AiServiceListMessagesProcedure = "/tank.ai.v1.AiService/ListMessages"
 )
 
 // AiServiceClient is a client for the tank.ai.v1.AiService service.
@@ -177,6 +179,10 @@ type AiServiceClient interface {
 	// conversation. Reading implies it (MarkRead, and a Watch that delivers a message), so a
 	// conversation on screen needs no call. A conversation the caller is not in is skipped.
 	MarkDelivered(context.Context, *connect.Request[v1.MarkDeliveredRequest]) (*connect.Response[v1.MarkDeliveredResponse], error)
+	// A page of a conversation's messages, older than a message the client already has
+	// (GetConversation with message_limit gives the newest ones). Same membership rule as
+	// GetConversation; reading a page never marks anything read.
+	ListMessages(context.Context, *connect.Request[v1.ListMessagesRequest]) (*connect.Response[v1.ListMessagesResponse], error)
 }
 
 // NewAiServiceClient constructs a client for the tank.ai.v1.AiService service. By default, it uses
@@ -394,6 +400,12 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("MarkDelivered")),
 			connect.WithClientOptions(opts...),
 		),
+		listMessages: connect.NewClient[v1.ListMessagesRequest, v1.ListMessagesResponse](
+			httpClient,
+			baseURL+AiServiceListMessagesProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("ListMessages")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -433,6 +445,7 @@ type aiServiceClient struct {
 	removeReaction     *connect.Client[v1.RemoveReactionRequest, v1.RemoveReactionResponse]
 	setReadReceipts    *connect.Client[v1.SetReadReceiptsRequest, v1.SetReadReceiptsResponse]
 	markDelivered      *connect.Client[v1.MarkDeliveredRequest, v1.MarkDeliveredResponse]
+	listMessages       *connect.Client[v1.ListMessagesRequest, v1.ListMessagesResponse]
 }
 
 // ListConversations calls tank.ai.v1.AiService.ListConversations.
@@ -605,6 +618,11 @@ func (c *aiServiceClient) MarkDelivered(ctx context.Context, req *connect.Reques
 	return c.markDelivered.CallUnary(ctx, req)
 }
 
+// ListMessages calls tank.ai.v1.AiService.ListMessages.
+func (c *aiServiceClient) ListMessages(ctx context.Context, req *connect.Request[v1.ListMessagesRequest]) (*connect.Response[v1.ListMessagesResponse], error) {
+	return c.listMessages.CallUnary(ctx, req)
+}
+
 // AiServiceHandler is an implementation of the tank.ai.v1.AiService service.
 type AiServiceHandler interface {
 	ListConversations(context.Context, *connect.Request[v1.ListConversationsRequest]) (*connect.Response[v1.ListConversationsResponse], error)
@@ -667,6 +685,10 @@ type AiServiceHandler interface {
 	// conversation. Reading implies it (MarkRead, and a Watch that delivers a message), so a
 	// conversation on screen needs no call. A conversation the caller is not in is skipped.
 	MarkDelivered(context.Context, *connect.Request[v1.MarkDeliveredRequest]) (*connect.Response[v1.MarkDeliveredResponse], error)
+	// A page of a conversation's messages, older than a message the client already has
+	// (GetConversation with message_limit gives the newest ones). Same membership rule as
+	// GetConversation; reading a page never marks anything read.
+	ListMessages(context.Context, *connect.Request[v1.ListMessagesRequest]) (*connect.Response[v1.ListMessagesResponse], error)
 }
 
 // NewAiServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -880,6 +902,12 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("MarkDelivered")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServiceListMessagesHandler := connect.NewUnaryHandler(
+		AiServiceListMessagesProcedure,
+		svc.ListMessages,
+		connect.WithSchema(aiServiceMethods.ByName("ListMessages")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.ai.v1.AiService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AiServiceListConversationsProcedure:
@@ -950,6 +978,8 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceSetReadReceiptsHandler.ServeHTTP(w, r)
 		case AiServiceMarkDeliveredProcedure:
 			aiServiceMarkDeliveredHandler.ServeHTTP(w, r)
+		case AiServiceListMessagesProcedure:
+			aiServiceListMessagesHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -1093,4 +1123,8 @@ func (UnimplementedAiServiceHandler) SetReadReceipts(context.Context, *connect.R
 
 func (UnimplementedAiServiceHandler) MarkDelivered(context.Context, *connect.Request[v1.MarkDeliveredRequest]) (*connect.Response[v1.MarkDeliveredResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.MarkDelivered is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) ListMessages(context.Context, *connect.Request[v1.ListMessagesRequest]) (*connect.Response[v1.ListMessagesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.ListMessages is not implemented"))
 }

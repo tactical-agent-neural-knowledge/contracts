@@ -266,36 +266,62 @@ class MessageReactions(_message.Message):
     def __init__(self, message_id: _Optional[str] = ..., reactions: _Optional[_Iterable[_Union[Reaction, _Mapping]]] = ...) -> None: ...
 
 class ListConversationsRequest(_message.Message):
-    __slots__ = ("query", "limit", "workspace_id")
+    __slots__ = ("query", "limit", "workspace_id", "cursor")
     QUERY_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CURSOR_FIELD_NUMBER: _ClassVar[int]
     query: str
     limit: int
     workspace_id: str
-    def __init__(self, query: _Optional[str] = ..., limit: _Optional[int] = ..., workspace_id: _Optional[str] = ...) -> None: ...
+    cursor: str
+    def __init__(self, query: _Optional[str] = ..., limit: _Optional[int] = ..., workspace_id: _Optional[str] = ..., cursor: _Optional[str] = ...) -> None: ...
 
 class ListConversationsResponse(_message.Message):
-    __slots__ = ("conversations",)
+    __slots__ = ("conversations", "next_cursor")
     CONVERSATIONS_FIELD_NUMBER: _ClassVar[int]
+    NEXT_CURSOR_FIELD_NUMBER: _ClassVar[int]
     conversations: _containers.RepeatedCompositeFieldContainer[Conversation]
-    def __init__(self, conversations: _Optional[_Iterable[_Union[Conversation, _Mapping]]] = ...) -> None: ...
+    next_cursor: str
+    def __init__(self, conversations: _Optional[_Iterable[_Union[Conversation, _Mapping]]] = ..., next_cursor: _Optional[str] = ...) -> None: ...
 
 class GetConversationRequest(_message.Message):
-    __slots__ = ("id",)
+    __slots__ = ("id", "message_limit")
     ID_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_LIMIT_FIELD_NUMBER: _ClassVar[int]
     id: str
-    def __init__(self, id: _Optional[str] = ...) -> None: ...
+    message_limit: int
+    def __init__(self, id: _Optional[str] = ..., message_limit: _Optional[int] = ...) -> None: ...
 
 class GetConversationResponse(_message.Message):
-    __slots__ = ("conversation", "messages", "atlas_pages")
+    __slots__ = ("conversation", "messages", "atlas_pages", "has_older")
     CONVERSATION_FIELD_NUMBER: _ClassVar[int]
     MESSAGES_FIELD_NUMBER: _ClassVar[int]
     ATLAS_PAGES_FIELD_NUMBER: _ClassVar[int]
+    HAS_OLDER_FIELD_NUMBER: _ClassVar[int]
     conversation: Conversation
     messages: _containers.RepeatedCompositeFieldContainer[Message]
     atlas_pages: _containers.RepeatedCompositeFieldContainer[AtlasPage]
-    def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ..., messages: _Optional[_Iterable[_Union[Message, _Mapping]]] = ..., atlas_pages: _Optional[_Iterable[_Union[AtlasPage, _Mapping]]] = ...) -> None: ...
+    has_older: bool
+    def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ..., messages: _Optional[_Iterable[_Union[Message, _Mapping]]] = ..., atlas_pages: _Optional[_Iterable[_Union[AtlasPage, _Mapping]]] = ..., has_older: bool = ...) -> None: ...
+
+class ListMessagesRequest(_message.Message):
+    __slots__ = ("conversation_id", "before_message_id", "limit")
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    BEFORE_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    before_message_id: str
+    limit: int
+    def __init__(self, conversation_id: _Optional[str] = ..., before_message_id: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListMessagesResponse(_message.Message):
+    __slots__ = ("messages", "has_older")
+    MESSAGES_FIELD_NUMBER: _ClassVar[int]
+    HAS_OLDER_FIELD_NUMBER: _ClassVar[int]
+    messages: _containers.RepeatedCompositeFieldContainer[Message]
+    has_older: bool
+    def __init__(self, messages: _Optional[_Iterable[_Union[Message, _Mapping]]] = ..., has_older: bool = ...) -> None: ...
 
 class AtlasPage(_message.Message):
     __slots__ = ("name", "canvas_id", "markdown", "added_at")

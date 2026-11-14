@@ -250,13 +250,25 @@ message ListConversationsRequest {
   // With a workspace id: only the caller's conversations in that workspace, for its TANK
   // Neural section (2026-11-01). Empty keeps the list as it was: every conversation.
   string workspace_id = 3;
+  // Paging (2026-11-14): the next_cursor of the previous page. Empty is the first page.
+  // Opaque: a client never builds or reads one. Without a cursor `limit` means what it
+  // always did (default 200, at most 500), so a client that never pages sees no change.
+  string cursor = 4;
 }
 message ListConversationsResponse {
   repeated Conversation conversations = 1;
+  // Pass back as ListConversationsRequest.cursor for the page after this one. Empty means
+  // there is nothing after it. The order (pinned first, then most recently updated) is held
+  // steady while conversations move: one updated between pages can be missed or repeated,
+  // never another one skipped.
+  string next_cursor = 2;
 }
 
 message GetConversationRequest {
   string id = 1;
+  // How many of the newest messages to return; 0 returns every message, as before. The
+  // ones returned are still oldest first. Older ones come from ListMessages.
+  int32 message_limit = 2;
 }
 message GetConversationResponse {
   Conversation conversation = 1;
@@ -264,6 +276,22 @@ message GetConversationResponse {
   // The Markdown files from this conversation that are pages in Atlas, oldest first. A page
   // since deleted is not listed.
   repeated AtlasPage atlas_pages = 3;
+  // There are messages older than the first one in `messages` (only with message_limit).
+  bool has_older = 4;
+}
+
+message ListMessagesRequest {
+  string conversation_id = 1;
+  // The page ends just before this message; empty pages back from the newest.
+  string before_message_id = 2;
+  // Default 50, at most 200.
+  int32 limit = 3;
+}
+message ListMessagesResponse {
+  // Oldest first, as in GetConversationResponse.
+  repeated Message messages = 1;
+  // There are messages older than the first one here.
+  bool has_older = 2;
 }
 
 // A Markdown file Neural wrote, added to Atlas from this conversation (Robby, 2026-11-03:
@@ -559,6 +587,10 @@ service AiService {
   // conversation. Reading implies it (MarkRead, and a Watch that delivers a message), so a
   // conversation on screen needs no call. A conversation the caller is not in is skipped.
   rpc MarkDelivered(MarkDeliveredRequest) returns (MarkDeliveredResponse);
+  // A page of a conversation's messages, older than a message the client already has
+  // (GetConversation with message_limit gives the newest ones). Same membership rule as
+  // GetConversation; reading a page never marks anything read.
+  rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
 }
 
 message SetReadReceiptsRequest {
