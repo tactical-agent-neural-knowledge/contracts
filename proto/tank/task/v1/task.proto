@@ -72,6 +72,10 @@ message Task {
   bool asker_muted = 19;
   // For Command: the Tread's name, so a card can say where it lives.
   string channel_name = 20;
+  // The task's own address in the web app (https://app.tank.chat/w/<workspace slug>/c/<tread
+  // id>?task=<id>), the same one its Activity row and push open. It opens only for people in
+  // the task's Tread; anyone else is told it is in a Tread they're not in, and sees nothing of it.
+  string link = 21;
 }
 
 
@@ -182,6 +186,20 @@ message SetTaskSettingsResponse {
   repeated TaskNotify notify = 1;
 }
 
+// Send to: hand a task to people in its Tread so they hear about it now, at whatever stage it
+// is in ("I want someone else to check it"). The caller must be in the task's Tread, and so
+// must everyone named: a person who isn't is refused for the whole call, and nobody is told
+// anything. People only (no agents or bots), never the caller, each person once.
+message SendTaskRequest {
+  string task_id = 1;
+  repeated string user_ids = 2;
+  // Optional, at most 500 characters. Shown in Activity inside the app; never in a push.
+  string note = 3;
+}
+message SendTaskResponse {
+  repeated string sent_user_ids = 1;
+}
+
 // What a run did to its task, from the control plane.
 enum TaskRunEvent {
   TASK_RUN_EVENT_UNSPECIFIED = 0;
@@ -220,4 +238,5 @@ service TaskService {
   rpc GetTaskSettings(GetTaskSettingsRequest) returns (GetTaskSettingsResponse);
   rpc SetTaskSettings(SetTaskSettingsRequest) returns (SetTaskSettingsResponse);
   rpc RecordTaskRun(RecordTaskRunRequest) returns (RecordTaskRunResponse);
+  rpc SendTask(SendTaskRequest) returns (SendTaskResponse);
 }

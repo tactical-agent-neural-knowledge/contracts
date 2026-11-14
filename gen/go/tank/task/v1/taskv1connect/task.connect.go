@@ -63,6 +63,8 @@ const (
 	// TaskServiceRecordTaskRunProcedure is the fully-qualified name of the TaskService's RecordTaskRun
 	// RPC.
 	TaskServiceRecordTaskRunProcedure = "/tank.task.v1.TaskService/RecordTaskRun"
+	// TaskServiceSendTaskProcedure is the fully-qualified name of the TaskService's SendTask RPC.
+	TaskServiceSendTaskProcedure = "/tank.task.v1.TaskService/SendTask"
 )
 
 // TaskServiceClient is a client for the tank.task.v1.TaskService service.
@@ -79,6 +81,7 @@ type TaskServiceClient interface {
 	GetTaskSettings(context.Context, *connect.Request[v1.GetTaskSettingsRequest]) (*connect.Response[v1.GetTaskSettingsResponse], error)
 	SetTaskSettings(context.Context, *connect.Request[v1.SetTaskSettingsRequest]) (*connect.Response[v1.SetTaskSettingsResponse], error)
 	RecordTaskRun(context.Context, *connect.Request[v1.RecordTaskRunRequest]) (*connect.Response[v1.RecordTaskRunResponse], error)
+	SendTask(context.Context, *connect.Request[v1.SendTaskRequest]) (*connect.Response[v1.SendTaskResponse], error)
 }
 
 // NewTaskServiceClient constructs a client for the tank.task.v1.TaskService service. By default, it
@@ -164,6 +167,12 @@ func NewTaskServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(taskServiceMethods.ByName("RecordTaskRun")),
 			connect.WithClientOptions(opts...),
 		),
+		sendTask: connect.NewClient[v1.SendTaskRequest, v1.SendTaskResponse](
+			httpClient,
+			baseURL+TaskServiceSendTaskProcedure,
+			connect.WithSchema(taskServiceMethods.ByName("SendTask")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -181,6 +190,7 @@ type taskServiceClient struct {
 	getTaskSettings       *connect.Client[v1.GetTaskSettingsRequest, v1.GetTaskSettingsResponse]
 	setTaskSettings       *connect.Client[v1.SetTaskSettingsRequest, v1.SetTaskSettingsResponse]
 	recordTaskRun         *connect.Client[v1.RecordTaskRunRequest, v1.RecordTaskRunResponse]
+	sendTask              *connect.Client[v1.SendTaskRequest, v1.SendTaskResponse]
 }
 
 // ListTasks calls tank.task.v1.TaskService.ListTasks.
@@ -243,6 +253,11 @@ func (c *taskServiceClient) RecordTaskRun(ctx context.Context, req *connect.Requ
 	return c.recordTaskRun.CallUnary(ctx, req)
 }
 
+// SendTask calls tank.task.v1.TaskService.SendTask.
+func (c *taskServiceClient) SendTask(ctx context.Context, req *connect.Request[v1.SendTaskRequest]) (*connect.Response[v1.SendTaskResponse], error) {
+	return c.sendTask.CallUnary(ctx, req)
+}
+
 // TaskServiceHandler is an implementation of the tank.task.v1.TaskService service.
 type TaskServiceHandler interface {
 	ListTasks(context.Context, *connect.Request[v1.ListTasksRequest]) (*connect.Response[v1.ListTasksResponse], error)
@@ -257,6 +272,7 @@ type TaskServiceHandler interface {
 	GetTaskSettings(context.Context, *connect.Request[v1.GetTaskSettingsRequest]) (*connect.Response[v1.GetTaskSettingsResponse], error)
 	SetTaskSettings(context.Context, *connect.Request[v1.SetTaskSettingsRequest]) (*connect.Response[v1.SetTaskSettingsResponse], error)
 	RecordTaskRun(context.Context, *connect.Request[v1.RecordTaskRunRequest]) (*connect.Response[v1.RecordTaskRunResponse], error)
+	SendTask(context.Context, *connect.Request[v1.SendTaskRequest]) (*connect.Response[v1.SendTaskResponse], error)
 }
 
 // NewTaskServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -338,6 +354,12 @@ func NewTaskServiceHandler(svc TaskServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(taskServiceMethods.ByName("RecordTaskRun")),
 		connect.WithHandlerOptions(opts...),
 	)
+	taskServiceSendTaskHandler := connect.NewUnaryHandler(
+		TaskServiceSendTaskProcedure,
+		svc.SendTask,
+		connect.WithSchema(taskServiceMethods.ByName("SendTask")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.task.v1.TaskService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case TaskServiceListTasksProcedure:
@@ -364,6 +386,8 @@ func NewTaskServiceHandler(svc TaskServiceHandler, opts ...connect.HandlerOption
 			taskServiceSetTaskSettingsHandler.ServeHTTP(w, r)
 		case TaskServiceRecordTaskRunProcedure:
 			taskServiceRecordTaskRunHandler.ServeHTTP(w, r)
+		case TaskServiceSendTaskProcedure:
+			taskServiceSendTaskHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -419,4 +443,8 @@ func (UnimplementedTaskServiceHandler) SetTaskSettings(context.Context, *connect
 
 func (UnimplementedTaskServiceHandler) RecordTaskRun(context.Context, *connect.Request[v1.RecordTaskRunRequest]) (*connect.Response[v1.RecordTaskRunResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.task.v1.TaskService.RecordTaskRun is not implemented"))
+}
+
+func (UnimplementedTaskServiceHandler) SendTask(context.Context, *connect.Request[v1.SendTaskRequest]) (*connect.Response[v1.SendTaskResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.task.v1.TaskService.SendTask is not implemented"))
 }

@@ -73,7 +73,7 @@ class TaskNotify(_message.Message):
     def __init__(self, stage: _Optional[_Union[TaskStage, str]] = ..., user_id: _Optional[str] = ..., from_workspace: bool = ...) -> None: ...
 
 class Task(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "title", "details", "stage", "created_by", "created_at", "updated_at", "stage_at", "run_id", "progress", "proof", "checked_by", "checked_at", "stuck_reason", "notify", "asker_muted", "channel_name")
+    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "title", "details", "stage", "created_by", "created_at", "updated_at", "stage_at", "run_id", "progress", "proof", "checked_by", "checked_at", "stuck_reason", "notify", "asker_muted", "channel_name", "link")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -94,6 +94,7 @@ class Task(_message.Message):
     NOTIFY_FIELD_NUMBER: _ClassVar[int]
     ASKER_MUTED_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_NAME_FIELD_NUMBER: _ClassVar[int]
+    LINK_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -114,7 +115,8 @@ class Task(_message.Message):
     notify: _containers.RepeatedCompositeFieldContainer[TaskNotify]
     asker_muted: bool
     channel_name: str
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., title: _Optional[str] = ..., details: _Optional[str] = ..., stage: _Optional[_Union[TaskStage, str]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stage_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., run_id: _Optional[str] = ..., progress: _Optional[str] = ..., proof: _Optional[_Union[TaskProof, _Mapping]] = ..., checked_by: _Optional[str] = ..., checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stuck_reason: _Optional[str] = ..., notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ..., asker_muted: bool = ..., channel_name: _Optional[str] = ...) -> None: ...
+    link: str
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., title: _Optional[str] = ..., details: _Optional[str] = ..., stage: _Optional[_Union[TaskStage, str]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stage_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., run_id: _Optional[str] = ..., progress: _Optional[str] = ..., proof: _Optional[_Union[TaskProof, _Mapping]] = ..., checked_by: _Optional[str] = ..., checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stuck_reason: _Optional[str] = ..., notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ..., asker_muted: bool = ..., channel_name: _Optional[str] = ..., link: _Optional[str] = ...) -> None: ...
 
 class ListTasksRequest(_message.Message):
     __slots__ = ("workspace_id", "channel_id", "stages", "asked_by", "limit")
@@ -289,6 +291,22 @@ class SetTaskSettingsResponse(_message.Message):
     NOTIFY_FIELD_NUMBER: _ClassVar[int]
     notify: _containers.RepeatedCompositeFieldContainer[TaskNotify]
     def __init__(self, notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ...) -> None: ...
+
+class SendTaskRequest(_message.Message):
+    __slots__ = ("task_id", "user_ids", "note")
+    TASK_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_IDS_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    task_id: str
+    user_ids: _containers.RepeatedScalarFieldContainer[str]
+    note: str
+    def __init__(self, task_id: _Optional[str] = ..., user_ids: _Optional[_Iterable[str]] = ..., note: _Optional[str] = ...) -> None: ...
+
+class SendTaskResponse(_message.Message):
+    __slots__ = ("sent_user_ids",)
+    SENT_USER_IDS_FIELD_NUMBER: _ClassVar[int]
+    sent_user_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, sent_user_ids: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class RecordTaskRunRequest(_message.Message):
     __slots__ = ("run_id", "task_id", "event", "ask", "proof", "reason", "progress")
