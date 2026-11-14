@@ -100,6 +100,18 @@ const (
 	// PlatformServiceSetWorkspaceClaude5CapProcedure is the fully-qualified name of the
 	// PlatformService's SetWorkspaceClaude5Cap RPC.
 	PlatformServiceSetWorkspaceClaude5CapProcedure = "/tank.platform.v1.PlatformService/SetWorkspaceClaude5Cap"
+	// PlatformServiceListEvalRunsProcedure is the fully-qualified name of the PlatformService's
+	// ListEvalRuns RPC.
+	PlatformServiceListEvalRunsProcedure = "/tank.platform.v1.PlatformService/ListEvalRuns"
+	// PlatformServiceGetEvalRunProcedure is the fully-qualified name of the PlatformService's
+	// GetEvalRun RPC.
+	PlatformServiceGetEvalRunProcedure = "/tank.platform.v1.PlatformService/GetEvalRun"
+	// PlatformServiceGetEvalSeriesProcedure is the fully-qualified name of the PlatformService's
+	// GetEvalSeries RPC.
+	PlatformServiceGetEvalSeriesProcedure = "/tank.platform.v1.PlatformService/GetEvalSeries"
+	// PlatformServiceStartEvalRunProcedure is the fully-qualified name of the PlatformService's
+	// StartEvalRun RPC.
+	PlatformServiceStartEvalRunProcedure = "/tank.platform.v1.PlatformService/StartEvalRun"
 )
 
 // PlatformServiceClient is a client for the tank.platform.v1.PlatformService service.
@@ -127,6 +139,10 @@ type PlatformServiceClient interface {
 	SetWorkspaceNoCharge(context.Context, *connect.Request[v1.SetWorkspaceNoChargeRequest]) (*connect.Response[v1.SetWorkspaceNoChargeResponse], error)
 	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
 	SetWorkspaceClaude5Cap(context.Context, *connect.Request[v1.SetWorkspaceClaude5CapRequest]) (*connect.Response[v1.SetWorkspaceClaude5CapResponse], error)
+	ListEvalRuns(context.Context, *connect.Request[v1.ListEvalRunsRequest]) (*connect.Response[v1.ListEvalRunsResponse], error)
+	GetEvalRun(context.Context, *connect.Request[v1.GetEvalRunRequest]) (*connect.Response[v1.GetEvalRunResponse], error)
+	GetEvalSeries(context.Context, *connect.Request[v1.GetEvalSeriesRequest]) (*connect.Response[v1.GetEvalSeriesResponse], error)
+	StartEvalRun(context.Context, *connect.Request[v1.StartEvalRunRequest]) (*connect.Response[v1.StartEvalRunResponse], error)
 }
 
 // NewPlatformServiceClient constructs a client for the tank.platform.v1.PlatformService service. By
@@ -278,6 +294,30 @@ func NewPlatformServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(platformServiceMethods.ByName("SetWorkspaceClaude5Cap")),
 			connect.WithClientOptions(opts...),
 		),
+		listEvalRuns: connect.NewClient[v1.ListEvalRunsRequest, v1.ListEvalRunsResponse](
+			httpClient,
+			baseURL+PlatformServiceListEvalRunsProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("ListEvalRuns")),
+			connect.WithClientOptions(opts...),
+		),
+		getEvalRun: connect.NewClient[v1.GetEvalRunRequest, v1.GetEvalRunResponse](
+			httpClient,
+			baseURL+PlatformServiceGetEvalRunProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("GetEvalRun")),
+			connect.WithClientOptions(opts...),
+		),
+		getEvalSeries: connect.NewClient[v1.GetEvalSeriesRequest, v1.GetEvalSeriesResponse](
+			httpClient,
+			baseURL+PlatformServiceGetEvalSeriesProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("GetEvalSeries")),
+			connect.WithClientOptions(opts...),
+		),
+		startEvalRun: connect.NewClient[v1.StartEvalRunRequest, v1.StartEvalRunResponse](
+			httpClient,
+			baseURL+PlatformServiceStartEvalRunProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("StartEvalRun")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -306,6 +346,10 @@ type platformServiceClient struct {
 	setWorkspaceNoCharge   *connect.Client[v1.SetWorkspaceNoChargeRequest, v1.SetWorkspaceNoChargeResponse]
 	createWorkspace        *connect.Client[v1.CreateWorkspaceRequest, v1.CreateWorkspaceResponse]
 	setWorkspaceClaude5Cap *connect.Client[v1.SetWorkspaceClaude5CapRequest, v1.SetWorkspaceClaude5CapResponse]
+	listEvalRuns           *connect.Client[v1.ListEvalRunsRequest, v1.ListEvalRunsResponse]
+	getEvalRun             *connect.Client[v1.GetEvalRunRequest, v1.GetEvalRunResponse]
+	getEvalSeries          *connect.Client[v1.GetEvalSeriesRequest, v1.GetEvalSeriesResponse]
+	startEvalRun           *connect.Client[v1.StartEvalRunRequest, v1.StartEvalRunResponse]
 }
 
 // ListAgentures calls tank.platform.v1.PlatformService.ListAgentures.
@@ -423,6 +467,26 @@ func (c *platformServiceClient) SetWorkspaceClaude5Cap(ctx context.Context, req 
 	return c.setWorkspaceClaude5Cap.CallUnary(ctx, req)
 }
 
+// ListEvalRuns calls tank.platform.v1.PlatformService.ListEvalRuns.
+func (c *platformServiceClient) ListEvalRuns(ctx context.Context, req *connect.Request[v1.ListEvalRunsRequest]) (*connect.Response[v1.ListEvalRunsResponse], error) {
+	return c.listEvalRuns.CallUnary(ctx, req)
+}
+
+// GetEvalRun calls tank.platform.v1.PlatformService.GetEvalRun.
+func (c *platformServiceClient) GetEvalRun(ctx context.Context, req *connect.Request[v1.GetEvalRunRequest]) (*connect.Response[v1.GetEvalRunResponse], error) {
+	return c.getEvalRun.CallUnary(ctx, req)
+}
+
+// GetEvalSeries calls tank.platform.v1.PlatformService.GetEvalSeries.
+func (c *platformServiceClient) GetEvalSeries(ctx context.Context, req *connect.Request[v1.GetEvalSeriesRequest]) (*connect.Response[v1.GetEvalSeriesResponse], error) {
+	return c.getEvalSeries.CallUnary(ctx, req)
+}
+
+// StartEvalRun calls tank.platform.v1.PlatformService.StartEvalRun.
+func (c *platformServiceClient) StartEvalRun(ctx context.Context, req *connect.Request[v1.StartEvalRunRequest]) (*connect.Response[v1.StartEvalRunResponse], error) {
+	return c.startEvalRun.CallUnary(ctx, req)
+}
+
 // PlatformServiceHandler is an implementation of the tank.platform.v1.PlatformService service.
 type PlatformServiceHandler interface {
 	ListAgentures(context.Context, *connect.Request[v1.ListAgenturesRequest]) (*connect.Response[v1.ListAgenturesResponse], error)
@@ -448,6 +512,10 @@ type PlatformServiceHandler interface {
 	SetWorkspaceNoCharge(context.Context, *connect.Request[v1.SetWorkspaceNoChargeRequest]) (*connect.Response[v1.SetWorkspaceNoChargeResponse], error)
 	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
 	SetWorkspaceClaude5Cap(context.Context, *connect.Request[v1.SetWorkspaceClaude5CapRequest]) (*connect.Response[v1.SetWorkspaceClaude5CapResponse], error)
+	ListEvalRuns(context.Context, *connect.Request[v1.ListEvalRunsRequest]) (*connect.Response[v1.ListEvalRunsResponse], error)
+	GetEvalRun(context.Context, *connect.Request[v1.GetEvalRunRequest]) (*connect.Response[v1.GetEvalRunResponse], error)
+	GetEvalSeries(context.Context, *connect.Request[v1.GetEvalSeriesRequest]) (*connect.Response[v1.GetEvalSeriesResponse], error)
+	StartEvalRun(context.Context, *connect.Request[v1.StartEvalRunRequest]) (*connect.Response[v1.StartEvalRunResponse], error)
 }
 
 // NewPlatformServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -595,6 +663,30 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 		connect.WithSchema(platformServiceMethods.ByName("SetWorkspaceClaude5Cap")),
 		connect.WithHandlerOptions(opts...),
 	)
+	platformServiceListEvalRunsHandler := connect.NewUnaryHandler(
+		PlatformServiceListEvalRunsProcedure,
+		svc.ListEvalRuns,
+		connect.WithSchema(platformServiceMethods.ByName("ListEvalRuns")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceGetEvalRunHandler := connect.NewUnaryHandler(
+		PlatformServiceGetEvalRunProcedure,
+		svc.GetEvalRun,
+		connect.WithSchema(platformServiceMethods.ByName("GetEvalRun")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceGetEvalSeriesHandler := connect.NewUnaryHandler(
+		PlatformServiceGetEvalSeriesProcedure,
+		svc.GetEvalSeries,
+		connect.WithSchema(platformServiceMethods.ByName("GetEvalSeries")),
+		connect.WithHandlerOptions(opts...),
+	)
+	platformServiceStartEvalRunHandler := connect.NewUnaryHandler(
+		PlatformServiceStartEvalRunProcedure,
+		svc.StartEvalRun,
+		connect.WithSchema(platformServiceMethods.ByName("StartEvalRun")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.platform.v1.PlatformService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PlatformServiceListAgenturesProcedure:
@@ -643,6 +735,14 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 			platformServiceCreateWorkspaceHandler.ServeHTTP(w, r)
 		case PlatformServiceSetWorkspaceClaude5CapProcedure:
 			platformServiceSetWorkspaceClaude5CapHandler.ServeHTTP(w, r)
+		case PlatformServiceListEvalRunsProcedure:
+			platformServiceListEvalRunsHandler.ServeHTTP(w, r)
+		case PlatformServiceGetEvalRunProcedure:
+			platformServiceGetEvalRunHandler.ServeHTTP(w, r)
+		case PlatformServiceGetEvalSeriesProcedure:
+			platformServiceGetEvalSeriesHandler.ServeHTTP(w, r)
+		case PlatformServiceStartEvalRunProcedure:
+			platformServiceStartEvalRunHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -742,4 +842,20 @@ func (UnimplementedPlatformServiceHandler) CreateWorkspace(context.Context, *con
 
 func (UnimplementedPlatformServiceHandler) SetWorkspaceClaude5Cap(context.Context, *connect.Request[v1.SetWorkspaceClaude5CapRequest]) (*connect.Response[v1.SetWorkspaceClaude5CapResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.SetWorkspaceClaude5Cap is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) ListEvalRuns(context.Context, *connect.Request[v1.ListEvalRunsRequest]) (*connect.Response[v1.ListEvalRunsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.ListEvalRuns is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) GetEvalRun(context.Context, *connect.Request[v1.GetEvalRunRequest]) (*connect.Response[v1.GetEvalRunResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.GetEvalRun is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) GetEvalSeries(context.Context, *connect.Request[v1.GetEvalSeriesRequest]) (*connect.Response[v1.GetEvalSeriesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.GetEvalSeries is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) StartEvalRun(context.Context, *connect.Request[v1.StartEvalRunRequest]) (*connect.Response[v1.StartEvalRunResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.StartEvalRun is not implemented"))
 }

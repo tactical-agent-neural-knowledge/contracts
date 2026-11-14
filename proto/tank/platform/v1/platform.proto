@@ -546,6 +546,112 @@ message GetNeuralResponse {
   WebIndex web = 7;
   NeuralUsage usage = 8;
   repeated NeuralDay days = 9;                 // the last 30, oldest first
+  // The nightly benchmarks (suite neural) over time, for the tab's graph: each task's
+  // headline metric, oldest first, and the runs where the served model changed.
+  repeated EvalSeries eval_series = 10;
+  repeated EvalVersionMark eval_versions = 11;
+}
+
+// ---------------------------------------------------------------- Evals
+//
+// Benchmarks run by lm-evaluation-harness in the cluster (repo evals, CronJob
+// evals-neural). Suite neural is TANK Neural on the standard set plus TANK's own frozen
+// evals, nightly. Scores are fractions (0..1) except where a metric says otherwise
+// (tank_chat_nll is a loss, lower is better). Every RPC here requires a super admin.
+
+// EvalRun is one pass of a suite over one model.
+message EvalRun {
+  string id = 1;
+  string suite = 2;                            // neural | tank
+  string subject = 3;                          // what was evaluated, e.g. tank-neural
+  string model = 4;                            // the served model name the harness asked
+  string model_version = 5;                    // what the server says it is serving (weights path or adapter)
+  string trigger = 6;                          // schedule | manual | candidate
+  string status = 7;                           // queued | running | done | failed
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp started_at = 9;    // unset while queued
+  google.protobuf.Timestamp finished_at = 10;  // unset until done or failed
+  double cost_usd = 11;                        // what the run spent; 0 for a suite on TANK's own GPU
+  string error = 12;                           // why it failed, in TANK's words
+  string harness_version = 13;                 // lm-eval version
+  string dataset_manifest_sha = 14;            // sha256 of the dataset manifests the run read
+  int32 tasks_done = 15;
+  int32 tasks_skipped = 16;                    // skipped because the GPU was busy, or failed
+  string requested_by = 17;                    // user id for a manual run
+}
+
+// EvalResult is one metric of one task in a run.
+message EvalResult {
+  string task = 1;                             // e.g. arc_challenge
+  string metric = 2;                           // e.g. acc_norm, exact_match,strict-match
+  double value = 3;
+  optional double stderr = 4;
+  int32 n = 5;                                 // questions scored
+  double cost_usd = 6;
+  map<string, int32> served_by = 7;            // answers per model that served them (suite tank)
+  string status = 8;                           // done | skipped | failed
+  string note = 9;                             // why skipped or failed
+  bool primary = 10;                           // the task's headline metric
+  bool higher_is_better = 11;
+}
+
+message EvalPoint {
+  string run_id = 1;
+  google.protobuf.Timestamp at = 2;            // when the run started
+  double value = 3;
+  optional double stderr = 4;
+  string model_version = 5;
+}
+
+// EvalSeries is one task's headline metric across runs, oldest first.
+message EvalSeries {
+  string task = 1;
+  string metric = 2;
+  bool higher_is_better = 3;
+  repeated EvalPoint points = 4;
+}
+
+// EvalVersionMark is a run where the served model was not the one before it.
+message EvalVersionMark {
+  string run_id = 1;
+  google.protobuf.Timestamp at = 2;
+  string model_version = 3;
+}
+
+message ListEvalRunsRequest {
+  string suite = 1;                            // empty: every suite
+  int32 limit = 2;                             // default 50, at most 200
+}
+message ListEvalRunsResponse {
+  repeated EvalRun runs = 1;                   // newest first
+}
+
+message GetEvalRunRequest {
+  string id = 1;
+}
+message GetEvalRunResponse {
+  EvalRun run = 1;
+  repeated EvalResult results = 2;
+}
+
+message GetEvalSeriesRequest {
+  string suite = 1;                            // neural
+  string model = 2;                            // empty: every model in the suite
+  repeated string tasks = 3;                   // empty: every task with a headline metric
+  int32 days = 4;                              // default 90
+}
+message GetEvalSeriesResponse {
+  repeated EvalSeries series = 1;
+  repeated EvalVersionMark versions = 2;
+}
+
+// StartEvalRun runs a suite now, outside its schedule: a Job from the suite's CronJob.
+// FAILED_PRECONDITION while a run of that suite is queued or running.
+message StartEvalRunRequest {
+  string suite = 1;                            // neural
+}
+message StartEvalRunResponse {
+  EvalRun run = 1;                             // queued
 }
 
 // ---------------------------------------------------------------- Actions
@@ -656,4 +762,9 @@ service PlatformService {
   rpc SetWorkspaceNoCharge(SetWorkspaceNoChargeRequest) returns (SetWorkspaceNoChargeResponse);
   rpc CreateWorkspace(CreateWorkspaceRequest) returns (CreateWorkspaceResponse);
   rpc SetWorkspaceClaude5Cap(SetWorkspaceClaude5CapRequest) returns (SetWorkspaceClaude5CapResponse);
+
+  rpc ListEvalRuns(ListEvalRunsRequest) returns (ListEvalRunsResponse);
+  rpc GetEvalRun(GetEvalRunRequest) returns (GetEvalRunResponse);
+  rpc GetEvalSeries(GetEvalSeriesRequest) returns (GetEvalSeriesResponse);
+  rpc StartEvalRun(StartEvalRunRequest) returns (StartEvalRunResponse);
 }

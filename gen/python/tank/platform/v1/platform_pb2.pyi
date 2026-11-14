@@ -859,7 +859,7 @@ class GetNeuralRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class GetNeuralResponse(_message.Message):
-    __slots__ = ("base_model", "server_up", "loaded", "neurons", "neuron_workspaces", "fields", "web", "usage", "days")
+    __slots__ = ("base_model", "server_up", "loaded", "neurons", "neuron_workspaces", "fields", "web", "usage", "days", "eval_series", "eval_versions")
     BASE_MODEL_FIELD_NUMBER: _ClassVar[int]
     SERVER_UP_FIELD_NUMBER: _ClassVar[int]
     LOADED_FIELD_NUMBER: _ClassVar[int]
@@ -869,6 +869,8 @@ class GetNeuralResponse(_message.Message):
     WEB_FIELD_NUMBER: _ClassVar[int]
     USAGE_FIELD_NUMBER: _ClassVar[int]
     DAYS_FIELD_NUMBER: _ClassVar[int]
+    EVAL_SERIES_FIELD_NUMBER: _ClassVar[int]
+    EVAL_VERSIONS_FIELD_NUMBER: _ClassVar[int]
     base_model: str
     server_up: bool
     loaded: _containers.RepeatedScalarFieldContainer[str]
@@ -878,7 +880,176 @@ class GetNeuralResponse(_message.Message):
     web: WebIndex
     usage: NeuralUsage
     days: _containers.RepeatedCompositeFieldContainer[NeuralDay]
-    def __init__(self, base_model: _Optional[str] = ..., server_up: bool = ..., loaded: _Optional[_Iterable[str]] = ..., neurons: _Optional[_Iterable[_Union[NeuronRow, _Mapping]]] = ..., neuron_workspaces: _Optional[_Iterable[_Union[NeuronWorkspace, _Mapping]]] = ..., fields: _Optional[_Iterable[_Union[FieldRow, _Mapping]]] = ..., web: _Optional[_Union[WebIndex, _Mapping]] = ..., usage: _Optional[_Union[NeuralUsage, _Mapping]] = ..., days: _Optional[_Iterable[_Union[NeuralDay, _Mapping]]] = ...) -> None: ...
+    eval_series: _containers.RepeatedCompositeFieldContainer[EvalSeries]
+    eval_versions: _containers.RepeatedCompositeFieldContainer[EvalVersionMark]
+    def __init__(self, base_model: _Optional[str] = ..., server_up: bool = ..., loaded: _Optional[_Iterable[str]] = ..., neurons: _Optional[_Iterable[_Union[NeuronRow, _Mapping]]] = ..., neuron_workspaces: _Optional[_Iterable[_Union[NeuronWorkspace, _Mapping]]] = ..., fields: _Optional[_Iterable[_Union[FieldRow, _Mapping]]] = ..., web: _Optional[_Union[WebIndex, _Mapping]] = ..., usage: _Optional[_Union[NeuralUsage, _Mapping]] = ..., days: _Optional[_Iterable[_Union[NeuralDay, _Mapping]]] = ..., eval_series: _Optional[_Iterable[_Union[EvalSeries, _Mapping]]] = ..., eval_versions: _Optional[_Iterable[_Union[EvalVersionMark, _Mapping]]] = ...) -> None: ...
+
+class EvalRun(_message.Message):
+    __slots__ = ("id", "suite", "subject", "model", "model_version", "trigger", "status", "created_at", "started_at", "finished_at", "cost_usd", "error", "harness_version", "dataset_manifest_sha", "tasks_done", "tasks_skipped", "requested_by")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    SUITE_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_FIELD_NUMBER: _ClassVar[int]
+    MODEL_FIELD_NUMBER: _ClassVar[int]
+    MODEL_VERSION_FIELD_NUMBER: _ClassVar[int]
+    TRIGGER_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    STARTED_AT_FIELD_NUMBER: _ClassVar[int]
+    FINISHED_AT_FIELD_NUMBER: _ClassVar[int]
+    COST_USD_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    HARNESS_VERSION_FIELD_NUMBER: _ClassVar[int]
+    DATASET_MANIFEST_SHA_FIELD_NUMBER: _ClassVar[int]
+    TASKS_DONE_FIELD_NUMBER: _ClassVar[int]
+    TASKS_SKIPPED_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    suite: str
+    subject: str
+    model: str
+    model_version: str
+    trigger: str
+    status: str
+    created_at: _timestamp_pb2.Timestamp
+    started_at: _timestamp_pb2.Timestamp
+    finished_at: _timestamp_pb2.Timestamp
+    cost_usd: float
+    error: str
+    harness_version: str
+    dataset_manifest_sha: str
+    tasks_done: int
+    tasks_skipped: int
+    requested_by: str
+    def __init__(self, id: _Optional[str] = ..., suite: _Optional[str] = ..., subject: _Optional[str] = ..., model: _Optional[str] = ..., model_version: _Optional[str] = ..., trigger: _Optional[str] = ..., status: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., started_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., finished_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., cost_usd: _Optional[float] = ..., error: _Optional[str] = ..., harness_version: _Optional[str] = ..., dataset_manifest_sha: _Optional[str] = ..., tasks_done: _Optional[int] = ..., tasks_skipped: _Optional[int] = ..., requested_by: _Optional[str] = ...) -> None: ...
+
+class EvalResult(_message.Message):
+    __slots__ = ("task", "metric", "value", "stderr", "n", "cost_usd", "served_by", "status", "note", "primary", "higher_is_better")
+    class ServedByEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: int
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[int] = ...) -> None: ...
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    METRIC_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    STDERR_FIELD_NUMBER: _ClassVar[int]
+    N_FIELD_NUMBER: _ClassVar[int]
+    COST_USD_FIELD_NUMBER: _ClassVar[int]
+    SERVED_BY_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    PRIMARY_FIELD_NUMBER: _ClassVar[int]
+    HIGHER_IS_BETTER_FIELD_NUMBER: _ClassVar[int]
+    task: str
+    metric: str
+    value: float
+    stderr: float
+    n: int
+    cost_usd: float
+    served_by: _containers.ScalarMap[str, int]
+    status: str
+    note: str
+    primary: bool
+    higher_is_better: bool
+    def __init__(self, task: _Optional[str] = ..., metric: _Optional[str] = ..., value: _Optional[float] = ..., stderr: _Optional[float] = ..., n: _Optional[int] = ..., cost_usd: _Optional[float] = ..., served_by: _Optional[_Mapping[str, int]] = ..., status: _Optional[str] = ..., note: _Optional[str] = ..., primary: bool = ..., higher_is_better: bool = ...) -> None: ...
+
+class EvalPoint(_message.Message):
+    __slots__ = ("run_id", "at", "value", "stderr", "model_version")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    STDERR_FIELD_NUMBER: _ClassVar[int]
+    MODEL_VERSION_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    at: _timestamp_pb2.Timestamp
+    value: float
+    stderr: float
+    model_version: str
+    def __init__(self, run_id: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., value: _Optional[float] = ..., stderr: _Optional[float] = ..., model_version: _Optional[str] = ...) -> None: ...
+
+class EvalSeries(_message.Message):
+    __slots__ = ("task", "metric", "higher_is_better", "points")
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    METRIC_FIELD_NUMBER: _ClassVar[int]
+    HIGHER_IS_BETTER_FIELD_NUMBER: _ClassVar[int]
+    POINTS_FIELD_NUMBER: _ClassVar[int]
+    task: str
+    metric: str
+    higher_is_better: bool
+    points: _containers.RepeatedCompositeFieldContainer[EvalPoint]
+    def __init__(self, task: _Optional[str] = ..., metric: _Optional[str] = ..., higher_is_better: bool = ..., points: _Optional[_Iterable[_Union[EvalPoint, _Mapping]]] = ...) -> None: ...
+
+class EvalVersionMark(_message.Message):
+    __slots__ = ("run_id", "at", "model_version")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    MODEL_VERSION_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    at: _timestamp_pb2.Timestamp
+    model_version: str
+    def __init__(self, run_id: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., model_version: _Optional[str] = ...) -> None: ...
+
+class ListEvalRunsRequest(_message.Message):
+    __slots__ = ("suite", "limit")
+    SUITE_FIELD_NUMBER: _ClassVar[int]
+    LIMIT_FIELD_NUMBER: _ClassVar[int]
+    suite: str
+    limit: int
+    def __init__(self, suite: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class ListEvalRunsResponse(_message.Message):
+    __slots__ = ("runs",)
+    RUNS_FIELD_NUMBER: _ClassVar[int]
+    runs: _containers.RepeatedCompositeFieldContainer[EvalRun]
+    def __init__(self, runs: _Optional[_Iterable[_Union[EvalRun, _Mapping]]] = ...) -> None: ...
+
+class GetEvalRunRequest(_message.Message):
+    __slots__ = ("id",)
+    ID_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    def __init__(self, id: _Optional[str] = ...) -> None: ...
+
+class GetEvalRunResponse(_message.Message):
+    __slots__ = ("run", "results")
+    RUN_FIELD_NUMBER: _ClassVar[int]
+    RESULTS_FIELD_NUMBER: _ClassVar[int]
+    run: EvalRun
+    results: _containers.RepeatedCompositeFieldContainer[EvalResult]
+    def __init__(self, run: _Optional[_Union[EvalRun, _Mapping]] = ..., results: _Optional[_Iterable[_Union[EvalResult, _Mapping]]] = ...) -> None: ...
+
+class GetEvalSeriesRequest(_message.Message):
+    __slots__ = ("suite", "model", "tasks", "days")
+    SUITE_FIELD_NUMBER: _ClassVar[int]
+    MODEL_FIELD_NUMBER: _ClassVar[int]
+    TASKS_FIELD_NUMBER: _ClassVar[int]
+    DAYS_FIELD_NUMBER: _ClassVar[int]
+    suite: str
+    model: str
+    tasks: _containers.RepeatedScalarFieldContainer[str]
+    days: int
+    def __init__(self, suite: _Optional[str] = ..., model: _Optional[str] = ..., tasks: _Optional[_Iterable[str]] = ..., days: _Optional[int] = ...) -> None: ...
+
+class GetEvalSeriesResponse(_message.Message):
+    __slots__ = ("series", "versions")
+    SERIES_FIELD_NUMBER: _ClassVar[int]
+    VERSIONS_FIELD_NUMBER: _ClassVar[int]
+    series: _containers.RepeatedCompositeFieldContainer[EvalSeries]
+    versions: _containers.RepeatedCompositeFieldContainer[EvalVersionMark]
+    def __init__(self, series: _Optional[_Iterable[_Union[EvalSeries, _Mapping]]] = ..., versions: _Optional[_Iterable[_Union[EvalVersionMark, _Mapping]]] = ...) -> None: ...
+
+class StartEvalRunRequest(_message.Message):
+    __slots__ = ("suite",)
+    SUITE_FIELD_NUMBER: _ClassVar[int]
+    suite: str
+    def __init__(self, suite: _Optional[str] = ...) -> None: ...
+
+class StartEvalRunResponse(_message.Message):
+    __slots__ = ("run",)
+    RUN_FIELD_NUMBER: _ClassVar[int]
+    run: EvalRun
+    def __init__(self, run: _Optional[_Union[EvalRun, _Mapping]] = ...) -> None: ...
 
 class SetWorkspacePlanRequest(_message.Message):
     __slots__ = ("workspace_id", "plan")
