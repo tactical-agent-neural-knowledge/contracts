@@ -87,6 +87,23 @@ const (
 	BooksServiceReadReceiptProcedure = "/tank.books.v1.BooksService/ReadReceipt"
 	// BooksServiceExportProcedure is the fully-qualified name of the BooksService's Export RPC.
 	BooksServiceExportProcedure = "/tank.books.v1.BooksService/Export"
+	// BooksServiceListCategoriesProcedure is the fully-qualified name of the BooksService's
+	// ListCategories RPC.
+	BooksServiceListCategoriesProcedure = "/tank.books.v1.BooksService/ListCategories"
+	// BooksServiceUpsertCategoryProcedure is the fully-qualified name of the BooksService's
+	// UpsertCategory RPC.
+	BooksServiceUpsertCategoryProcedure = "/tank.books.v1.BooksService/UpsertCategory"
+	// BooksServiceSetCashBalanceProcedure is the fully-qualified name of the BooksService's
+	// SetCashBalance RPC.
+	BooksServiceSetCashBalanceProcedure = "/tank.books.v1.BooksService/SetCashBalance"
+	// BooksServicePayExpenseProcedure is the fully-qualified name of the BooksService's PayExpense RPC.
+	BooksServicePayExpenseProcedure = "/tank.books.v1.BooksService/PayExpense"
+	// BooksServiceGetStatementProcedure is the fully-qualified name of the BooksService's GetStatement
+	// RPC.
+	BooksServiceGetStatementProcedure = "/tank.books.v1.BooksService/GetStatement"
+	// BooksServiceListTransactionsProcedure is the fully-qualified name of the BooksService's
+	// ListTransactions RPC.
+	BooksServiceListTransactionsProcedure = "/tank.books.v1.BooksService/ListTransactions"
 )
 
 // BooksServiceClient is a client for the tank.books.v1.BooksService service.
@@ -110,6 +127,12 @@ type BooksServiceClient interface {
 	GetReport(context.Context, *connect.Request[v1.GetReportRequest]) (*connect.Response[v1.GetReportResponse], error)
 	ReadReceipt(context.Context, *connect.Request[v1.ReadReceiptRequest]) (*connect.Response[v1.ReadReceiptResponse], error)
 	Export(context.Context, *connect.Request[v1.ExportRequest]) (*connect.Response[v1.ExportResponse], error)
+	ListCategories(context.Context, *connect.Request[v1.ListCategoriesRequest]) (*connect.Response[v1.ListCategoriesResponse], error)
+	UpsertCategory(context.Context, *connect.Request[v1.UpsertCategoryRequest]) (*connect.Response[v1.UpsertCategoryResponse], error)
+	SetCashBalance(context.Context, *connect.Request[v1.SetCashBalanceRequest]) (*connect.Response[v1.SetCashBalanceResponse], error)
+	PayExpense(context.Context, *connect.Request[v1.PayExpenseRequest]) (*connect.Response[v1.PayExpenseResponse], error)
+	GetStatement(context.Context, *connect.Request[v1.GetStatementRequest]) (*connect.Response[v1.GetStatementResponse], error)
+	ListTransactions(context.Context, *connect.Request[v1.ListTransactionsRequest]) (*connect.Response[v1.ListTransactionsResponse], error)
 }
 
 // NewBooksServiceClient constructs a client for the tank.books.v1.BooksService service. By default,
@@ -237,6 +260,42 @@ func NewBooksServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(booksServiceMethods.ByName("Export")),
 			connect.WithClientOptions(opts...),
 		),
+		listCategories: connect.NewClient[v1.ListCategoriesRequest, v1.ListCategoriesResponse](
+			httpClient,
+			baseURL+BooksServiceListCategoriesProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("ListCategories")),
+			connect.WithClientOptions(opts...),
+		),
+		upsertCategory: connect.NewClient[v1.UpsertCategoryRequest, v1.UpsertCategoryResponse](
+			httpClient,
+			baseURL+BooksServiceUpsertCategoryProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("UpsertCategory")),
+			connect.WithClientOptions(opts...),
+		),
+		setCashBalance: connect.NewClient[v1.SetCashBalanceRequest, v1.SetCashBalanceResponse](
+			httpClient,
+			baseURL+BooksServiceSetCashBalanceProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("SetCashBalance")),
+			connect.WithClientOptions(opts...),
+		),
+		payExpense: connect.NewClient[v1.PayExpenseRequest, v1.PayExpenseResponse](
+			httpClient,
+			baseURL+BooksServicePayExpenseProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("PayExpense")),
+			connect.WithClientOptions(opts...),
+		),
+		getStatement: connect.NewClient[v1.GetStatementRequest, v1.GetStatementResponse](
+			httpClient,
+			baseURL+BooksServiceGetStatementProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("GetStatement")),
+			connect.WithClientOptions(opts...),
+		),
+		listTransactions: connect.NewClient[v1.ListTransactionsRequest, v1.ListTransactionsResponse](
+			httpClient,
+			baseURL+BooksServiceListTransactionsProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("ListTransactions")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -261,6 +320,12 @@ type booksServiceClient struct {
 	getReport              *connect.Client[v1.GetReportRequest, v1.GetReportResponse]
 	readReceipt            *connect.Client[v1.ReadReceiptRequest, v1.ReadReceiptResponse]
 	export                 *connect.Client[v1.ExportRequest, v1.ExportResponse]
+	listCategories         *connect.Client[v1.ListCategoriesRequest, v1.ListCategoriesResponse]
+	upsertCategory         *connect.Client[v1.UpsertCategoryRequest, v1.UpsertCategoryResponse]
+	setCashBalance         *connect.Client[v1.SetCashBalanceRequest, v1.SetCashBalanceResponse]
+	payExpense             *connect.Client[v1.PayExpenseRequest, v1.PayExpenseResponse]
+	getStatement           *connect.Client[v1.GetStatementRequest, v1.GetStatementResponse]
+	listTransactions       *connect.Client[v1.ListTransactionsRequest, v1.ListTransactionsResponse]
 }
 
 // GetSettings calls tank.books.v1.BooksService.GetSettings.
@@ -358,6 +423,36 @@ func (c *booksServiceClient) Export(ctx context.Context, req *connect.Request[v1
 	return c.export.CallUnary(ctx, req)
 }
 
+// ListCategories calls tank.books.v1.BooksService.ListCategories.
+func (c *booksServiceClient) ListCategories(ctx context.Context, req *connect.Request[v1.ListCategoriesRequest]) (*connect.Response[v1.ListCategoriesResponse], error) {
+	return c.listCategories.CallUnary(ctx, req)
+}
+
+// UpsertCategory calls tank.books.v1.BooksService.UpsertCategory.
+func (c *booksServiceClient) UpsertCategory(ctx context.Context, req *connect.Request[v1.UpsertCategoryRequest]) (*connect.Response[v1.UpsertCategoryResponse], error) {
+	return c.upsertCategory.CallUnary(ctx, req)
+}
+
+// SetCashBalance calls tank.books.v1.BooksService.SetCashBalance.
+func (c *booksServiceClient) SetCashBalance(ctx context.Context, req *connect.Request[v1.SetCashBalanceRequest]) (*connect.Response[v1.SetCashBalanceResponse], error) {
+	return c.setCashBalance.CallUnary(ctx, req)
+}
+
+// PayExpense calls tank.books.v1.BooksService.PayExpense.
+func (c *booksServiceClient) PayExpense(ctx context.Context, req *connect.Request[v1.PayExpenseRequest]) (*connect.Response[v1.PayExpenseResponse], error) {
+	return c.payExpense.CallUnary(ctx, req)
+}
+
+// GetStatement calls tank.books.v1.BooksService.GetStatement.
+func (c *booksServiceClient) GetStatement(ctx context.Context, req *connect.Request[v1.GetStatementRequest]) (*connect.Response[v1.GetStatementResponse], error) {
+	return c.getStatement.CallUnary(ctx, req)
+}
+
+// ListTransactions calls tank.books.v1.BooksService.ListTransactions.
+func (c *booksServiceClient) ListTransactions(ctx context.Context, req *connect.Request[v1.ListTransactionsRequest]) (*connect.Response[v1.ListTransactionsResponse], error) {
+	return c.listTransactions.CallUnary(ctx, req)
+}
+
 // BooksServiceHandler is an implementation of the tank.books.v1.BooksService service.
 type BooksServiceHandler interface {
 	GetSettings(context.Context, *connect.Request[v1.GetSettingsRequest]) (*connect.Response[v1.GetSettingsResponse], error)
@@ -379,6 +474,12 @@ type BooksServiceHandler interface {
 	GetReport(context.Context, *connect.Request[v1.GetReportRequest]) (*connect.Response[v1.GetReportResponse], error)
 	ReadReceipt(context.Context, *connect.Request[v1.ReadReceiptRequest]) (*connect.Response[v1.ReadReceiptResponse], error)
 	Export(context.Context, *connect.Request[v1.ExportRequest]) (*connect.Response[v1.ExportResponse], error)
+	ListCategories(context.Context, *connect.Request[v1.ListCategoriesRequest]) (*connect.Response[v1.ListCategoriesResponse], error)
+	UpsertCategory(context.Context, *connect.Request[v1.UpsertCategoryRequest]) (*connect.Response[v1.UpsertCategoryResponse], error)
+	SetCashBalance(context.Context, *connect.Request[v1.SetCashBalanceRequest]) (*connect.Response[v1.SetCashBalanceResponse], error)
+	PayExpense(context.Context, *connect.Request[v1.PayExpenseRequest]) (*connect.Response[v1.PayExpenseResponse], error)
+	GetStatement(context.Context, *connect.Request[v1.GetStatementRequest]) (*connect.Response[v1.GetStatementResponse], error)
+	ListTransactions(context.Context, *connect.Request[v1.ListTransactionsRequest]) (*connect.Response[v1.ListTransactionsResponse], error)
 }
 
 // NewBooksServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -502,6 +603,42 @@ func NewBooksServiceHandler(svc BooksServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(booksServiceMethods.ByName("Export")),
 		connect.WithHandlerOptions(opts...),
 	)
+	booksServiceListCategoriesHandler := connect.NewUnaryHandler(
+		BooksServiceListCategoriesProcedure,
+		svc.ListCategories,
+		connect.WithSchema(booksServiceMethods.ByName("ListCategories")),
+		connect.WithHandlerOptions(opts...),
+	)
+	booksServiceUpsertCategoryHandler := connect.NewUnaryHandler(
+		BooksServiceUpsertCategoryProcedure,
+		svc.UpsertCategory,
+		connect.WithSchema(booksServiceMethods.ByName("UpsertCategory")),
+		connect.WithHandlerOptions(opts...),
+	)
+	booksServiceSetCashBalanceHandler := connect.NewUnaryHandler(
+		BooksServiceSetCashBalanceProcedure,
+		svc.SetCashBalance,
+		connect.WithSchema(booksServiceMethods.ByName("SetCashBalance")),
+		connect.WithHandlerOptions(opts...),
+	)
+	booksServicePayExpenseHandler := connect.NewUnaryHandler(
+		BooksServicePayExpenseProcedure,
+		svc.PayExpense,
+		connect.WithSchema(booksServiceMethods.ByName("PayExpense")),
+		connect.WithHandlerOptions(opts...),
+	)
+	booksServiceGetStatementHandler := connect.NewUnaryHandler(
+		BooksServiceGetStatementProcedure,
+		svc.GetStatement,
+		connect.WithSchema(booksServiceMethods.ByName("GetStatement")),
+		connect.WithHandlerOptions(opts...),
+	)
+	booksServiceListTransactionsHandler := connect.NewUnaryHandler(
+		BooksServiceListTransactionsProcedure,
+		svc.ListTransactions,
+		connect.WithSchema(booksServiceMethods.ByName("ListTransactions")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.books.v1.BooksService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BooksServiceGetSettingsProcedure:
@@ -542,6 +679,18 @@ func NewBooksServiceHandler(svc BooksServiceHandler, opts ...connect.HandlerOpti
 			booksServiceReadReceiptHandler.ServeHTTP(w, r)
 		case BooksServiceExportProcedure:
 			booksServiceExportHandler.ServeHTTP(w, r)
+		case BooksServiceListCategoriesProcedure:
+			booksServiceListCategoriesHandler.ServeHTTP(w, r)
+		case BooksServiceUpsertCategoryProcedure:
+			booksServiceUpsertCategoryHandler.ServeHTTP(w, r)
+		case BooksServiceSetCashBalanceProcedure:
+			booksServiceSetCashBalanceHandler.ServeHTTP(w, r)
+		case BooksServicePayExpenseProcedure:
+			booksServicePayExpenseHandler.ServeHTTP(w, r)
+		case BooksServiceGetStatementProcedure:
+			booksServiceGetStatementHandler.ServeHTTP(w, r)
+		case BooksServiceListTransactionsProcedure:
+			booksServiceListTransactionsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -625,4 +774,28 @@ func (UnimplementedBooksServiceHandler) ReadReceipt(context.Context, *connect.Re
 
 func (UnimplementedBooksServiceHandler) Export(context.Context, *connect.Request[v1.ExportRequest]) (*connect.Response[v1.ExportResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.Export is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) ListCategories(context.Context, *connect.Request[v1.ListCategoriesRequest]) (*connect.Response[v1.ListCategoriesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.ListCategories is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) UpsertCategory(context.Context, *connect.Request[v1.UpsertCategoryRequest]) (*connect.Response[v1.UpsertCategoryResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.UpsertCategory is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) SetCashBalance(context.Context, *connect.Request[v1.SetCashBalanceRequest]) (*connect.Response[v1.SetCashBalanceResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.SetCashBalance is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) PayExpense(context.Context, *connect.Request[v1.PayExpenseRequest]) (*connect.Response[v1.PayExpenseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.PayExpense is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) GetStatement(context.Context, *connect.Request[v1.GetStatementRequest]) (*connect.Response[v1.GetStatementResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.GetStatement is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) ListTransactions(context.Context, *connect.Request[v1.ListTransactionsRequest]) (*connect.Response[v1.ListTransactionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.ListTransactions is not implemented"))
 }
