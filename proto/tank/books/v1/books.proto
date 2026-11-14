@@ -39,6 +39,16 @@ message Settings {
   string stripe_secret_key = 10;
   string stripe_key_hint = 11;   // e.g. "…a4F2"; empty when no key is stored
   bool payments_ready = 12;      // a key is stored, so sent invoices carry a pay link
+  // The month the fiscal year starts, 1 (January, the default) to 12. Quarters and
+  // years in a statement are cut from it. A fiscal year is named by the calendar year
+  // it ends in: with April, April 2026 to March 2027 is FY2027.
+  int32 fiscal_year_start_month = 13;
+  // IANA zone the books are kept in, e.g. "America/New_York". Every period (a month,
+  // a quarter, "this month" in a report) is cut at midnight here. Empty on write
+  // leaves it as it is; it defaults to the workspace owner's zone, else UTC.
+  string timezone = 14;
+  // The Tread Books notices and the CFO post in; empty for none.
+  string finance_channel_id = 15;
 }
 
 message Customer {
@@ -87,6 +97,8 @@ message Invoice {
   // Where the customer pays by card, when the business has connected Stripe. Minted
   // when the invoice is sent.
   string pay_url = 23;
+  // The income category the invoice's revenue is filed under (a Category id).
+  string category_id = 24;
 }
 
 message Payment {
@@ -115,6 +127,48 @@ message Expense {
   // Where the figure came from, e.g. "aws-cost-explorer". With the period and the
   // category it is the key a repeated collection revises instead of duplicating.
   string source = 12;
+  // The expense category it is filed under (a Category id). `category` above is the
+  // old free text and stays until every client reads this.
+  string category_id = 13;
+  // When the money went out. Unset = an unpaid bill: it counts as spent when earned
+  // and as cash out only once it is paid.
+  google.protobuf.Timestamp paid_at = 14;
+  // The category was filed automatically from old free text that matched nothing
+  // (it sits under Other) and a person should check it.
+  bool category_needs_review = 15;
+}
+
+enum CategoryKind {
+  CATEGORY_KIND_UNSPECIFIED = 0;
+  CATEGORY_KIND_INCOME = 1;
+  CATEGORY_KIND_EXPENSE = 2;
+}
+
+// A line on the statement. Every workspace starts with the standard chart; people may
+// add categories or rename them within a group, never move one between groups.
+message Category {
+  string id = 1;
+  string key = 2;              // stable machine name, e.g. "hosting"
+  string name = 3;             // what people read, e.g. "Hosting"
+  CategoryKind kind = 4;
+  // income | cost_of_revenue | payroll | operating. Gross profit is income less
+  // cost_of_revenue.
+  string group = 5;
+  int32 sort = 6;
+  bool archived = 7;
+  bool standard = 8;           // from the standard chart, not added by a person
+}
+
+// "Cash in the bank on <date>": what ending cash is counted from.
+message CashBalance {
+  string id = 1;
+  // The day, at midnight in the books' timezone; the amount is the balance at the
+  // end of that day.
+  google.protobuf.Timestamp as_of = 2;
+  int64 amount_cents = 3;
+  string note = 4;
+  string set_by = 5;           // user id, or "agent"
+  google.protobuf.Timestamp created_at = 6;
 }
 
 // The numbers a person asks for first, with nothing to click into.
@@ -184,6 +238,7 @@ message CreateInvoiceRequest {
   string notes = 7;
   string thread_root_id = 8;
   bool send = 9;               // send on creation
+  string category_id = 10;     // an income Category id; empty = Sales
 }
 message CreateInvoiceResponse { Invoice invoice = 1; }
 message SendInvoiceRequest {
@@ -217,6 +272,9 @@ message VoidInvoiceResponse { Invoice invoice = 1; }
 message ListExpensesRequest {
   string workspace_id = 1;
   int32 days = 2;              // 0 = 90
+  // Only the expenses filed automatically whose category a person should check, at
+  // any date (days is ignored).
+  bool needs_review = 3;
 }
 message ListExpensesResponse { repeated Expense expenses = 1; }
 message RecordExpenseRequest {
@@ -233,6 +291,12 @@ message RecordExpenseRequest {
   google.protobuf.Timestamp period_start = 8;
   google.protobuf.Timestamp period_end = 9;
   string source = 10;
+  // A Category id; empty files it from `category` text (unknown text goes under Other).
+  string category_id = 11;
+  // Unset = paid when it happened, as before. false = an unpaid bill (pay it later
+  // with PayExpense); true = paid, at paid_at or else at the expense's date.
+  optional bool paid = 12;
+  google.protobuf.Timestamp paid_at = 13;
 }
 message RecordExpenseResponse {
   Expense expense = 1;
@@ -326,7 +390,13 @@ message ReadReceiptResponse {
 message ExportRequest {
   string workspace_id = 1;
   string period = 2;               // as in a report
-  string kind = 3;                 // invoices | expenses | journal
+  string kind = 3;                 // invoices | expenses | journal | statement
+  // For kind statement: the statement to write (its workspace_id is ignored). Unset =
+  // this fiscal year by month, earned. period is not used for a statement.
+  GetStatementRequest statement = 4;
+  // For the other kinds with period "custom": the window, from inclusive, to exclusive.
+  google.protobuf.Timestamp from = 5;
+  google.protobuf.Timestamp to = 6;
 }
 message ExportResponse {
   string filename = 1;
@@ -336,9 +406,174 @@ message ExportResponse {
 
 message GetReportRequest {
   string workspace_id = 1;
-  string period = 2;             // this_month | last_month | this_quarter | this_year | last_30_days (default)
+  // this_month | last_month | this_quarter | last_quarter | this_year | last_year |
+  // last_30_days (default) | custom. Quarters and years are fiscal, cut in the books'
+  // timezone.
+  string period = 2;
+  // For custom: from inclusive, to exclusive.
+  google.protobuf.Timestamp from = 3;
+  google.protobuf.Timestamp to = 4;
 }
 message GetReportResponse { Report report = 1; }
+
+message ListCategoriesRequest {
+  string workspace_id = 1;
+  bool include_archived = 2;
+}
+message ListCategoriesResponse { repeated Category categories = 1; }
+message UpsertCategoryRequest {
+  string workspace_id = 1;
+  string id = 2;               // empty to add one
+  string name = 3;
+  string group = 4;            // required to add; a category never changes group
+  bool archived = 5;           // archive (true) or bring back (false); edits only
+  int32 sort = 6;              // 0 = leave (edit) or after the group's last (add)
+}
+message UpsertCategoryResponse { Category category = 1; }
+
+message SetCashBalanceRequest {
+  string workspace_id = 1;
+  google.protobuf.Timestamp as_of = 2;   // the day; unset = today
+  int64 amount_cents = 3;                // may be negative (overdrawn)
+  string note = 4;
+}
+message SetCashBalanceResponse { CashBalance balance = 1; }
+
+message PayExpenseRequest {
+  string workspace_id = 1;
+  string id = 2;                         // an unpaid bill
+  google.protobuf.Timestamp paid_at = 3; // unset = now
+}
+message PayExpenseResponse { Expense expense = 1; }
+
+enum StatementGrain {
+  STATEMENT_GRAIN_UNSPECIFIED = 0;  // = month
+  STATEMENT_GRAIN_MONTH = 1;
+  STATEMENT_GRAIN_QUARTER = 2;      // fiscal quarters
+  STATEMENT_GRAIN_YEAR = 3;         // fiscal years
+}
+
+enum StatementBasis {
+  STATEMENT_BASIS_UNSPECIFIED = 0;  // = earned
+  STATEMENT_BASIS_EARNED = 1;       // the P&L: invoiced and billed, from the journal
+  STATEMENT_BASIS_CASH = 2;         // money that arrived and went out
+}
+
+enum PeriodKind {
+  PERIOD_KIND_UNSPECIFIED = 0;
+  PERIOD_KIND_PAST = 1;
+  PERIOD_KIND_CURRENT = 2;          // today falls in it: actual to date + expected rest
+  PERIOD_KIND_FUTURE = 3;
+}
+
+enum CellState {
+  CELL_STATE_UNSPECIFIED = 0;
+  CELL_STATE_ACTUAL = 1;
+  CELL_STATE_EXPECTED = 2;
+  CELL_STATE_MIXED = 3;             // actual to date plus expected for the rest
+}
+
+enum StatementRowKind {
+  STATEMENT_ROW_KIND_UNSPECIFIED = 0;
+  STATEMENT_ROW_KIND_CATEGORY = 1;
+  STATEMENT_ROW_KIND_SUBTOTAL = 2;  // a group's total
+  STATEMENT_ROW_KIND_TOTAL = 3;     // gross profit, net and the cash lines
+}
+
+// One column of a statement.
+message StatementPeriod {
+  // month "2026-04", quarter "FY2027-Q1", year "FY2027" (named by the calendar year
+  // the fiscal year ends in). Accepted back as from_period / to_period.
+  string key = 1;
+  string label = 2;                         // e.g. "Apr 2026", "Q1 FY2027", "FY2027"
+  google.protobuf.Timestamp start = 3;      // inclusive, midnight in the books' timezone
+  google.protobuf.Timestamp end = 4;        // exclusive
+  PeriodKind kind = 5;
+}
+
+// One figure. What the cell shows is actual + expected; budget is beside it.
+// Expected and budget are zero until forecasts (phase 2) and budgets (phase 3).
+message StatementCell {
+  int64 actual_cents = 1;
+  int64 expected_cents = 2;
+  int64 budget_cents = 3;
+  CellState state = 4;
+}
+
+message StatementRow {
+  StatementRowKind kind = 1;
+  string category_id = 2;        // for a category row
+  string group = 3;              // income | cost_of_revenue | payroll | operating; empty on totals
+  string label = 4;
+  // Stable name for subtotals and totals: "group:income", "group:cost_of_revenue",
+  // "group:payroll", "group:operating", "expenses", "gross_profit", "net",
+  // "cash_in", "cash_out", "ending_cash". Empty on category rows.
+  string key = 5;
+  repeated StatementCell cells = 6;   // one per period, in order
+  StatementCell total = 7;            // across every period; unset for ending_cash
+}
+
+message GetStatementRequest {
+  string workspace_id = 1;
+  StatementGrain grain = 2;
+  StatementBasis basis = 3;
+  // The range, by period key ("2026-04", "FY2027-Q1", "FY2027") of any grain, or by
+  // dates: every period that overlaps [from, to) is a column. Nothing given = this
+  // fiscal year (year grain: the last two fiscal years and this one).
+  string from_period = 4;
+  string to_period = 5;
+  google.protobuf.Timestamp from = 6;
+  google.protobuf.Timestamp to = 7;
+  // A scenario to lay over the forecast (phase 4). Ignored until then.
+  string scenario_id = 8;
+}
+
+message GetStatementResponse {
+  string currency = 1;
+  StatementGrain grain = 2;
+  StatementBasis basis = 3;
+  int32 fiscal_year_start_month = 4;
+  string timezone = 5;
+  repeated StatementPeriod periods = 6;
+  // Income categories and their subtotal, then each expense group's categories and
+  // subtotal, then the expenses total and gross profit. Categories with nothing in
+  // any period are left out, except that every group's subtotal is always there.
+  repeated StatementRow rows = 7;
+  StatementRow net = 8;          // income − expenses
+  StatementRow cash_in = 9;      // payments received (either basis)
+  StatementRow cash_out = 10;    // expenses paid (either basis)
+  // Cash at each period's end: the latest balance set plus cash movements since.
+  // Empty cells when no balance has ever been set (has_opening_balance false).
+  StatementRow ending_cash = 11;
+  bool has_opening_balance = 12;
+  CashBalance opening_balance = 13;   // the latest one set, when there is one
+}
+
+// What is behind one cell: the invoices, payments and expenses in a category and a
+// period, on a basis.
+message ListTransactionsRequest {
+  string workspace_id = 1;
+  string category_id = 2;
+  google.protobuf.Timestamp start = 3;   // inclusive
+  google.protobuf.Timestamp end = 4;     // exclusive
+  StatementBasis basis = 5;
+}
+
+message StatementTransaction {
+  string kind = 1;               // invoice | payment | expense
+  string id = 2;                 // of that invoice, payment or expense
+  google.protobuf.Timestamp at = 3;
+  string label = 4;              // "INV-0007 · Acme", or the vendor
+  int64 amount_cents = 5;        // what it adds to the cell; negative for a reversal
+  string memo = 6;               // the journal entry's memo, on the earned basis
+  string invoice_id = 7;         // for a payment, the invoice it paid
+  string category_id = 8;
+}
+
+message ListTransactionsResponse {
+  repeated StatementTransaction transactions = 1;
+  int64 total_cents = 2;         // equals the cell's actual
+}
 
 service BooksService {
   rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
@@ -360,4 +595,10 @@ service BooksService {
   rpc GetReport(GetReportRequest) returns (GetReportResponse);
   rpc ReadReceipt(ReadReceiptRequest) returns (ReadReceiptResponse);
   rpc Export(ExportRequest) returns (ExportResponse);
+  rpc ListCategories(ListCategoriesRequest) returns (ListCategoriesResponse);
+  rpc UpsertCategory(UpsertCategoryRequest) returns (UpsertCategoryResponse);
+  rpc SetCashBalance(SetCashBalanceRequest) returns (SetCashBalanceResponse);
+  rpc PayExpense(PayExpenseRequest) returns (PayExpenseResponse);
+  rpc GetStatement(GetStatementRequest) returns (GetStatementResponse);
+  rpc ListTransactions(ListTransactionsRequest) returns (ListTransactionsResponse);
 }
