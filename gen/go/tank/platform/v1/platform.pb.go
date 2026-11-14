@@ -4652,8 +4652,12 @@ type GetNeuralResponse struct {
 	Web              *WebIndex              `protobuf:"bytes,7,opt,name=web,proto3" json:"web,omitempty"`
 	Usage            *NeuralUsage           `protobuf:"bytes,8,opt,name=usage,proto3" json:"usage,omitempty"`
 	Days             []*NeuralDay           `protobuf:"bytes,9,rep,name=days,proto3" json:"days,omitempty"` // the last 30, oldest first
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// The nightly benchmarks (suite neural) over time, for the tab's graph: each task's
+	// headline metric, oldest first, and the runs where the served model changed.
+	EvalSeries    []*EvalSeries      `protobuf:"bytes,10,rep,name=eval_series,json=evalSeries,proto3" json:"eval_series,omitempty"`
+	EvalVersions  []*EvalVersionMark `protobuf:"bytes,11,rep,name=eval_versions,json=evalVersions,proto3" json:"eval_versions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetNeuralResponse) Reset() {
@@ -4749,6 +4753,926 @@ func (x *GetNeuralResponse) GetDays() []*NeuralDay {
 	return nil
 }
 
+func (x *GetNeuralResponse) GetEvalSeries() []*EvalSeries {
+	if x != nil {
+		return x.EvalSeries
+	}
+	return nil
+}
+
+func (x *GetNeuralResponse) GetEvalVersions() []*EvalVersionMark {
+	if x != nil {
+		return x.EvalVersions
+	}
+	return nil
+}
+
+// EvalRun is one pass of a suite over one model.
+type EvalRun struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Id                 string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Suite              string                 `protobuf:"bytes,2,opt,name=suite,proto3" json:"suite,omitempty"`                                   // neural | tank
+	Subject            string                 `protobuf:"bytes,3,opt,name=subject,proto3" json:"subject,omitempty"`                               // what was evaluated, e.g. tank-neural
+	Model              string                 `protobuf:"bytes,4,opt,name=model,proto3" json:"model,omitempty"`                                   // the served model name the harness asked
+	ModelVersion       string                 `protobuf:"bytes,5,opt,name=model_version,json=modelVersion,proto3" json:"model_version,omitempty"` // what the server says it is serving (weights path or adapter)
+	Trigger            string                 `protobuf:"bytes,6,opt,name=trigger,proto3" json:"trigger,omitempty"`                               // schedule | manual | candidate
+	Status             string                 `protobuf:"bytes,7,opt,name=status,proto3" json:"status,omitempty"`                                 // queued | running | done | failed
+	CreatedAt          *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	StartedAt          *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=started_at,json=startedAt,proto3" json:"started_at,omitempty"`                               // unset while queued
+	FinishedAt         *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=finished_at,json=finishedAt,proto3" json:"finished_at,omitempty"`                           // unset until done or failed
+	CostUsd            float64                `protobuf:"fixed64,11,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`                                  // what the run spent; 0 for a suite on TANK's own GPU
+	Error              string                 `protobuf:"bytes,12,opt,name=error,proto3" json:"error,omitempty"`                                                       // why it failed, in TANK's words
+	HarnessVersion     string                 `protobuf:"bytes,13,opt,name=harness_version,json=harnessVersion,proto3" json:"harness_version,omitempty"`               // lm-eval version
+	DatasetManifestSha string                 `protobuf:"bytes,14,opt,name=dataset_manifest_sha,json=datasetManifestSha,proto3" json:"dataset_manifest_sha,omitempty"` // sha256 of the dataset manifests the run read
+	TasksDone          int32                  `protobuf:"varint,15,opt,name=tasks_done,json=tasksDone,proto3" json:"tasks_done,omitempty"`
+	TasksSkipped       int32                  `protobuf:"varint,16,opt,name=tasks_skipped,json=tasksSkipped,proto3" json:"tasks_skipped,omitempty"` // skipped because the GPU was busy, or failed
+	RequestedBy        string                 `protobuf:"bytes,17,opt,name=requested_by,json=requestedBy,proto3" json:"requested_by,omitempty"`     // user id for a manual run
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *EvalRun) Reset() {
+	*x = EvalRun{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[59]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvalRun) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvalRun) ProtoMessage() {}
+
+func (x *EvalRun) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[59]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvalRun.ProtoReflect.Descriptor instead.
+func (*EvalRun) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{59}
+}
+
+func (x *EvalRun) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *EvalRun) GetSuite() string {
+	if x != nil {
+		return x.Suite
+	}
+	return ""
+}
+
+func (x *EvalRun) GetSubject() string {
+	if x != nil {
+		return x.Subject
+	}
+	return ""
+}
+
+func (x *EvalRun) GetModel() string {
+	if x != nil {
+		return x.Model
+	}
+	return ""
+}
+
+func (x *EvalRun) GetModelVersion() string {
+	if x != nil {
+		return x.ModelVersion
+	}
+	return ""
+}
+
+func (x *EvalRun) GetTrigger() string {
+	if x != nil {
+		return x.Trigger
+	}
+	return ""
+}
+
+func (x *EvalRun) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *EvalRun) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *EvalRun) GetStartedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartedAt
+	}
+	return nil
+}
+
+func (x *EvalRun) GetFinishedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.FinishedAt
+	}
+	return nil
+}
+
+func (x *EvalRun) GetCostUsd() float64 {
+	if x != nil {
+		return x.CostUsd
+	}
+	return 0
+}
+
+func (x *EvalRun) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+func (x *EvalRun) GetHarnessVersion() string {
+	if x != nil {
+		return x.HarnessVersion
+	}
+	return ""
+}
+
+func (x *EvalRun) GetDatasetManifestSha() string {
+	if x != nil {
+		return x.DatasetManifestSha
+	}
+	return ""
+}
+
+func (x *EvalRun) GetTasksDone() int32 {
+	if x != nil {
+		return x.TasksDone
+	}
+	return 0
+}
+
+func (x *EvalRun) GetTasksSkipped() int32 {
+	if x != nil {
+		return x.TasksSkipped
+	}
+	return 0
+}
+
+func (x *EvalRun) GetRequestedBy() string {
+	if x != nil {
+		return x.RequestedBy
+	}
+	return ""
+}
+
+// EvalResult is one metric of one task in a run.
+type EvalResult struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Task           string                 `protobuf:"bytes,1,opt,name=task,proto3" json:"task,omitempty"`     // e.g. arc_challenge
+	Metric         string                 `protobuf:"bytes,2,opt,name=metric,proto3" json:"metric,omitempty"` // e.g. acc_norm, exact_match,strict-match
+	Value          float64                `protobuf:"fixed64,3,opt,name=value,proto3" json:"value,omitempty"`
+	Stderr         *float64               `protobuf:"fixed64,4,opt,name=stderr,proto3,oneof" json:"stderr,omitempty"`
+	N              int32                  `protobuf:"varint,5,opt,name=n,proto3" json:"n,omitempty"` // questions scored
+	CostUsd        float64                `protobuf:"fixed64,6,opt,name=cost_usd,json=costUsd,proto3" json:"cost_usd,omitempty"`
+	ServedBy       map[string]int32       `protobuf:"bytes,7,rep,name=served_by,json=servedBy,proto3" json:"served_by,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"` // answers per model that served them (suite tank)
+	Status         string                 `protobuf:"bytes,8,opt,name=status,proto3" json:"status,omitempty"`                                                                                                // done | skipped | failed
+	Note           string                 `protobuf:"bytes,9,opt,name=note,proto3" json:"note,omitempty"`                                                                                                    // why skipped or failed
+	Primary        bool                   `protobuf:"varint,10,opt,name=primary,proto3" json:"primary,omitempty"`                                                                                            // the task's headline metric
+	HigherIsBetter bool                   `protobuf:"varint,11,opt,name=higher_is_better,json=higherIsBetter,proto3" json:"higher_is_better,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *EvalResult) Reset() {
+	*x = EvalResult{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[60]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvalResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvalResult) ProtoMessage() {}
+
+func (x *EvalResult) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[60]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvalResult.ProtoReflect.Descriptor instead.
+func (*EvalResult) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{60}
+}
+
+func (x *EvalResult) GetTask() string {
+	if x != nil {
+		return x.Task
+	}
+	return ""
+}
+
+func (x *EvalResult) GetMetric() string {
+	if x != nil {
+		return x.Metric
+	}
+	return ""
+}
+
+func (x *EvalResult) GetValue() float64 {
+	if x != nil {
+		return x.Value
+	}
+	return 0
+}
+
+func (x *EvalResult) GetStderr() float64 {
+	if x != nil && x.Stderr != nil {
+		return *x.Stderr
+	}
+	return 0
+}
+
+func (x *EvalResult) GetN() int32 {
+	if x != nil {
+		return x.N
+	}
+	return 0
+}
+
+func (x *EvalResult) GetCostUsd() float64 {
+	if x != nil {
+		return x.CostUsd
+	}
+	return 0
+}
+
+func (x *EvalResult) GetServedBy() map[string]int32 {
+	if x != nil {
+		return x.ServedBy
+	}
+	return nil
+}
+
+func (x *EvalResult) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *EvalResult) GetNote() string {
+	if x != nil {
+		return x.Note
+	}
+	return ""
+}
+
+func (x *EvalResult) GetPrimary() bool {
+	if x != nil {
+		return x.Primary
+	}
+	return false
+}
+
+func (x *EvalResult) GetHigherIsBetter() bool {
+	if x != nil {
+		return x.HigherIsBetter
+	}
+	return false
+}
+
+type EvalPoint struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RunId         string                 `protobuf:"bytes,1,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
+	At            *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=at,proto3" json:"at,omitempty"` // when the run started
+	Value         float64                `protobuf:"fixed64,3,opt,name=value,proto3" json:"value,omitempty"`
+	Stderr        *float64               `protobuf:"fixed64,4,opt,name=stderr,proto3,oneof" json:"stderr,omitempty"`
+	ModelVersion  string                 `protobuf:"bytes,5,opt,name=model_version,json=modelVersion,proto3" json:"model_version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EvalPoint) Reset() {
+	*x = EvalPoint{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[61]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvalPoint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvalPoint) ProtoMessage() {}
+
+func (x *EvalPoint) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[61]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvalPoint.ProtoReflect.Descriptor instead.
+func (*EvalPoint) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{61}
+}
+
+func (x *EvalPoint) GetRunId() string {
+	if x != nil {
+		return x.RunId
+	}
+	return ""
+}
+
+func (x *EvalPoint) GetAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.At
+	}
+	return nil
+}
+
+func (x *EvalPoint) GetValue() float64 {
+	if x != nil {
+		return x.Value
+	}
+	return 0
+}
+
+func (x *EvalPoint) GetStderr() float64 {
+	if x != nil && x.Stderr != nil {
+		return *x.Stderr
+	}
+	return 0
+}
+
+func (x *EvalPoint) GetModelVersion() string {
+	if x != nil {
+		return x.ModelVersion
+	}
+	return ""
+}
+
+// EvalSeries is one task's headline metric across runs, oldest first.
+type EvalSeries struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Task           string                 `protobuf:"bytes,1,opt,name=task,proto3" json:"task,omitempty"`
+	Metric         string                 `protobuf:"bytes,2,opt,name=metric,proto3" json:"metric,omitempty"`
+	HigherIsBetter bool                   `protobuf:"varint,3,opt,name=higher_is_better,json=higherIsBetter,proto3" json:"higher_is_better,omitempty"`
+	Points         []*EvalPoint           `protobuf:"bytes,4,rep,name=points,proto3" json:"points,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *EvalSeries) Reset() {
+	*x = EvalSeries{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[62]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvalSeries) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvalSeries) ProtoMessage() {}
+
+func (x *EvalSeries) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[62]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvalSeries.ProtoReflect.Descriptor instead.
+func (*EvalSeries) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{62}
+}
+
+func (x *EvalSeries) GetTask() string {
+	if x != nil {
+		return x.Task
+	}
+	return ""
+}
+
+func (x *EvalSeries) GetMetric() string {
+	if x != nil {
+		return x.Metric
+	}
+	return ""
+}
+
+func (x *EvalSeries) GetHigherIsBetter() bool {
+	if x != nil {
+		return x.HigherIsBetter
+	}
+	return false
+}
+
+func (x *EvalSeries) GetPoints() []*EvalPoint {
+	if x != nil {
+		return x.Points
+	}
+	return nil
+}
+
+// EvalVersionMark is a run where the served model was not the one before it.
+type EvalVersionMark struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RunId         string                 `protobuf:"bytes,1,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
+	At            *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=at,proto3" json:"at,omitempty"`
+	ModelVersion  string                 `protobuf:"bytes,3,opt,name=model_version,json=modelVersion,proto3" json:"model_version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EvalVersionMark) Reset() {
+	*x = EvalVersionMark{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[63]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvalVersionMark) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvalVersionMark) ProtoMessage() {}
+
+func (x *EvalVersionMark) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[63]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvalVersionMark.ProtoReflect.Descriptor instead.
+func (*EvalVersionMark) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{63}
+}
+
+func (x *EvalVersionMark) GetRunId() string {
+	if x != nil {
+		return x.RunId
+	}
+	return ""
+}
+
+func (x *EvalVersionMark) GetAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.At
+	}
+	return nil
+}
+
+func (x *EvalVersionMark) GetModelVersion() string {
+	if x != nil {
+		return x.ModelVersion
+	}
+	return ""
+}
+
+type ListEvalRunsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Suite         string                 `protobuf:"bytes,1,opt,name=suite,proto3" json:"suite,omitempty"`  // empty: every suite
+	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"` // default 50, at most 200
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListEvalRunsRequest) Reset() {
+	*x = ListEvalRunsRequest{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[64]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListEvalRunsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListEvalRunsRequest) ProtoMessage() {}
+
+func (x *ListEvalRunsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[64]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListEvalRunsRequest.ProtoReflect.Descriptor instead.
+func (*ListEvalRunsRequest) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{64}
+}
+
+func (x *ListEvalRunsRequest) GetSuite() string {
+	if x != nil {
+		return x.Suite
+	}
+	return ""
+}
+
+func (x *ListEvalRunsRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+type ListEvalRunsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Runs          []*EvalRun             `protobuf:"bytes,1,rep,name=runs,proto3" json:"runs,omitempty"` // newest first
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListEvalRunsResponse) Reset() {
+	*x = ListEvalRunsResponse{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[65]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListEvalRunsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListEvalRunsResponse) ProtoMessage() {}
+
+func (x *ListEvalRunsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[65]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListEvalRunsResponse.ProtoReflect.Descriptor instead.
+func (*ListEvalRunsResponse) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{65}
+}
+
+func (x *ListEvalRunsResponse) GetRuns() []*EvalRun {
+	if x != nil {
+		return x.Runs
+	}
+	return nil
+}
+
+type GetEvalRunRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEvalRunRequest) Reset() {
+	*x = GetEvalRunRequest{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[66]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEvalRunRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEvalRunRequest) ProtoMessage() {}
+
+func (x *GetEvalRunRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[66]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEvalRunRequest.ProtoReflect.Descriptor instead.
+func (*GetEvalRunRequest) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{66}
+}
+
+func (x *GetEvalRunRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type GetEvalRunResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Run           *EvalRun               `protobuf:"bytes,1,opt,name=run,proto3" json:"run,omitempty"`
+	Results       []*EvalResult          `protobuf:"bytes,2,rep,name=results,proto3" json:"results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEvalRunResponse) Reset() {
+	*x = GetEvalRunResponse{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[67]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEvalRunResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEvalRunResponse) ProtoMessage() {}
+
+func (x *GetEvalRunResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[67]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEvalRunResponse.ProtoReflect.Descriptor instead.
+func (*GetEvalRunResponse) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{67}
+}
+
+func (x *GetEvalRunResponse) GetRun() *EvalRun {
+	if x != nil {
+		return x.Run
+	}
+	return nil
+}
+
+func (x *GetEvalRunResponse) GetResults() []*EvalResult {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+type GetEvalSeriesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Suite         string                 `protobuf:"bytes,1,opt,name=suite,proto3" json:"suite,omitempty"` // neural
+	Model         string                 `protobuf:"bytes,2,opt,name=model,proto3" json:"model,omitempty"` // empty: every model in the suite
+	Tasks         []string               `protobuf:"bytes,3,rep,name=tasks,proto3" json:"tasks,omitempty"` // empty: every task with a headline metric
+	Days          int32                  `protobuf:"varint,4,opt,name=days,proto3" json:"days,omitempty"`  // default 90
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEvalSeriesRequest) Reset() {
+	*x = GetEvalSeriesRequest{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[68]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEvalSeriesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEvalSeriesRequest) ProtoMessage() {}
+
+func (x *GetEvalSeriesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[68]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEvalSeriesRequest.ProtoReflect.Descriptor instead.
+func (*GetEvalSeriesRequest) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{68}
+}
+
+func (x *GetEvalSeriesRequest) GetSuite() string {
+	if x != nil {
+		return x.Suite
+	}
+	return ""
+}
+
+func (x *GetEvalSeriesRequest) GetModel() string {
+	if x != nil {
+		return x.Model
+	}
+	return ""
+}
+
+func (x *GetEvalSeriesRequest) GetTasks() []string {
+	if x != nil {
+		return x.Tasks
+	}
+	return nil
+}
+
+func (x *GetEvalSeriesRequest) GetDays() int32 {
+	if x != nil {
+		return x.Days
+	}
+	return 0
+}
+
+type GetEvalSeriesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Series        []*EvalSeries          `protobuf:"bytes,1,rep,name=series,proto3" json:"series,omitempty"`
+	Versions      []*EvalVersionMark     `protobuf:"bytes,2,rep,name=versions,proto3" json:"versions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetEvalSeriesResponse) Reset() {
+	*x = GetEvalSeriesResponse{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[69]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetEvalSeriesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetEvalSeriesResponse) ProtoMessage() {}
+
+func (x *GetEvalSeriesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[69]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetEvalSeriesResponse.ProtoReflect.Descriptor instead.
+func (*GetEvalSeriesResponse) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{69}
+}
+
+func (x *GetEvalSeriesResponse) GetSeries() []*EvalSeries {
+	if x != nil {
+		return x.Series
+	}
+	return nil
+}
+
+func (x *GetEvalSeriesResponse) GetVersions() []*EvalVersionMark {
+	if x != nil {
+		return x.Versions
+	}
+	return nil
+}
+
+// StartEvalRun runs a suite now, outside its schedule: a Job from the suite's CronJob.
+// FAILED_PRECONDITION while a run of that suite is queued or running.
+type StartEvalRunRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Suite         string                 `protobuf:"bytes,1,opt,name=suite,proto3" json:"suite,omitempty"` // neural
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StartEvalRunRequest) Reset() {
+	*x = StartEvalRunRequest{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[70]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartEvalRunRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartEvalRunRequest) ProtoMessage() {}
+
+func (x *StartEvalRunRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[70]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartEvalRunRequest.ProtoReflect.Descriptor instead.
+func (*StartEvalRunRequest) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{70}
+}
+
+func (x *StartEvalRunRequest) GetSuite() string {
+	if x != nil {
+		return x.Suite
+	}
+	return ""
+}
+
+type StartEvalRunResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Run           *EvalRun               `protobuf:"bytes,1,opt,name=run,proto3" json:"run,omitempty"` // queued
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StartEvalRunResponse) Reset() {
+	*x = StartEvalRunResponse{}
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[71]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StartEvalRunResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StartEvalRunResponse) ProtoMessage() {}
+
+func (x *StartEvalRunResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[71]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StartEvalRunResponse.ProtoReflect.Descriptor instead.
+func (*StartEvalRunResponse) Descriptor() ([]byte, []int) {
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{71}
+}
+
+func (x *StartEvalRunResponse) GetRun() *EvalRun {
+	if x != nil {
+		return x.Run
+	}
+	return nil
+}
+
 // SetWorkspacePlan moves a workspace between free and premium. Premium provisions its
 // agent. Nothing is charged or refunded: Stripe and the App Store are not touched.
 type SetWorkspacePlanRequest struct {
@@ -4761,7 +5685,7 @@ type SetWorkspacePlanRequest struct {
 
 func (x *SetWorkspacePlanRequest) Reset() {
 	*x = SetWorkspacePlanRequest{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[59]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4773,7 +5697,7 @@ func (x *SetWorkspacePlanRequest) String() string {
 func (*SetWorkspacePlanRequest) ProtoMessage() {}
 
 func (x *SetWorkspacePlanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[59]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4786,7 +5710,7 @@ func (x *SetWorkspacePlanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetWorkspacePlanRequest.ProtoReflect.Descriptor instead.
 func (*SetWorkspacePlanRequest) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{59}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *SetWorkspacePlanRequest) GetWorkspaceId() string {
@@ -4811,7 +5735,7 @@ type SetWorkspacePlanResponse struct {
 
 func (x *SetWorkspacePlanResponse) Reset() {
 	*x = SetWorkspacePlanResponse{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[60]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4823,7 +5747,7 @@ func (x *SetWorkspacePlanResponse) String() string {
 func (*SetWorkspacePlanResponse) ProtoMessage() {}
 
 func (x *SetWorkspacePlanResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[60]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4836,7 +5760,7 @@ func (x *SetWorkspacePlanResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetWorkspacePlanResponse.ProtoReflect.Descriptor instead.
 func (*SetWorkspacePlanResponse) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{60}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{73}
 }
 
 // SetWorkspaceAddon turns one add-on on or off.
@@ -4851,7 +5775,7 @@ type SetWorkspaceAddonRequest struct {
 
 func (x *SetWorkspaceAddonRequest) Reset() {
 	*x = SetWorkspaceAddonRequest{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[61]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4863,7 +5787,7 @@ func (x *SetWorkspaceAddonRequest) String() string {
 func (*SetWorkspaceAddonRequest) ProtoMessage() {}
 
 func (x *SetWorkspaceAddonRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[61]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4876,7 +5800,7 @@ func (x *SetWorkspaceAddonRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetWorkspaceAddonRequest.ProtoReflect.Descriptor instead.
 func (*SetWorkspaceAddonRequest) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{61}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *SetWorkspaceAddonRequest) GetWorkspaceId() string {
@@ -4908,7 +5832,7 @@ type SetWorkspaceAddonResponse struct {
 
 func (x *SetWorkspaceAddonResponse) Reset() {
 	*x = SetWorkspaceAddonResponse{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[62]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4920,7 +5844,7 @@ func (x *SetWorkspaceAddonResponse) String() string {
 func (*SetWorkspaceAddonResponse) ProtoMessage() {}
 
 func (x *SetWorkspaceAddonResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[62]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4933,7 +5857,7 @@ func (x *SetWorkspaceAddonResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetWorkspaceAddonResponse.ProtoReflect.Descriptor instead.
 func (*SetWorkspaceAddonResponse) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{62}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{75}
 }
 
 // SuspendWorkspace stops everyone using a workspace, its agents included, until it is
@@ -4949,7 +5873,7 @@ type SuspendWorkspaceRequest struct {
 
 func (x *SuspendWorkspaceRequest) Reset() {
 	*x = SuspendWorkspaceRequest{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[63]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4961,7 +5885,7 @@ func (x *SuspendWorkspaceRequest) String() string {
 func (*SuspendWorkspaceRequest) ProtoMessage() {}
 
 func (x *SuspendWorkspaceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[63]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4974,7 +5898,7 @@ func (x *SuspendWorkspaceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SuspendWorkspaceRequest.ProtoReflect.Descriptor instead.
 func (*SuspendWorkspaceRequest) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{63}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *SuspendWorkspaceRequest) GetWorkspaceId() string {
@@ -5006,7 +5930,7 @@ type SuspendWorkspaceResponse struct {
 
 func (x *SuspendWorkspaceResponse) Reset() {
 	*x = SuspendWorkspaceResponse{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[64]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5018,7 +5942,7 @@ func (x *SuspendWorkspaceResponse) String() string {
 func (*SuspendWorkspaceResponse) ProtoMessage() {}
 
 func (x *SuspendWorkspaceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[64]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5031,7 +5955,7 @@ func (x *SuspendWorkspaceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SuspendWorkspaceResponse.ProtoReflect.Descriptor instead.
 func (*SuspendWorkspaceResponse) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{64}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{77}
 }
 
 // SuspendUser signs a person out everywhere and refuses them across the platform until
@@ -5047,7 +5971,7 @@ type SuspendUserRequest struct {
 
 func (x *SuspendUserRequest) Reset() {
 	*x = SuspendUserRequest{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[65]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5059,7 +5983,7 @@ func (x *SuspendUserRequest) String() string {
 func (*SuspendUserRequest) ProtoMessage() {}
 
 func (x *SuspendUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[65]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5072,7 +5996,7 @@ func (x *SuspendUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SuspendUserRequest.ProtoReflect.Descriptor instead.
 func (*SuspendUserRequest) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{65}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *SuspendUserRequest) GetUserId() string {
@@ -5104,7 +6028,7 @@ type SuspendUserResponse struct {
 
 func (x *SuspendUserResponse) Reset() {
 	*x = SuspendUserResponse{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[66]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5116,7 +6040,7 @@ func (x *SuspendUserResponse) String() string {
 func (*SuspendUserResponse) ProtoMessage() {}
 
 func (x *SuspendUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[66]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5129,7 +6053,7 @@ func (x *SuspendUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SuspendUserResponse.ProtoReflect.Descriptor instead.
 func (*SuspendUserResponse) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{66}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{79}
 }
 
 // SetWorkspaceNoCharge marks a workspace that will never pay (Robby, 2026-11-12: ones
@@ -5147,7 +6071,7 @@ type SetWorkspaceNoChargeRequest struct {
 
 func (x *SetWorkspaceNoChargeRequest) Reset() {
 	*x = SetWorkspaceNoChargeRequest{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[67]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5159,7 +6083,7 @@ func (x *SetWorkspaceNoChargeRequest) String() string {
 func (*SetWorkspaceNoChargeRequest) ProtoMessage() {}
 
 func (x *SetWorkspaceNoChargeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[67]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5172,7 +6096,7 @@ func (x *SetWorkspaceNoChargeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetWorkspaceNoChargeRequest.ProtoReflect.Descriptor instead.
 func (*SetWorkspaceNoChargeRequest) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{67}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *SetWorkspaceNoChargeRequest) GetWorkspaceId() string {
@@ -5204,7 +6128,7 @@ type SetWorkspaceNoChargeResponse struct {
 
 func (x *SetWorkspaceNoChargeResponse) Reset() {
 	*x = SetWorkspaceNoChargeResponse{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[68]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5216,7 +6140,7 @@ func (x *SetWorkspaceNoChargeResponse) String() string {
 func (*SetWorkspaceNoChargeResponse) ProtoMessage() {}
 
 func (x *SetWorkspaceNoChargeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[68]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5229,7 +6153,7 @@ func (x *SetWorkspaceNoChargeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetWorkspaceNoChargeResponse.ProtoReflect.Descriptor instead.
 func (*SetWorkspaceNoChargeResponse) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{68}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{81}
 }
 
 // SetWorkspaceClaude5Cap sets or clears a workspace's monthly cap on Claude 5 spend, in
@@ -5247,7 +6171,7 @@ type SetWorkspaceClaude5CapRequest struct {
 
 func (x *SetWorkspaceClaude5CapRequest) Reset() {
 	*x = SetWorkspaceClaude5CapRequest{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[69]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5259,7 +6183,7 @@ func (x *SetWorkspaceClaude5CapRequest) String() string {
 func (*SetWorkspaceClaude5CapRequest) ProtoMessage() {}
 
 func (x *SetWorkspaceClaude5CapRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[69]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5272,7 +6196,7 @@ func (x *SetWorkspaceClaude5CapRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetWorkspaceClaude5CapRequest.ProtoReflect.Descriptor instead.
 func (*SetWorkspaceClaude5CapRequest) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{69}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *SetWorkspaceClaude5CapRequest) GetWorkspaceId() string {
@@ -5312,7 +6236,7 @@ type SetWorkspaceClaude5CapResponse struct {
 
 func (x *SetWorkspaceClaude5CapResponse) Reset() {
 	*x = SetWorkspaceClaude5CapResponse{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[70]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5324,7 +6248,7 @@ func (x *SetWorkspaceClaude5CapResponse) String() string {
 func (*SetWorkspaceClaude5CapResponse) ProtoMessage() {}
 
 func (x *SetWorkspaceClaude5CapResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[70]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5337,7 +6261,7 @@ func (x *SetWorkspaceClaude5CapResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetWorkspaceClaude5CapResponse.ProtoReflect.Descriptor instead.
 func (*SetWorkspaceClaude5CapResponse) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{70}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *SetWorkspaceClaude5CapResponse) GetClaude5() *Claude5Spend {
@@ -5365,7 +6289,7 @@ type CreateWorkspaceRequest struct {
 
 func (x *CreateWorkspaceRequest) Reset() {
 	*x = CreateWorkspaceRequest{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[71]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5377,7 +6301,7 @@ func (x *CreateWorkspaceRequest) String() string {
 func (*CreateWorkspaceRequest) ProtoMessage() {}
 
 func (x *CreateWorkspaceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[71]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5390,7 +6314,7 @@ func (x *CreateWorkspaceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateWorkspaceRequest.ProtoReflect.Descriptor instead.
 func (*CreateWorkspaceRequest) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{71}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *CreateWorkspaceRequest) GetName() string {
@@ -5430,7 +6354,7 @@ type CreateWorkspaceResponse struct {
 
 func (x *CreateWorkspaceResponse) Reset() {
 	*x = CreateWorkspaceResponse{}
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[72]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5442,7 +6366,7 @@ func (x *CreateWorkspaceResponse) String() string {
 func (*CreateWorkspaceResponse) ProtoMessage() {}
 
 func (x *CreateWorkspaceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tank_platform_v1_platform_proto_msgTypes[72]
+	mi := &file_tank_platform_v1_platform_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5455,7 +6379,7 @@ func (x *CreateWorkspaceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateWorkspaceResponse.ProtoReflect.Descriptor instead.
 func (*CreateWorkspaceResponse) Descriptor() ([]byte, []int) {
-	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{72}
+	return file_tank_platform_v1_platform_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *CreateWorkspaceResponse) GetWorkspace() *WorkspaceRow {
@@ -6218,7 +7142,7 @@ var file_tank_platform_v1_platform_proto_rawDesc = string([]byte{
 	0x26, 0x0a, 0x0f, 0x63, 0x68, 0x61, 0x72, 0x67, 0x65, 0x64, 0x5f, 0x75, 0x73, 0x64, 0x5f, 0x33,
 	0x30, 0x64, 0x18, 0x10, 0x20, 0x01, 0x28, 0x01, 0x52, 0x0d, 0x63, 0x68, 0x61, 0x72, 0x67, 0x65,
 	0x64, 0x55, 0x73, 0x64, 0x33, 0x30, 0x64, 0x22, 0x12, 0x0a, 0x10, 0x47, 0x65, 0x74, 0x4e, 0x65,
-	0x75, 0x72, 0x61, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0xb6, 0x03, 0x0a, 0x11,
+	0x75, 0x72, 0x61, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0xbd, 0x04, 0x0a, 0x11,
 	0x47, 0x65, 0x74, 0x4e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x62, 0x61, 0x73, 0x65, 0x5f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x62, 0x61, 0x73, 0x65, 0x4d, 0x6f, 0x64, 0x65, 0x6c,
@@ -6246,7 +7170,149 @@ var file_tank_platform_v1_platform_proto_rawDesc = string([]byte{
 	0x61, 0x67, 0x65, 0x12, 0x2f, 0x0a, 0x04, 0x64, 0x61, 0x79, 0x73, 0x18, 0x09, 0x20, 0x03, 0x28,
 	0x0b, 0x32, 0x1b, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
 	0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x4e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x44, 0x61, 0x79, 0x52, 0x04,
-	0x64, 0x61, 0x79, 0x73, 0x22, 0x50, 0x0a, 0x17, 0x53, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73,
+	0x64, 0x61, 0x79, 0x73, 0x12, 0x3d, 0x0a, 0x0b, 0x65, 0x76, 0x61, 0x6c, 0x5f, 0x73, 0x65, 0x72,
+	0x69, 0x65, 0x73, 0x18, 0x0a, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x74, 0x61, 0x6e, 0x6b,
+	0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x76, 0x61,
+	0x6c, 0x53, 0x65, 0x72, 0x69, 0x65, 0x73, 0x52, 0x0a, 0x65, 0x76, 0x61, 0x6c, 0x53, 0x65, 0x72,
+	0x69, 0x65, 0x73, 0x12, 0x46, 0x0a, 0x0d, 0x65, 0x76, 0x61, 0x6c, 0x5f, 0x76, 0x65, 0x72, 0x73,
+	0x69, 0x6f, 0x6e, 0x73, 0x18, 0x0b, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x74, 0x61, 0x6e,
+	0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x76,
+	0x61, 0x6c, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x61, 0x72, 0x6b, 0x52, 0x0c, 0x65,
+	0x76, 0x61, 0x6c, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0xdc, 0x04, 0x0a, 0x07,
+	0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x75, 0x69, 0x74, 0x65,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x73, 0x75, 0x69, 0x74, 0x65, 0x12, 0x18, 0x0a,
+	0x07, 0x73, 0x75, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
+	0x73, 0x75, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x6d, 0x6f, 0x64, 0x65, 0x6c,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x12, 0x23, 0x0a,
+	0x0d, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x05,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x56, 0x65, 0x72, 0x73, 0x69,
+	0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x74, 0x72, 0x69, 0x67, 0x67, 0x65, 0x72, 0x18, 0x06, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x74, 0x72, 0x69, 0x67, 0x67, 0x65, 0x72, 0x12, 0x16, 0x0a, 0x06,
+	0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x12, 0x39, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f,
+	0x61, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
+	0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12,
+	0x39, 0x0a, 0x0a, 0x73, 0x74, 0x61, 0x72, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x09, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52,
+	0x09, 0x73, 0x74, 0x61, 0x72, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x3b, 0x0a, 0x0b, 0x66, 0x69,
+	0x6e, 0x69, 0x73, 0x68, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0a, 0x66, 0x69, 0x6e,
+	0x69, 0x73, 0x68, 0x65, 0x64, 0x41, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6f, 0x73, 0x74, 0x5f,
+	0x75, 0x73, 0x64, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x01, 0x52, 0x07, 0x63, 0x6f, 0x73, 0x74, 0x55,
+	0x73, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x0c, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x27, 0x0a, 0x0f, 0x68, 0x61, 0x72, 0x6e,
+	0x65, 0x73, 0x73, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x0d, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0e, 0x68, 0x61, 0x72, 0x6e, 0x65, 0x73, 0x73, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f,
+	0x6e, 0x12, 0x30, 0x0a, 0x14, 0x64, 0x61, 0x74, 0x61, 0x73, 0x65, 0x74, 0x5f, 0x6d, 0x61, 0x6e,
+	0x69, 0x66, 0x65, 0x73, 0x74, 0x5f, 0x73, 0x68, 0x61, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x12, 0x64, 0x61, 0x74, 0x61, 0x73, 0x65, 0x74, 0x4d, 0x61, 0x6e, 0x69, 0x66, 0x65, 0x73, 0x74,
+	0x53, 0x68, 0x61, 0x12, 0x1d, 0x0a, 0x0a, 0x74, 0x61, 0x73, 0x6b, 0x73, 0x5f, 0x64, 0x6f, 0x6e,
+	0x65, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x05, 0x52, 0x09, 0x74, 0x61, 0x73, 0x6b, 0x73, 0x44, 0x6f,
+	0x6e, 0x65, 0x12, 0x23, 0x0a, 0x0d, 0x74, 0x61, 0x73, 0x6b, 0x73, 0x5f, 0x73, 0x6b, 0x69, 0x70,
+	0x70, 0x65, 0x64, 0x18, 0x10, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0c, 0x74, 0x61, 0x73, 0x6b, 0x73,
+	0x53, 0x6b, 0x69, 0x70, 0x70, 0x65, 0x64, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x65, 0x64, 0x5f, 0x62, 0x79, 0x18, 0x11, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x72,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x65, 0x64, 0x42, 0x79, 0x22, 0x95, 0x03, 0x0a, 0x0a, 0x45,
+	0x76, 0x61, 0x6c, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x61, 0x73,
+	0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x61, 0x73, 0x6b, 0x12, 0x16, 0x0a,
+	0x06, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x6d,
+	0x65, 0x74, 0x72, 0x69, 0x63, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x01, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x1b, 0x0a, 0x06, 0x73,
+	0x74, 0x64, 0x65, 0x72, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x01, 0x48, 0x00, 0x52, 0x06, 0x73,
+	0x74, 0x64, 0x65, 0x72, 0x72, 0x88, 0x01, 0x01, 0x12, 0x0c, 0x0a, 0x01, 0x6e, 0x18, 0x05, 0x20,
+	0x01, 0x28, 0x05, 0x52, 0x01, 0x6e, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6f, 0x73, 0x74, 0x5f, 0x75,
+	0x73, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x01, 0x52, 0x07, 0x63, 0x6f, 0x73, 0x74, 0x55, 0x73,
+	0x64, 0x12, 0x47, 0x0a, 0x09, 0x73, 0x65, 0x72, 0x76, 0x65, 0x64, 0x5f, 0x62, 0x79, 0x18, 0x07,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x2a, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74,
+	0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x65, 0x73, 0x75,
+	0x6c, 0x74, 0x2e, 0x53, 0x65, 0x72, 0x76, 0x65, 0x64, 0x42, 0x79, 0x45, 0x6e, 0x74, 0x72, 0x79,
+	0x52, 0x08, 0x73, 0x65, 0x72, 0x76, 0x65, 0x64, 0x42, 0x79, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74,
+	0x75, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x6f, 0x74, 0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x04, 0x6e, 0x6f, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72,
+	0x79, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79,
+	0x12, 0x28, 0x0a, 0x10, 0x68, 0x69, 0x67, 0x68, 0x65, 0x72, 0x5f, 0x69, 0x73, 0x5f, 0x62, 0x65,
+	0x74, 0x74, 0x65, 0x72, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0e, 0x68, 0x69, 0x67, 0x68,
+	0x65, 0x72, 0x49, 0x73, 0x42, 0x65, 0x74, 0x74, 0x65, 0x72, 0x1a, 0x3b, 0x0a, 0x0d, 0x53, 0x65,
+	0x72, 0x76, 0x65, 0x64, 0x42, 0x79, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b,
+	0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a,
+	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x76, 0x61,
+	0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x42, 0x09, 0x0a, 0x07, 0x5f, 0x73, 0x74, 0x64, 0x65,
+	0x72, 0x72, 0x22, 0xb1, 0x01, 0x0a, 0x09, 0x45, 0x76, 0x61, 0x6c, 0x50, 0x6f, 0x69, 0x6e, 0x74,
+	0x12, 0x15, 0x0a, 0x06, 0x72, 0x75, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x05, 0x72, 0x75, 0x6e, 0x49, 0x64, 0x12, 0x2a, 0x0a, 0x02, 0x61, 0x74, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52,
+	0x02, 0x61, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x01, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x1b, 0x0a, 0x06, 0x73, 0x74, 0x64,
+	0x65, 0x72, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x01, 0x48, 0x00, 0x52, 0x06, 0x73, 0x74, 0x64,
+	0x65, 0x72, 0x72, 0x88, 0x01, 0x01, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x5f,
+	0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x6d,
+	0x6f, 0x64, 0x65, 0x6c, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x09, 0x0a, 0x07, 0x5f,
+	0x73, 0x74, 0x64, 0x65, 0x72, 0x72, 0x22, 0x97, 0x01, 0x0a, 0x0a, 0x45, 0x76, 0x61, 0x6c, 0x53,
+	0x65, 0x72, 0x69, 0x65, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x61, 0x73, 0x6b, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x61, 0x73, 0x6b, 0x12, 0x16, 0x0a, 0x06, 0x6d, 0x65, 0x74,
+	0x72, 0x69, 0x63, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x6d, 0x65, 0x74, 0x72, 0x69,
+	0x63, 0x12, 0x28, 0x0a, 0x10, 0x68, 0x69, 0x67, 0x68, 0x65, 0x72, 0x5f, 0x69, 0x73, 0x5f, 0x62,
+	0x65, 0x74, 0x74, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0e, 0x68, 0x69, 0x67,
+	0x68, 0x65, 0x72, 0x49, 0x73, 0x42, 0x65, 0x74, 0x74, 0x65, 0x72, 0x12, 0x33, 0x0a, 0x06, 0x70,
+	0x6f, 0x69, 0x6e, 0x74, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x74, 0x61,
+	0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x45,
+	0x76, 0x61, 0x6c, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x06, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73,
+	0x22, 0x79, 0x0a, 0x0f, 0x45, 0x76, 0x61, 0x6c, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x4d,
+	0x61, 0x72, 0x6b, 0x12, 0x15, 0x0a, 0x06, 0x72, 0x75, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x05, 0x72, 0x75, 0x6e, 0x49, 0x64, 0x12, 0x2a, 0x0a, 0x02, 0x61, 0x74,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
+	0x6d, 0x70, 0x52, 0x02, 0x61, 0x74, 0x12, 0x23, 0x0a, 0x0d, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x5f,
+	0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x6d,
+	0x6f, 0x64, 0x65, 0x6c, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x41, 0x0a, 0x13, 0x4c,
+	0x69, 0x73, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x75, 0x69, 0x74, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x05, 0x73, 0x75, 0x69, 0x74, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x69, 0x6d, 0x69,
+	0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x22, 0x45,
+	0x0a, 0x14, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x04, 0x72, 0x75, 0x6e, 0x73, 0x18, 0x01,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74,
+	0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e, 0x52,
+	0x04, 0x72, 0x75, 0x6e, 0x73, 0x22, 0x23, 0x0a, 0x11, 0x47, 0x65, 0x74, 0x45, 0x76, 0x61, 0x6c,
+	0x52, 0x75, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x79, 0x0a, 0x12, 0x47, 0x65,
+	0x74, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x2b, 0x0a, 0x03, 0x72, 0x75, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e,
+	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31,
+	0x2e, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e, 0x52, 0x03, 0x72, 0x75, 0x6e, 0x12, 0x36, 0x0a,
+	0x07, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c,
+	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76,
+	0x31, 0x2e, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x52, 0x07, 0x72, 0x65,
+	0x73, 0x75, 0x6c, 0x74, 0x73, 0x22, 0x6c, 0x0a, 0x14, 0x47, 0x65, 0x74, 0x45, 0x76, 0x61, 0x6c,
+	0x53, 0x65, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a,
+	0x05, 0x73, 0x75, 0x69, 0x74, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x73, 0x75,
+	0x69, 0x74, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x05, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x61, 0x73,
+	0x6b, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x74, 0x61, 0x73, 0x6b, 0x73, 0x12,
+	0x12, 0x0a, 0x04, 0x64, 0x61, 0x79, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x64,
+	0x61, 0x79, 0x73, 0x22, 0x8c, 0x01, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x53,
+	0x65, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x34, 0x0a,
+	0x06, 0x73, 0x65, 0x72, 0x69, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e,
+	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31,
+	0x2e, 0x45, 0x76, 0x61, 0x6c, 0x53, 0x65, 0x72, 0x69, 0x65, 0x73, 0x52, 0x06, 0x73, 0x65, 0x72,
+	0x69, 0x65, 0x73, 0x12, 0x3d, 0x0a, 0x08, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18,
+	0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61,
+	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x76, 0x61, 0x6c, 0x56, 0x65, 0x72,
+	0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x61, 0x72, 0x6b, 0x52, 0x08, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f,
+	0x6e, 0x73, 0x22, 0x2b, 0x0a, 0x13, 0x53, 0x74, 0x61, 0x72, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x52,
+	0x75, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x75, 0x69,
+	0x74, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x73, 0x75, 0x69, 0x74, 0x65, 0x22,
+	0x43, 0x0a, 0x14, 0x53, 0x74, 0x61, 0x72, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2b, 0x0a, 0x03, 0x72, 0x75, 0x6e, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74,
+	0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e, 0x52,
+	0x03, 0x72, 0x75, 0x6e, 0x22, 0x50, 0x0a, 0x17, 0x53, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73,
 	0x70, 0x61, 0x63, 0x65, 0x50, 0x6c, 0x61, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
 	0x21, 0x0a, 0x0c, 0x77, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65, 0x5f, 0x69, 0x64, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x77, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63, 0x65,
@@ -6315,7 +7381,7 @@ var file_tank_platform_v1_platform_proto_rawDesc = string([]byte{
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c,
 	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70,
 	0x61, 0x63, 0x65, 0x52, 0x6f, 0x77, 0x52, 0x09, 0x77, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63,
-	0x65, 0x32, 0x8f, 0x12, 0x0a, 0x0f, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x53, 0x65,
+	0x65, 0x32, 0x88, 0x15, 0x0a, 0x0f, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x53, 0x65,
 	0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x67, 0x65,
 	0x6e, 0x74, 0x75, 0x72, 0x65, 0x73, 0x12, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c,
 	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x67,
@@ -6460,21 +7526,45 @@ var file_tank_platform_v1_platform_proto_rawDesc = string([]byte{
 	0x74, 0x1a, 0x30, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
 	0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x73, 0x70, 0x61, 0x63,
 	0x65, 0x43, 0x6c, 0x61, 0x75, 0x64, 0x65, 0x35, 0x43, 0x61, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x42, 0xe0, 0x01, 0x0a, 0x14, 0x63, 0x6f, 0x6d, 0x2e, 0x74, 0x61, 0x6e, 0x6b,
-	0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x42, 0x0d, 0x50, 0x6c,
-	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x57, 0x67,
-	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x74, 0x61, 0x63, 0x74, 0x69, 0x63,
-	0x61, 0x6c, 0x2d, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2d, 0x6e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x2d,
-	0x6b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x2f, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61,
-	0x63, 0x74, 0x73, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x67, 0x6f, 0x2f, 0x74, 0x61, 0x6e, 0x6b, 0x2f,
-	0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2f, 0x76, 0x31, 0x3b, 0x70, 0x6c, 0x61, 0x74,
-	0x66, 0x6f, 0x72, 0x6d, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x54, 0x50, 0x58, 0xaa, 0x02, 0x10, 0x54,
-	0x61, 0x6e, 0x6b, 0x2e, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31, 0xca,
-	0x02, 0x10, 0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5c,
-	0x56, 0x31, 0xe2, 0x02, 0x1c, 0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f,
-	0x72, 0x6d, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0xea, 0x02, 0x12, 0x54, 0x61, 0x6e, 0x6b, 0x3a, 0x3a, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f,
-	0x72, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0c, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x52,
+	0x75, 0x6e, 0x73, 0x12, 0x25, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66,
+	0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x52,
+	0x75, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x74, 0x61, 0x6e,
+	0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69,
+	0x73, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x57, 0x0a, 0x0a, 0x47, 0x65, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e,
+	0x12, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d,
+	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61,
+	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x45, 0x76, 0x61, 0x6c,
+	0x52, 0x75, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0d, 0x47,
+	0x65, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x53, 0x65, 0x72, 0x69, 0x65, 0x73, 0x12, 0x26, 0x2e, 0x74,
+	0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e,
+	0x47, 0x65, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x53, 0x65, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74,
+	0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x53,
+	0x65, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a,
+	0x0c, 0x53, 0x74, 0x61, 0x72, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e, 0x12, 0x25, 0x2e,
+	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31,
+	0x2e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x45, 0x76, 0x61, 0x6c, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74,
+	0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x45, 0x76, 0x61,
+	0x6c, 0x52, 0x75, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xe0, 0x01, 0x0a,
+	0x14, 0x63, 0x6f, 0x6d, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f,
+	0x72, 0x6d, 0x2e, 0x76, 0x31, 0x42, 0x0d, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x57, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x74, 0x61, 0x63, 0x74, 0x69, 0x63, 0x61, 0x6c, 0x2d, 0x61, 0x67, 0x65, 0x6e,
+	0x74, 0x2d, 0x6e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x2d, 0x6b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64,
+	0x67, 0x65, 0x2f, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x65, 0x6e,
+	0x2f, 0x67, 0x6f, 0x2f, 0x74, 0x61, 0x6e, 0x6b, 0x2f, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
+	0x6d, 0x2f, 0x76, 0x31, 0x3b, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x76, 0x31, 0xa2,
+	0x02, 0x03, 0x54, 0x50, 0x58, 0xaa, 0x02, 0x10, 0x54, 0x61, 0x6e, 0x6b, 0x2e, 0x50, 0x6c, 0x61,
+	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x10, 0x54, 0x61, 0x6e, 0x6b, 0x5c,
+	0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1c, 0x54, 0x61,
+	0x6e, 0x6b, 0x5c, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5c, 0x56, 0x31, 0x5c, 0x47,
+	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x12, 0x54, 0x61, 0x6e,
+	0x6b, 0x3a, 0x3a, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
@@ -6489,7 +7579,7 @@ func file_tank_platform_v1_platform_proto_rawDescGZIP() []byte {
 	return file_tank_platform_v1_platform_proto_rawDescData
 }
 
-var file_tank_platform_v1_platform_proto_msgTypes = make([]protoimpl.MessageInfo, 73)
+var file_tank_platform_v1_platform_proto_msgTypes = make([]protoimpl.MessageInfo, 87)
 var file_tank_platform_v1_platform_proto_goTypes = []any{
 	(*AgentureRow)(nil),                    // 0: tank.platform.v1.AgentureRow
 	(*ListAgenturesRequest)(nil),           // 1: tank.platform.v1.ListAgenturesRequest
@@ -6550,138 +7640,175 @@ var file_tank_platform_v1_platform_proto_goTypes = []any{
 	(*NeuralUsage)(nil),                    // 56: tank.platform.v1.NeuralUsage
 	(*GetNeuralRequest)(nil),               // 57: tank.platform.v1.GetNeuralRequest
 	(*GetNeuralResponse)(nil),              // 58: tank.platform.v1.GetNeuralResponse
-	(*SetWorkspacePlanRequest)(nil),        // 59: tank.platform.v1.SetWorkspacePlanRequest
-	(*SetWorkspacePlanResponse)(nil),       // 60: tank.platform.v1.SetWorkspacePlanResponse
-	(*SetWorkspaceAddonRequest)(nil),       // 61: tank.platform.v1.SetWorkspaceAddonRequest
-	(*SetWorkspaceAddonResponse)(nil),      // 62: tank.platform.v1.SetWorkspaceAddonResponse
-	(*SuspendWorkspaceRequest)(nil),        // 63: tank.platform.v1.SuspendWorkspaceRequest
-	(*SuspendWorkspaceResponse)(nil),       // 64: tank.platform.v1.SuspendWorkspaceResponse
-	(*SuspendUserRequest)(nil),             // 65: tank.platform.v1.SuspendUserRequest
-	(*SuspendUserResponse)(nil),            // 66: tank.platform.v1.SuspendUserResponse
-	(*SetWorkspaceNoChargeRequest)(nil),    // 67: tank.platform.v1.SetWorkspaceNoChargeRequest
-	(*SetWorkspaceNoChargeResponse)(nil),   // 68: tank.platform.v1.SetWorkspaceNoChargeResponse
-	(*SetWorkspaceClaude5CapRequest)(nil),  // 69: tank.platform.v1.SetWorkspaceClaude5CapRequest
-	(*SetWorkspaceClaude5CapResponse)(nil), // 70: tank.platform.v1.SetWorkspaceClaude5CapResponse
-	(*CreateWorkspaceRequest)(nil),         // 71: tank.platform.v1.CreateWorkspaceRequest
-	(*CreateWorkspaceResponse)(nil),        // 72: tank.platform.v1.CreateWorkspaceResponse
-	(*timestamppb.Timestamp)(nil),          // 73: google.protobuf.Timestamp
+	(*EvalRun)(nil),                        // 59: tank.platform.v1.EvalRun
+	(*EvalResult)(nil),                     // 60: tank.platform.v1.EvalResult
+	(*EvalPoint)(nil),                      // 61: tank.platform.v1.EvalPoint
+	(*EvalSeries)(nil),                     // 62: tank.platform.v1.EvalSeries
+	(*EvalVersionMark)(nil),                // 63: tank.platform.v1.EvalVersionMark
+	(*ListEvalRunsRequest)(nil),            // 64: tank.platform.v1.ListEvalRunsRequest
+	(*ListEvalRunsResponse)(nil),           // 65: tank.platform.v1.ListEvalRunsResponse
+	(*GetEvalRunRequest)(nil),              // 66: tank.platform.v1.GetEvalRunRequest
+	(*GetEvalRunResponse)(nil),             // 67: tank.platform.v1.GetEvalRunResponse
+	(*GetEvalSeriesRequest)(nil),           // 68: tank.platform.v1.GetEvalSeriesRequest
+	(*GetEvalSeriesResponse)(nil),          // 69: tank.platform.v1.GetEvalSeriesResponse
+	(*StartEvalRunRequest)(nil),            // 70: tank.platform.v1.StartEvalRunRequest
+	(*StartEvalRunResponse)(nil),           // 71: tank.platform.v1.StartEvalRunResponse
+	(*SetWorkspacePlanRequest)(nil),        // 72: tank.platform.v1.SetWorkspacePlanRequest
+	(*SetWorkspacePlanResponse)(nil),       // 73: tank.platform.v1.SetWorkspacePlanResponse
+	(*SetWorkspaceAddonRequest)(nil),       // 74: tank.platform.v1.SetWorkspaceAddonRequest
+	(*SetWorkspaceAddonResponse)(nil),      // 75: tank.platform.v1.SetWorkspaceAddonResponse
+	(*SuspendWorkspaceRequest)(nil),        // 76: tank.platform.v1.SuspendWorkspaceRequest
+	(*SuspendWorkspaceResponse)(nil),       // 77: tank.platform.v1.SuspendWorkspaceResponse
+	(*SuspendUserRequest)(nil),             // 78: tank.platform.v1.SuspendUserRequest
+	(*SuspendUserResponse)(nil),            // 79: tank.platform.v1.SuspendUserResponse
+	(*SetWorkspaceNoChargeRequest)(nil),    // 80: tank.platform.v1.SetWorkspaceNoChargeRequest
+	(*SetWorkspaceNoChargeResponse)(nil),   // 81: tank.platform.v1.SetWorkspaceNoChargeResponse
+	(*SetWorkspaceClaude5CapRequest)(nil),  // 82: tank.platform.v1.SetWorkspaceClaude5CapRequest
+	(*SetWorkspaceClaude5CapResponse)(nil), // 83: tank.platform.v1.SetWorkspaceClaude5CapResponse
+	(*CreateWorkspaceRequest)(nil),         // 84: tank.platform.v1.CreateWorkspaceRequest
+	(*CreateWorkspaceResponse)(nil),        // 85: tank.platform.v1.CreateWorkspaceResponse
+	nil,                                    // 86: tank.platform.v1.EvalResult.ServedByEntry
+	(*timestamppb.Timestamp)(nil),          // 87: google.protobuf.Timestamp
 }
 var file_tank_platform_v1_platform_proto_depIdxs = []int32{
-	73, // 0: tank.platform.v1.AgentureRow.next_due_at:type_name -> google.protobuf.Timestamp
-	73, // 1: tank.platform.v1.AgentureRow.last_run_at:type_name -> google.protobuf.Timestamp
-	0,  // 2: tank.platform.v1.ListAgenturesResponse.agentures:type_name -> tank.platform.v1.AgentureRow
-	3,  // 3: tank.platform.v1.ListAgenturesResponse.summary:type_name -> tank.platform.v1.BoardSummary
-	0,  // 4: tank.platform.v1.SetAllocationResponse.agenture:type_name -> tank.platform.v1.AgentureRow
-	3,  // 5: tank.platform.v1.SetBoardSettingsResponse.summary:type_name -> tank.platform.v1.BoardSummary
-	73, // 6: tank.platform.v1.MergeProposal.proposed_at:type_name -> google.protobuf.Timestamp
-	73, // 7: tank.platform.v1.MergeProposal.done_at:type_name -> google.protobuf.Timestamp
-	10, // 8: tank.platform.v1.ListMergesResponse.merges:type_name -> tank.platform.v1.MergeProposal
-	10, // 9: tank.platform.v1.DecideMergeResponse.merge:type_name -> tank.platform.v1.MergeProposal
-	15, // 10: tank.platform.v1.ListDropCandidatesResponse.candidates:type_name -> tank.platform.v1.DropCandidate
-	73, // 11: tank.platform.v1.UserRow.created_at:type_name -> google.protobuf.Timestamp
-	73, // 12: tank.platform.v1.UserRow.last_login_at:type_name -> google.protobuf.Timestamp
-	73, // 13: tank.platform.v1.UserRow.last_active_at:type_name -> google.protobuf.Timestamp
-	73, // 14: tank.platform.v1.UserRow.suspended_at:type_name -> google.protobuf.Timestamp
-	18, // 15: tank.platform.v1.SearchUsersResponse.users:type_name -> tank.platform.v1.UserRow
-	73, // 16: tank.platform.v1.Membership.joined_at:type_name -> google.protobuf.Timestamp
-	73, // 17: tank.platform.v1.Membership.last_active_at:type_name -> google.protobuf.Timestamp
-	73, // 18: tank.platform.v1.LoginRow.at:type_name -> google.protobuf.Timestamp
-	18, // 19: tank.platform.v1.GetUserResponse.user:type_name -> tank.platform.v1.UserRow
-	21, // 20: tank.platform.v1.GetUserResponse.memberships:type_name -> tank.platform.v1.Membership
-	22, // 21: tank.platform.v1.GetUserResponse.logins:type_name -> tank.platform.v1.LoginRow
-	73, // 22: tank.platform.v1.WorkspaceRow.created_at:type_name -> google.protobuf.Timestamp
-	73, // 23: tank.platform.v1.WorkspaceRow.last_active_at:type_name -> google.protobuf.Timestamp
-	73, // 24: tank.platform.v1.WorkspaceRow.suspended_at:type_name -> google.protobuf.Timestamp
-	25, // 25: tank.platform.v1.SearchWorkspacesResponse.workspaces:type_name -> tank.platform.v1.WorkspaceRow
-	73, // 26: tank.platform.v1.MemberRow.joined_at:type_name -> google.protobuf.Timestamp
-	73, // 27: tank.platform.v1.MemberRow.last_login_at:type_name -> google.protobuf.Timestamp
-	73, // 28: tank.platform.v1.MemberRow.last_active_at:type_name -> google.protobuf.Timestamp
-	73, // 29: tank.platform.v1.Feature.since:type_name -> google.protobuf.Timestamp
-	73, // 30: tank.platform.v1.AgentRunRow.started_at:type_name -> google.protobuf.Timestamp
-	73, // 31: tank.platform.v1.AgentRunRow.ended_at:type_name -> google.protobuf.Timestamp
-	32, // 32: tank.platform.v1.AgentUsage.recent:type_name -> tank.platform.v1.AgentRunRow
-	34, // 33: tank.platform.v1.AgentUsage.rate_history:type_name -> tank.platform.v1.RateMonth
-	25, // 34: tank.platform.v1.GetWorkspaceResponse.workspace:type_name -> tank.platform.v1.WorkspaceRow
-	28, // 35: tank.platform.v1.GetWorkspaceResponse.members:type_name -> tank.platform.v1.MemberRow
-	29, // 36: tank.platform.v1.GetWorkspaceResponse.features:type_name -> tank.platform.v1.Feature
-	30, // 37: tank.platform.v1.GetWorkspaceResponse.subscriptions:type_name -> tank.platform.v1.Subscription
-	33, // 38: tank.platform.v1.GetWorkspaceResponse.agent_usage:type_name -> tank.platform.v1.AgentUsage
-	31, // 39: tank.platform.v1.GetWorkspaceResponse.days:type_name -> tank.platform.v1.DailyCount
-	35, // 40: tank.platform.v1.GetWorkspaceResponse.counts:type_name -> tank.platform.v1.WorkspaceCounts
-	38, // 41: tank.platform.v1.GetWorkspaceResponse.claude5:type_name -> tank.platform.v1.Claude5Spend
-	31, // 42: tank.platform.v1.GetOverviewResponse.days:type_name -> tank.platform.v1.DailyCount
-	25, // 43: tank.platform.v1.GetOverviewResponse.most_active:type_name -> tank.platform.v1.WorkspaceRow
-	73, // 44: tank.platform.v1.SuperAdminRow.added_at:type_name -> google.protobuf.Timestamp
-	41, // 45: tank.platform.v1.ListSuperAdminsResponse.admins:type_name -> tank.platform.v1.SuperAdminRow
-	41, // 46: tank.platform.v1.AddSuperAdminResponse.admins:type_name -> tank.platform.v1.SuperAdminRow
-	41, // 47: tank.platform.v1.RemoveSuperAdminResponse.admins:type_name -> tank.platform.v1.SuperAdminRow
-	73, // 48: tank.platform.v1.NeuronRow.trained_at:type_name -> google.protobuf.Timestamp
-	73, // 49: tank.platform.v1.NeuronRow.approved_at:type_name -> google.protobuf.Timestamp
-	73, // 50: tank.platform.v1.NeuronRow.last_answered_at:type_name -> google.protobuf.Timestamp
-	73, // 51: tank.platform.v1.FeedRow.last_fetched_at:type_name -> google.protobuf.Timestamp
-	73, // 52: tank.platform.v1.WebIndex.oldest_due:type_name -> google.protobuf.Timestamp
-	53, // 53: tank.platform.v1.WebIndex.sources:type_name -> tank.platform.v1.SourceCount
-	51, // 54: tank.platform.v1.WebIndex.feed_rows:type_name -> tank.platform.v1.FeedRow
-	52, // 55: tank.platform.v1.WebIndex.host_rows:type_name -> tank.platform.v1.HostRow
-	48, // 56: tank.platform.v1.GetNeuralResponse.neurons:type_name -> tank.platform.v1.NeuronRow
-	49, // 57: tank.platform.v1.GetNeuralResponse.neuron_workspaces:type_name -> tank.platform.v1.NeuronWorkspace
-	50, // 58: tank.platform.v1.GetNeuralResponse.fields:type_name -> tank.platform.v1.FieldRow
-	54, // 59: tank.platform.v1.GetNeuralResponse.web:type_name -> tank.platform.v1.WebIndex
-	56, // 60: tank.platform.v1.GetNeuralResponse.usage:type_name -> tank.platform.v1.NeuralUsage
-	55, // 61: tank.platform.v1.GetNeuralResponse.days:type_name -> tank.platform.v1.NeuralDay
-	38, // 62: tank.platform.v1.SetWorkspaceClaude5CapResponse.claude5:type_name -> tank.platform.v1.Claude5Spend
-	25, // 63: tank.platform.v1.CreateWorkspaceResponse.workspace:type_name -> tank.platform.v1.WorkspaceRow
-	1,  // 64: tank.platform.v1.PlatformService.ListAgentures:input_type -> tank.platform.v1.ListAgenturesRequest
-	4,  // 65: tank.platform.v1.PlatformService.SetAllocation:input_type -> tank.platform.v1.SetAllocationRequest
-	6,  // 66: tank.platform.v1.PlatformService.SetBoardSettings:input_type -> tank.platform.v1.SetBoardSettingsRequest
-	8,  // 67: tank.platform.v1.PlatformService.StopRun:input_type -> tank.platform.v1.StopRunRequest
-	11, // 68: tank.platform.v1.PlatformService.ListMerges:input_type -> tank.platform.v1.ListMergesRequest
-	13, // 69: tank.platform.v1.PlatformService.DecideMerge:input_type -> tank.platform.v1.DecideMergeRequest
-	16, // 70: tank.platform.v1.PlatformService.ListDropCandidates:input_type -> tank.platform.v1.ListDropCandidatesRequest
-	39, // 71: tank.platform.v1.PlatformService.GetOverview:input_type -> tank.platform.v1.GetOverviewRequest
-	19, // 72: tank.platform.v1.PlatformService.SearchUsers:input_type -> tank.platform.v1.SearchUsersRequest
-	23, // 73: tank.platform.v1.PlatformService.GetUser:input_type -> tank.platform.v1.GetUserRequest
-	26, // 74: tank.platform.v1.PlatformService.SearchWorkspaces:input_type -> tank.platform.v1.SearchWorkspacesRequest
-	36, // 75: tank.platform.v1.PlatformService.GetWorkspace:input_type -> tank.platform.v1.GetWorkspaceRequest
-	42, // 76: tank.platform.v1.PlatformService.ListSuperAdmins:input_type -> tank.platform.v1.ListSuperAdminsRequest
-	44, // 77: tank.platform.v1.PlatformService.AddSuperAdmin:input_type -> tank.platform.v1.AddSuperAdminRequest
-	46, // 78: tank.platform.v1.PlatformService.RemoveSuperAdmin:input_type -> tank.platform.v1.RemoveSuperAdminRequest
-	57, // 79: tank.platform.v1.PlatformService.GetNeural:input_type -> tank.platform.v1.GetNeuralRequest
-	59, // 80: tank.platform.v1.PlatformService.SetWorkspacePlan:input_type -> tank.platform.v1.SetWorkspacePlanRequest
-	61, // 81: tank.platform.v1.PlatformService.SetWorkspaceAddon:input_type -> tank.platform.v1.SetWorkspaceAddonRequest
-	63, // 82: tank.platform.v1.PlatformService.SuspendWorkspace:input_type -> tank.platform.v1.SuspendWorkspaceRequest
-	65, // 83: tank.platform.v1.PlatformService.SuspendUser:input_type -> tank.platform.v1.SuspendUserRequest
-	67, // 84: tank.platform.v1.PlatformService.SetWorkspaceNoCharge:input_type -> tank.platform.v1.SetWorkspaceNoChargeRequest
-	71, // 85: tank.platform.v1.PlatformService.CreateWorkspace:input_type -> tank.platform.v1.CreateWorkspaceRequest
-	69, // 86: tank.platform.v1.PlatformService.SetWorkspaceClaude5Cap:input_type -> tank.platform.v1.SetWorkspaceClaude5CapRequest
-	2,  // 87: tank.platform.v1.PlatformService.ListAgentures:output_type -> tank.platform.v1.ListAgenturesResponse
-	5,  // 88: tank.platform.v1.PlatformService.SetAllocation:output_type -> tank.platform.v1.SetAllocationResponse
-	7,  // 89: tank.platform.v1.PlatformService.SetBoardSettings:output_type -> tank.platform.v1.SetBoardSettingsResponse
-	9,  // 90: tank.platform.v1.PlatformService.StopRun:output_type -> tank.platform.v1.StopRunResponse
-	12, // 91: tank.platform.v1.PlatformService.ListMerges:output_type -> tank.platform.v1.ListMergesResponse
-	14, // 92: tank.platform.v1.PlatformService.DecideMerge:output_type -> tank.platform.v1.DecideMergeResponse
-	17, // 93: tank.platform.v1.PlatformService.ListDropCandidates:output_type -> tank.platform.v1.ListDropCandidatesResponse
-	40, // 94: tank.platform.v1.PlatformService.GetOverview:output_type -> tank.platform.v1.GetOverviewResponse
-	20, // 95: tank.platform.v1.PlatformService.SearchUsers:output_type -> tank.platform.v1.SearchUsersResponse
-	24, // 96: tank.platform.v1.PlatformService.GetUser:output_type -> tank.platform.v1.GetUserResponse
-	27, // 97: tank.platform.v1.PlatformService.SearchWorkspaces:output_type -> tank.platform.v1.SearchWorkspacesResponse
-	37, // 98: tank.platform.v1.PlatformService.GetWorkspace:output_type -> tank.platform.v1.GetWorkspaceResponse
-	43, // 99: tank.platform.v1.PlatformService.ListSuperAdmins:output_type -> tank.platform.v1.ListSuperAdminsResponse
-	45, // 100: tank.platform.v1.PlatformService.AddSuperAdmin:output_type -> tank.platform.v1.AddSuperAdminResponse
-	47, // 101: tank.platform.v1.PlatformService.RemoveSuperAdmin:output_type -> tank.platform.v1.RemoveSuperAdminResponse
-	58, // 102: tank.platform.v1.PlatformService.GetNeural:output_type -> tank.platform.v1.GetNeuralResponse
-	60, // 103: tank.platform.v1.PlatformService.SetWorkspacePlan:output_type -> tank.platform.v1.SetWorkspacePlanResponse
-	62, // 104: tank.platform.v1.PlatformService.SetWorkspaceAddon:output_type -> tank.platform.v1.SetWorkspaceAddonResponse
-	64, // 105: tank.platform.v1.PlatformService.SuspendWorkspace:output_type -> tank.platform.v1.SuspendWorkspaceResponse
-	66, // 106: tank.platform.v1.PlatformService.SuspendUser:output_type -> tank.platform.v1.SuspendUserResponse
-	68, // 107: tank.platform.v1.PlatformService.SetWorkspaceNoCharge:output_type -> tank.platform.v1.SetWorkspaceNoChargeResponse
-	72, // 108: tank.platform.v1.PlatformService.CreateWorkspace:output_type -> tank.platform.v1.CreateWorkspaceResponse
-	70, // 109: tank.platform.v1.PlatformService.SetWorkspaceClaude5Cap:output_type -> tank.platform.v1.SetWorkspaceClaude5CapResponse
-	87, // [87:110] is the sub-list for method output_type
-	64, // [64:87] is the sub-list for method input_type
-	64, // [64:64] is the sub-list for extension type_name
-	64, // [64:64] is the sub-list for extension extendee
-	0,  // [0:64] is the sub-list for field type_name
+	87,  // 0: tank.platform.v1.AgentureRow.next_due_at:type_name -> google.protobuf.Timestamp
+	87,  // 1: tank.platform.v1.AgentureRow.last_run_at:type_name -> google.protobuf.Timestamp
+	0,   // 2: tank.platform.v1.ListAgenturesResponse.agentures:type_name -> tank.platform.v1.AgentureRow
+	3,   // 3: tank.platform.v1.ListAgenturesResponse.summary:type_name -> tank.platform.v1.BoardSummary
+	0,   // 4: tank.platform.v1.SetAllocationResponse.agenture:type_name -> tank.platform.v1.AgentureRow
+	3,   // 5: tank.platform.v1.SetBoardSettingsResponse.summary:type_name -> tank.platform.v1.BoardSummary
+	87,  // 6: tank.platform.v1.MergeProposal.proposed_at:type_name -> google.protobuf.Timestamp
+	87,  // 7: tank.platform.v1.MergeProposal.done_at:type_name -> google.protobuf.Timestamp
+	10,  // 8: tank.platform.v1.ListMergesResponse.merges:type_name -> tank.platform.v1.MergeProposal
+	10,  // 9: tank.platform.v1.DecideMergeResponse.merge:type_name -> tank.platform.v1.MergeProposal
+	15,  // 10: tank.platform.v1.ListDropCandidatesResponse.candidates:type_name -> tank.platform.v1.DropCandidate
+	87,  // 11: tank.platform.v1.UserRow.created_at:type_name -> google.protobuf.Timestamp
+	87,  // 12: tank.platform.v1.UserRow.last_login_at:type_name -> google.protobuf.Timestamp
+	87,  // 13: tank.platform.v1.UserRow.last_active_at:type_name -> google.protobuf.Timestamp
+	87,  // 14: tank.platform.v1.UserRow.suspended_at:type_name -> google.protobuf.Timestamp
+	18,  // 15: tank.platform.v1.SearchUsersResponse.users:type_name -> tank.platform.v1.UserRow
+	87,  // 16: tank.platform.v1.Membership.joined_at:type_name -> google.protobuf.Timestamp
+	87,  // 17: tank.platform.v1.Membership.last_active_at:type_name -> google.protobuf.Timestamp
+	87,  // 18: tank.platform.v1.LoginRow.at:type_name -> google.protobuf.Timestamp
+	18,  // 19: tank.platform.v1.GetUserResponse.user:type_name -> tank.platform.v1.UserRow
+	21,  // 20: tank.platform.v1.GetUserResponse.memberships:type_name -> tank.platform.v1.Membership
+	22,  // 21: tank.platform.v1.GetUserResponse.logins:type_name -> tank.platform.v1.LoginRow
+	87,  // 22: tank.platform.v1.WorkspaceRow.created_at:type_name -> google.protobuf.Timestamp
+	87,  // 23: tank.platform.v1.WorkspaceRow.last_active_at:type_name -> google.protobuf.Timestamp
+	87,  // 24: tank.platform.v1.WorkspaceRow.suspended_at:type_name -> google.protobuf.Timestamp
+	25,  // 25: tank.platform.v1.SearchWorkspacesResponse.workspaces:type_name -> tank.platform.v1.WorkspaceRow
+	87,  // 26: tank.platform.v1.MemberRow.joined_at:type_name -> google.protobuf.Timestamp
+	87,  // 27: tank.platform.v1.MemberRow.last_login_at:type_name -> google.protobuf.Timestamp
+	87,  // 28: tank.platform.v1.MemberRow.last_active_at:type_name -> google.protobuf.Timestamp
+	87,  // 29: tank.platform.v1.Feature.since:type_name -> google.protobuf.Timestamp
+	87,  // 30: tank.platform.v1.AgentRunRow.started_at:type_name -> google.protobuf.Timestamp
+	87,  // 31: tank.platform.v1.AgentRunRow.ended_at:type_name -> google.protobuf.Timestamp
+	32,  // 32: tank.platform.v1.AgentUsage.recent:type_name -> tank.platform.v1.AgentRunRow
+	34,  // 33: tank.platform.v1.AgentUsage.rate_history:type_name -> tank.platform.v1.RateMonth
+	25,  // 34: tank.platform.v1.GetWorkspaceResponse.workspace:type_name -> tank.platform.v1.WorkspaceRow
+	28,  // 35: tank.platform.v1.GetWorkspaceResponse.members:type_name -> tank.platform.v1.MemberRow
+	29,  // 36: tank.platform.v1.GetWorkspaceResponse.features:type_name -> tank.platform.v1.Feature
+	30,  // 37: tank.platform.v1.GetWorkspaceResponse.subscriptions:type_name -> tank.platform.v1.Subscription
+	33,  // 38: tank.platform.v1.GetWorkspaceResponse.agent_usage:type_name -> tank.platform.v1.AgentUsage
+	31,  // 39: tank.platform.v1.GetWorkspaceResponse.days:type_name -> tank.platform.v1.DailyCount
+	35,  // 40: tank.platform.v1.GetWorkspaceResponse.counts:type_name -> tank.platform.v1.WorkspaceCounts
+	38,  // 41: tank.platform.v1.GetWorkspaceResponse.claude5:type_name -> tank.platform.v1.Claude5Spend
+	31,  // 42: tank.platform.v1.GetOverviewResponse.days:type_name -> tank.platform.v1.DailyCount
+	25,  // 43: tank.platform.v1.GetOverviewResponse.most_active:type_name -> tank.platform.v1.WorkspaceRow
+	87,  // 44: tank.platform.v1.SuperAdminRow.added_at:type_name -> google.protobuf.Timestamp
+	41,  // 45: tank.platform.v1.ListSuperAdminsResponse.admins:type_name -> tank.platform.v1.SuperAdminRow
+	41,  // 46: tank.platform.v1.AddSuperAdminResponse.admins:type_name -> tank.platform.v1.SuperAdminRow
+	41,  // 47: tank.platform.v1.RemoveSuperAdminResponse.admins:type_name -> tank.platform.v1.SuperAdminRow
+	87,  // 48: tank.platform.v1.NeuronRow.trained_at:type_name -> google.protobuf.Timestamp
+	87,  // 49: tank.platform.v1.NeuronRow.approved_at:type_name -> google.protobuf.Timestamp
+	87,  // 50: tank.platform.v1.NeuronRow.last_answered_at:type_name -> google.protobuf.Timestamp
+	87,  // 51: tank.platform.v1.FeedRow.last_fetched_at:type_name -> google.protobuf.Timestamp
+	87,  // 52: tank.platform.v1.WebIndex.oldest_due:type_name -> google.protobuf.Timestamp
+	53,  // 53: tank.platform.v1.WebIndex.sources:type_name -> tank.platform.v1.SourceCount
+	51,  // 54: tank.platform.v1.WebIndex.feed_rows:type_name -> tank.platform.v1.FeedRow
+	52,  // 55: tank.platform.v1.WebIndex.host_rows:type_name -> tank.platform.v1.HostRow
+	48,  // 56: tank.platform.v1.GetNeuralResponse.neurons:type_name -> tank.platform.v1.NeuronRow
+	49,  // 57: tank.platform.v1.GetNeuralResponse.neuron_workspaces:type_name -> tank.platform.v1.NeuronWorkspace
+	50,  // 58: tank.platform.v1.GetNeuralResponse.fields:type_name -> tank.platform.v1.FieldRow
+	54,  // 59: tank.platform.v1.GetNeuralResponse.web:type_name -> tank.platform.v1.WebIndex
+	56,  // 60: tank.platform.v1.GetNeuralResponse.usage:type_name -> tank.platform.v1.NeuralUsage
+	55,  // 61: tank.platform.v1.GetNeuralResponse.days:type_name -> tank.platform.v1.NeuralDay
+	62,  // 62: tank.platform.v1.GetNeuralResponse.eval_series:type_name -> tank.platform.v1.EvalSeries
+	63,  // 63: tank.platform.v1.GetNeuralResponse.eval_versions:type_name -> tank.platform.v1.EvalVersionMark
+	87,  // 64: tank.platform.v1.EvalRun.created_at:type_name -> google.protobuf.Timestamp
+	87,  // 65: tank.platform.v1.EvalRun.started_at:type_name -> google.protobuf.Timestamp
+	87,  // 66: tank.platform.v1.EvalRun.finished_at:type_name -> google.protobuf.Timestamp
+	86,  // 67: tank.platform.v1.EvalResult.served_by:type_name -> tank.platform.v1.EvalResult.ServedByEntry
+	87,  // 68: tank.platform.v1.EvalPoint.at:type_name -> google.protobuf.Timestamp
+	61,  // 69: tank.platform.v1.EvalSeries.points:type_name -> tank.platform.v1.EvalPoint
+	87,  // 70: tank.platform.v1.EvalVersionMark.at:type_name -> google.protobuf.Timestamp
+	59,  // 71: tank.platform.v1.ListEvalRunsResponse.runs:type_name -> tank.platform.v1.EvalRun
+	59,  // 72: tank.platform.v1.GetEvalRunResponse.run:type_name -> tank.platform.v1.EvalRun
+	60,  // 73: tank.platform.v1.GetEvalRunResponse.results:type_name -> tank.platform.v1.EvalResult
+	62,  // 74: tank.platform.v1.GetEvalSeriesResponse.series:type_name -> tank.platform.v1.EvalSeries
+	63,  // 75: tank.platform.v1.GetEvalSeriesResponse.versions:type_name -> tank.platform.v1.EvalVersionMark
+	59,  // 76: tank.platform.v1.StartEvalRunResponse.run:type_name -> tank.platform.v1.EvalRun
+	38,  // 77: tank.platform.v1.SetWorkspaceClaude5CapResponse.claude5:type_name -> tank.platform.v1.Claude5Spend
+	25,  // 78: tank.platform.v1.CreateWorkspaceResponse.workspace:type_name -> tank.platform.v1.WorkspaceRow
+	1,   // 79: tank.platform.v1.PlatformService.ListAgentures:input_type -> tank.platform.v1.ListAgenturesRequest
+	4,   // 80: tank.platform.v1.PlatformService.SetAllocation:input_type -> tank.platform.v1.SetAllocationRequest
+	6,   // 81: tank.platform.v1.PlatformService.SetBoardSettings:input_type -> tank.platform.v1.SetBoardSettingsRequest
+	8,   // 82: tank.platform.v1.PlatformService.StopRun:input_type -> tank.platform.v1.StopRunRequest
+	11,  // 83: tank.platform.v1.PlatformService.ListMerges:input_type -> tank.platform.v1.ListMergesRequest
+	13,  // 84: tank.platform.v1.PlatformService.DecideMerge:input_type -> tank.platform.v1.DecideMergeRequest
+	16,  // 85: tank.platform.v1.PlatformService.ListDropCandidates:input_type -> tank.platform.v1.ListDropCandidatesRequest
+	39,  // 86: tank.platform.v1.PlatformService.GetOverview:input_type -> tank.platform.v1.GetOverviewRequest
+	19,  // 87: tank.platform.v1.PlatformService.SearchUsers:input_type -> tank.platform.v1.SearchUsersRequest
+	23,  // 88: tank.platform.v1.PlatformService.GetUser:input_type -> tank.platform.v1.GetUserRequest
+	26,  // 89: tank.platform.v1.PlatformService.SearchWorkspaces:input_type -> tank.platform.v1.SearchWorkspacesRequest
+	36,  // 90: tank.platform.v1.PlatformService.GetWorkspace:input_type -> tank.platform.v1.GetWorkspaceRequest
+	42,  // 91: tank.platform.v1.PlatformService.ListSuperAdmins:input_type -> tank.platform.v1.ListSuperAdminsRequest
+	44,  // 92: tank.platform.v1.PlatformService.AddSuperAdmin:input_type -> tank.platform.v1.AddSuperAdminRequest
+	46,  // 93: tank.platform.v1.PlatformService.RemoveSuperAdmin:input_type -> tank.platform.v1.RemoveSuperAdminRequest
+	57,  // 94: tank.platform.v1.PlatformService.GetNeural:input_type -> tank.platform.v1.GetNeuralRequest
+	72,  // 95: tank.platform.v1.PlatformService.SetWorkspacePlan:input_type -> tank.platform.v1.SetWorkspacePlanRequest
+	74,  // 96: tank.platform.v1.PlatformService.SetWorkspaceAddon:input_type -> tank.platform.v1.SetWorkspaceAddonRequest
+	76,  // 97: tank.platform.v1.PlatformService.SuspendWorkspace:input_type -> tank.platform.v1.SuspendWorkspaceRequest
+	78,  // 98: tank.platform.v1.PlatformService.SuspendUser:input_type -> tank.platform.v1.SuspendUserRequest
+	80,  // 99: tank.platform.v1.PlatformService.SetWorkspaceNoCharge:input_type -> tank.platform.v1.SetWorkspaceNoChargeRequest
+	84,  // 100: tank.platform.v1.PlatformService.CreateWorkspace:input_type -> tank.platform.v1.CreateWorkspaceRequest
+	82,  // 101: tank.platform.v1.PlatformService.SetWorkspaceClaude5Cap:input_type -> tank.platform.v1.SetWorkspaceClaude5CapRequest
+	64,  // 102: tank.platform.v1.PlatformService.ListEvalRuns:input_type -> tank.platform.v1.ListEvalRunsRequest
+	66,  // 103: tank.platform.v1.PlatformService.GetEvalRun:input_type -> tank.platform.v1.GetEvalRunRequest
+	68,  // 104: tank.platform.v1.PlatformService.GetEvalSeries:input_type -> tank.platform.v1.GetEvalSeriesRequest
+	70,  // 105: tank.platform.v1.PlatformService.StartEvalRun:input_type -> tank.platform.v1.StartEvalRunRequest
+	2,   // 106: tank.platform.v1.PlatformService.ListAgentures:output_type -> tank.platform.v1.ListAgenturesResponse
+	5,   // 107: tank.platform.v1.PlatformService.SetAllocation:output_type -> tank.platform.v1.SetAllocationResponse
+	7,   // 108: tank.platform.v1.PlatformService.SetBoardSettings:output_type -> tank.platform.v1.SetBoardSettingsResponse
+	9,   // 109: tank.platform.v1.PlatformService.StopRun:output_type -> tank.platform.v1.StopRunResponse
+	12,  // 110: tank.platform.v1.PlatformService.ListMerges:output_type -> tank.platform.v1.ListMergesResponse
+	14,  // 111: tank.platform.v1.PlatformService.DecideMerge:output_type -> tank.platform.v1.DecideMergeResponse
+	17,  // 112: tank.platform.v1.PlatformService.ListDropCandidates:output_type -> tank.platform.v1.ListDropCandidatesResponse
+	40,  // 113: tank.platform.v1.PlatformService.GetOverview:output_type -> tank.platform.v1.GetOverviewResponse
+	20,  // 114: tank.platform.v1.PlatformService.SearchUsers:output_type -> tank.platform.v1.SearchUsersResponse
+	24,  // 115: tank.platform.v1.PlatformService.GetUser:output_type -> tank.platform.v1.GetUserResponse
+	27,  // 116: tank.platform.v1.PlatformService.SearchWorkspaces:output_type -> tank.platform.v1.SearchWorkspacesResponse
+	37,  // 117: tank.platform.v1.PlatformService.GetWorkspace:output_type -> tank.platform.v1.GetWorkspaceResponse
+	43,  // 118: tank.platform.v1.PlatformService.ListSuperAdmins:output_type -> tank.platform.v1.ListSuperAdminsResponse
+	45,  // 119: tank.platform.v1.PlatformService.AddSuperAdmin:output_type -> tank.platform.v1.AddSuperAdminResponse
+	47,  // 120: tank.platform.v1.PlatformService.RemoveSuperAdmin:output_type -> tank.platform.v1.RemoveSuperAdminResponse
+	58,  // 121: tank.platform.v1.PlatformService.GetNeural:output_type -> tank.platform.v1.GetNeuralResponse
+	73,  // 122: tank.platform.v1.PlatformService.SetWorkspacePlan:output_type -> tank.platform.v1.SetWorkspacePlanResponse
+	75,  // 123: tank.platform.v1.PlatformService.SetWorkspaceAddon:output_type -> tank.platform.v1.SetWorkspaceAddonResponse
+	77,  // 124: tank.platform.v1.PlatformService.SuspendWorkspace:output_type -> tank.platform.v1.SuspendWorkspaceResponse
+	79,  // 125: tank.platform.v1.PlatformService.SuspendUser:output_type -> tank.platform.v1.SuspendUserResponse
+	81,  // 126: tank.platform.v1.PlatformService.SetWorkspaceNoCharge:output_type -> tank.platform.v1.SetWorkspaceNoChargeResponse
+	85,  // 127: tank.platform.v1.PlatformService.CreateWorkspace:output_type -> tank.platform.v1.CreateWorkspaceResponse
+	83,  // 128: tank.platform.v1.PlatformService.SetWorkspaceClaude5Cap:output_type -> tank.platform.v1.SetWorkspaceClaude5CapResponse
+	65,  // 129: tank.platform.v1.PlatformService.ListEvalRuns:output_type -> tank.platform.v1.ListEvalRunsResponse
+	67,  // 130: tank.platform.v1.PlatformService.GetEvalRun:output_type -> tank.platform.v1.GetEvalRunResponse
+	69,  // 131: tank.platform.v1.PlatformService.GetEvalSeries:output_type -> tank.platform.v1.GetEvalSeriesResponse
+	71,  // 132: tank.platform.v1.PlatformService.StartEvalRun:output_type -> tank.platform.v1.StartEvalRunResponse
+	106, // [106:133] is the sub-list for method output_type
+	79,  // [79:106] is the sub-list for method input_type
+	79,  // [79:79] is the sub-list for extension type_name
+	79,  // [79:79] is the sub-list for extension extendee
+	0,   // [0:79] is the sub-list for field type_name
 }
 
 func init() { file_tank_platform_v1_platform_proto_init() }
@@ -6689,13 +7816,15 @@ func file_tank_platform_v1_platform_proto_init() {
 	if File_tank_platform_v1_platform_proto != nil {
 		return
 	}
+	file_tank_platform_v1_platform_proto_msgTypes[60].OneofWrappers = []any{}
+	file_tank_platform_v1_platform_proto_msgTypes[61].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tank_platform_v1_platform_proto_rawDesc), len(file_tank_platform_v1_platform_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   73,
+			NumMessages:   87,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
