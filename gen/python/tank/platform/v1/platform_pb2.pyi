@@ -333,7 +333,7 @@ class GetUserResponse(_message.Message):
     def __init__(self, user: _Optional[_Union[UserRow, _Mapping]] = ..., memberships: _Optional[_Iterable[_Union[Membership, _Mapping]]] = ..., logins: _Optional[_Iterable[_Union[LoginRow, _Mapping]]] = ...) -> None: ...
 
 class WorkspaceRow(_message.Message):
-    __slots__ = ("id", "slug", "name", "kind", "plan", "addons", "people", "created_at", "last_active_at", "owner_email", "agent_runs_30d", "agent_cost_usd_30d", "agent_billed_cents_month", "suspended_at", "suspended_reason", "no_charge")
+    __slots__ = ("id", "slug", "name", "kind", "plan", "addons", "people", "created_at", "last_active_at", "owner_email", "agent_runs_30d", "agent_cost_usd_30d", "agent_billed_cents_month", "suspended_at", "suspended_reason", "no_charge", "markup", "markup_effective_from", "effective_markup")
     ID_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -350,6 +350,9 @@ class WorkspaceRow(_message.Message):
     SUSPENDED_AT_FIELD_NUMBER: _ClassVar[int]
     SUSPENDED_REASON_FIELD_NUMBER: _ClassVar[int]
     NO_CHARGE_FIELD_NUMBER: _ClassVar[int]
+    MARKUP_FIELD_NUMBER: _ClassVar[int]
+    MARKUP_EFFECTIVE_FROM_FIELD_NUMBER: _ClassVar[int]
+    EFFECTIVE_MARKUP_FIELD_NUMBER: _ClassVar[int]
     id: str
     slug: str
     name: str
@@ -366,7 +369,22 @@ class WorkspaceRow(_message.Message):
     suspended_at: _timestamp_pb2.Timestamp
     suspended_reason: str
     no_charge: bool
-    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., kind: _Optional[str] = ..., plan: _Optional[str] = ..., addons: _Optional[_Iterable[str]] = ..., people: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_active_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., owner_email: _Optional[str] = ..., agent_runs_30d: _Optional[int] = ..., agent_cost_usd_30d: _Optional[float] = ..., agent_billed_cents_month: _Optional[int] = ..., suspended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., suspended_reason: _Optional[str] = ..., no_charge: bool = ...) -> None: ...
+    markup: float
+    markup_effective_from: _timestamp_pb2.Timestamp
+    effective_markup: float
+    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., kind: _Optional[str] = ..., plan: _Optional[str] = ..., addons: _Optional[_Iterable[str]] = ..., people: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_active_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., owner_email: _Optional[str] = ..., agent_runs_30d: _Optional[int] = ..., agent_cost_usd_30d: _Optional[float] = ..., agent_billed_cents_month: _Optional[int] = ..., suspended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., suspended_reason: _Optional[str] = ..., no_charge: bool = ..., markup: _Optional[float] = ..., markup_effective_from: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., effective_markup: _Optional[float] = ...) -> None: ...
+
+class MarkupChange(_message.Message):
+    __slots__ = ("markup", "effective_from", "reason", "set_by_email")
+    MARKUP_FIELD_NUMBER: _ClassVar[int]
+    EFFECTIVE_FROM_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    SET_BY_EMAIL_FIELD_NUMBER: _ClassVar[int]
+    markup: float
+    effective_from: _timestamp_pb2.Timestamp
+    reason: str
+    set_by_email: str
+    def __init__(self, markup: _Optional[float] = ..., effective_from: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., reason: _Optional[str] = ..., set_by_email: _Optional[str] = ...) -> None: ...
 
 class SearchWorkspacesRequest(_message.Message):
     __slots__ = ("query", "limit", "offset", "sort", "kind", "plan")
@@ -553,7 +571,7 @@ class GetWorkspaceRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ...) -> None: ...
 
 class GetWorkspaceResponse(_message.Message):
-    __slots__ = ("workspace", "members", "features", "subscriptions", "agent_usage", "days", "counts", "claude5")
+    __slots__ = ("workspace", "members", "features", "subscriptions", "agent_usage", "days", "counts", "claude5", "markup_history")
     WORKSPACE_FIELD_NUMBER: _ClassVar[int]
     MEMBERS_FIELD_NUMBER: _ClassVar[int]
     FEATURES_FIELD_NUMBER: _ClassVar[int]
@@ -562,6 +580,7 @@ class GetWorkspaceResponse(_message.Message):
     DAYS_FIELD_NUMBER: _ClassVar[int]
     COUNTS_FIELD_NUMBER: _ClassVar[int]
     CLAUDE5_FIELD_NUMBER: _ClassVar[int]
+    MARKUP_HISTORY_FIELD_NUMBER: _ClassVar[int]
     workspace: WorkspaceRow
     members: _containers.RepeatedCompositeFieldContainer[MemberRow]
     features: _containers.RepeatedCompositeFieldContainer[Feature]
@@ -570,7 +589,8 @@ class GetWorkspaceResponse(_message.Message):
     days: _containers.RepeatedCompositeFieldContainer[DailyCount]
     counts: WorkspaceCounts
     claude5: Claude5Spend
-    def __init__(self, workspace: _Optional[_Union[WorkspaceRow, _Mapping]] = ..., members: _Optional[_Iterable[_Union[MemberRow, _Mapping]]] = ..., features: _Optional[_Iterable[_Union[Feature, _Mapping]]] = ..., subscriptions: _Optional[_Iterable[_Union[Subscription, _Mapping]]] = ..., agent_usage: _Optional[_Union[AgentUsage, _Mapping]] = ..., days: _Optional[_Iterable[_Union[DailyCount, _Mapping]]] = ..., counts: _Optional[_Union[WorkspaceCounts, _Mapping]] = ..., claude5: _Optional[_Union[Claude5Spend, _Mapping]] = ...) -> None: ...
+    markup_history: _containers.RepeatedCompositeFieldContainer[MarkupChange]
+    def __init__(self, workspace: _Optional[_Union[WorkspaceRow, _Mapping]] = ..., members: _Optional[_Iterable[_Union[MemberRow, _Mapping]]] = ..., features: _Optional[_Iterable[_Union[Feature, _Mapping]]] = ..., subscriptions: _Optional[_Iterable[_Union[Subscription, _Mapping]]] = ..., agent_usage: _Optional[_Union[AgentUsage, _Mapping]] = ..., days: _Optional[_Iterable[_Union[DailyCount, _Mapping]]] = ..., counts: _Optional[_Union[WorkspaceCounts, _Mapping]] = ..., claude5: _Optional[_Union[Claude5Spend, _Mapping]] = ..., markup_history: _Optional[_Iterable[_Union[MarkupChange, _Mapping]]] = ...) -> None: ...
 
 class Claude5Spend(_message.Message):
     __slots__ = ("capped", "cap_cents", "month_cents", "over_cap")
@@ -589,7 +609,7 @@ class GetOverviewRequest(_message.Message):
     def __init__(self) -> None: ...
 
 class GetOverviewResponse(_message.Message):
-    __slots__ = ("people", "people_new_7d", "people_active_1d", "people_active_7d", "workspaces", "workspaces_new_7d", "premium", "agent_cost_usd_month", "agent_runs_30d", "days", "caller_is_root", "most_active")
+    __slots__ = ("people", "people_new_7d", "people_active_1d", "people_active_7d", "workspaces", "workspaces_new_7d", "premium", "agent_cost_usd_month", "agent_runs_30d", "days", "caller_is_root", "most_active", "agent_billed_usd_month", "effective_markup")
     PEOPLE_FIELD_NUMBER: _ClassVar[int]
     PEOPLE_NEW_7D_FIELD_NUMBER: _ClassVar[int]
     PEOPLE_ACTIVE_1D_FIELD_NUMBER: _ClassVar[int]
@@ -602,6 +622,8 @@ class GetOverviewResponse(_message.Message):
     DAYS_FIELD_NUMBER: _ClassVar[int]
     CALLER_IS_ROOT_FIELD_NUMBER: _ClassVar[int]
     MOST_ACTIVE_FIELD_NUMBER: _ClassVar[int]
+    AGENT_BILLED_USD_MONTH_FIELD_NUMBER: _ClassVar[int]
+    EFFECTIVE_MARKUP_FIELD_NUMBER: _ClassVar[int]
     people: int
     people_new_7d: int
     people_active_1d: int
@@ -614,7 +636,9 @@ class GetOverviewResponse(_message.Message):
     days: _containers.RepeatedCompositeFieldContainer[DailyCount]
     caller_is_root: bool
     most_active: _containers.RepeatedCompositeFieldContainer[WorkspaceRow]
-    def __init__(self, people: _Optional[int] = ..., people_new_7d: _Optional[int] = ..., people_active_1d: _Optional[int] = ..., people_active_7d: _Optional[int] = ..., workspaces: _Optional[int] = ..., workspaces_new_7d: _Optional[int] = ..., premium: _Optional[int] = ..., agent_cost_usd_month: _Optional[float] = ..., agent_runs_30d: _Optional[int] = ..., days: _Optional[_Iterable[_Union[DailyCount, _Mapping]]] = ..., caller_is_root: bool = ..., most_active: _Optional[_Iterable[_Union[WorkspaceRow, _Mapping]]] = ...) -> None: ...
+    agent_billed_usd_month: float
+    effective_markup: float
+    def __init__(self, people: _Optional[int] = ..., people_new_7d: _Optional[int] = ..., people_active_1d: _Optional[int] = ..., people_active_7d: _Optional[int] = ..., workspaces: _Optional[int] = ..., workspaces_new_7d: _Optional[int] = ..., premium: _Optional[int] = ..., agent_cost_usd_month: _Optional[float] = ..., agent_runs_30d: _Optional[int] = ..., days: _Optional[_Iterable[_Union[DailyCount, _Mapping]]] = ..., caller_is_root: bool = ..., most_active: _Optional[_Iterable[_Union[WorkspaceRow, _Mapping]]] = ..., agent_billed_usd_month: _Optional[float] = ..., effective_markup: _Optional[float] = ...) -> None: ...
 
 class SuperAdminRow(_message.Message):
     __slots__ = ("user_id", "email", "display_name", "root", "added_by_email", "added_at")
@@ -1118,6 +1142,26 @@ class SetWorkspaceNoChargeRequest(_message.Message):
 class SetWorkspaceNoChargeResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class SetWorkspaceMarkupRequest(_message.Message):
+    __slots__ = ("workspace_id", "markup", "effective_from", "reason")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    MARKUP_FIELD_NUMBER: _ClassVar[int]
+    EFFECTIVE_FROM_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    markup: float
+    effective_from: _timestamp_pb2.Timestamp
+    reason: str
+    def __init__(self, workspace_id: _Optional[str] = ..., markup: _Optional[float] = ..., effective_from: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., reason: _Optional[str] = ...) -> None: ...
+
+class SetWorkspaceMarkupResponse(_message.Message):
+    __slots__ = ("markup_history", "markup")
+    MARKUP_HISTORY_FIELD_NUMBER: _ClassVar[int]
+    MARKUP_FIELD_NUMBER: _ClassVar[int]
+    markup_history: _containers.RepeatedCompositeFieldContainer[MarkupChange]
+    markup: float
+    def __init__(self, markup_history: _Optional[_Iterable[_Union[MarkupChange, _Mapping]]] = ..., markup: _Optional[float] = ...) -> None: ...
 
 class SetWorkspaceClaude5CapRequest(_message.Message):
     __slots__ = ("workspace_id", "capped", "cap_cents", "reason")

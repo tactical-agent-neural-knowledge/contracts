@@ -237,6 +237,17 @@ message WorkspaceRow {
   google.protobuf.Timestamp suspended_at = 14; // unset when the workspace is not suspended
   string suspended_reason = 15;
   bool no_charge = 16;                         // pays nothing; its raw agent cost still shows here
+  double markup = 17;                          // the rate in force now (1.5 when it has no schedule row)
+  google.protobuf.Timestamp markup_effective_from = 18; // when that rate began; unset for the default
+  double effective_markup = 19;                // billed / raw cost this month; 0 with no cost yet
+}
+
+// MarkupChange is one row of a workspace's markup schedule (see SetWorkspaceMarkup).
+message MarkupChange {
+  double markup = 1;
+  google.protobuf.Timestamp effective_from = 2;
+  string reason = 3;
+  string set_by_email = 4;                     // empty for the migration's own rows
 }
 
 message SearchWorkspacesRequest {
@@ -361,6 +372,7 @@ message GetWorkspaceResponse {
   repeated DailyCount days = 6;                // the last 30, oldest first
   WorkspaceCounts counts = 7;
   Claude5Spend claude5 = 8;
+  repeated MarkupChange markup_history = 9;    // newest first
 }
 
 // Claude5Spend is a workspace's spend on the Claude 5 family this calendar month (UTC),
@@ -388,6 +400,8 @@ message GetOverviewResponse {
   repeated DailyCount days = 10;               // the last 30, oldest first
   bool caller_is_root = 11;                    // may add and remove super admins
   repeated WorkspaceRow most_active = 12;      // the top few by last 7 days of messages
+  double agent_billed_usd_month = 13;          // what workspaces are charged for agents this month
+  double effective_markup = 14;                // billed / raw cost this month; 0 with no cost yet
 }
 
 // SuperAdminRow is one person who may use this console.
@@ -706,6 +720,21 @@ message SetWorkspaceNoChargeRequest {
 }
 message SetWorkspaceNoChargeResponse {}
 
+// SetWorkspaceMarkup adds a row to a workspace's markup schedule: from effective_from
+// (empty is now) its agent usage is priced at markup times raw cost. Rows are added and
+// never edited, so usage before the date keeps the rate it was priced at. markup must be
+// at least 1 and at most 10. Recorded as workspace.markup.changed.
+message SetWorkspaceMarkupRequest {
+  string workspace_id = 1;
+  double markup = 2;
+  google.protobuf.Timestamp effective_from = 3;
+  string reason = 4;                           // kept in the schedule and the audit log
+}
+message SetWorkspaceMarkupResponse {
+  repeated MarkupChange markup_history = 1;    // newest first
+  double markup = 2;                           // the rate in force now
+}
+
 // SetWorkspaceClaude5Cap sets or clears a workspace's monthly cap on Claude 5 spend, in
 // cents of raw model cost (see Claude5Spend). capped false clears it (no cap). Recorded
 // as workspace.claude5_cap.changed.
@@ -760,6 +789,7 @@ service PlatformService {
   rpc SuspendWorkspace(SuspendWorkspaceRequest) returns (SuspendWorkspaceResponse);
   rpc SuspendUser(SuspendUserRequest) returns (SuspendUserResponse);
   rpc SetWorkspaceNoCharge(SetWorkspaceNoChargeRequest) returns (SetWorkspaceNoChargeResponse);
+  rpc SetWorkspaceMarkup(SetWorkspaceMarkupRequest) returns (SetWorkspaceMarkupResponse);
   rpc CreateWorkspace(CreateWorkspaceRequest) returns (CreateWorkspaceResponse);
   rpc SetWorkspaceClaude5Cap(SetWorkspaceClaude5CapRequest) returns (SetWorkspaceClaude5CapResponse);
 
