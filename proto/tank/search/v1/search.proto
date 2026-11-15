@@ -62,6 +62,25 @@ message SearchResponse {
   bool semantic_used = 6;
 }
 
+// A person opened a result (2026-11-15): which one, where it was in the list, and what the list
+// showed, so the Vault's ranking can be measured. Kept for evals, never shown.
+message RecordResultOpenedRequest {
+  string workspace_id = 1;
+  // The query as the person typed it (SearchRequest.q, or query when q was empty).
+  string q = 2;
+  // The opened hit's message id.
+  string result_id = 3;
+  // Its position in the list, from 0.
+  int32 rank = 4;
+  // Every hit the list showed, in order, at most 200; the opened one among them.
+  repeated string shown_ids = 5;
+  // Whether the Vault's semantic half contributed (SearchResponse.semantic_used).
+  bool semantic_used = 6;
+}
+message RecordResultOpenedResponse {}
+
 service SearchService {
   rpc Search(SearchRequest) returns (SearchResponse);
+  // Members of the workspace only; rate-limited per person. A failure is never shown.
+  rpc RecordResultOpened(RecordResultOpenedRequest) returns (RecordResultOpenedResponse);
 }

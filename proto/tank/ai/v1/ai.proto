@@ -591,7 +591,22 @@ service AiService {
   // (GetConversation with message_limit gives the newest ones). Same membership rule as
   // GetConversation; reading a page never marks anything read.
   rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
+  // A quiet signal about one of Neural's answers (2026-11-15): the person copied it or shared
+  // it. Kept for TANK Neural's evals and preference labels, never shown. Only the
+  // conversation's owner is recorded; anyone else, an unknown message or a person's own
+  // message changes nothing and is no error. Rate-limited per person. A regenerate is not
+  // sent: the server records it from SendMessage.regenerate_message_id, and a stop from
+  // StopReply.
+  rpc RecordAnswerSignal(RecordAnswerSignalRequest) returns (RecordAnswerSignalResponse);
 }
+
+message RecordAnswerSignalRequest {
+  // The assistant message.
+  string message_id = 1;
+  // "copy" (the whole answer), "copy_code" (one code block of it) or "share".
+  string kind = 2;
+}
+message RecordAnswerSignalResponse {}
 
 message SetReadReceiptsRequest {
   string conversation_id = 1;
