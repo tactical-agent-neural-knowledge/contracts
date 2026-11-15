@@ -55,6 +55,30 @@ class StatementRowKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     STATEMENT_ROW_KIND_CATEGORY: _ClassVar[StatementRowKind]
     STATEMENT_ROW_KIND_SUBTOTAL: _ClassVar[StatementRowKind]
     STATEMENT_ROW_KIND_TOTAL: _ClassVar[StatementRowKind]
+
+class Cadence(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    CADENCE_UNSPECIFIED: _ClassVar[Cadence]
+    CADENCE_WEEKLY: _ClassVar[Cadence]
+    CADENCE_MONTHLY: _ClassVar[Cadence]
+    CADENCE_QUARTERLY: _ClassVar[Cadence]
+    CADENCE_YEARLY: _ClassVar[Cadence]
+
+class RecurringSource(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    RECURRING_SOURCE_UNSPECIFIED: _ClassVar[RecurringSource]
+    RECURRING_SOURCE_PERSON: _ClassVar[RecurringSource]
+    RECURRING_SOURCE_DETECTED: _ClassVar[RecurringSource]
+    RECURRING_SOURCE_TANK: _ClassVar[RecurringSource]
+    RECURRING_SOURCE_AGENT: _ClassVar[RecurringSource]
+
+class RecurringStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    RECURRING_STATUS_UNSPECIFIED: _ClassVar[RecurringStatus]
+    RECURRING_STATUS_ACTIVE: _ClassVar[RecurringStatus]
+    RECURRING_STATUS_PROPOSED: _ClassVar[RecurringStatus]
+    RECURRING_STATUS_PAUSED: _ClassVar[RecurringStatus]
+    RECURRING_STATUS_DISMISSED: _ClassVar[RecurringStatus]
 INVOICE_STATUS_UNSPECIFIED: InvoiceStatus
 INVOICE_STATUS_DRAFT: InvoiceStatus
 INVOICE_STATUS_SENT: InvoiceStatus
@@ -83,6 +107,21 @@ STATEMENT_ROW_KIND_UNSPECIFIED: StatementRowKind
 STATEMENT_ROW_KIND_CATEGORY: StatementRowKind
 STATEMENT_ROW_KIND_SUBTOTAL: StatementRowKind
 STATEMENT_ROW_KIND_TOTAL: StatementRowKind
+CADENCE_UNSPECIFIED: Cadence
+CADENCE_WEEKLY: Cadence
+CADENCE_MONTHLY: Cadence
+CADENCE_QUARTERLY: Cadence
+CADENCE_YEARLY: Cadence
+RECURRING_SOURCE_UNSPECIFIED: RecurringSource
+RECURRING_SOURCE_PERSON: RecurringSource
+RECURRING_SOURCE_DETECTED: RecurringSource
+RECURRING_SOURCE_TANK: RecurringSource
+RECURRING_SOURCE_AGENT: RecurringSource
+RECURRING_STATUS_UNSPECIFIED: RecurringStatus
+RECURRING_STATUS_ACTIVE: RecurringStatus
+RECURRING_STATUS_PROPOSED: RecurringStatus
+RECURRING_STATUS_PAUSED: RecurringStatus
+RECURRING_STATUS_DISMISSED: RecurringStatus
 
 class Settings(_message.Message):
     __slots__ = ("enabled", "currency", "business_name", "invoice_prefix", "next_invoice_number", "default_due_days", "chase_every_days", "competes_with", "payment_instructions", "stripe_secret_key", "stripe_key_hint", "payments_ready", "fiscal_year_start_month", "timezone", "finance_channel_id")
@@ -828,16 +867,20 @@ class StatementPeriod(_message.Message):
     def __init__(self, key: _Optional[str] = ..., label: _Optional[str] = ..., start: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., end: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., kind: _Optional[_Union[PeriodKind, str]] = ...) -> None: ...
 
 class StatementCell(_message.Message):
-    __slots__ = ("actual_cents", "expected_cents", "budget_cents", "state")
+    __slots__ = ("actual_cents", "expected_cents", "budget_cents", "state", "missed_cents", "missed_count")
     ACTUAL_CENTS_FIELD_NUMBER: _ClassVar[int]
     EXPECTED_CENTS_FIELD_NUMBER: _ClassVar[int]
     BUDGET_CENTS_FIELD_NUMBER: _ClassVar[int]
     STATE_FIELD_NUMBER: _ClassVar[int]
+    MISSED_CENTS_FIELD_NUMBER: _ClassVar[int]
+    MISSED_COUNT_FIELD_NUMBER: _ClassVar[int]
     actual_cents: int
     expected_cents: int
     budget_cents: int
     state: CellState
-    def __init__(self, actual_cents: _Optional[int] = ..., expected_cents: _Optional[int] = ..., budget_cents: _Optional[int] = ..., state: _Optional[_Union[CellState, str]] = ...) -> None: ...
+    missed_cents: int
+    missed_count: int
+    def __init__(self, actual_cents: _Optional[int] = ..., expected_cents: _Optional[int] = ..., budget_cents: _Optional[int] = ..., state: _Optional[_Union[CellState, str]] = ..., missed_cents: _Optional[int] = ..., missed_count: _Optional[int] = ...) -> None: ...
 
 class StatementRow(_message.Message):
     __slots__ = ("kind", "category_id", "group", "label", "key", "cells", "total")
@@ -877,7 +920,7 @@ class GetStatementRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ..., grain: _Optional[_Union[StatementGrain, str]] = ..., basis: _Optional[_Union[StatementBasis, str]] = ..., from_period: _Optional[str] = ..., to_period: _Optional[str] = ..., to: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., scenario_id: _Optional[str] = ..., **kwargs) -> None: ...
 
 class GetStatementResponse(_message.Message):
-    __slots__ = ("currency", "grain", "basis", "fiscal_year_start_month", "timezone", "periods", "rows", "net", "cash_in", "cash_out", "ending_cash", "has_opening_balance", "opening_balance")
+    __slots__ = ("currency", "grain", "basis", "fiscal_year_start_month", "timezone", "periods", "rows", "net", "cash_in", "cash_out", "ending_cash", "has_opening_balance", "opening_balance", "runway")
     CURRENCY_FIELD_NUMBER: _ClassVar[int]
     GRAIN_FIELD_NUMBER: _ClassVar[int]
     BASIS_FIELD_NUMBER: _ClassVar[int]
@@ -891,6 +934,7 @@ class GetStatementResponse(_message.Message):
     ENDING_CASH_FIELD_NUMBER: _ClassVar[int]
     HAS_OPENING_BALANCE_FIELD_NUMBER: _ClassVar[int]
     OPENING_BALANCE_FIELD_NUMBER: _ClassVar[int]
+    RUNWAY_FIELD_NUMBER: _ClassVar[int]
     currency: str
     grain: StatementGrain
     basis: StatementBasis
@@ -904,7 +948,144 @@ class GetStatementResponse(_message.Message):
     ending_cash: StatementRow
     has_opening_balance: bool
     opening_balance: CashBalance
-    def __init__(self, currency: _Optional[str] = ..., grain: _Optional[_Union[StatementGrain, str]] = ..., basis: _Optional[_Union[StatementBasis, str]] = ..., fiscal_year_start_month: _Optional[int] = ..., timezone: _Optional[str] = ..., periods: _Optional[_Iterable[_Union[StatementPeriod, _Mapping]]] = ..., rows: _Optional[_Iterable[_Union[StatementRow, _Mapping]]] = ..., net: _Optional[_Union[StatementRow, _Mapping]] = ..., cash_in: _Optional[_Union[StatementRow, _Mapping]] = ..., cash_out: _Optional[_Union[StatementRow, _Mapping]] = ..., ending_cash: _Optional[_Union[StatementRow, _Mapping]] = ..., has_opening_balance: bool = ..., opening_balance: _Optional[_Union[CashBalance, _Mapping]] = ...) -> None: ...
+    runway: Runway
+    def __init__(self, currency: _Optional[str] = ..., grain: _Optional[_Union[StatementGrain, str]] = ..., basis: _Optional[_Union[StatementBasis, str]] = ..., fiscal_year_start_month: _Optional[int] = ..., timezone: _Optional[str] = ..., periods: _Optional[_Iterable[_Union[StatementPeriod, _Mapping]]] = ..., rows: _Optional[_Iterable[_Union[StatementRow, _Mapping]]] = ..., net: _Optional[_Union[StatementRow, _Mapping]] = ..., cash_in: _Optional[_Union[StatementRow, _Mapping]] = ..., cash_out: _Optional[_Union[StatementRow, _Mapping]] = ..., ending_cash: _Optional[_Union[StatementRow, _Mapping]] = ..., has_opening_balance: bool = ..., opening_balance: _Optional[_Union[CashBalance, _Mapping]] = ..., runway: _Optional[_Union[Runway, _Mapping]] = ...) -> None: ...
+
+class Recurring(_message.Message):
+    __slots__ = ("id", "kind", "category_id", "customer_id", "customer_name", "vendor", "name", "amount_cents", "cadence", "anchor_day", "starts_on", "ends_on", "basis_offset_days", "source", "status", "created_by", "created_at", "read_only", "seen_count", "seen_since", "next_on", "daily_average_cents", "capped", "cap_cents")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    CATEGORY_ID_FIELD_NUMBER: _ClassVar[int]
+    CUSTOMER_ID_FIELD_NUMBER: _ClassVar[int]
+    CUSTOMER_NAME_FIELD_NUMBER: _ClassVar[int]
+    VENDOR_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    AMOUNT_CENTS_FIELD_NUMBER: _ClassVar[int]
+    CADENCE_FIELD_NUMBER: _ClassVar[int]
+    ANCHOR_DAY_FIELD_NUMBER: _ClassVar[int]
+    STARTS_ON_FIELD_NUMBER: _ClassVar[int]
+    ENDS_ON_FIELD_NUMBER: _ClassVar[int]
+    BASIS_OFFSET_DAYS_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    CREATED_BY_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    READ_ONLY_FIELD_NUMBER: _ClassVar[int]
+    SEEN_COUNT_FIELD_NUMBER: _ClassVar[int]
+    SEEN_SINCE_FIELD_NUMBER: _ClassVar[int]
+    NEXT_ON_FIELD_NUMBER: _ClassVar[int]
+    DAILY_AVERAGE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    CAPPED_FIELD_NUMBER: _ClassVar[int]
+    CAP_CENTS_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    kind: CategoryKind
+    category_id: str
+    customer_id: str
+    customer_name: str
+    vendor: str
+    name: str
+    amount_cents: int
+    cadence: Cadence
+    anchor_day: int
+    starts_on: _timestamp_pb2.Timestamp
+    ends_on: _timestamp_pb2.Timestamp
+    basis_offset_days: int
+    source: RecurringSource
+    status: RecurringStatus
+    created_by: str
+    created_at: _timestamp_pb2.Timestamp
+    read_only: bool
+    seen_count: int
+    seen_since: _timestamp_pb2.Timestamp
+    next_on: _timestamp_pb2.Timestamp
+    daily_average_cents: int
+    capped: bool
+    cap_cents: int
+    def __init__(self, id: _Optional[str] = ..., kind: _Optional[_Union[CategoryKind, str]] = ..., category_id: _Optional[str] = ..., customer_id: _Optional[str] = ..., customer_name: _Optional[str] = ..., vendor: _Optional[str] = ..., name: _Optional[str] = ..., amount_cents: _Optional[int] = ..., cadence: _Optional[_Union[Cadence, str]] = ..., anchor_day: _Optional[int] = ..., starts_on: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., ends_on: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., basis_offset_days: _Optional[int] = ..., source: _Optional[_Union[RecurringSource, str]] = ..., status: _Optional[_Union[RecurringStatus, str]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., read_only: bool = ..., seen_count: _Optional[int] = ..., seen_since: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., next_on: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., daily_average_cents: _Optional[int] = ..., capped: bool = ..., cap_cents: _Optional[int] = ...) -> None: ...
+
+class Occurrence(_message.Message):
+    __slots__ = ("recurring_id", "on", "amount_cents", "kind", "category_id", "name")
+    RECURRING_ID_FIELD_NUMBER: _ClassVar[int]
+    ON_FIELD_NUMBER: _ClassVar[int]
+    AMOUNT_CENTS_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    CATEGORY_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    recurring_id: str
+    on: _timestamp_pb2.Timestamp
+    amount_cents: int
+    kind: CategoryKind
+    category_id: str
+    name: str
+    def __init__(self, recurring_id: _Optional[str] = ..., on: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., amount_cents: _Optional[int] = ..., kind: _Optional[_Union[CategoryKind, str]] = ..., category_id: _Optional[str] = ..., name: _Optional[str] = ...) -> None: ...
+
+class Runway(_message.Message):
+    __slots__ = ("runs_out_month", "runs_out_at", "horizon_month", "lowest_cents", "lowest_month")
+    RUNS_OUT_MONTH_FIELD_NUMBER: _ClassVar[int]
+    RUNS_OUT_AT_FIELD_NUMBER: _ClassVar[int]
+    HORIZON_MONTH_FIELD_NUMBER: _ClassVar[int]
+    LOWEST_CENTS_FIELD_NUMBER: _ClassVar[int]
+    LOWEST_MONTH_FIELD_NUMBER: _ClassVar[int]
+    runs_out_month: str
+    runs_out_at: _timestamp_pb2.Timestamp
+    horizon_month: str
+    lowest_cents: int
+    lowest_month: str
+    def __init__(self, runs_out_month: _Optional[str] = ..., runs_out_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., horizon_month: _Optional[str] = ..., lowest_cents: _Optional[int] = ..., lowest_month: _Optional[str] = ...) -> None: ...
+
+class ListRecurringRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class ListRecurringResponse(_message.Message):
+    __slots__ = ("rules", "proposals", "tank", "not_seen", "runway", "can_edit", "currency")
+    RULES_FIELD_NUMBER: _ClassVar[int]
+    PROPOSALS_FIELD_NUMBER: _ClassVar[int]
+    TANK_FIELD_NUMBER: _ClassVar[int]
+    NOT_SEEN_FIELD_NUMBER: _ClassVar[int]
+    RUNWAY_FIELD_NUMBER: _ClassVar[int]
+    CAN_EDIT_FIELD_NUMBER: _ClassVar[int]
+    CURRENCY_FIELD_NUMBER: _ClassVar[int]
+    rules: _containers.RepeatedCompositeFieldContainer[Recurring]
+    proposals: _containers.RepeatedCompositeFieldContainer[Recurring]
+    tank: _containers.RepeatedCompositeFieldContainer[Recurring]
+    not_seen: _containers.RepeatedCompositeFieldContainer[Occurrence]
+    runway: Runway
+    can_edit: bool
+    currency: str
+    def __init__(self, rules: _Optional[_Iterable[_Union[Recurring, _Mapping]]] = ..., proposals: _Optional[_Iterable[_Union[Recurring, _Mapping]]] = ..., tank: _Optional[_Iterable[_Union[Recurring, _Mapping]]] = ..., not_seen: _Optional[_Iterable[_Union[Occurrence, _Mapping]]] = ..., runway: _Optional[_Union[Runway, _Mapping]] = ..., can_edit: bool = ..., currency: _Optional[str] = ...) -> None: ...
+
+class UpsertRecurringRequest(_message.Message):
+    __slots__ = ("workspace_id", "rule")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    RULE_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    rule: Recurring
+    def __init__(self, workspace_id: _Optional[str] = ..., rule: _Optional[_Union[Recurring, _Mapping]] = ...) -> None: ...
+
+class UpsertRecurringResponse(_message.Message):
+    __slots__ = ("rule",)
+    RULE_FIELD_NUMBER: _ClassVar[int]
+    rule: Recurring
+    def __init__(self, rule: _Optional[_Union[Recurring, _Mapping]] = ...) -> None: ...
+
+class SetRecurringStatusRequest(_message.Message):
+    __slots__ = ("workspace_id", "id", "status")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    id: str
+    status: RecurringStatus
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ..., status: _Optional[_Union[RecurringStatus, str]] = ...) -> None: ...
+
+class SetRecurringStatusResponse(_message.Message):
+    __slots__ = ("rule",)
+    RULE_FIELD_NUMBER: _ClassVar[int]
+    rule: Recurring
+    def __init__(self, rule: _Optional[_Union[Recurring, _Mapping]] = ...) -> None: ...
 
 class ListTransactionsRequest(_message.Message):
     __slots__ = ("workspace_id", "category_id", "start", "end", "basis")
