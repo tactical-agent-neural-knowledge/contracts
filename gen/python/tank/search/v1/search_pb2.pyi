@@ -80,3 +80,23 @@ class SearchResponse(_message.Message):
     parsed_query: str
     semantic_used: bool
     def __init__(self, hits: _Optional[_Iterable[_Union[SearchHit, _Mapping]]] = ..., next_cursor: _Optional[str] = ..., total_estimate: _Optional[int] = ..., parsed_filters: _Optional[_Union[SearchFilters, _Mapping]] = ..., parsed_query: _Optional[str] = ..., semantic_used: bool = ...) -> None: ...
+
+class RecordResultOpenedRequest(_message.Message):
+    __slots__ = ("workspace_id", "q", "result_id", "rank", "shown_ids", "semantic_used")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    Q_FIELD_NUMBER: _ClassVar[int]
+    RESULT_ID_FIELD_NUMBER: _ClassVar[int]
+    RANK_FIELD_NUMBER: _ClassVar[int]
+    SHOWN_IDS_FIELD_NUMBER: _ClassVar[int]
+    SEMANTIC_USED_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    q: str
+    result_id: str
+    rank: int
+    shown_ids: _containers.RepeatedScalarFieldContainer[str]
+    semantic_used: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., q: _Optional[str] = ..., result_id: _Optional[str] = ..., rank: _Optional[int] = ..., shown_ids: _Optional[_Iterable[str]] = ..., semantic_used: bool = ...) -> None: ...
+
+class RecordResultOpenedResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...

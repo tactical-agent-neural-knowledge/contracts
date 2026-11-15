@@ -627,6 +627,18 @@ class GetUsageResponse(_message.Message):
     model_label: str
     def __init__(self, days: _Optional[_Iterable[_Union[UsageDay, _Mapping]]] = ..., messages: _Optional[int] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., cost_micro_usd: _Optional[int] = ..., today_messages: _Optional[int] = ..., month_cost_micro_usd: _Optional[int] = ..., all_time_messages: _Optional[int] = ..., conversations: _Optional[_Iterable[_Union[ConversationUsage, _Mapping]]] = ..., model_label: _Optional[str] = ...) -> None: ...
 
+class RecordAnswerSignalRequest(_message.Message):
+    __slots__ = ("message_id", "kind")
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    kind: str
+    def __init__(self, message_id: _Optional[str] = ..., kind: _Optional[str] = ...) -> None: ...
+
+class RecordAnswerSignalResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class SetReadReceiptsRequest(_message.Message):
     __slots__ = ("conversation_id", "on")
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]

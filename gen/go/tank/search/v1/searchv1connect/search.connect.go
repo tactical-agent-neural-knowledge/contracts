@@ -35,11 +35,16 @@ const (
 const (
 	// SearchServiceSearchProcedure is the fully-qualified name of the SearchService's Search RPC.
 	SearchServiceSearchProcedure = "/tank.search.v1.SearchService/Search"
+	// SearchServiceRecordResultOpenedProcedure is the fully-qualified name of the SearchService's
+	// RecordResultOpened RPC.
+	SearchServiceRecordResultOpenedProcedure = "/tank.search.v1.SearchService/RecordResultOpened"
 )
 
 // SearchServiceClient is a client for the tank.search.v1.SearchService service.
 type SearchServiceClient interface {
 	Search(context.Context, *connect.Request[v1.SearchRequest]) (*connect.Response[v1.SearchResponse], error)
+	// Members of the workspace only; rate-limited per person. A failure is never shown.
+	RecordResultOpened(context.Context, *connect.Request[v1.RecordResultOpenedRequest]) (*connect.Response[v1.RecordResultOpenedResponse], error)
 }
 
 // NewSearchServiceClient constructs a client for the tank.search.v1.SearchService service. By
@@ -59,12 +64,19 @@ func NewSearchServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(searchServiceMethods.ByName("Search")),
 			connect.WithClientOptions(opts...),
 		),
+		recordResultOpened: connect.NewClient[v1.RecordResultOpenedRequest, v1.RecordResultOpenedResponse](
+			httpClient,
+			baseURL+SearchServiceRecordResultOpenedProcedure,
+			connect.WithSchema(searchServiceMethods.ByName("RecordResultOpened")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // searchServiceClient implements SearchServiceClient.
 type searchServiceClient struct {
-	search *connect.Client[v1.SearchRequest, v1.SearchResponse]
+	search             *connect.Client[v1.SearchRequest, v1.SearchResponse]
+	recordResultOpened *connect.Client[v1.RecordResultOpenedRequest, v1.RecordResultOpenedResponse]
 }
 
 // Search calls tank.search.v1.SearchService.Search.
@@ -72,9 +84,16 @@ func (c *searchServiceClient) Search(ctx context.Context, req *connect.Request[v
 	return c.search.CallUnary(ctx, req)
 }
 
+// RecordResultOpened calls tank.search.v1.SearchService.RecordResultOpened.
+func (c *searchServiceClient) RecordResultOpened(ctx context.Context, req *connect.Request[v1.RecordResultOpenedRequest]) (*connect.Response[v1.RecordResultOpenedResponse], error) {
+	return c.recordResultOpened.CallUnary(ctx, req)
+}
+
 // SearchServiceHandler is an implementation of the tank.search.v1.SearchService service.
 type SearchServiceHandler interface {
 	Search(context.Context, *connect.Request[v1.SearchRequest]) (*connect.Response[v1.SearchResponse], error)
+	// Members of the workspace only; rate-limited per person. A failure is never shown.
+	RecordResultOpened(context.Context, *connect.Request[v1.RecordResultOpenedRequest]) (*connect.Response[v1.RecordResultOpenedResponse], error)
 }
 
 // NewSearchServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -90,10 +109,18 @@ func NewSearchServiceHandler(svc SearchServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(searchServiceMethods.ByName("Search")),
 		connect.WithHandlerOptions(opts...),
 	)
+	searchServiceRecordResultOpenedHandler := connect.NewUnaryHandler(
+		SearchServiceRecordResultOpenedProcedure,
+		svc.RecordResultOpened,
+		connect.WithSchema(searchServiceMethods.ByName("RecordResultOpened")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.search.v1.SearchService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case SearchServiceSearchProcedure:
 			searchServiceSearchHandler.ServeHTTP(w, r)
+		case SearchServiceRecordResultOpenedProcedure:
+			searchServiceRecordResultOpenedHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -105,4 +132,8 @@ type UnimplementedSearchServiceHandler struct{}
 
 func (UnimplementedSearchServiceHandler) Search(context.Context, *connect.Request[v1.SearchRequest]) (*connect.Response[v1.SearchResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.search.v1.SearchService.Search is not implemented"))
+}
+
+func (UnimplementedSearchServiceHandler) RecordResultOpened(context.Context, *connect.Request[v1.RecordResultOpenedRequest]) (*connect.Response[v1.RecordResultOpenedResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.search.v1.SearchService.RecordResultOpened is not implemented"))
 }
