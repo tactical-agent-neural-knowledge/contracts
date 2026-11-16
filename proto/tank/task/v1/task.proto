@@ -77,6 +77,8 @@ message Task {
   // id>?task=<id>), the same one its Activity row and push open. It opens only for people in
   // the task's Tread; anyone else is told it is in a Tread they're not in, and sees nothing of it.
   string link = 21;
+  // Files attached when the task was made, shared into its Tread when it starts.
+  repeated string file_ids = 22;
 }
 
 
@@ -109,6 +111,8 @@ message CreateTaskRequest {
   string details = 4;
   bool start_now = 5;
   repeated TaskNotify notify = 6;
+  // Finished uploads by the caller in this workspace; at most 10.
+  repeated string file_ids = 7;
 }
 message CreateTaskResponse {
   Task task = 1;
@@ -122,6 +126,7 @@ message CreateTaskWithChannelRequest {
   string details = 3;
   bool start_now = 4;
   repeated TaskNotify notify = 5;
+  repeated string file_ids = 6;
 }
 message CreateTaskWithChannelResponse {
   Task task = 1;
