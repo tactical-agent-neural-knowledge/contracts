@@ -113,6 +113,9 @@ const (
 	// BooksServiceSetRecurringStatusProcedure is the fully-qualified name of the BooksService's
 	// SetRecurringStatus RPC.
 	BooksServiceSetRecurringStatusProcedure = "/tank.books.v1.BooksService/SetRecurringStatus"
+	// BooksServiceGetForecastProcedure is the fully-qualified name of the BooksService's GetForecast
+	// RPC.
+	BooksServiceGetForecastProcedure = "/tank.books.v1.BooksService/GetForecast"
 )
 
 // BooksServiceClient is a client for the tank.books.v1.BooksService service.
@@ -145,6 +148,7 @@ type BooksServiceClient interface {
 	ListRecurring(context.Context, *connect.Request[v1.ListRecurringRequest]) (*connect.Response[v1.ListRecurringResponse], error)
 	UpsertRecurring(context.Context, *connect.Request[v1.UpsertRecurringRequest]) (*connect.Response[v1.UpsertRecurringResponse], error)
 	SetRecurringStatus(context.Context, *connect.Request[v1.SetRecurringStatusRequest]) (*connect.Response[v1.SetRecurringStatusResponse], error)
+	GetForecast(context.Context, *connect.Request[v1.GetForecastRequest]) (*connect.Response[v1.GetForecastResponse], error)
 }
 
 // NewBooksServiceClient constructs a client for the tank.books.v1.BooksService service. By default,
@@ -326,6 +330,12 @@ func NewBooksServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(booksServiceMethods.ByName("SetRecurringStatus")),
 			connect.WithClientOptions(opts...),
 		),
+		getForecast: connect.NewClient[v1.GetForecastRequest, v1.GetForecastResponse](
+			httpClient,
+			baseURL+BooksServiceGetForecastProcedure,
+			connect.WithSchema(booksServiceMethods.ByName("GetForecast")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -359,6 +369,7 @@ type booksServiceClient struct {
 	listRecurring          *connect.Client[v1.ListRecurringRequest, v1.ListRecurringResponse]
 	upsertRecurring        *connect.Client[v1.UpsertRecurringRequest, v1.UpsertRecurringResponse]
 	setRecurringStatus     *connect.Client[v1.SetRecurringStatusRequest, v1.SetRecurringStatusResponse]
+	getForecast            *connect.Client[v1.GetForecastRequest, v1.GetForecastResponse]
 }
 
 // GetSettings calls tank.books.v1.BooksService.GetSettings.
@@ -501,6 +512,11 @@ func (c *booksServiceClient) SetRecurringStatus(ctx context.Context, req *connec
 	return c.setRecurringStatus.CallUnary(ctx, req)
 }
 
+// GetForecast calls tank.books.v1.BooksService.GetForecast.
+func (c *booksServiceClient) GetForecast(ctx context.Context, req *connect.Request[v1.GetForecastRequest]) (*connect.Response[v1.GetForecastResponse], error) {
+	return c.getForecast.CallUnary(ctx, req)
+}
+
 // BooksServiceHandler is an implementation of the tank.books.v1.BooksService service.
 type BooksServiceHandler interface {
 	GetSettings(context.Context, *connect.Request[v1.GetSettingsRequest]) (*connect.Response[v1.GetSettingsResponse], error)
@@ -531,6 +547,7 @@ type BooksServiceHandler interface {
 	ListRecurring(context.Context, *connect.Request[v1.ListRecurringRequest]) (*connect.Response[v1.ListRecurringResponse], error)
 	UpsertRecurring(context.Context, *connect.Request[v1.UpsertRecurringRequest]) (*connect.Response[v1.UpsertRecurringResponse], error)
 	SetRecurringStatus(context.Context, *connect.Request[v1.SetRecurringStatusRequest]) (*connect.Response[v1.SetRecurringStatusResponse], error)
+	GetForecast(context.Context, *connect.Request[v1.GetForecastRequest]) (*connect.Response[v1.GetForecastResponse], error)
 }
 
 // NewBooksServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -708,6 +725,12 @@ func NewBooksServiceHandler(svc BooksServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(booksServiceMethods.ByName("SetRecurringStatus")),
 		connect.WithHandlerOptions(opts...),
 	)
+	booksServiceGetForecastHandler := connect.NewUnaryHandler(
+		BooksServiceGetForecastProcedure,
+		svc.GetForecast,
+		connect.WithSchema(booksServiceMethods.ByName("GetForecast")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.books.v1.BooksService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case BooksServiceGetSettingsProcedure:
@@ -766,6 +789,8 @@ func NewBooksServiceHandler(svc BooksServiceHandler, opts ...connect.HandlerOpti
 			booksServiceUpsertRecurringHandler.ServeHTTP(w, r)
 		case BooksServiceSetRecurringStatusProcedure:
 			booksServiceSetRecurringStatusHandler.ServeHTTP(w, r)
+		case BooksServiceGetForecastProcedure:
+			booksServiceGetForecastHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -885,4 +910,8 @@ func (UnimplementedBooksServiceHandler) UpsertRecurring(context.Context, *connec
 
 func (UnimplementedBooksServiceHandler) SetRecurringStatus(context.Context, *connect.Request[v1.SetRecurringStatusRequest]) (*connect.Response[v1.SetRecurringStatusResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.SetRecurringStatus is not implemented"))
+}
+
+func (UnimplementedBooksServiceHandler) GetForecast(context.Context, *connect.Request[v1.GetForecastRequest]) (*connect.Response[v1.GetForecastResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.books.v1.BooksService.GetForecast is not implemented"))
 }
