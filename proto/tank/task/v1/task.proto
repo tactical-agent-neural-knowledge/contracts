@@ -16,6 +16,7 @@ enum TaskStage {
   TASK_STAGE_READY_TO_CHECK = 3;
   TASK_STAGE_DONE = 4;
   TASK_STAGE_STUCK = 5;
+  TASK_STAGE_CANCELLED = 6;
 }
 
 // One line of the checklist against the ask, with whether TANK's record says it was met.
@@ -160,6 +161,15 @@ message RetryTaskResponse {
   Task task = 1;
 }
 
+// Cancel a task at any stage short of DONE: a live run is stopped, and the task moves to
+// CANCELLED. Cancelling a task that is already CANCELLED returns it unchanged.
+message CancelTaskRequest {
+  string task_id = 1;
+}
+message CancelTaskResponse {
+  Task task = 1;
+}
+
 // Replace the task's own picks (workspace rules are not affected).
 message SetTaskNotifyRequest {
   string task_id = 1;
@@ -234,6 +244,7 @@ service TaskService {
   rpc ConfirmTask(ConfirmTaskRequest) returns (ConfirmTaskResponse);
   rpc SendBackTask(SendBackTaskRequest) returns (SendBackTaskResponse);
   rpc RetryTask(RetryTaskRequest) returns (RetryTaskResponse);
+  rpc CancelTask(CancelTaskRequest) returns (CancelTaskResponse);
   rpc SetTaskNotify(SetTaskNotifyRequest) returns (SetTaskNotifyResponse);
   rpc GetTaskSettings(GetTaskSettingsRequest) returns (GetTaskSettingsResponse);
   rpc SetTaskSettings(SetTaskSettingsRequest) returns (SetTaskSettingsResponse);
