@@ -51,6 +51,8 @@ const (
 	TaskServiceSendBackTaskProcedure = "/tank.task.v1.TaskService/SendBackTask"
 	// TaskServiceRetryTaskProcedure is the fully-qualified name of the TaskService's RetryTask RPC.
 	TaskServiceRetryTaskProcedure = "/tank.task.v1.TaskService/RetryTask"
+	// TaskServiceCancelTaskProcedure is the fully-qualified name of the TaskService's CancelTask RPC.
+	TaskServiceCancelTaskProcedure = "/tank.task.v1.TaskService/CancelTask"
 	// TaskServiceSetTaskNotifyProcedure is the fully-qualified name of the TaskService's SetTaskNotify
 	// RPC.
 	TaskServiceSetTaskNotifyProcedure = "/tank.task.v1.TaskService/SetTaskNotify"
@@ -77,6 +79,7 @@ type TaskServiceClient interface {
 	ConfirmTask(context.Context, *connect.Request[v1.ConfirmTaskRequest]) (*connect.Response[v1.ConfirmTaskResponse], error)
 	SendBackTask(context.Context, *connect.Request[v1.SendBackTaskRequest]) (*connect.Response[v1.SendBackTaskResponse], error)
 	RetryTask(context.Context, *connect.Request[v1.RetryTaskRequest]) (*connect.Response[v1.RetryTaskResponse], error)
+	CancelTask(context.Context, *connect.Request[v1.CancelTaskRequest]) (*connect.Response[v1.CancelTaskResponse], error)
 	SetTaskNotify(context.Context, *connect.Request[v1.SetTaskNotifyRequest]) (*connect.Response[v1.SetTaskNotifyResponse], error)
 	GetTaskSettings(context.Context, *connect.Request[v1.GetTaskSettingsRequest]) (*connect.Response[v1.GetTaskSettingsResponse], error)
 	SetTaskSettings(context.Context, *connect.Request[v1.SetTaskSettingsRequest]) (*connect.Response[v1.SetTaskSettingsResponse], error)
@@ -143,6 +146,12 @@ func NewTaskServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(taskServiceMethods.ByName("RetryTask")),
 			connect.WithClientOptions(opts...),
 		),
+		cancelTask: connect.NewClient[v1.CancelTaskRequest, v1.CancelTaskResponse](
+			httpClient,
+			baseURL+TaskServiceCancelTaskProcedure,
+			connect.WithSchema(taskServiceMethods.ByName("CancelTask")),
+			connect.WithClientOptions(opts...),
+		),
 		setTaskNotify: connect.NewClient[v1.SetTaskNotifyRequest, v1.SetTaskNotifyResponse](
 			httpClient,
 			baseURL+TaskServiceSetTaskNotifyProcedure,
@@ -186,6 +195,7 @@ type taskServiceClient struct {
 	confirmTask           *connect.Client[v1.ConfirmTaskRequest, v1.ConfirmTaskResponse]
 	sendBackTask          *connect.Client[v1.SendBackTaskRequest, v1.SendBackTaskResponse]
 	retryTask             *connect.Client[v1.RetryTaskRequest, v1.RetryTaskResponse]
+	cancelTask            *connect.Client[v1.CancelTaskRequest, v1.CancelTaskResponse]
 	setTaskNotify         *connect.Client[v1.SetTaskNotifyRequest, v1.SetTaskNotifyResponse]
 	getTaskSettings       *connect.Client[v1.GetTaskSettingsRequest, v1.GetTaskSettingsResponse]
 	setTaskSettings       *connect.Client[v1.SetTaskSettingsRequest, v1.SetTaskSettingsResponse]
@@ -233,6 +243,11 @@ func (c *taskServiceClient) RetryTask(ctx context.Context, req *connect.Request[
 	return c.retryTask.CallUnary(ctx, req)
 }
 
+// CancelTask calls tank.task.v1.TaskService.CancelTask.
+func (c *taskServiceClient) CancelTask(ctx context.Context, req *connect.Request[v1.CancelTaskRequest]) (*connect.Response[v1.CancelTaskResponse], error) {
+	return c.cancelTask.CallUnary(ctx, req)
+}
+
 // SetTaskNotify calls tank.task.v1.TaskService.SetTaskNotify.
 func (c *taskServiceClient) SetTaskNotify(ctx context.Context, req *connect.Request[v1.SetTaskNotifyRequest]) (*connect.Response[v1.SetTaskNotifyResponse], error) {
 	return c.setTaskNotify.CallUnary(ctx, req)
@@ -268,6 +283,7 @@ type TaskServiceHandler interface {
 	ConfirmTask(context.Context, *connect.Request[v1.ConfirmTaskRequest]) (*connect.Response[v1.ConfirmTaskResponse], error)
 	SendBackTask(context.Context, *connect.Request[v1.SendBackTaskRequest]) (*connect.Response[v1.SendBackTaskResponse], error)
 	RetryTask(context.Context, *connect.Request[v1.RetryTaskRequest]) (*connect.Response[v1.RetryTaskResponse], error)
+	CancelTask(context.Context, *connect.Request[v1.CancelTaskRequest]) (*connect.Response[v1.CancelTaskResponse], error)
 	SetTaskNotify(context.Context, *connect.Request[v1.SetTaskNotifyRequest]) (*connect.Response[v1.SetTaskNotifyResponse], error)
 	GetTaskSettings(context.Context, *connect.Request[v1.GetTaskSettingsRequest]) (*connect.Response[v1.GetTaskSettingsResponse], error)
 	SetTaskSettings(context.Context, *connect.Request[v1.SetTaskSettingsRequest]) (*connect.Response[v1.SetTaskSettingsResponse], error)
@@ -330,6 +346,12 @@ func NewTaskServiceHandler(svc TaskServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(taskServiceMethods.ByName("RetryTask")),
 		connect.WithHandlerOptions(opts...),
 	)
+	taskServiceCancelTaskHandler := connect.NewUnaryHandler(
+		TaskServiceCancelTaskProcedure,
+		svc.CancelTask,
+		connect.WithSchema(taskServiceMethods.ByName("CancelTask")),
+		connect.WithHandlerOptions(opts...),
+	)
 	taskServiceSetTaskNotifyHandler := connect.NewUnaryHandler(
 		TaskServiceSetTaskNotifyProcedure,
 		svc.SetTaskNotify,
@@ -378,6 +400,8 @@ func NewTaskServiceHandler(svc TaskServiceHandler, opts ...connect.HandlerOption
 			taskServiceSendBackTaskHandler.ServeHTTP(w, r)
 		case TaskServiceRetryTaskProcedure:
 			taskServiceRetryTaskHandler.ServeHTTP(w, r)
+		case TaskServiceCancelTaskProcedure:
+			taskServiceCancelTaskHandler.ServeHTTP(w, r)
 		case TaskServiceSetTaskNotifyProcedure:
 			taskServiceSetTaskNotifyHandler.ServeHTTP(w, r)
 		case TaskServiceGetTaskSettingsProcedure:
@@ -427,6 +451,10 @@ func (UnimplementedTaskServiceHandler) SendBackTask(context.Context, *connect.Re
 
 func (UnimplementedTaskServiceHandler) RetryTask(context.Context, *connect.Request[v1.RetryTaskRequest]) (*connect.Response[v1.RetryTaskResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.task.v1.TaskService.RetryTask is not implemented"))
+}
+
+func (UnimplementedTaskServiceHandler) CancelTask(context.Context, *connect.Request[v1.CancelTaskRequest]) (*connect.Response[v1.CancelTaskResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.task.v1.TaskService.CancelTask is not implemented"))
 }
 
 func (UnimplementedTaskServiceHandler) SetTaskNotify(context.Context, *connect.Request[v1.SetTaskNotifyRequest]) (*connect.Response[v1.SetTaskNotifyResponse], error) {
