@@ -1,42 +1,50 @@
-# Neural Knowledge by TANK · refreshed 2026-11-09 · 089197169722
+# Neural Knowledge by TANK · refreshed 2026-11-16 · d7aa1845d1fb
 
-This repository is the single source of truth for every wire contract between TANK's services. Hand-written Protocol Buffer definitions live under `proto/`; generated Go, TypeScript and Python bindings are committed under `gen/` so consumers never fetch at build time. Every change to a `.proto` file must arrive in the same PR as the regenerated output for all three languages.
+This repository is the single source of truth for every wire contract between TANK's services. Hand-written Protocol Buffer definitions live under `proto/tank/<domain>/v1/`; generated Go, TypeScript and Python bindings are committed under `gen/` so consumers never fetch at build time. A change to a `.proto` file lands in the same PR as the regenerated output for all three languages, and CI rejects a PR whose `gen/` is stale.
 
 ## Commands
 
 ```
-npx --yes @bufbuild/buf lint              # lint all proto files
-npx --yes @bufbuild/buf generate          # regenerate gen/ (requires make tools first)
-npx --yes @bufbuild/buf breaking --against '.git#branch=main'  # breaking-change check
-go build ./...                            # build Go bindings
-make tools                                # install pinned generators into .tools/
-make check                                # everything CI runs (lint, gen, build, stale check)
+npx --yes @bufbuild/buf lint                                    # lint proto/ (verified)
+go build ./...                                                  # build Go bindings (verified)
+go vet ./...                                                    # vet Go bindings (verified)
+npx --yes @bufbuild/buf breaking --against '.git#branch=main'  # wire compatibility against a local main
+make tools                                                      # install pinned generators into .tools/
+npx --yes @bufbuild/buf generate                                # regenerate gen/ (run make tools first)
+make gen                                                        # same as buf generate, after tools
+make check                                                      # lint, gen, build and the stale-gen gate (CI)
 ```
 
 ## Areas
 
-- `.` — repo root: Makefile, buf.yaml, buf.gen.yaml, go.mod; read `.neural/neurons/root.md`
-- `.github` — CI workflows (lint, gen-staleness, go build, tsc, publish-ts); read `.neural/neurons/github.md`
-- `proto` — 38 `.proto` files, one domain per subdirectory under `proto/tank/<domain>/v1/`; read `.neural/neurons/proto.md`
+- `.` — repo root: Makefile, buf.yaml, buf.gen.yaml, go.mod, CLAUDE.md; read `.neural/neurons/root.md`
+- `.github` — CI workflows (`ci.yml`, `security.yml`); read `.neural/neurons/github.md`
+- `proto` — 41 `.proto` files, one package per domain under `proto/tank/<domain>/v1/`; read `.neural/neurons/proto.md`
 
 ## Rules
 
-From `CLAUDE.md`:
-- Never renumber or reuse field numbers.
-- Never remove a field before every client has shipped without it.
-- Never edit `gen/` by hand.
-- Never change plugin versions without regenerating everything in the same PR.
+From `CLAUDE.md`, hard prohibitions:
+- Renumbering or reusing field numbers.
+- Removing a field before every client has shipped without it.
+- Editing `gen/` by hand.
+- Changing plugin versions without regenerating everything in the same PR.
+
+From `CLAUDE.md`, decided:
 - Wire names stay neutral (`Channel`, not `Tread`); product vocabulary lives in the clients.
-- One proto package per domain, version suffix `v1`.
+- One proto package per domain, version suffix `v1`. Generated code committed, not fetched at build time.
 
 From `buf.yaml`:
-- `breaking.use: [FILE]` — moving a message between files is a breaking change even when field numbers are unchanged.
 - `lint.use: [STANDARD]` except `PACKAGE_VERSION_SUFFIX`.
+- `breaking.use: [FILE]`: moving a message between files is breaking even when field numbers are unchanged.
 
 ## Before changing anything
 
-Run `make tools` once to install the pinned generators into `.tools/`; `buf generate` will fail without them. After editing any `.proto` file, run `npx --yes @bufbuild/buf lint` to catch style violations, then `npx --yes @bufbuild/buf breaking --against '.git#branch=main'` to verify wire compatibility. Regenerate with `npx --yes @bufbuild/buf generate` and commit the updated `gen/` alongside the proto change — CI's `make check` gate rejects any PR where `gen/` is stale. `make` is often absent in agent sandboxes; run the underlying buf and go commands directly.
+- Run `make tools` once; `buf generate` fails without the pinned generators in `.tools/`.
+- After editing a `.proto` file, run `npx --yes @bufbuild/buf lint`, then `npx --yes @bufbuild/buf breaking --against '.git#branch=main'`.
+- Regenerate with `npx --yes @bufbuild/buf generate` and commit `gen/` in the same PR; `make check` rejects stale output.
+- `make` is optional: its targets wrap `npx --yes @bufbuild/buf` and `go`, so run those directly when make is missing.
+- CI runs buf lint, buf breaking against main, the gen-staleness check, `go build` and `tsc`; `publish-ts` runs on main and `v*` tags.
 
 ## Neural Knowledge
 
-This file and the neurons under `.neural/neurons/` are generated by TANK's Neural Knowledge system. The layer is refreshed automatically on every push to the default branch and on a weekly schedule; any edits made by hand are overwritten on the next refresh. To read deeper context about a specific area, open the neuron file listed above for that area.
+This file and the neurons under `.neural/neurons/` are generated by TANK's Neural Knowledge system, and the layer lives in `.neural/`. It is refreshed automatically on every push to the default branch and on a weekly schedule. Edits made by hand are overwritten on the next refresh; to read deeper context about a specific area, open the neuron file listed under Areas.
