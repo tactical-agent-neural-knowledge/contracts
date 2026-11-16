@@ -49,6 +49,13 @@ class WaitingDirection(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     WAITING_DIRECTION_UNSPECIFIED: _ClassVar[WaitingDirection]
     WAITING_DIRECTION_ON_ME: _ClassVar[WaitingDirection]
     WAITING_DIRECTION_BY_ME: _ClassVar[WaitingDirection]
+
+class NarrativeStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    NARRATIVE_STATUS_UNSPECIFIED: _ClassVar[NarrativeStatus]
+    NARRATIVE_STATUS_NARRATED: _ClassVar[NarrativeStatus]
+    NARRATIVE_STATUS_NOTHING_NEW: _ClassVar[NarrativeStatus]
+    NARRATIVE_STATUS_UNAVAILABLE: _ClassVar[NarrativeStatus]
 MARK_TYPE_UNSPECIFIED: MarkType
 MARK_TYPE_MENTION: MarkType
 MARK_TYPE_OWN_MESSAGE: MarkType
@@ -76,6 +83,10 @@ LANE_PERSONAL: Lane
 WAITING_DIRECTION_UNSPECIFIED: WaitingDirection
 WAITING_DIRECTION_ON_ME: WaitingDirection
 WAITING_DIRECTION_BY_ME: WaitingDirection
+NARRATIVE_STATUS_UNSPECIFIED: NarrativeStatus
+NARRATIVE_STATUS_NARRATED: NarrativeStatus
+NARRATIVE_STATUS_NOTHING_NEW: NarrativeStatus
+NARRATIVE_STATUS_UNAVAILABLE: NarrativeStatus
 
 class Mark(_message.Message):
     __slots__ = ("id", "channel_id", "message_id", "channel_seq", "type", "lane", "elevation", "preview", "created_at", "status", "waiting_on_user_ids", "created_by_user_id", "resolved_at", "detail", "url", "artifact_kind", "survey")
@@ -326,20 +337,24 @@ class BriefingPerson(_message.Message):
     def __init__(self, user_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class GetBriefingResponse(_message.Message):
-    __slots__ = ("treads", "people", "quiet_since", "narrative", "hours", "setup")
+    __slots__ = ("treads", "people", "quiet_since", "narrative", "hours", "setup", "unread_notifications", "narrative_status")
     TREADS_FIELD_NUMBER: _ClassVar[int]
     PEOPLE_FIELD_NUMBER: _ClassVar[int]
     QUIET_SINCE_FIELD_NUMBER: _ClassVar[int]
     NARRATIVE_FIELD_NUMBER: _ClassVar[int]
     HOURS_FIELD_NUMBER: _ClassVar[int]
     SETUP_FIELD_NUMBER: _ClassVar[int]
+    UNREAD_NOTIFICATIONS_FIELD_NUMBER: _ClassVar[int]
+    NARRATIVE_STATUS_FIELD_NUMBER: _ClassVar[int]
     treads: _containers.RepeatedCompositeFieldContainer[BriefingTread]
     people: _containers.RepeatedCompositeFieldContainer[BriefingPerson]
     quiet_since: _timestamp_pb2.Timestamp
     narrative: str
     hours: _containers.RepeatedCompositeFieldContainer[BriefingHour]
     setup: BriefingSetup
-    def __init__(self, treads: _Optional[_Iterable[_Union[BriefingTread, _Mapping]]] = ..., people: _Optional[_Iterable[_Union[BriefingPerson, _Mapping]]] = ..., quiet_since: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., narrative: _Optional[str] = ..., hours: _Optional[_Iterable[_Union[BriefingHour, _Mapping]]] = ..., setup: _Optional[_Union[BriefingSetup, _Mapping]] = ...) -> None: ...
+    unread_notifications: int
+    narrative_status: NarrativeStatus
+    def __init__(self, treads: _Optional[_Iterable[_Union[BriefingTread, _Mapping]]] = ..., people: _Optional[_Iterable[_Union[BriefingPerson, _Mapping]]] = ..., quiet_since: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., narrative: _Optional[str] = ..., hours: _Optional[_Iterable[_Union[BriefingHour, _Mapping]]] = ..., setup: _Optional[_Union[BriefingSetup, _Mapping]] = ..., unread_notifications: _Optional[int] = ..., narrative_status: _Optional[_Union[NarrativeStatus, str]] = ...) -> None: ...
 
 class BriefingHour(_message.Message):
     __slots__ = ("hour", "messages", "runs")
