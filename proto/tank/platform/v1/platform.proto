@@ -240,6 +240,9 @@ message WorkspaceRow {
   double markup = 17;                          // the rate in force now (1.5 when it has no schedule row)
   google.protobuf.Timestamp markup_effective_from = 18; // when that rate began; unset for the default
   double effective_markup = 19;                // billed / raw cost this month; 0 with no cost yet
+  bool fee_waived = 20;                        // premium without a paid subscription: no agent time included each month
+  bool agent_time_prepaid = 21;                // its agents run off a balance
+  int64 agent_time_available_cents = 22;       // what its agents may still spend now; meaningful when prepaid
 }
 
 // MarkupChange is one row of a workspace's markup schedule (see SetWorkspaceMarkup).
@@ -373,6 +376,31 @@ message GetWorkspaceResponse {
   WorkspaceCounts counts = 7;
   Claude5Spend claude5 = 8;
   repeated MarkupChange markup_history = 9;    // newest first
+  WorkspaceAgentTime agent_time = 10;
+}
+
+// WorkspaceAgentTime is a workspace's agent time as the console shows it: the balance a
+// run draws on and what put it there. A workspace that is not prepaid, or is no charge,
+// is never stopped, whatever the balance says.
+message WorkspaceAgentTime {
+  bool prepaid = 1;
+  bool no_charge = 2;
+  bool fee_waived = 3;                         // no agent time included each month
+  int64 included_cents = 4;                    // what the plan includes each month (0 when waived or free)
+  int64 included_left_cents = 5;
+  int64 balance_cents = 6;                     // bought or given, less what was used past the included amount
+  int64 available_cents = 7;                   // included_left + balance
+  int64 used_this_month_cents = 8;
+  bool blocked = 9;                            // no run may start
+  repeated AgentTimeGift history = 10;         // newest first, at most 50: purchases, refills and what was given
+}
+
+// AgentTimeGift is one addition to (or, negative, removal from) the balance.
+message AgentTimeGift {
+  string kind = 1;                             // purchase | auto_refill | adjustment
+  int64 cents = 2;
+  google.protobuf.Timestamp at = 3;
+  string note = 4;
 }
 
 // Claude5Spend is a workspace's spend on the Claude 5 family this calendar month (UTC),
@@ -677,6 +705,9 @@ message StartEvalRunResponse {
 
 // SetWorkspacePlan moves a workspace between free and premium. Premium provisions its
 // agent. Nothing is charged or refunded: Stripe and the App Store are not touched.
+// A workspace made premium here with no paid subscription has its fee waived: no agent
+// time is included each month, so its agents run only on time given or bought. A paid
+// subscription starting later ends the waiver.
 message SetWorkspacePlanRequest {
   string workspace_id = 1;
   string plan = 2;                             // free | premium
@@ -720,6 +751,22 @@ message SetWorkspaceNoChargeRequest {
 }
 message SetWorkspaceNoChargeResponse {}
 
+// GiveAgentTime adds agent time to a workspace's balance without a payment (Robby,
+// 2026-11-16: a few dollars for a new customer, more when one runs out, or a top-up for
+// one that buys its own). The balance rises by cents at once and a workspace that was
+// stopped for having none may run again. A negative cents takes back what was given by
+// mistake, never below a balance of zero. The workspace is put on prepaid agent time if
+// it was not. An addition is listed in the workspace's billing history as given, with
+// the note. Recorded as agent_time.bought with kind adjustment in the workspace's log.
+message GiveAgentTimeRequest {
+  string workspace_id = 1;
+  int64 cents = 2;                             // not zero; at most 1,000,000 either way
+  string note = 3;                             // why; the workspace's admins read it in billing history
+}
+message GiveAgentTimeResponse {
+  WorkspaceAgentTime agent_time = 1;
+}
+
 // SetWorkspaceMarkup adds a row to a workspace's markup schedule: from effective_from
 // (empty is now) its agent usage is priced at markup times raw cost. Rows are added and
 // never edited, so usage before the date keeps the rate it was priced at. markup must be
@@ -752,6 +799,8 @@ message SetWorkspaceClaude5CapResponse {
 // workspaces he uses himself, made from the console rather than tankctl). It is made
 // exactly as the app makes one (its owner and #general), then given its plan (premium
 // provisions its agent, as SetWorkspacePlan does) and, when asked, marked no charge.
+// A premium workspace made here pays no subscription, so unless it is no charge its fee
+// is waived and it has no agent time until some is given (agent_time_cents) or bought.
 // Recorded as operator.workspace.created in the new workspace's log and the platform's.
 // A slug already in use is ALREADY_EXISTS.
 message CreateWorkspaceRequest {
@@ -759,6 +808,7 @@ message CreateWorkspaceRequest {
   string slug = 2;                             // empty makes one from the name
   string plan = 3;                             // free | premium; empty is free
   bool no_charge = 4;                          // as SetWorkspaceNoCharge
+  int64 agent_time_cents = 5;                  // agent time given at the start, as GiveAgentTime; 0 gives none
 }
 message CreateWorkspaceResponse {
   WorkspaceRow workspace = 1;
@@ -789,6 +839,7 @@ service PlatformService {
   rpc SuspendWorkspace(SuspendWorkspaceRequest) returns (SuspendWorkspaceResponse);
   rpc SuspendUser(SuspendUserRequest) returns (SuspendUserResponse);
   rpc SetWorkspaceNoCharge(SetWorkspaceNoChargeRequest) returns (SetWorkspaceNoChargeResponse);
+  rpc GiveAgentTime(GiveAgentTimeRequest) returns (GiveAgentTimeResponse);
   rpc SetWorkspaceMarkup(SetWorkspaceMarkupRequest) returns (SetWorkspaceMarkupResponse);
   rpc CreateWorkspace(CreateWorkspaceRequest) returns (CreateWorkspaceResponse);
   rpc SetWorkspaceClaude5Cap(SetWorkspaceClaude5CapRequest) returns (SetWorkspaceClaude5CapResponse);
