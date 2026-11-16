@@ -335,6 +335,22 @@ message GetBriefingResponse {
   // What a new workspace has and has not done yet. Home shows the first-week cards until
   // every one is true or the person hides them.
   BriefingSetup setup = 6;
+  // Your unread notifications (mentions, replies, reactions, task events), the same count the
+  // Activity badge shows. Zero means nothing waits for you there.
+  int32 unread_notifications = 7;
+  // How the narrative came out; set only when narrate was requested.
+  NarrativeStatus narrative_status = 8;
+}
+
+// Why the narrative is what it is, so a client never mistakes a failure for "caught up".
+enum NarrativeStatus {
+  NARRATIVE_STATUS_UNSPECIFIED = 0;
+  // Written; the narrative has text.
+  NARRATIVE_STATUS_NARRATED = 1;
+  // No unread messages and no unread notifications: the person really is caught up.
+  NARRATIVE_STATUS_NOTHING_NEW = 2;
+  // There is something unread but the narration failed or is not configured.
+  NARRATIVE_STATUS_UNAVAILABLE = 3;
 }
 
 message BriefingHour {
