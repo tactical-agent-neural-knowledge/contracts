@@ -16,6 +16,7 @@ class TaskStage(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     TASK_STAGE_READY_TO_CHECK: _ClassVar[TaskStage]
     TASK_STAGE_DONE: _ClassVar[TaskStage]
     TASK_STAGE_STUCK: _ClassVar[TaskStage]
+    TASK_STAGE_CANCELLED: _ClassVar[TaskStage]
 
 class TaskRunEvent(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -31,6 +32,7 @@ TASK_STAGE_IN_PROGRESS: TaskStage
 TASK_STAGE_READY_TO_CHECK: TaskStage
 TASK_STAGE_DONE: TaskStage
 TASK_STAGE_STUCK: TaskStage
+TASK_STAGE_CANCELLED: TaskStage
 TASK_RUN_EVENT_UNSPECIFIED: TaskRunEvent
 TASK_RUN_EVENT_STARTED: TaskRunEvent
 TASK_RUN_EVENT_WAITING: TaskRunEvent
@@ -243,6 +245,18 @@ class RetryTaskRequest(_message.Message):
     def __init__(self, task_id: _Optional[str] = ...) -> None: ...
 
 class RetryTaskResponse(_message.Message):
+    __slots__ = ("task",)
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    task: Task
+    def __init__(self, task: _Optional[_Union[Task, _Mapping]] = ...) -> None: ...
+
+class CancelTaskRequest(_message.Message):
+    __slots__ = ("task_id",)
+    TASK_ID_FIELD_NUMBER: _ClassVar[int]
+    task_id: str
+    def __init__(self, task_id: _Optional[str] = ...) -> None: ...
+
+class CancelTaskResponse(_message.Message):
     __slots__ = ("task",)
     TASK_FIELD_NUMBER: _ClassVar[int]
     task: Task
