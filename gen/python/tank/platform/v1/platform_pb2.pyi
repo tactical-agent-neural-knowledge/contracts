@@ -333,7 +333,7 @@ class GetUserResponse(_message.Message):
     def __init__(self, user: _Optional[_Union[UserRow, _Mapping]] = ..., memberships: _Optional[_Iterable[_Union[Membership, _Mapping]]] = ..., logins: _Optional[_Iterable[_Union[LoginRow, _Mapping]]] = ...) -> None: ...
 
 class WorkspaceRow(_message.Message):
-    __slots__ = ("id", "slug", "name", "kind", "plan", "addons", "people", "created_at", "last_active_at", "owner_email", "agent_runs_30d", "agent_cost_usd_30d", "agent_billed_cents_month", "suspended_at", "suspended_reason", "no_charge", "markup", "markup_effective_from", "effective_markup")
+    __slots__ = ("id", "slug", "name", "kind", "plan", "addons", "people", "created_at", "last_active_at", "owner_email", "agent_runs_30d", "agent_cost_usd_30d", "agent_billed_cents_month", "suspended_at", "suspended_reason", "no_charge", "markup", "markup_effective_from", "effective_markup", "fee_waived", "agent_time_prepaid", "agent_time_available_cents")
     ID_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -353,6 +353,9 @@ class WorkspaceRow(_message.Message):
     MARKUP_FIELD_NUMBER: _ClassVar[int]
     MARKUP_EFFECTIVE_FROM_FIELD_NUMBER: _ClassVar[int]
     EFFECTIVE_MARKUP_FIELD_NUMBER: _ClassVar[int]
+    FEE_WAIVED_FIELD_NUMBER: _ClassVar[int]
+    AGENT_TIME_PREPAID_FIELD_NUMBER: _ClassVar[int]
+    AGENT_TIME_AVAILABLE_CENTS_FIELD_NUMBER: _ClassVar[int]
     id: str
     slug: str
     name: str
@@ -372,7 +375,10 @@ class WorkspaceRow(_message.Message):
     markup: float
     markup_effective_from: _timestamp_pb2.Timestamp
     effective_markup: float
-    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., kind: _Optional[str] = ..., plan: _Optional[str] = ..., addons: _Optional[_Iterable[str]] = ..., people: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_active_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., owner_email: _Optional[str] = ..., agent_runs_30d: _Optional[int] = ..., agent_cost_usd_30d: _Optional[float] = ..., agent_billed_cents_month: _Optional[int] = ..., suspended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., suspended_reason: _Optional[str] = ..., no_charge: bool = ..., markup: _Optional[float] = ..., markup_effective_from: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., effective_markup: _Optional[float] = ...) -> None: ...
+    fee_waived: bool
+    agent_time_prepaid: bool
+    agent_time_available_cents: int
+    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., kind: _Optional[str] = ..., plan: _Optional[str] = ..., addons: _Optional[_Iterable[str]] = ..., people: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., last_active_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., owner_email: _Optional[str] = ..., agent_runs_30d: _Optional[int] = ..., agent_cost_usd_30d: _Optional[float] = ..., agent_billed_cents_month: _Optional[int] = ..., suspended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., suspended_reason: _Optional[str] = ..., no_charge: bool = ..., markup: _Optional[float] = ..., markup_effective_from: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., effective_markup: _Optional[float] = ..., fee_waived: bool = ..., agent_time_prepaid: bool = ..., agent_time_available_cents: _Optional[int] = ...) -> None: ...
 
 class MarkupChange(_message.Message):
     __slots__ = ("markup", "effective_from", "reason", "set_by_email")
@@ -571,7 +577,7 @@ class GetWorkspaceRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ..., slug: _Optional[str] = ...) -> None: ...
 
 class GetWorkspaceResponse(_message.Message):
-    __slots__ = ("workspace", "members", "features", "subscriptions", "agent_usage", "days", "counts", "claude5", "markup_history")
+    __slots__ = ("workspace", "members", "features", "subscriptions", "agent_usage", "days", "counts", "claude5", "markup_history", "agent_time")
     WORKSPACE_FIELD_NUMBER: _ClassVar[int]
     MEMBERS_FIELD_NUMBER: _ClassVar[int]
     FEATURES_FIELD_NUMBER: _ClassVar[int]
@@ -581,6 +587,7 @@ class GetWorkspaceResponse(_message.Message):
     COUNTS_FIELD_NUMBER: _ClassVar[int]
     CLAUDE5_FIELD_NUMBER: _ClassVar[int]
     MARKUP_HISTORY_FIELD_NUMBER: _ClassVar[int]
+    AGENT_TIME_FIELD_NUMBER: _ClassVar[int]
     workspace: WorkspaceRow
     members: _containers.RepeatedCompositeFieldContainer[MemberRow]
     features: _containers.RepeatedCompositeFieldContainer[Feature]
@@ -590,7 +597,44 @@ class GetWorkspaceResponse(_message.Message):
     counts: WorkspaceCounts
     claude5: Claude5Spend
     markup_history: _containers.RepeatedCompositeFieldContainer[MarkupChange]
-    def __init__(self, workspace: _Optional[_Union[WorkspaceRow, _Mapping]] = ..., members: _Optional[_Iterable[_Union[MemberRow, _Mapping]]] = ..., features: _Optional[_Iterable[_Union[Feature, _Mapping]]] = ..., subscriptions: _Optional[_Iterable[_Union[Subscription, _Mapping]]] = ..., agent_usage: _Optional[_Union[AgentUsage, _Mapping]] = ..., days: _Optional[_Iterable[_Union[DailyCount, _Mapping]]] = ..., counts: _Optional[_Union[WorkspaceCounts, _Mapping]] = ..., claude5: _Optional[_Union[Claude5Spend, _Mapping]] = ..., markup_history: _Optional[_Iterable[_Union[MarkupChange, _Mapping]]] = ...) -> None: ...
+    agent_time: WorkspaceAgentTime
+    def __init__(self, workspace: _Optional[_Union[WorkspaceRow, _Mapping]] = ..., members: _Optional[_Iterable[_Union[MemberRow, _Mapping]]] = ..., features: _Optional[_Iterable[_Union[Feature, _Mapping]]] = ..., subscriptions: _Optional[_Iterable[_Union[Subscription, _Mapping]]] = ..., agent_usage: _Optional[_Union[AgentUsage, _Mapping]] = ..., days: _Optional[_Iterable[_Union[DailyCount, _Mapping]]] = ..., counts: _Optional[_Union[WorkspaceCounts, _Mapping]] = ..., claude5: _Optional[_Union[Claude5Spend, _Mapping]] = ..., markup_history: _Optional[_Iterable[_Union[MarkupChange, _Mapping]]] = ..., agent_time: _Optional[_Union[WorkspaceAgentTime, _Mapping]] = ...) -> None: ...
+
+class WorkspaceAgentTime(_message.Message):
+    __slots__ = ("prepaid", "no_charge", "fee_waived", "included_cents", "included_left_cents", "balance_cents", "available_cents", "used_this_month_cents", "blocked", "history")
+    PREPAID_FIELD_NUMBER: _ClassVar[int]
+    NO_CHARGE_FIELD_NUMBER: _ClassVar[int]
+    FEE_WAIVED_FIELD_NUMBER: _ClassVar[int]
+    INCLUDED_CENTS_FIELD_NUMBER: _ClassVar[int]
+    INCLUDED_LEFT_CENTS_FIELD_NUMBER: _ClassVar[int]
+    BALANCE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    AVAILABLE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    USED_THIS_MONTH_CENTS_FIELD_NUMBER: _ClassVar[int]
+    BLOCKED_FIELD_NUMBER: _ClassVar[int]
+    HISTORY_FIELD_NUMBER: _ClassVar[int]
+    prepaid: bool
+    no_charge: bool
+    fee_waived: bool
+    included_cents: int
+    included_left_cents: int
+    balance_cents: int
+    available_cents: int
+    used_this_month_cents: int
+    blocked: bool
+    history: _containers.RepeatedCompositeFieldContainer[AgentTimeGift]
+    def __init__(self, prepaid: bool = ..., no_charge: bool = ..., fee_waived: bool = ..., included_cents: _Optional[int] = ..., included_left_cents: _Optional[int] = ..., balance_cents: _Optional[int] = ..., available_cents: _Optional[int] = ..., used_this_month_cents: _Optional[int] = ..., blocked: bool = ..., history: _Optional[_Iterable[_Union[AgentTimeGift, _Mapping]]] = ...) -> None: ...
+
+class AgentTimeGift(_message.Message):
+    __slots__ = ("kind", "cents", "at", "note")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    CENTS_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    cents: int
+    at: _timestamp_pb2.Timestamp
+    note: str
+    def __init__(self, kind: _Optional[str] = ..., cents: _Optional[int] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., note: _Optional[str] = ...) -> None: ...
 
 class Claude5Spend(_message.Message):
     __slots__ = ("capped", "cap_cents", "month_cents", "over_cap")
@@ -1143,6 +1187,22 @@ class SetWorkspaceNoChargeResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class GiveAgentTimeRequest(_message.Message):
+    __slots__ = ("workspace_id", "cents", "note")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CENTS_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    cents: int
+    note: str
+    def __init__(self, workspace_id: _Optional[str] = ..., cents: _Optional[int] = ..., note: _Optional[str] = ...) -> None: ...
+
+class GiveAgentTimeResponse(_message.Message):
+    __slots__ = ("agent_time",)
+    AGENT_TIME_FIELD_NUMBER: _ClassVar[int]
+    agent_time: WorkspaceAgentTime
+    def __init__(self, agent_time: _Optional[_Union[WorkspaceAgentTime, _Mapping]] = ...) -> None: ...
+
 class SetWorkspaceMarkupRequest(_message.Message):
     __slots__ = ("workspace_id", "markup", "effective_from", "reason")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
@@ -1182,16 +1242,18 @@ class SetWorkspaceClaude5CapResponse(_message.Message):
     def __init__(self, claude5: _Optional[_Union[Claude5Spend, _Mapping]] = ...) -> None: ...
 
 class CreateWorkspaceRequest(_message.Message):
-    __slots__ = ("name", "slug", "plan", "no_charge")
+    __slots__ = ("name", "slug", "plan", "no_charge", "agent_time_cents")
     NAME_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     PLAN_FIELD_NUMBER: _ClassVar[int]
     NO_CHARGE_FIELD_NUMBER: _ClassVar[int]
+    AGENT_TIME_CENTS_FIELD_NUMBER: _ClassVar[int]
     name: str
     slug: str
     plan: str
     no_charge: bool
-    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., plan: _Optional[str] = ..., no_charge: bool = ...) -> None: ...
+    agent_time_cents: int
+    def __init__(self, name: _Optional[str] = ..., slug: _Optional[str] = ..., plan: _Optional[str] = ..., no_charge: bool = ..., agent_time_cents: _Optional[int] = ...) -> None: ...
 
 class CreateWorkspaceResponse(_message.Message):
     __slots__ = ("workspace",)

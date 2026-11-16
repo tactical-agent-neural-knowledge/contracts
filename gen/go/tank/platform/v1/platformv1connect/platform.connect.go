@@ -94,6 +94,9 @@ const (
 	// PlatformServiceSetWorkspaceNoChargeProcedure is the fully-qualified name of the PlatformService's
 	// SetWorkspaceNoCharge RPC.
 	PlatformServiceSetWorkspaceNoChargeProcedure = "/tank.platform.v1.PlatformService/SetWorkspaceNoCharge"
+	// PlatformServiceGiveAgentTimeProcedure is the fully-qualified name of the PlatformService's
+	// GiveAgentTime RPC.
+	PlatformServiceGiveAgentTimeProcedure = "/tank.platform.v1.PlatformService/GiveAgentTime"
 	// PlatformServiceSetWorkspaceMarkupProcedure is the fully-qualified name of the PlatformService's
 	// SetWorkspaceMarkup RPC.
 	PlatformServiceSetWorkspaceMarkupProcedure = "/tank.platform.v1.PlatformService/SetWorkspaceMarkup"
@@ -140,6 +143,7 @@ type PlatformServiceClient interface {
 	SuspendWorkspace(context.Context, *connect.Request[v1.SuspendWorkspaceRequest]) (*connect.Response[v1.SuspendWorkspaceResponse], error)
 	SuspendUser(context.Context, *connect.Request[v1.SuspendUserRequest]) (*connect.Response[v1.SuspendUserResponse], error)
 	SetWorkspaceNoCharge(context.Context, *connect.Request[v1.SetWorkspaceNoChargeRequest]) (*connect.Response[v1.SetWorkspaceNoChargeResponse], error)
+	GiveAgentTime(context.Context, *connect.Request[v1.GiveAgentTimeRequest]) (*connect.Response[v1.GiveAgentTimeResponse], error)
 	SetWorkspaceMarkup(context.Context, *connect.Request[v1.SetWorkspaceMarkupRequest]) (*connect.Response[v1.SetWorkspaceMarkupResponse], error)
 	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
 	SetWorkspaceClaude5Cap(context.Context, *connect.Request[v1.SetWorkspaceClaude5CapRequest]) (*connect.Response[v1.SetWorkspaceClaude5CapResponse], error)
@@ -286,6 +290,12 @@ func NewPlatformServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(platformServiceMethods.ByName("SetWorkspaceNoCharge")),
 			connect.WithClientOptions(opts...),
 		),
+		giveAgentTime: connect.NewClient[v1.GiveAgentTimeRequest, v1.GiveAgentTimeResponse](
+			httpClient,
+			baseURL+PlatformServiceGiveAgentTimeProcedure,
+			connect.WithSchema(platformServiceMethods.ByName("GiveAgentTime")),
+			connect.WithClientOptions(opts...),
+		),
 		setWorkspaceMarkup: connect.NewClient[v1.SetWorkspaceMarkupRequest, v1.SetWorkspaceMarkupResponse](
 			httpClient,
 			baseURL+PlatformServiceSetWorkspaceMarkupProcedure,
@@ -354,6 +364,7 @@ type platformServiceClient struct {
 	suspendWorkspace       *connect.Client[v1.SuspendWorkspaceRequest, v1.SuspendWorkspaceResponse]
 	suspendUser            *connect.Client[v1.SuspendUserRequest, v1.SuspendUserResponse]
 	setWorkspaceNoCharge   *connect.Client[v1.SetWorkspaceNoChargeRequest, v1.SetWorkspaceNoChargeResponse]
+	giveAgentTime          *connect.Client[v1.GiveAgentTimeRequest, v1.GiveAgentTimeResponse]
 	setWorkspaceMarkup     *connect.Client[v1.SetWorkspaceMarkupRequest, v1.SetWorkspaceMarkupResponse]
 	createWorkspace        *connect.Client[v1.CreateWorkspaceRequest, v1.CreateWorkspaceResponse]
 	setWorkspaceClaude5Cap *connect.Client[v1.SetWorkspaceClaude5CapRequest, v1.SetWorkspaceClaude5CapResponse]
@@ -468,6 +479,11 @@ func (c *platformServiceClient) SetWorkspaceNoCharge(ctx context.Context, req *c
 	return c.setWorkspaceNoCharge.CallUnary(ctx, req)
 }
 
+// GiveAgentTime calls tank.platform.v1.PlatformService.GiveAgentTime.
+func (c *platformServiceClient) GiveAgentTime(ctx context.Context, req *connect.Request[v1.GiveAgentTimeRequest]) (*connect.Response[v1.GiveAgentTimeResponse], error) {
+	return c.giveAgentTime.CallUnary(ctx, req)
+}
+
 // SetWorkspaceMarkup calls tank.platform.v1.PlatformService.SetWorkspaceMarkup.
 func (c *platformServiceClient) SetWorkspaceMarkup(ctx context.Context, req *connect.Request[v1.SetWorkspaceMarkupRequest]) (*connect.Response[v1.SetWorkspaceMarkupResponse], error) {
 	return c.setWorkspaceMarkup.CallUnary(ctx, req)
@@ -526,6 +542,7 @@ type PlatformServiceHandler interface {
 	SuspendWorkspace(context.Context, *connect.Request[v1.SuspendWorkspaceRequest]) (*connect.Response[v1.SuspendWorkspaceResponse], error)
 	SuspendUser(context.Context, *connect.Request[v1.SuspendUserRequest]) (*connect.Response[v1.SuspendUserResponse], error)
 	SetWorkspaceNoCharge(context.Context, *connect.Request[v1.SetWorkspaceNoChargeRequest]) (*connect.Response[v1.SetWorkspaceNoChargeResponse], error)
+	GiveAgentTime(context.Context, *connect.Request[v1.GiveAgentTimeRequest]) (*connect.Response[v1.GiveAgentTimeResponse], error)
 	SetWorkspaceMarkup(context.Context, *connect.Request[v1.SetWorkspaceMarkupRequest]) (*connect.Response[v1.SetWorkspaceMarkupResponse], error)
 	CreateWorkspace(context.Context, *connect.Request[v1.CreateWorkspaceRequest]) (*connect.Response[v1.CreateWorkspaceResponse], error)
 	SetWorkspaceClaude5Cap(context.Context, *connect.Request[v1.SetWorkspaceClaude5CapRequest]) (*connect.Response[v1.SetWorkspaceClaude5CapResponse], error)
@@ -668,6 +685,12 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 		connect.WithSchema(platformServiceMethods.ByName("SetWorkspaceNoCharge")),
 		connect.WithHandlerOptions(opts...),
 	)
+	platformServiceGiveAgentTimeHandler := connect.NewUnaryHandler(
+		PlatformServiceGiveAgentTimeProcedure,
+		svc.GiveAgentTime,
+		connect.WithSchema(platformServiceMethods.ByName("GiveAgentTime")),
+		connect.WithHandlerOptions(opts...),
+	)
 	platformServiceSetWorkspaceMarkupHandler := connect.NewUnaryHandler(
 		PlatformServiceSetWorkspaceMarkupProcedure,
 		svc.SetWorkspaceMarkup,
@@ -754,6 +777,8 @@ func NewPlatformServiceHandler(svc PlatformServiceHandler, opts ...connect.Handl
 			platformServiceSuspendUserHandler.ServeHTTP(w, r)
 		case PlatformServiceSetWorkspaceNoChargeProcedure:
 			platformServiceSetWorkspaceNoChargeHandler.ServeHTTP(w, r)
+		case PlatformServiceGiveAgentTimeProcedure:
+			platformServiceGiveAgentTimeHandler.ServeHTTP(w, r)
 		case PlatformServiceSetWorkspaceMarkupProcedure:
 			platformServiceSetWorkspaceMarkupHandler.ServeHTTP(w, r)
 		case PlatformServiceCreateWorkspaceProcedure:
@@ -859,6 +884,10 @@ func (UnimplementedPlatformServiceHandler) SuspendUser(context.Context, *connect
 
 func (UnimplementedPlatformServiceHandler) SetWorkspaceNoCharge(context.Context, *connect.Request[v1.SetWorkspaceNoChargeRequest]) (*connect.Response[v1.SetWorkspaceNoChargeResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.SetWorkspaceNoCharge is not implemented"))
+}
+
+func (UnimplementedPlatformServiceHandler) GiveAgentTime(context.Context, *connect.Request[v1.GiveAgentTimeRequest]) (*connect.Response[v1.GiveAgentTimeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.platform.v1.PlatformService.GiveAgentTime is not implemented"))
 }
 
 func (UnimplementedPlatformServiceHandler) SetWorkspaceMarkup(context.Context, *connect.Request[v1.SetWorkspaceMarkupRequest]) (*connect.Response[v1.SetWorkspaceMarkupResponse], error) {
