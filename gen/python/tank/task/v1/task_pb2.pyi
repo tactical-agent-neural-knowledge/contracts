@@ -75,7 +75,7 @@ class TaskNotify(_message.Message):
     def __init__(self, stage: _Optional[_Union[TaskStage, str]] = ..., user_id: _Optional[str] = ..., from_workspace: bool = ...) -> None: ...
 
 class Task(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "title", "details", "stage", "created_by", "created_at", "updated_at", "stage_at", "run_id", "progress", "proof", "checked_by", "checked_at", "stuck_reason", "notify", "asker_muted", "channel_name", "link")
+    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "title", "details", "stage", "created_by", "created_at", "updated_at", "stage_at", "run_id", "progress", "proof", "checked_by", "checked_at", "stuck_reason", "notify", "asker_muted", "channel_name", "link", "file_ids")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -97,6 +97,7 @@ class Task(_message.Message):
     ASKER_MUTED_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_NAME_FIELD_NUMBER: _ClassVar[int]
     LINK_FIELD_NUMBER: _ClassVar[int]
+    FILE_IDS_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -118,7 +119,8 @@ class Task(_message.Message):
     asker_muted: bool
     channel_name: str
     link: str
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., title: _Optional[str] = ..., details: _Optional[str] = ..., stage: _Optional[_Union[TaskStage, str]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stage_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., run_id: _Optional[str] = ..., progress: _Optional[str] = ..., proof: _Optional[_Union[TaskProof, _Mapping]] = ..., checked_by: _Optional[str] = ..., checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stuck_reason: _Optional[str] = ..., notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ..., asker_muted: bool = ..., channel_name: _Optional[str] = ..., link: _Optional[str] = ...) -> None: ...
+    file_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., title: _Optional[str] = ..., details: _Optional[str] = ..., stage: _Optional[_Union[TaskStage, str]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stage_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., run_id: _Optional[str] = ..., progress: _Optional[str] = ..., proof: _Optional[_Union[TaskProof, _Mapping]] = ..., checked_by: _Optional[str] = ..., checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stuck_reason: _Optional[str] = ..., notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ..., asker_muted: bool = ..., channel_name: _Optional[str] = ..., link: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class ListTasksRequest(_message.Message):
     __slots__ = ("workspace_id", "channel_id", "stages", "asked_by", "limit")
@@ -157,20 +159,22 @@ class GetTaskResponse(_message.Message):
     def __init__(self, task: _Optional[_Union[Task, _Mapping]] = ...) -> None: ...
 
 class CreateTaskRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "title", "details", "start_now", "notify")
+    __slots__ = ("workspace_id", "channel_id", "title", "details", "start_now", "notify", "file_ids")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     DETAILS_FIELD_NUMBER: _ClassVar[int]
     START_NOW_FIELD_NUMBER: _ClassVar[int]
     NOTIFY_FIELD_NUMBER: _ClassVar[int]
+    FILE_IDS_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     title: str
     details: str
     start_now: bool
     notify: _containers.RepeatedCompositeFieldContainer[TaskNotify]
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., details: _Optional[str] = ..., start_now: bool = ..., notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ...) -> None: ...
+    file_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., title: _Optional[str] = ..., details: _Optional[str] = ..., start_now: bool = ..., notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ..., file_ids: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class CreateTaskResponse(_message.Message):
     __slots__ = ("task",)
@@ -179,18 +183,20 @@ class CreateTaskResponse(_message.Message):
     def __init__(self, task: _Optional[_Union[Task, _Mapping]] = ...) -> None: ...
 
 class CreateTaskWithChannelRequest(_message.Message):
-    __slots__ = ("workspace_id", "title", "details", "start_now", "notify")
+    __slots__ = ("workspace_id", "title", "details", "start_now", "notify", "file_ids")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     DETAILS_FIELD_NUMBER: _ClassVar[int]
     START_NOW_FIELD_NUMBER: _ClassVar[int]
     NOTIFY_FIELD_NUMBER: _ClassVar[int]
+    FILE_IDS_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     title: str
     details: str
     start_now: bool
     notify: _containers.RepeatedCompositeFieldContainer[TaskNotify]
-    def __init__(self, workspace_id: _Optional[str] = ..., title: _Optional[str] = ..., details: _Optional[str] = ..., start_now: bool = ..., notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ...) -> None: ...
+    file_ids: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, workspace_id: _Optional[str] = ..., title: _Optional[str] = ..., details: _Optional[str] = ..., start_now: bool = ..., notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ..., file_ids: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class CreateTaskWithChannelResponse(_message.Message):
     __slots__ = ("task", "channel")
