@@ -1,7 +1,7 @@
 {
   "generated_by": "TANK Neural Knowledge",
-  "commit": "08919716972204b9e0eaa8c02cffac190f93d1f7",
-  "refreshed_at": "2026-11-09T00:48:33.266Z",
+  "commit": "d7aa1845d1fb0a2c496e0cf09a3b8e2eda410bc4",
+  "refreshed_at": "2026-11-16T00:46:02.654Z",
   "areas": {
     ".": {
       "neurons": ".neural/neurons/root.md",
@@ -39,10 +39,10 @@
       "neurons": ".neural/neurons/proto.md",
       "hot": [
         "proto/tank/agentctl/v1/agentctl.proto",
+        "proto/tank/ai/v1/ai.proto",
         "proto/tank/agent/v1/agent.proto",
         "proto/tank/board/v1/board.proto",
-        "proto/tank/ai/v1/ai.proto",
-        "proto/tank/canvas/v1/canvas.proto",
+        "proto/tank/platform/v1/platform.proto",
         "proto/tank/workspace/v1/workspace.proto"
       ],
       "files": [
@@ -52,11 +52,13 @@
         "proto/tank/agentctl/v1/agentctl.proto",
         "proto/tank/agentops/v1/agentops.proto",
         "proto/tank/ai/v1/ai.proto",
+        "proto/tank/apps/v1/apps.proto",
         "proto/tank/auth/v1/auth.proto",
         "proto/tank/billing/v1/billing.proto",
         "proto/tank/blocks/v1/blocks.proto",
         "proto/tank/board/v1/board.proto",
         "proto/tank/books/v1/books.proto",
+        "proto/tank/browse/v1/browse.proto",
         "proto/tank/canvas/v1/canvas.proto",
         "proto/tank/catalog/v1/catalog.proto",
         "proto/tank/channel/v1/channel.proto",
@@ -82,6 +84,7 @@
         "proto/tank/search/v1/search.proto",
         "proto/tank/security/v1/security.proto",
         "proto/tank/social/v1/social.proto",
+        "proto/tank/task/v1/task.proto",
         "proto/tank/topo/v1/topo.proto",
         "proto/tank/workspace/v1/workspace.proto"
       ]
