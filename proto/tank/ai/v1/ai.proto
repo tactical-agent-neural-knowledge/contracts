@@ -151,6 +151,11 @@ message Attachment {
   // the file itself. TANK's own models see its frames and hear its speech; nothing else
   // does. Clients play it back through FilesService.GetDownloadUrl.
   string file_id = 6;
+  // A small picture of an image attachment, for showing it in the conversation. Set when
+  // the messages were asked for light: then `data` is empty for every attachment, `size` is
+  // still the whole attachment's, and the bytes come from GetAttachment when the person
+  // opens it. A conversation with a few photos used to be megabytes every time it opened.
+  bytes thumb = 7;
 }
 
 enum Role {
@@ -269,6 +274,8 @@ message GetConversationRequest {
   // How many of the newest messages to return; 0 returns every message, as before. The
   // ones returned are still oldest first. Older ones come from ListMessages.
   int32 message_limit = 2;
+  // Attachments come without their bytes and pictures with a thumb (Attachment.thumb).
+  bool light = 3;
 }
 message GetConversationResponse {
   Conversation conversation = 1;
@@ -286,6 +293,17 @@ message ListMessagesRequest {
   string before_message_id = 2;
   // Default 50, at most 200.
   int32 limit = 3;
+  // Attachments come without their bytes and pictures with a thumb (Attachment.thumb).
+  bool light = 4;
+}
+
+message GetAttachmentRequest {
+  string conversation_id = 1;
+  string attachment_id = 2;
+}
+message GetAttachmentResponse {
+  // With its bytes.
+  Attachment attachment = 1;
 }
 message ListMessagesResponse {
   // Oldest first, as in GetConversationResponse.
@@ -591,6 +609,8 @@ service AiService {
   // (GetConversation with message_limit gives the newest ones). Same membership rule as
   // GetConversation; reading a page never marks anything read.
   rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse);
+  // One attachment with its bytes, for a member of its conversation: what a light read left out.
+  rpc GetAttachment(GetAttachmentRequest) returns (GetAttachmentResponse);
   // A quiet signal about one of Neural's answers (2026-11-15): the person copied it or shared
   // it. Kept for TANK Neural's evals and preference labels, never shown. Only the
   // conversation's owner is recorded; anyone else, an unknown message or a person's own
@@ -732,6 +752,8 @@ message RemoveMemberResponse {
 }
 message WatchRequest {
   string conversation_id = 1;
+  // Messages arrive with attachments as in a light read (Attachment.thumb).
+  bool light = 2;
 }
 message WatchResponse {
   oneof event {

@@ -115,6 +115,8 @@ const (
 	AiServiceMarkDeliveredProcedure = "/tank.ai.v1.AiService/MarkDelivered"
 	// AiServiceListMessagesProcedure is the fully-qualified name of the AiService's ListMessages RPC.
 	AiServiceListMessagesProcedure = "/tank.ai.v1.AiService/ListMessages"
+	// AiServiceGetAttachmentProcedure is the fully-qualified name of the AiService's GetAttachment RPC.
+	AiServiceGetAttachmentProcedure = "/tank.ai.v1.AiService/GetAttachment"
 	// AiServiceRecordAnswerSignalProcedure is the fully-qualified name of the AiService's
 	// RecordAnswerSignal RPC.
 	AiServiceRecordAnswerSignalProcedure = "/tank.ai.v1.AiService/RecordAnswerSignal"
@@ -186,6 +188,8 @@ type AiServiceClient interface {
 	// (GetConversation with message_limit gives the newest ones). Same membership rule as
 	// GetConversation; reading a page never marks anything read.
 	ListMessages(context.Context, *connect.Request[v1.ListMessagesRequest]) (*connect.Response[v1.ListMessagesResponse], error)
+	// One attachment with its bytes, for a member of its conversation: what a light read left out.
+	GetAttachment(context.Context, *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.GetAttachmentResponse], error)
 	// A quiet signal about one of Neural's answers (2026-11-15): the person copied it or shared
 	// it. Kept for TANK Neural's evals and preference labels, never shown. Only the
 	// conversation's owner is recorded; anyone else, an unknown message or a person's own
@@ -416,6 +420,12 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("ListMessages")),
 			connect.WithClientOptions(opts...),
 		),
+		getAttachment: connect.NewClient[v1.GetAttachmentRequest, v1.GetAttachmentResponse](
+			httpClient,
+			baseURL+AiServiceGetAttachmentProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("GetAttachment")),
+			connect.WithClientOptions(opts...),
+		),
 		recordAnswerSignal: connect.NewClient[v1.RecordAnswerSignalRequest, v1.RecordAnswerSignalResponse](
 			httpClient,
 			baseURL+AiServiceRecordAnswerSignalProcedure,
@@ -462,6 +472,7 @@ type aiServiceClient struct {
 	setReadReceipts    *connect.Client[v1.SetReadReceiptsRequest, v1.SetReadReceiptsResponse]
 	markDelivered      *connect.Client[v1.MarkDeliveredRequest, v1.MarkDeliveredResponse]
 	listMessages       *connect.Client[v1.ListMessagesRequest, v1.ListMessagesResponse]
+	getAttachment      *connect.Client[v1.GetAttachmentRequest, v1.GetAttachmentResponse]
 	recordAnswerSignal *connect.Client[v1.RecordAnswerSignalRequest, v1.RecordAnswerSignalResponse]
 }
 
@@ -640,6 +651,11 @@ func (c *aiServiceClient) ListMessages(ctx context.Context, req *connect.Request
 	return c.listMessages.CallUnary(ctx, req)
 }
 
+// GetAttachment calls tank.ai.v1.AiService.GetAttachment.
+func (c *aiServiceClient) GetAttachment(ctx context.Context, req *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.GetAttachmentResponse], error) {
+	return c.getAttachment.CallUnary(ctx, req)
+}
+
 // RecordAnswerSignal calls tank.ai.v1.AiService.RecordAnswerSignal.
 func (c *aiServiceClient) RecordAnswerSignal(ctx context.Context, req *connect.Request[v1.RecordAnswerSignalRequest]) (*connect.Response[v1.RecordAnswerSignalResponse], error) {
 	return c.recordAnswerSignal.CallUnary(ctx, req)
@@ -711,6 +727,8 @@ type AiServiceHandler interface {
 	// (GetConversation with message_limit gives the newest ones). Same membership rule as
 	// GetConversation; reading a page never marks anything read.
 	ListMessages(context.Context, *connect.Request[v1.ListMessagesRequest]) (*connect.Response[v1.ListMessagesResponse], error)
+	// One attachment with its bytes, for a member of its conversation: what a light read left out.
+	GetAttachment(context.Context, *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.GetAttachmentResponse], error)
 	// A quiet signal about one of Neural's answers (2026-11-15): the person copied it or shared
 	// it. Kept for TANK Neural's evals and preference labels, never shown. Only the
 	// conversation's owner is recorded; anyone else, an unknown message or a person's own
@@ -937,6 +955,12 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("ListMessages")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServiceGetAttachmentHandler := connect.NewUnaryHandler(
+		AiServiceGetAttachmentProcedure,
+		svc.GetAttachment,
+		connect.WithSchema(aiServiceMethods.ByName("GetAttachment")),
+		connect.WithHandlerOptions(opts...),
+	)
 	aiServiceRecordAnswerSignalHandler := connect.NewUnaryHandler(
 		AiServiceRecordAnswerSignalProcedure,
 		svc.RecordAnswerSignal,
@@ -1015,6 +1039,8 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceMarkDeliveredHandler.ServeHTTP(w, r)
 		case AiServiceListMessagesProcedure:
 			aiServiceListMessagesHandler.ServeHTTP(w, r)
+		case AiServiceGetAttachmentProcedure:
+			aiServiceGetAttachmentHandler.ServeHTTP(w, r)
 		case AiServiceRecordAnswerSignalProcedure:
 			aiServiceRecordAnswerSignalHandler.ServeHTTP(w, r)
 		default:
@@ -1164,6 +1190,10 @@ func (UnimplementedAiServiceHandler) MarkDelivered(context.Context, *connect.Req
 
 func (UnimplementedAiServiceHandler) ListMessages(context.Context, *connect.Request[v1.ListMessagesRequest]) (*connect.Response[v1.ListMessagesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.ListMessages is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) GetAttachment(context.Context, *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.GetAttachmentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.GetAttachment is not implemented"))
 }
 
 func (UnimplementedAiServiceHandler) RecordAnswerSignal(context.Context, *connect.Request[v1.RecordAnswerSignalRequest]) (*connect.Response[v1.RecordAnswerSignalResponse], error) {
