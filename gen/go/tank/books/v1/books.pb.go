@@ -6220,10 +6220,11 @@ func (x *ListTransactionsResponse) GetTotalCents() int64 {
 // One thing the model expects to happen. Forecast lines are never booked: they are read
 // from the books and the platform's own usage, and never enter the journal or the report.
 type ForecastLine struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Kind          string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`     // "income" or "spend"
-	Label         string                 `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`   // e.g. "Cache7 auto-refill"
-	Source        string                 `protobuf:"bytes,3,opt,name=source,proto3" json:"source,omitempty"` // refill, usage, invoice, aws, agents, recurring, bill, fee
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	Kind   string                 `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`     // "income" or "spend"
+	Label  string                 `protobuf:"bytes,2,opt,name=label,proto3" json:"label,omitempty"`   // e.g. "Cache7 auto-refill"
+	Source string                 `protobuf:"bytes,3,opt,name=source,proto3" json:"source,omitempty"` // refill, usage, invoice, aws, agents_in_aws, recurring, bill, fee
+	// (agents_in_aws is shown for reference: it is inside the aws lines, so no total counts it)
 	ExpectedAt    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=expected_at,json=expectedAt,proto3" json:"expected_at,omitempty"`
 	Cents         int64                  `protobuf:"varint,5,opt,name=cents,proto3" json:"cents,omitempty"`
 	Basis         string                 `protobuf:"bytes,6,opt,name=basis,proto3" json:"basis,omitempty"` // how the figure was worked out, so it can be checked

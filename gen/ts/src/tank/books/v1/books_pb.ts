@@ -3100,13 +3100,15 @@ export type ForecastLine = Message<"tank.books.v1.ForecastLine"> & {
   label: string;
 
   /**
-   * refill, usage, invoice, aws, agents, recurring, bill, fee
+   * refill, usage, invoice, aws, agents_in_aws, recurring, bill, fee
    *
    * @generated from field: string source = 3;
    */
   source: string;
 
   /**
+   * (agents_in_aws is shown for reference: it is inside the aws lines, so no total counts it)
+   *
    * @generated from field: google.protobuf.Timestamp expected_at = 4;
    */
   expectedAt?: Timestamp;
