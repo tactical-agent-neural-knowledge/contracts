@@ -154,20 +154,22 @@ class Offer(_message.Message):
     def __init__(self, id: _Optional[str] = ..., text: _Optional[str] = ..., action: _Optional[str] = ..., app_id: _Optional[str] = ...) -> None: ...
 
 class Attachment(_message.Message):
-    __slots__ = ("id", "name", "mime", "data", "size", "file_id")
+    __slots__ = ("id", "name", "mime", "data", "size", "file_id", "thumb")
     ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     MIME_FIELD_NUMBER: _ClassVar[int]
     DATA_FIELD_NUMBER: _ClassVar[int]
     SIZE_FIELD_NUMBER: _ClassVar[int]
     FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    THUMB_FIELD_NUMBER: _ClassVar[int]
     id: str
     name: str
     mime: str
     data: bytes
     size: int
     file_id: str
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., data: _Optional[bytes] = ..., size: _Optional[int] = ..., file_id: _Optional[str] = ...) -> None: ...
+    thumb: bytes
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., mime: _Optional[str] = ..., data: _Optional[bytes] = ..., size: _Optional[int] = ..., file_id: _Optional[str] = ..., thumb: _Optional[bytes] = ...) -> None: ...
 
 class Message(_message.Message):
     __slots__ = ("id", "conversation_id", "role", "text", "attachments", "created_at", "stop_reason", "input_tokens", "output_tokens", "rating", "as_of", "suggestions", "offers", "author_id", "author_name", "author_avatar_url", "reactions", "receipts")
@@ -286,12 +288,14 @@ class ListConversationsResponse(_message.Message):
     def __init__(self, conversations: _Optional[_Iterable[_Union[Conversation, _Mapping]]] = ..., next_cursor: _Optional[str] = ...) -> None: ...
 
 class GetConversationRequest(_message.Message):
-    __slots__ = ("id", "message_limit")
+    __slots__ = ("id", "message_limit", "light")
     ID_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_LIMIT_FIELD_NUMBER: _ClassVar[int]
+    LIGHT_FIELD_NUMBER: _ClassVar[int]
     id: str
     message_limit: int
-    def __init__(self, id: _Optional[str] = ..., message_limit: _Optional[int] = ...) -> None: ...
+    light: bool
+    def __init__(self, id: _Optional[str] = ..., message_limit: _Optional[int] = ..., light: bool = ...) -> None: ...
 
 class GetConversationResponse(_message.Message):
     __slots__ = ("conversation", "messages", "atlas_pages", "has_older")
@@ -306,14 +310,30 @@ class GetConversationResponse(_message.Message):
     def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ..., messages: _Optional[_Iterable[_Union[Message, _Mapping]]] = ..., atlas_pages: _Optional[_Iterable[_Union[AtlasPage, _Mapping]]] = ..., has_older: bool = ...) -> None: ...
 
 class ListMessagesRequest(_message.Message):
-    __slots__ = ("conversation_id", "before_message_id", "limit")
+    __slots__ = ("conversation_id", "before_message_id", "limit", "light")
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
     BEFORE_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
+    LIGHT_FIELD_NUMBER: _ClassVar[int]
     conversation_id: str
     before_message_id: str
     limit: int
-    def __init__(self, conversation_id: _Optional[str] = ..., before_message_id: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+    light: bool
+    def __init__(self, conversation_id: _Optional[str] = ..., before_message_id: _Optional[str] = ..., limit: _Optional[int] = ..., light: bool = ...) -> None: ...
+
+class GetAttachmentRequest(_message.Message):
+    __slots__ = ("conversation_id", "attachment_id")
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    ATTACHMENT_ID_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    attachment_id: str
+    def __init__(self, conversation_id: _Optional[str] = ..., attachment_id: _Optional[str] = ...) -> None: ...
+
+class GetAttachmentResponse(_message.Message):
+    __slots__ = ("attachment",)
+    ATTACHMENT_FIELD_NUMBER: _ClassVar[int]
+    attachment: Attachment
+    def __init__(self, attachment: _Optional[_Union[Attachment, _Mapping]] = ...) -> None: ...
 
 class ListMessagesResponse(_message.Message):
     __slots__ = ("messages", "has_older")
@@ -852,10 +872,12 @@ class RemoveMemberResponse(_message.Message):
     def __init__(self, conversation: _Optional[_Union[Conversation, _Mapping]] = ...) -> None: ...
 
 class WatchRequest(_message.Message):
-    __slots__ = ("conversation_id",)
+    __slots__ = ("conversation_id", "light")
     CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    LIGHT_FIELD_NUMBER: _ClassVar[int]
     conversation_id: str
-    def __init__(self, conversation_id: _Optional[str] = ...) -> None: ...
+    light: bool
+    def __init__(self, conversation_id: _Optional[str] = ..., light: bool = ...) -> None: ...
 
 class WatchResponse(_message.Message):
     __slots__ = ("message", "reply_started", "reply_delta", "conversation", "typing", "suggestions", "devices_changed", "pages_changed", "device_updated", "reactions", "receipts")
