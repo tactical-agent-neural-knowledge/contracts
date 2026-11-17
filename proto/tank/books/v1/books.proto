@@ -708,6 +708,38 @@ message ListTransactionsResponse {
   int64 total_cents = 2;         // equals the cell's actual
 }
 
+// One thing the model expects to happen. Forecast lines are never booked: they are read
+// from the books and the platform's own usage, and never enter the journal or the report.
+message ForecastLine {
+  string kind = 1;                       // "income" or "spend"
+  string label = 2;                      // e.g. "Cache7 auto-refill"
+  string source = 3;                     // refill, usage, invoice, aws, agents_in_aws, recurring, bill, fee
+                                         // (agents_in_aws is shown for reference: it is inside the aws lines, so no total counts it)
+  google.protobuf.Timestamp expected_at = 4;
+  int64 cents = 5;
+  string basis = 6;                      // how the figure was worked out, so it can be checked
+}
+
+// The forecast over one window, ending where the lines in it end.
+message ForecastTotals {
+  string label = 1;                      // "rest of this month", "next 30 days", "next month"
+  google.protobuf.Timestamp from = 2;
+  google.protobuf.Timestamp to = 3;      // exclusive
+  int64 income_cents = 4;
+  int64 spend_cents = 5;
+  int64 net_cents = 6;                   // income minus spend
+}
+
+message GetForecastRequest { string workspace_id = 1; }
+message GetForecastResponse {
+  google.protobuf.Timestamp as_of = 1;
+  string currency = 2;
+  repeated ForecastLine lines = 3;       // by expected date
+  ForecastTotals rest_of_month = 4;
+  ForecastTotals next_30_days = 5;
+  ForecastTotals next_month = 6;
+}
+
 service BooksService {
   rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
   rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
@@ -737,4 +769,5 @@ service BooksService {
   rpc ListRecurring(ListRecurringRequest) returns (ListRecurringResponse);
   rpc UpsertRecurring(UpsertRecurringRequest) returns (UpsertRecurringResponse);
   rpc SetRecurringStatus(SetRecurringStatusRequest) returns (SetRecurringStatusResponse);
+  rpc GetForecast(GetForecastRequest) returns (GetForecastResponse);
 }

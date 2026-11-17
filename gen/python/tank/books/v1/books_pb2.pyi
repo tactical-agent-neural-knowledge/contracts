@@ -1128,3 +1128,56 @@ class ListTransactionsResponse(_message.Message):
     transactions: _containers.RepeatedCompositeFieldContainer[StatementTransaction]
     total_cents: int
     def __init__(self, transactions: _Optional[_Iterable[_Union[StatementTransaction, _Mapping]]] = ..., total_cents: _Optional[int] = ...) -> None: ...
+
+class ForecastLine(_message.Message):
+    __slots__ = ("kind", "label", "source", "expected_at", "cents", "basis")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    LABEL_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    EXPECTED_AT_FIELD_NUMBER: _ClassVar[int]
+    CENTS_FIELD_NUMBER: _ClassVar[int]
+    BASIS_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    label: str
+    source: str
+    expected_at: _timestamp_pb2.Timestamp
+    cents: int
+    basis: str
+    def __init__(self, kind: _Optional[str] = ..., label: _Optional[str] = ..., source: _Optional[str] = ..., expected_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., cents: _Optional[int] = ..., basis: _Optional[str] = ...) -> None: ...
+
+class ForecastTotals(_message.Message):
+    __slots__ = ("label", "to", "income_cents", "spend_cents", "net_cents")
+    LABEL_FIELD_NUMBER: _ClassVar[int]
+    FROM_FIELD_NUMBER: _ClassVar[int]
+    TO_FIELD_NUMBER: _ClassVar[int]
+    INCOME_CENTS_FIELD_NUMBER: _ClassVar[int]
+    SPEND_CENTS_FIELD_NUMBER: _ClassVar[int]
+    NET_CENTS_FIELD_NUMBER: _ClassVar[int]
+    label: str
+    to: _timestamp_pb2.Timestamp
+    income_cents: int
+    spend_cents: int
+    net_cents: int
+    def __init__(self, label: _Optional[str] = ..., to: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., income_cents: _Optional[int] = ..., spend_cents: _Optional[int] = ..., net_cents: _Optional[int] = ..., **kwargs) -> None: ...
+
+class GetForecastRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class GetForecastResponse(_message.Message):
+    __slots__ = ("as_of", "currency", "lines", "rest_of_month", "next_30_days", "next_month")
+    AS_OF_FIELD_NUMBER: _ClassVar[int]
+    CURRENCY_FIELD_NUMBER: _ClassVar[int]
+    LINES_FIELD_NUMBER: _ClassVar[int]
+    REST_OF_MONTH_FIELD_NUMBER: _ClassVar[int]
+    NEXT_30_DAYS_FIELD_NUMBER: _ClassVar[int]
+    NEXT_MONTH_FIELD_NUMBER: _ClassVar[int]
+    as_of: _timestamp_pb2.Timestamp
+    currency: str
+    lines: _containers.RepeatedCompositeFieldContainer[ForecastLine]
+    rest_of_month: ForecastTotals
+    next_30_days: ForecastTotals
+    next_month: ForecastTotals
+    def __init__(self, as_of: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., currency: _Optional[str] = ..., lines: _Optional[_Iterable[_Union[ForecastLine, _Mapping]]] = ..., rest_of_month: _Optional[_Union[ForecastTotals, _Mapping]] = ..., next_30_days: _Optional[_Union[ForecastTotals, _Mapping]] = ..., next_month: _Optional[_Union[ForecastTotals, _Mapping]] = ...) -> None: ...
