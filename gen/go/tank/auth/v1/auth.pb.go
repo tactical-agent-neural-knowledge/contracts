@@ -2519,6 +2519,149 @@ func (*DeleteAccountResponse) Descriptor() ([]byte, []int) {
 	return file_tank_auth_v1_auth_proto_rawDescGZIP(), []int{42}
 }
 
+// Test accounts only (2026-11-17): accounts an operator made with tankctl so TANK's own test
+// logins can sign in through TANK's browser, the password and authenticator seed kept in
+// Lockbox. Everyone else signs in by magic link or a provider, and this answers every address
+// that is not a test account exactly as it answers a wrong password.
+//
+// Two steps on one call: without `code`, a right password answers code_required and nothing
+// else; with a current authenticator code, it signs in like CompleteMagicLink.
+type SignInWithPasswordRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Code          string                 `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SignInWithPasswordRequest) Reset() {
+	*x = SignInWithPasswordRequest{}
+	mi := &file_tank_auth_v1_auth_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SignInWithPasswordRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SignInWithPasswordRequest) ProtoMessage() {}
+
+func (x *SignInWithPasswordRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_auth_v1_auth_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SignInWithPasswordRequest.ProtoReflect.Descriptor instead.
+func (*SignInWithPasswordRequest) Descriptor() ([]byte, []int) {
+	return file_tank_auth_v1_auth_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *SignInWithPasswordRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *SignInWithPasswordRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *SignInWithPasswordRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+type SignInWithPasswordResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Me              *Principal             `protobuf:"bytes,1,opt,name=me,proto3" json:"me,omitempty"`
+	AccessToken     string                 `protobuf:"bytes,2,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	RefreshToken    string                 `protobuf:"bytes,3,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	AccessExpiresAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=access_expires_at,json=accessExpiresAt,proto3" json:"access_expires_at,omitempty"`
+	CodeRequired    bool                   `protobuf:"varint,5,opt,name=code_required,json=codeRequired,proto3" json:"code_required,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *SignInWithPasswordResponse) Reset() {
+	*x = SignInWithPasswordResponse{}
+	mi := &file_tank_auth_v1_auth_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SignInWithPasswordResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SignInWithPasswordResponse) ProtoMessage() {}
+
+func (x *SignInWithPasswordResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_tank_auth_v1_auth_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SignInWithPasswordResponse.ProtoReflect.Descriptor instead.
+func (*SignInWithPasswordResponse) Descriptor() ([]byte, []int) {
+	return file_tank_auth_v1_auth_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *SignInWithPasswordResponse) GetMe() *Principal {
+	if x != nil {
+		return x.Me
+	}
+	return nil
+}
+
+func (x *SignInWithPasswordResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *SignInWithPasswordResponse) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+func (x *SignInWithPasswordResponse) GetAccessExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.AccessExpiresAt
+	}
+	return nil
+}
+
+func (x *SignInWithPasswordResponse) GetCodeRequired() bool {
+	if x != nil {
+		return x.CodeRequired
+	}
+	return false
+}
+
 var File_tank_auth_v1_auth_proto protoreflect.FileDescriptor
 
 var file_tank_auth_v1_auth_proto_rawDesc = string([]byte{
@@ -2816,7 +2959,29 @@ var file_tank_auth_v1_auth_proto_rawDesc = string([]byte{
 	0x74, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x07, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d, 0x22, 0x17, 0x0a, 0x15, 0x44,
 	0x65, 0x6c, 0x65, 0x74, 0x65, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x2a, 0x7a, 0x0a, 0x0d, 0x50, 0x72, 0x69, 0x6e, 0x63, 0x69, 0x70, 0x61,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x61, 0x0a, 0x19, 0x53, 0x69, 0x67, 0x6e, 0x49, 0x6e, 0x57, 0x69,
+	0x74, 0x68, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77,
+	0x6f, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77,
+	0x6f, 0x72, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x22, 0xfa, 0x01, 0x0a, 0x1a, 0x53, 0x69, 0x67, 0x6e,
+	0x49, 0x6e, 0x57, 0x69, 0x74, 0x68, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x27, 0x0a, 0x02, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x17, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x76,
+	0x31, 0x2e, 0x50, 0x72, 0x69, 0x6e, 0x63, 0x69, 0x70, 0x61, 0x6c, 0x52, 0x02, 0x6d, 0x65, 0x12,
+	0x21, 0x0a, 0x0c, 0x61, 0x63, 0x63, 0x65, 0x73, 0x73, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x63, 0x63, 0x65, 0x73, 0x73, 0x54, 0x6f, 0x6b,
+	0x65, 0x6e, 0x12, 0x23, 0x0a, 0x0d, 0x72, 0x65, 0x66, 0x72, 0x65, 0x73, 0x68, 0x5f, 0x74, 0x6f,
+	0x6b, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x72, 0x65, 0x66, 0x72, 0x65,
+	0x73, 0x68, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x46, 0x0a, 0x11, 0x61, 0x63, 0x63, 0x65, 0x73,
+	0x73, 0x5f, 0x65, 0x78, 0x70, 0x69, 0x72, 0x65, 0x73, 0x5f, 0x61, 0x74, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0f,
+	0x61, 0x63, 0x63, 0x65, 0x73, 0x73, 0x45, 0x78, 0x70, 0x69, 0x72, 0x65, 0x73, 0x41, 0x74, 0x12,
+	0x23, 0x0a, 0x0d, 0x63, 0x6f, 0x64, 0x65, 0x5f, 0x72, 0x65, 0x71, 0x75, 0x69, 0x72, 0x65, 0x64,
+	0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0c, 0x63, 0x6f, 0x64, 0x65, 0x52, 0x65, 0x71, 0x75,
+	0x69, 0x72, 0x65, 0x64, 0x2a, 0x7a, 0x0a, 0x0d, 0x50, 0x72, 0x69, 0x6e, 0x63, 0x69, 0x70, 0x61,
 	0x6c, 0x4b, 0x69, 0x6e, 0x64, 0x12, 0x1e, 0x0a, 0x1a, 0x50, 0x52, 0x49, 0x4e, 0x43, 0x49, 0x50,
 	0x41, 0x4c, 0x5f, 0x4b, 0x49, 0x4e, 0x44, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46,
 	0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x17, 0x0a, 0x13, 0x50, 0x52, 0x49, 0x4e, 0x43, 0x49, 0x50,
@@ -2829,7 +2994,7 @@ var file_tank_auth_v1_auth_proto_rawDesc = string([]byte{
 	0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x15, 0x0a,
 	0x11, 0x53, 0x53, 0x4f, 0x5f, 0x50, 0x52, 0x4f, 0x56, 0x49, 0x44, 0x45, 0x52, 0x5f, 0x4f, 0x49,
 	0x44, 0x43, 0x10, 0x01, 0x12, 0x15, 0x0a, 0x11, 0x53, 0x53, 0x4f, 0x5f, 0x50, 0x52, 0x4f, 0x56,
-	0x49, 0x44, 0x45, 0x52, 0x5f, 0x53, 0x41, 0x4d, 0x4c, 0x10, 0x02, 0x32, 0x9a, 0x0d, 0x0a, 0x0b,
+	0x49, 0x44, 0x45, 0x52, 0x5f, 0x53, 0x41, 0x4d, 0x4c, 0x10, 0x02, 0x32, 0x83, 0x0e, 0x0a, 0x0b,
 	0x41, 0x75, 0x74, 0x68, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x5b, 0x0a, 0x0e, 0x53,
 	0x74, 0x61, 0x72, 0x74, 0x4d, 0x61, 0x67, 0x69, 0x63, 0x4c, 0x69, 0x6e, 0x6b, 0x12, 0x23, 0x2e,
 	0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x74, 0x61,
@@ -2935,20 +3100,26 @@ var file_tank_auth_v1_auth_proto_rawDesc = string([]byte{
 	0x65, 0x6c, 0x65, 0x74, 0x65, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75,
 	0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e,
 	0x76, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xc0, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d,
-	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x76, 0x31, 0x42, 0x09, 0x41,
-	0x75, 0x74, 0x68, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x4f, 0x67, 0x69, 0x74, 0x68,
-	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x74, 0x61, 0x63, 0x74, 0x69, 0x63, 0x61, 0x6c, 0x2d,
-	0x61, 0x67, 0x65, 0x6e, 0x74, 0x2d, 0x6e, 0x65, 0x75, 0x72, 0x61, 0x6c, 0x2d, 0x6b, 0x6e, 0x6f,
-	0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x2f, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x73,
-	0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x67, 0x6f, 0x2f, 0x74, 0x61, 0x6e, 0x6b, 0x2f, 0x61, 0x75, 0x74,
-	0x68, 0x2f, 0x76, 0x31, 0x3b, 0x61, 0x75, 0x74, 0x68, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x54, 0x41,
-	0x58, 0xaa, 0x02, 0x0c, 0x54, 0x61, 0x6e, 0x6b, 0x2e, 0x41, 0x75, 0x74, 0x68, 0x2e, 0x56, 0x31,
-	0xca, 0x02, 0x0c, 0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x41, 0x75, 0x74, 0x68, 0x5c, 0x56, 0x31, 0xe2,
-	0x02, 0x18, 0x54, 0x61, 0x6e, 0x6b, 0x5c, 0x41, 0x75, 0x74, 0x68, 0x5c, 0x56, 0x31, 0x5c, 0x47,
-	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x54, 0x61, 0x6e,
-	0x6b, 0x3a, 0x3a, 0x41, 0x75, 0x74, 0x68, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x67, 0x0a, 0x12, 0x53, 0x69, 0x67, 0x6e,
+	0x49, 0x6e, 0x57, 0x69, 0x74, 0x68, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x12, 0x27,
+	0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x69,
+	0x67, 0x6e, 0x49, 0x6e, 0x57, 0x69, 0x74, 0x68, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x75, 0x74, 0x68, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x69, 0x67, 0x6e, 0x49, 0x6e, 0x57, 0x69, 0x74,
+	0x68, 0x50, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x42, 0xc0, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x74, 0x61, 0x6e, 0x6b, 0x2e, 0x61,
+	0x75, 0x74, 0x68, 0x2e, 0x76, 0x31, 0x42, 0x09, 0x41, 0x75, 0x74, 0x68, 0x50, 0x72, 0x6f, 0x74,
+	0x6f, 0x50, 0x01, 0x5a, 0x4f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
+	0x74, 0x61, 0x63, 0x74, 0x69, 0x63, 0x61, 0x6c, 0x2d, 0x61, 0x67, 0x65, 0x6e, 0x74, 0x2d, 0x6e,
+	0x65, 0x75, 0x72, 0x61, 0x6c, 0x2d, 0x6b, 0x6e, 0x6f, 0x77, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x2f,
+	0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x67, 0x6f,
+	0x2f, 0x74, 0x61, 0x6e, 0x6b, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x76, 0x31, 0x3b, 0x61, 0x75,
+	0x74, 0x68, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x54, 0x41, 0x58, 0xaa, 0x02, 0x0c, 0x54, 0x61, 0x6e,
+	0x6b, 0x2e, 0x41, 0x75, 0x74, 0x68, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x54, 0x61, 0x6e, 0x6b,
+	0x5c, 0x41, 0x75, 0x74, 0x68, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x54, 0x61, 0x6e, 0x6b, 0x5c,
+	0x41, 0x75, 0x74, 0x68, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x54, 0x61, 0x6e, 0x6b, 0x3a, 0x3a, 0x41, 0x75, 0x74, 0x68,
+	0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
@@ -2964,7 +3135,7 @@ func file_tank_auth_v1_auth_proto_rawDescGZIP() []byte {
 }
 
 var file_tank_auth_v1_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_tank_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 43)
+var file_tank_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 45)
 var file_tank_auth_v1_auth_proto_goTypes = []any{
 	(PrincipalKind)(0),                      // 0: tank.auth.v1.PrincipalKind
 	(SsoProvider)(0),                        // 1: tank.auth.v1.SsoProvider
@@ -3011,77 +3182,83 @@ var file_tank_auth_v1_auth_proto_goTypes = []any{
 	(*GetAccountDeletionResponse)(nil),      // 42: tank.auth.v1.GetAccountDeletionResponse
 	(*DeleteAccountRequest)(nil),            // 43: tank.auth.v1.DeleteAccountRequest
 	(*DeleteAccountResponse)(nil),           // 44: tank.auth.v1.DeleteAccountResponse
-	(*timestamppb.Timestamp)(nil),           // 45: google.protobuf.Timestamp
+	(*SignInWithPasswordRequest)(nil),       // 45: tank.auth.v1.SignInWithPasswordRequest
+	(*SignInWithPasswordResponse)(nil),      // 46: tank.auth.v1.SignInWithPasswordResponse
+	(*timestamppb.Timestamp)(nil),           // 47: google.protobuf.Timestamp
 }
 var file_tank_auth_v1_auth_proto_depIdxs = []int32{
 	0,  // 0: tank.auth.v1.Principal.kind:type_name -> tank.auth.v1.PrincipalKind
 	2,  // 1: tank.auth.v1.CompleteMagicLinkResponse.me:type_name -> tank.auth.v1.Principal
-	45, // 2: tank.auth.v1.CompleteMagicLinkResponse.access_expires_at:type_name -> google.protobuf.Timestamp
+	47, // 2: tank.auth.v1.CompleteMagicLinkResponse.access_expires_at:type_name -> google.protobuf.Timestamp
 	2,  // 3: tank.auth.v1.ExchangeCodeResponse.me:type_name -> tank.auth.v1.Principal
-	45, // 4: tank.auth.v1.ExchangeCodeResponse.access_expires_at:type_name -> google.protobuf.Timestamp
-	45, // 5: tank.auth.v1.RefreshResponse.access_expires_at:type_name -> google.protobuf.Timestamp
-	45, // 6: tank.auth.v1.MintGatewayTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
+	47, // 4: tank.auth.v1.ExchangeCodeResponse.access_expires_at:type_name -> google.protobuf.Timestamp
+	47, // 5: tank.auth.v1.RefreshResponse.access_expires_at:type_name -> google.protobuf.Timestamp
+	47, // 6: tank.auth.v1.MintGatewayTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
 	2,  // 7: tank.auth.v1.GetMeResponse.me:type_name -> tank.auth.v1.Principal
 	2,  // 8: tank.auth.v1.Identity.principal:type_name -> tank.auth.v1.Principal
-	45, // 9: tank.auth.v1.Identity.added_at:type_name -> google.protobuf.Timestamp
+	47, // 9: tank.auth.v1.Identity.added_at:type_name -> google.protobuf.Timestamp
 	17, // 10: tank.auth.v1.ListIdentitiesResponse.identities:type_name -> tank.auth.v1.Identity
-	45, // 11: tank.auth.v1.Session.created_at:type_name -> google.protobuf.Timestamp
-	45, // 12: tank.auth.v1.Session.expires_at:type_name -> google.protobuf.Timestamp
+	47, // 11: tank.auth.v1.Session.created_at:type_name -> google.protobuf.Timestamp
+	47, // 12: tank.auth.v1.Session.expires_at:type_name -> google.protobuf.Timestamp
 	22, // 13: tank.auth.v1.ListSessionsResponse.sessions:type_name -> tank.auth.v1.Session
 	1,  // 14: tank.auth.v1.SsoConfig.provider:type_name -> tank.auth.v1.SsoProvider
-	45, // 15: tank.auth.v1.SsoConfig.updated_at:type_name -> google.protobuf.Timestamp
+	47, // 15: tank.auth.v1.SsoConfig.updated_at:type_name -> google.protobuf.Timestamp
 	29, // 16: tank.auth.v1.GetSsoConfigResponse.config:type_name -> tank.auth.v1.SsoConfig
 	1,  // 17: tank.auth.v1.SetSsoConfigRequest.provider:type_name -> tank.auth.v1.SsoProvider
 	29, // 18: tank.auth.v1.SetSsoConfigResponse.config:type_name -> tank.auth.v1.SsoConfig
-	45, // 19: tank.auth.v1.StartSsoResponse.expires_at:type_name -> google.protobuf.Timestamp
+	47, // 19: tank.auth.v1.StartSsoResponse.expires_at:type_name -> google.protobuf.Timestamp
 	2,  // 20: tank.auth.v1.CompleteSsoResponse.me:type_name -> tank.auth.v1.Principal
-	45, // 21: tank.auth.v1.CompleteSsoResponse.access_expires_at:type_name -> google.protobuf.Timestamp
+	47, // 21: tank.auth.v1.CompleteSsoResponse.access_expires_at:type_name -> google.protobuf.Timestamp
 	2,  // 22: tank.auth.v1.UpdateMeResponse.me:type_name -> tank.auth.v1.Principal
 	40, // 23: tank.auth.v1.GetAccountDeletionResponse.blocking:type_name -> tank.auth.v1.AccountWorkspace
 	40, // 24: tank.auth.v1.GetAccountDeletionResponse.closing:type_name -> tank.auth.v1.AccountWorkspace
-	3,  // 25: tank.auth.v1.AuthService.StartMagicLink:input_type -> tank.auth.v1.StartMagicLinkRequest
-	5,  // 26: tank.auth.v1.AuthService.CompleteMagicLink:input_type -> tank.auth.v1.CompleteMagicLinkRequest
-	7,  // 27: tank.auth.v1.AuthService.ExchangeCode:input_type -> tank.auth.v1.ExchangeCodeRequest
-	9,  // 28: tank.auth.v1.AuthService.Refresh:input_type -> tank.auth.v1.RefreshRequest
-	11, // 29: tank.auth.v1.AuthService.Logout:input_type -> tank.auth.v1.LogoutRequest
-	13, // 30: tank.auth.v1.AuthService.MintGatewayToken:input_type -> tank.auth.v1.MintGatewayTokenRequest
-	15, // 31: tank.auth.v1.AuthService.GetMe:input_type -> tank.auth.v1.GetMeRequest
-	18, // 32: tank.auth.v1.AuthService.ListIdentities:input_type -> tank.auth.v1.ListIdentitiesRequest
-	20, // 33: tank.auth.v1.AuthService.SignOutIdentity:input_type -> tank.auth.v1.SignOutIdentityRequest
-	23, // 34: tank.auth.v1.AuthService.ListSessions:input_type -> tank.auth.v1.ListSessionsRequest
-	25, // 35: tank.auth.v1.AuthService.RevokeSession:input_type -> tank.auth.v1.RevokeSessionRequest
-	27, // 36: tank.auth.v1.AuthService.AdminRevokeUserSessions:input_type -> tank.auth.v1.AdminRevokeUserSessionsRequest
-	30, // 37: tank.auth.v1.AuthService.GetSsoConfig:input_type -> tank.auth.v1.GetSsoConfigRequest
-	32, // 38: tank.auth.v1.AuthService.SetSsoConfig:input_type -> tank.auth.v1.SetSsoConfigRequest
-	34, // 39: tank.auth.v1.AuthService.StartSso:input_type -> tank.auth.v1.StartSsoRequest
-	36, // 40: tank.auth.v1.AuthService.CompleteSso:input_type -> tank.auth.v1.CompleteSsoRequest
-	38, // 41: tank.auth.v1.AuthService.UpdateMe:input_type -> tank.auth.v1.UpdateMeRequest
-	41, // 42: tank.auth.v1.AuthService.GetAccountDeletion:input_type -> tank.auth.v1.GetAccountDeletionRequest
-	43, // 43: tank.auth.v1.AuthService.DeleteAccount:input_type -> tank.auth.v1.DeleteAccountRequest
-	4,  // 44: tank.auth.v1.AuthService.StartMagicLink:output_type -> tank.auth.v1.StartMagicLinkResponse
-	6,  // 45: tank.auth.v1.AuthService.CompleteMagicLink:output_type -> tank.auth.v1.CompleteMagicLinkResponse
-	8,  // 46: tank.auth.v1.AuthService.ExchangeCode:output_type -> tank.auth.v1.ExchangeCodeResponse
-	10, // 47: tank.auth.v1.AuthService.Refresh:output_type -> tank.auth.v1.RefreshResponse
-	12, // 48: tank.auth.v1.AuthService.Logout:output_type -> tank.auth.v1.LogoutResponse
-	14, // 49: tank.auth.v1.AuthService.MintGatewayToken:output_type -> tank.auth.v1.MintGatewayTokenResponse
-	16, // 50: tank.auth.v1.AuthService.GetMe:output_type -> tank.auth.v1.GetMeResponse
-	19, // 51: tank.auth.v1.AuthService.ListIdentities:output_type -> tank.auth.v1.ListIdentitiesResponse
-	21, // 52: tank.auth.v1.AuthService.SignOutIdentity:output_type -> tank.auth.v1.SignOutIdentityResponse
-	24, // 53: tank.auth.v1.AuthService.ListSessions:output_type -> tank.auth.v1.ListSessionsResponse
-	26, // 54: tank.auth.v1.AuthService.RevokeSession:output_type -> tank.auth.v1.RevokeSessionResponse
-	28, // 55: tank.auth.v1.AuthService.AdminRevokeUserSessions:output_type -> tank.auth.v1.AdminRevokeUserSessionsResponse
-	31, // 56: tank.auth.v1.AuthService.GetSsoConfig:output_type -> tank.auth.v1.GetSsoConfigResponse
-	33, // 57: tank.auth.v1.AuthService.SetSsoConfig:output_type -> tank.auth.v1.SetSsoConfigResponse
-	35, // 58: tank.auth.v1.AuthService.StartSso:output_type -> tank.auth.v1.StartSsoResponse
-	37, // 59: tank.auth.v1.AuthService.CompleteSso:output_type -> tank.auth.v1.CompleteSsoResponse
-	39, // 60: tank.auth.v1.AuthService.UpdateMe:output_type -> tank.auth.v1.UpdateMeResponse
-	42, // 61: tank.auth.v1.AuthService.GetAccountDeletion:output_type -> tank.auth.v1.GetAccountDeletionResponse
-	44, // 62: tank.auth.v1.AuthService.DeleteAccount:output_type -> tank.auth.v1.DeleteAccountResponse
-	44, // [44:63] is the sub-list for method output_type
-	25, // [25:44] is the sub-list for method input_type
-	25, // [25:25] is the sub-list for extension type_name
-	25, // [25:25] is the sub-list for extension extendee
-	0,  // [0:25] is the sub-list for field type_name
+	2,  // 25: tank.auth.v1.SignInWithPasswordResponse.me:type_name -> tank.auth.v1.Principal
+	47, // 26: tank.auth.v1.SignInWithPasswordResponse.access_expires_at:type_name -> google.protobuf.Timestamp
+	3,  // 27: tank.auth.v1.AuthService.StartMagicLink:input_type -> tank.auth.v1.StartMagicLinkRequest
+	5,  // 28: tank.auth.v1.AuthService.CompleteMagicLink:input_type -> tank.auth.v1.CompleteMagicLinkRequest
+	7,  // 29: tank.auth.v1.AuthService.ExchangeCode:input_type -> tank.auth.v1.ExchangeCodeRequest
+	9,  // 30: tank.auth.v1.AuthService.Refresh:input_type -> tank.auth.v1.RefreshRequest
+	11, // 31: tank.auth.v1.AuthService.Logout:input_type -> tank.auth.v1.LogoutRequest
+	13, // 32: tank.auth.v1.AuthService.MintGatewayToken:input_type -> tank.auth.v1.MintGatewayTokenRequest
+	15, // 33: tank.auth.v1.AuthService.GetMe:input_type -> tank.auth.v1.GetMeRequest
+	18, // 34: tank.auth.v1.AuthService.ListIdentities:input_type -> tank.auth.v1.ListIdentitiesRequest
+	20, // 35: tank.auth.v1.AuthService.SignOutIdentity:input_type -> tank.auth.v1.SignOutIdentityRequest
+	23, // 36: tank.auth.v1.AuthService.ListSessions:input_type -> tank.auth.v1.ListSessionsRequest
+	25, // 37: tank.auth.v1.AuthService.RevokeSession:input_type -> tank.auth.v1.RevokeSessionRequest
+	27, // 38: tank.auth.v1.AuthService.AdminRevokeUserSessions:input_type -> tank.auth.v1.AdminRevokeUserSessionsRequest
+	30, // 39: tank.auth.v1.AuthService.GetSsoConfig:input_type -> tank.auth.v1.GetSsoConfigRequest
+	32, // 40: tank.auth.v1.AuthService.SetSsoConfig:input_type -> tank.auth.v1.SetSsoConfigRequest
+	34, // 41: tank.auth.v1.AuthService.StartSso:input_type -> tank.auth.v1.StartSsoRequest
+	36, // 42: tank.auth.v1.AuthService.CompleteSso:input_type -> tank.auth.v1.CompleteSsoRequest
+	38, // 43: tank.auth.v1.AuthService.UpdateMe:input_type -> tank.auth.v1.UpdateMeRequest
+	41, // 44: tank.auth.v1.AuthService.GetAccountDeletion:input_type -> tank.auth.v1.GetAccountDeletionRequest
+	43, // 45: tank.auth.v1.AuthService.DeleteAccount:input_type -> tank.auth.v1.DeleteAccountRequest
+	45, // 46: tank.auth.v1.AuthService.SignInWithPassword:input_type -> tank.auth.v1.SignInWithPasswordRequest
+	4,  // 47: tank.auth.v1.AuthService.StartMagicLink:output_type -> tank.auth.v1.StartMagicLinkResponse
+	6,  // 48: tank.auth.v1.AuthService.CompleteMagicLink:output_type -> tank.auth.v1.CompleteMagicLinkResponse
+	8,  // 49: tank.auth.v1.AuthService.ExchangeCode:output_type -> tank.auth.v1.ExchangeCodeResponse
+	10, // 50: tank.auth.v1.AuthService.Refresh:output_type -> tank.auth.v1.RefreshResponse
+	12, // 51: tank.auth.v1.AuthService.Logout:output_type -> tank.auth.v1.LogoutResponse
+	14, // 52: tank.auth.v1.AuthService.MintGatewayToken:output_type -> tank.auth.v1.MintGatewayTokenResponse
+	16, // 53: tank.auth.v1.AuthService.GetMe:output_type -> tank.auth.v1.GetMeResponse
+	19, // 54: tank.auth.v1.AuthService.ListIdentities:output_type -> tank.auth.v1.ListIdentitiesResponse
+	21, // 55: tank.auth.v1.AuthService.SignOutIdentity:output_type -> tank.auth.v1.SignOutIdentityResponse
+	24, // 56: tank.auth.v1.AuthService.ListSessions:output_type -> tank.auth.v1.ListSessionsResponse
+	26, // 57: tank.auth.v1.AuthService.RevokeSession:output_type -> tank.auth.v1.RevokeSessionResponse
+	28, // 58: tank.auth.v1.AuthService.AdminRevokeUserSessions:output_type -> tank.auth.v1.AdminRevokeUserSessionsResponse
+	31, // 59: tank.auth.v1.AuthService.GetSsoConfig:output_type -> tank.auth.v1.GetSsoConfigResponse
+	33, // 60: tank.auth.v1.AuthService.SetSsoConfig:output_type -> tank.auth.v1.SetSsoConfigResponse
+	35, // 61: tank.auth.v1.AuthService.StartSso:output_type -> tank.auth.v1.StartSsoResponse
+	37, // 62: tank.auth.v1.AuthService.CompleteSso:output_type -> tank.auth.v1.CompleteSsoResponse
+	39, // 63: tank.auth.v1.AuthService.UpdateMe:output_type -> tank.auth.v1.UpdateMeResponse
+	42, // 64: tank.auth.v1.AuthService.GetAccountDeletion:output_type -> tank.auth.v1.GetAccountDeletionResponse
+	44, // 65: tank.auth.v1.AuthService.DeleteAccount:output_type -> tank.auth.v1.DeleteAccountResponse
+	46, // 66: tank.auth.v1.AuthService.SignInWithPassword:output_type -> tank.auth.v1.SignInWithPasswordResponse
+	47, // [47:67] is the sub-list for method output_type
+	27, // [27:47] is the sub-list for method input_type
+	27, // [27:27] is the sub-list for extension type_name
+	27, // [27:27] is the sub-list for extension extendee
+	0,  // [0:27] is the sub-list for field type_name
 }
 
 func init() { file_tank_auth_v1_auth_proto_init() }
@@ -3096,7 +3273,7 @@ func file_tank_auth_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tank_auth_v1_auth_proto_rawDesc), len(file_tank_auth_v1_auth_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   43,
+			NumMessages:   45,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

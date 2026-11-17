@@ -396,3 +396,27 @@ class DeleteAccountRequest(_message.Message):
 class DeleteAccountResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class SignInWithPasswordRequest(_message.Message):
+    __slots__ = ("email", "password", "code")
+    EMAIL_FIELD_NUMBER: _ClassVar[int]
+    PASSWORD_FIELD_NUMBER: _ClassVar[int]
+    CODE_FIELD_NUMBER: _ClassVar[int]
+    email: str
+    password: str
+    code: str
+    def __init__(self, email: _Optional[str] = ..., password: _Optional[str] = ..., code: _Optional[str] = ...) -> None: ...
+
+class SignInWithPasswordResponse(_message.Message):
+    __slots__ = ("me", "access_token", "refresh_token", "access_expires_at", "code_required")
+    ME_FIELD_NUMBER: _ClassVar[int]
+    ACCESS_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    REFRESH_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    ACCESS_EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    CODE_REQUIRED_FIELD_NUMBER: _ClassVar[int]
+    me: Principal
+    access_token: str
+    refresh_token: str
+    access_expires_at: _timestamp_pb2.Timestamp
+    code_required: bool
+    def __init__(self, me: _Optional[_Union[Principal, _Mapping]] = ..., access_token: _Optional[str] = ..., refresh_token: _Optional[str] = ..., access_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., code_required: bool = ...) -> None: ...
