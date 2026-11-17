@@ -84,6 +84,9 @@ const (
 	// AuthServiceDeleteAccountProcedure is the fully-qualified name of the AuthService's DeleteAccount
 	// RPC.
 	AuthServiceDeleteAccountProcedure = "/tank.auth.v1.AuthService/DeleteAccount"
+	// AuthServiceSignInWithPasswordProcedure is the fully-qualified name of the AuthService's
+	// SignInWithPassword RPC.
+	AuthServiceSignInWithPasswordProcedure = "/tank.auth.v1.AuthService/SignInWithPassword"
 )
 
 // AuthServiceClient is a client for the tank.auth.v1.AuthService service.
@@ -107,6 +110,7 @@ type AuthServiceClient interface {
 	UpdateMe(context.Context, *connect.Request[v1.UpdateMeRequest]) (*connect.Response[v1.UpdateMeResponse], error)
 	GetAccountDeletion(context.Context, *connect.Request[v1.GetAccountDeletionRequest]) (*connect.Response[v1.GetAccountDeletionResponse], error)
 	DeleteAccount(context.Context, *connect.Request[v1.DeleteAccountRequest]) (*connect.Response[v1.DeleteAccountResponse], error)
+	SignInWithPassword(context.Context, *connect.Request[v1.SignInWithPasswordRequest]) (*connect.Response[v1.SignInWithPasswordResponse], error)
 }
 
 // NewAuthServiceClient constructs a client for the tank.auth.v1.AuthService service. By default, it
@@ -234,6 +238,12 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(authServiceMethods.ByName("DeleteAccount")),
 			connect.WithClientOptions(opts...),
 		),
+		signInWithPassword: connect.NewClient[v1.SignInWithPasswordRequest, v1.SignInWithPasswordResponse](
+			httpClient,
+			baseURL+AuthServiceSignInWithPasswordProcedure,
+			connect.WithSchema(authServiceMethods.ByName("SignInWithPassword")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -258,6 +268,7 @@ type authServiceClient struct {
 	updateMe                *connect.Client[v1.UpdateMeRequest, v1.UpdateMeResponse]
 	getAccountDeletion      *connect.Client[v1.GetAccountDeletionRequest, v1.GetAccountDeletionResponse]
 	deleteAccount           *connect.Client[v1.DeleteAccountRequest, v1.DeleteAccountResponse]
+	signInWithPassword      *connect.Client[v1.SignInWithPasswordRequest, v1.SignInWithPasswordResponse]
 }
 
 // StartMagicLink calls tank.auth.v1.AuthService.StartMagicLink.
@@ -355,6 +366,11 @@ func (c *authServiceClient) DeleteAccount(ctx context.Context, req *connect.Requ
 	return c.deleteAccount.CallUnary(ctx, req)
 }
 
+// SignInWithPassword calls tank.auth.v1.AuthService.SignInWithPassword.
+func (c *authServiceClient) SignInWithPassword(ctx context.Context, req *connect.Request[v1.SignInWithPasswordRequest]) (*connect.Response[v1.SignInWithPasswordResponse], error) {
+	return c.signInWithPassword.CallUnary(ctx, req)
+}
+
 // AuthServiceHandler is an implementation of the tank.auth.v1.AuthService service.
 type AuthServiceHandler interface {
 	StartMagicLink(context.Context, *connect.Request[v1.StartMagicLinkRequest]) (*connect.Response[v1.StartMagicLinkResponse], error)
@@ -376,6 +392,7 @@ type AuthServiceHandler interface {
 	UpdateMe(context.Context, *connect.Request[v1.UpdateMeRequest]) (*connect.Response[v1.UpdateMeResponse], error)
 	GetAccountDeletion(context.Context, *connect.Request[v1.GetAccountDeletionRequest]) (*connect.Response[v1.GetAccountDeletionResponse], error)
 	DeleteAccount(context.Context, *connect.Request[v1.DeleteAccountRequest]) (*connect.Response[v1.DeleteAccountResponse], error)
+	SignInWithPassword(context.Context, *connect.Request[v1.SignInWithPasswordRequest]) (*connect.Response[v1.SignInWithPasswordResponse], error)
 }
 
 // NewAuthServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -499,6 +516,12 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(authServiceMethods.ByName("DeleteAccount")),
 		connect.WithHandlerOptions(opts...),
 	)
+	authServiceSignInWithPasswordHandler := connect.NewUnaryHandler(
+		AuthServiceSignInWithPasswordProcedure,
+		svc.SignInWithPassword,
+		connect.WithSchema(authServiceMethods.ByName("SignInWithPassword")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.auth.v1.AuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AuthServiceStartMagicLinkProcedure:
@@ -539,6 +562,8 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 			authServiceGetAccountDeletionHandler.ServeHTTP(w, r)
 		case AuthServiceDeleteAccountProcedure:
 			authServiceDeleteAccountHandler.ServeHTTP(w, r)
+		case AuthServiceSignInWithPasswordProcedure:
+			authServiceSignInWithPasswordHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -622,4 +647,8 @@ func (UnimplementedAuthServiceHandler) GetAccountDeletion(context.Context, *conn
 
 func (UnimplementedAuthServiceHandler) DeleteAccount(context.Context, *connect.Request[v1.DeleteAccountRequest]) (*connect.Response[v1.DeleteAccountResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.DeleteAccount is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) SignInWithPassword(context.Context, *connect.Request[v1.SignInWithPasswordRequest]) (*connect.Response[v1.SignInWithPasswordResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.auth.v1.AuthService.SignInWithPassword is not implemented"))
 }

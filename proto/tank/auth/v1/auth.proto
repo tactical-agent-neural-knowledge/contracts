@@ -280,6 +280,26 @@ message DeleteAccountRequest {
 }
 message DeleteAccountResponse {}
 
+// Test accounts only (2026-11-17): accounts an operator made with tankctl so TANK's own test
+// logins can sign in through TANK's browser, the password and authenticator seed kept in
+// Lockbox. Everyone else signs in by magic link or a provider, and this answers every address
+// that is not a test account exactly as it answers a wrong password.
+//
+// Two steps on one call: without `code`, a right password answers code_required and nothing
+// else; with a current authenticator code, it signs in like CompleteMagicLink.
+message SignInWithPasswordRequest {
+  string email = 1;
+  string password = 2;
+  string code = 3;
+}
+message SignInWithPasswordResponse {
+  Principal me = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+  google.protobuf.Timestamp access_expires_at = 4;
+  bool code_required = 5;
+}
+
 service AuthService {
   rpc StartMagicLink(StartMagicLinkRequest) returns (StartMagicLinkResponse);
   rpc CompleteMagicLink(CompleteMagicLinkRequest) returns (CompleteMagicLinkResponse);
@@ -300,4 +320,5 @@ service AuthService {
   rpc UpdateMe(UpdateMeRequest) returns (UpdateMeResponse);
   rpc GetAccountDeletion(GetAccountDeletionRequest) returns (GetAccountDeletionResponse);
   rpc DeleteAccount(DeleteAccountRequest) returns (DeleteAccountResponse);
+  rpc SignInWithPassword(SignInWithPasswordRequest) returns (SignInWithPasswordResponse);
 }
