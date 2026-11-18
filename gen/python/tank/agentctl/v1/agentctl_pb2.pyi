@@ -989,6 +989,54 @@ class BooksListExpensesResponse(_message.Message):
     expenses: _containers.RepeatedCompositeFieldContainer[_books_pb2.Expense]
     def __init__(self, expenses: _Optional[_Iterable[_Union[_books_pb2.Expense, _Mapping]]] = ...) -> None: ...
 
+class BooksListRecurringRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class BooksListRecurringResponse(_message.Message):
+    __slots__ = ("rules", "proposals", "tank")
+    RULES_FIELD_NUMBER: _ClassVar[int]
+    PROPOSALS_FIELD_NUMBER: _ClassVar[int]
+    TANK_FIELD_NUMBER: _ClassVar[int]
+    rules: _containers.RepeatedCompositeFieldContainer[_books_pb2.Recurring]
+    proposals: _containers.RepeatedCompositeFieldContainer[_books_pb2.Recurring]
+    tank: _containers.RepeatedCompositeFieldContainer[_books_pb2.Recurring]
+    def __init__(self, rules: _Optional[_Iterable[_Union[_books_pb2.Recurring, _Mapping]]] = ..., proposals: _Optional[_Iterable[_Union[_books_pb2.Recurring, _Mapping]]] = ..., tank: _Optional[_Iterable[_Union[_books_pb2.Recurring, _Mapping]]] = ...) -> None: ...
+
+class BooksProposeRecurringRequest(_message.Message):
+    __slots__ = ("kind", "name", "vendor", "customer_name", "category", "amount_cents", "cadence", "anchor_day", "starts_on", "ends_on", "basis_offset_days")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    VENDOR_FIELD_NUMBER: _ClassVar[int]
+    CUSTOMER_NAME_FIELD_NUMBER: _ClassVar[int]
+    CATEGORY_FIELD_NUMBER: _ClassVar[int]
+    AMOUNT_CENTS_FIELD_NUMBER: _ClassVar[int]
+    CADENCE_FIELD_NUMBER: _ClassVar[int]
+    ANCHOR_DAY_FIELD_NUMBER: _ClassVar[int]
+    STARTS_ON_FIELD_NUMBER: _ClassVar[int]
+    ENDS_ON_FIELD_NUMBER: _ClassVar[int]
+    BASIS_OFFSET_DAYS_FIELD_NUMBER: _ClassVar[int]
+    kind: str
+    name: str
+    vendor: str
+    customer_name: str
+    category: str
+    amount_cents: int
+    cadence: str
+    anchor_day: int
+    starts_on: str
+    ends_on: str
+    basis_offset_days: int
+    def __init__(self, kind: _Optional[str] = ..., name: _Optional[str] = ..., vendor: _Optional[str] = ..., customer_name: _Optional[str] = ..., category: _Optional[str] = ..., amount_cents: _Optional[int] = ..., cadence: _Optional[str] = ..., anchor_day: _Optional[int] = ..., starts_on: _Optional[str] = ..., ends_on: _Optional[str] = ..., basis_offset_days: _Optional[int] = ...) -> None: ...
+
+class BooksProposeRecurringResponse(_message.Message):
+    __slots__ = ("rule", "outcome")
+    RULE_FIELD_NUMBER: _ClassVar[int]
+    OUTCOME_FIELD_NUMBER: _ClassVar[int]
+    rule: _books_pb2.Recurring
+    outcome: str
+    def __init__(self, rule: _Optional[_Union[_books_pb2.Recurring, _Mapping]] = ..., outcome: _Optional[str] = ...) -> None: ...
+
 class BooksRecordPaymentRequest(_message.Message):
     __slots__ = ("invoice_number", "amount_cents", "method", "reference", "evidence_message_id")
     INVOICE_NUMBER_FIELD_NUMBER: _ClassVar[int]
