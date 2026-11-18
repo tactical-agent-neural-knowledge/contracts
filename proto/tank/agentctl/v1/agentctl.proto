@@ -657,6 +657,31 @@ message BooksListExpensesRequest {
   int32 days = 1;                                // 0 = 90
 }
 message BooksListExpensesResponse { repeated tank.books.v1.Expense expenses = 1; }
+message BooksListRecurringRequest {}
+message BooksListRecurringResponse {
+  repeated tank.books.v1.Recurring rules = 1;      // accepted: in the forecast (active) or paused
+  repeated tank.books.v1.Recurring proposals = 2;  // waiting for a person, including this agent's own
+  repeated tank.books.v1.Recurring tank = 3;       // what TANK itself charges, read-only
+}
+// A forecast rule an agent proposes. A person accepts it in Books; until then it is not in
+// the forecast. Nothing here is booked.
+message BooksProposeRecurringRequest {
+  string kind = 1;                               // income | expense
+  string name = 2;                               // what people call it: "Cache7 refill #1"
+  string vendor = 3;                             // expense: who is paid
+  string customer_name = 4;                      // income: who pays; found by name, never created
+  string category = 5;                           // a category's name or key; empty = the side's default
+  int64 amount_cents = 6;                        // each occurrence
+  string cadence = 7;                            // weekly | monthly | quarterly | yearly
+  int32 anchor_day = 8;                          // 0 = the day of starts_on
+  string starts_on = 9;                          // YYYY-MM-DD of the first occurrence
+  string ends_on = 10;                           // YYYY-MM-DD, inclusive; equal to starts_on for a one-off
+  int32 basis_offset_days = 11;                  // days after it is earned that the cash moves
+}
+message BooksProposeRecurringResponse {
+  tank.books.v1.Recurring rule = 1;
+  string outcome = 2;                            // proposed | already_there
+}
 message BooksRecordPaymentRequest {
   string invoice_number = 1;                     // e.g. INV-0007
   int64 amount_cents = 2;                        // 0 = what is still due
@@ -1160,6 +1185,8 @@ service RunnerService {
   rpc BooksRecordPayment(BooksRecordPaymentRequest) returns (BooksRecordPaymentResponse);
   rpc BooksListExpenses(BooksListExpensesRequest) returns (BooksListExpensesResponse);
   rpc BooksReport(BooksReportRequest) returns (BooksReportResponse);
+  rpc BooksListRecurring(BooksListRecurringRequest) returns (BooksListRecurringResponse);
+  rpc BooksProposeRecurring(BooksProposeRecurringRequest) returns (BooksProposeRecurringResponse);
   rpc SocialAccounts(SocialAccountsRequest) returns (SocialAccountsResponse);
   rpc SocialCreatePost(SocialCreatePostRequest) returns (SocialCreatePostResponse);
   rpc SocialPublishPost(SocialPublishPostRequest) returns (SocialPublishPostResponse);

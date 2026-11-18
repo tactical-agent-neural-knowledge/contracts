@@ -166,6 +166,12 @@ const (
 	// RunnerServiceBooksReportProcedure is the fully-qualified name of the RunnerService's BooksReport
 	// RPC.
 	RunnerServiceBooksReportProcedure = "/tank.agentctl.v1.RunnerService/BooksReport"
+	// RunnerServiceBooksListRecurringProcedure is the fully-qualified name of the RunnerService's
+	// BooksListRecurring RPC.
+	RunnerServiceBooksListRecurringProcedure = "/tank.agentctl.v1.RunnerService/BooksListRecurring"
+	// RunnerServiceBooksProposeRecurringProcedure is the fully-qualified name of the RunnerService's
+	// BooksProposeRecurring RPC.
+	RunnerServiceBooksProposeRecurringProcedure = "/tank.agentctl.v1.RunnerService/BooksProposeRecurring"
 	// RunnerServiceSocialAccountsProcedure is the fully-qualified name of the RunnerService's
 	// SocialAccounts RPC.
 	RunnerServiceSocialAccountsProcedure = "/tank.agentctl.v1.RunnerService/SocialAccounts"
@@ -519,6 +525,8 @@ type RunnerServiceClient interface {
 	BooksRecordPayment(context.Context, *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error)
 	BooksListExpenses(context.Context, *connect.Request[v1.BooksListExpensesRequest]) (*connect.Response[v1.BooksListExpensesResponse], error)
 	BooksReport(context.Context, *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error)
+	BooksListRecurring(context.Context, *connect.Request[v1.BooksListRecurringRequest]) (*connect.Response[v1.BooksListRecurringResponse], error)
+	BooksProposeRecurring(context.Context, *connect.Request[v1.BooksProposeRecurringRequest]) (*connect.Response[v1.BooksProposeRecurringResponse], error)
 	SocialAccounts(context.Context, *connect.Request[v1.SocialAccountsRequest]) (*connect.Response[v1.SocialAccountsResponse], error)
 	SocialCreatePost(context.Context, *connect.Request[v1.SocialCreatePostRequest]) (*connect.Response[v1.SocialCreatePostResponse], error)
 	SocialPublishPost(context.Context, *connect.Request[v1.SocialPublishPostRequest]) (*connect.Response[v1.SocialPublishPostResponse], error)
@@ -840,6 +848,18 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("BooksReport")),
 			connect.WithClientOptions(opts...),
 		),
+		booksListRecurring: connect.NewClient[v1.BooksListRecurringRequest, v1.BooksListRecurringResponse](
+			httpClient,
+			baseURL+RunnerServiceBooksListRecurringProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("BooksListRecurring")),
+			connect.WithClientOptions(opts...),
+		),
+		booksProposeRecurring: connect.NewClient[v1.BooksProposeRecurringRequest, v1.BooksProposeRecurringResponse](
+			httpClient,
+			baseURL+RunnerServiceBooksProposeRecurringProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("BooksProposeRecurring")),
+			connect.WithClientOptions(opts...),
+		),
 		socialAccounts: connect.NewClient[v1.SocialAccountsRequest, v1.SocialAccountsResponse](
 			httpClient,
 			baseURL+RunnerServiceSocialAccountsProcedure,
@@ -1071,6 +1091,8 @@ type runnerServiceClient struct {
 	booksRecordPayment       *connect.Client[v1.BooksRecordPaymentRequest, v1.BooksRecordPaymentResponse]
 	booksListExpenses        *connect.Client[v1.BooksListExpensesRequest, v1.BooksListExpensesResponse]
 	booksReport              *connect.Client[v1.BooksReportRequest, v1.BooksReportResponse]
+	booksListRecurring       *connect.Client[v1.BooksListRecurringRequest, v1.BooksListRecurringResponse]
+	booksProposeRecurring    *connect.Client[v1.BooksProposeRecurringRequest, v1.BooksProposeRecurringResponse]
 	socialAccounts           *connect.Client[v1.SocialAccountsRequest, v1.SocialAccountsResponse]
 	socialCreatePost         *connect.Client[v1.SocialCreatePostRequest, v1.SocialCreatePostResponse]
 	socialPublishPost        *connect.Client[v1.SocialPublishPostRequest, v1.SocialPublishPostResponse]
@@ -1333,6 +1355,16 @@ func (c *runnerServiceClient) BooksReport(ctx context.Context, req *connect.Requ
 	return c.booksReport.CallUnary(ctx, req)
 }
 
+// BooksListRecurring calls tank.agentctl.v1.RunnerService.BooksListRecurring.
+func (c *runnerServiceClient) BooksListRecurring(ctx context.Context, req *connect.Request[v1.BooksListRecurringRequest]) (*connect.Response[v1.BooksListRecurringResponse], error) {
+	return c.booksListRecurring.CallUnary(ctx, req)
+}
+
+// BooksProposeRecurring calls tank.agentctl.v1.RunnerService.BooksProposeRecurring.
+func (c *runnerServiceClient) BooksProposeRecurring(ctx context.Context, req *connect.Request[v1.BooksProposeRecurringRequest]) (*connect.Response[v1.BooksProposeRecurringResponse], error) {
+	return c.booksProposeRecurring.CallUnary(ctx, req)
+}
+
 // SocialAccounts calls tank.agentctl.v1.RunnerService.SocialAccounts.
 func (c *runnerServiceClient) SocialAccounts(ctx context.Context, req *connect.Request[v1.SocialAccountsRequest]) (*connect.Response[v1.SocialAccountsResponse], error) {
 	return c.socialAccounts.CallUnary(ctx, req)
@@ -1553,6 +1585,8 @@ type RunnerServiceHandler interface {
 	BooksRecordPayment(context.Context, *connect.Request[v1.BooksRecordPaymentRequest]) (*connect.Response[v1.BooksRecordPaymentResponse], error)
 	BooksListExpenses(context.Context, *connect.Request[v1.BooksListExpensesRequest]) (*connect.Response[v1.BooksListExpensesResponse], error)
 	BooksReport(context.Context, *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error)
+	BooksListRecurring(context.Context, *connect.Request[v1.BooksListRecurringRequest]) (*connect.Response[v1.BooksListRecurringResponse], error)
+	BooksProposeRecurring(context.Context, *connect.Request[v1.BooksProposeRecurringRequest]) (*connect.Response[v1.BooksProposeRecurringResponse], error)
 	SocialAccounts(context.Context, *connect.Request[v1.SocialAccountsRequest]) (*connect.Response[v1.SocialAccountsResponse], error)
 	SocialCreatePost(context.Context, *connect.Request[v1.SocialCreatePostRequest]) (*connect.Response[v1.SocialCreatePostResponse], error)
 	SocialPublishPost(context.Context, *connect.Request[v1.SocialPublishPostRequest]) (*connect.Response[v1.SocialPublishPostResponse], error)
@@ -1870,6 +1904,18 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("BooksReport")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceBooksListRecurringHandler := connect.NewUnaryHandler(
+		RunnerServiceBooksListRecurringProcedure,
+		svc.BooksListRecurring,
+		connect.WithSchema(runnerServiceMethods.ByName("BooksListRecurring")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceBooksProposeRecurringHandler := connect.NewUnaryHandler(
+		RunnerServiceBooksProposeRecurringProcedure,
+		svc.BooksProposeRecurring,
+		connect.WithSchema(runnerServiceMethods.ByName("BooksProposeRecurring")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServiceSocialAccountsHandler := connect.NewUnaryHandler(
 		RunnerServiceSocialAccountsProcedure,
 		svc.SocialAccounts,
@@ -2144,6 +2190,10 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceBooksListExpensesHandler.ServeHTTP(w, r)
 		case RunnerServiceBooksReportProcedure:
 			runnerServiceBooksReportHandler.ServeHTTP(w, r)
+		case RunnerServiceBooksListRecurringProcedure:
+			runnerServiceBooksListRecurringHandler.ServeHTTP(w, r)
+		case RunnerServiceBooksProposeRecurringProcedure:
+			runnerServiceBooksProposeRecurringHandler.ServeHTTP(w, r)
 		case RunnerServiceSocialAccountsProcedure:
 			runnerServiceSocialAccountsHandler.ServeHTTP(w, r)
 		case RunnerServiceSocialCreatePostProcedure:
@@ -2395,6 +2445,14 @@ func (UnimplementedRunnerServiceHandler) BooksListExpenses(context.Context, *con
 
 func (UnimplementedRunnerServiceHandler) BooksReport(context.Context, *connect.Request[v1.BooksReportRequest]) (*connect.Response[v1.BooksReportResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BooksReport is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) BooksListRecurring(context.Context, *connect.Request[v1.BooksListRecurringRequest]) (*connect.Response[v1.BooksListRecurringResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BooksListRecurring is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) BooksProposeRecurring(context.Context, *connect.Request[v1.BooksProposeRecurringRequest]) (*connect.Response[v1.BooksProposeRecurringResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.BooksProposeRecurring is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) SocialAccounts(context.Context, *connect.Request[v1.SocialAccountsRequest]) (*connect.Response[v1.SocialAccountsResponse], error) {
