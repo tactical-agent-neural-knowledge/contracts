@@ -389,6 +389,17 @@ message PostToThreadResponse {
   string message_id = 1;
 }
 
+// Ask another agent in this workspace to do a task, in this run's thread. The control plane
+// posts the ask as this agent with an explicit mention; the other agent answers in the thread.
+message RequestAgentTaskRequest {
+  string agent = 1;  // the other agent's name, or its title (for example "CFO")
+  string task = 2;   // what to do, with the context it needs: it does not see this run's transcript
+}
+message RequestAgentTaskResponse {
+  string message_id = 1;
+  string agent_name = 2;  // who was asked, as the workspace names them
+}
+
 message PostPlanRequest {
   string summary = 1;
   repeated tank.blocks.v1.PlanStep steps = 2;
@@ -1121,6 +1132,7 @@ service RunnerService {
   rpc PushBranch(stream PushBranchRequest) returns (PushBranchResponse);
 
   rpc PostToThread(PostToThreadRequest) returns (PostToThreadResponse);
+  rpc RequestAgentTask(RequestAgentTaskRequest) returns (RequestAgentTaskResponse);
   rpc AttachArtifact(AttachArtifactRequest) returns (AttachArtifactResponse);
   rpc GetAttachment(GetAttachmentRequest) returns (stream GetAttachmentResponse);
   rpc PostPlan(PostPlanRequest) returns (PostPlanResponse);

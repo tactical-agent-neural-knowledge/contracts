@@ -553,6 +553,22 @@ class PostToThreadResponse(_message.Message):
     message_id: str
     def __init__(self, message_id: _Optional[str] = ...) -> None: ...
 
+class RequestAgentTaskRequest(_message.Message):
+    __slots__ = ("agent", "task")
+    AGENT_FIELD_NUMBER: _ClassVar[int]
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    agent: str
+    task: str
+    def __init__(self, agent: _Optional[str] = ..., task: _Optional[str] = ...) -> None: ...
+
+class RequestAgentTaskResponse(_message.Message):
+    __slots__ = ("message_id", "agent_name")
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    AGENT_NAME_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    agent_name: str
+    def __init__(self, message_id: _Optional[str] = ..., agent_name: _Optional[str] = ...) -> None: ...
+
 class PostPlanRequest(_message.Message):
     __slots__ = ("summary", "steps", "risks", "questions", "preview_file_ids")
     SUMMARY_FIELD_NUMBER: _ClassVar[int]
