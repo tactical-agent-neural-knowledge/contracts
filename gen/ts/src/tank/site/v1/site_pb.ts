@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tank/site/v1/site.proto.
  */
 export const file_tank_site_v1_site: GenFile = /*@__PURE__*/
-  fileDesc("Chd0YW5rL3NpdGUvdjEvc2l0ZS5wcm90bxIMdGFuay5zaXRlLnYxIiYKFEdldEV4cGVyaWVuY2VSZXF1ZXN0Eg4KBnByb21wdBgBIAEoCSJFChVHZXRFeHBlcmllbmNlUmVzcG9uc2USLAoKZXhwZXJpZW5jZRgBIAEoCzIYLnRhbmsuc2l0ZS52MS5FeHBlcmllbmNlIpYBCgpFeHBlcmllbmNlEhAKCGhlYWRsaW5lGAEgASgJEgwKBGxlZGUYAiABKAkSMQoIc2VjdGlvbnMYAyADKAsyHy50YW5rLnNpdGUudjEuRXhwZXJpZW5jZVNlY3Rpb24SDwoHY2xvc2luZxgEIAEoCRIPCgdjbG9zZXN0GAUgASgIEhMKC3dyaXR0ZW5fZm9yGAYgASgJIkEKEUV4cGVyaWVuY2VTZWN0aW9uEg8KB2ZlYXR1cmUYASABKAkSDQoFdGl0bGUYAiABKAkSDAoEYm9keRgDIAEoCTJnCgtTaXRlU2VydmljZRJYCg1HZXRFeHBlcmllbmNlEiIudGFuay5zaXRlLnYxLkdldEV4cGVyaWVuY2VSZXF1ZXN0GiMudGFuay5zaXRlLnYxLkdldEV4cGVyaWVuY2VSZXNwb25zZULAAQoQY29tLnRhbmsuc2l0ZS52MUIJU2l0ZVByb3RvUAFaT2dpdGh1Yi5jb20vdGFjdGljYWwtYWdlbnQtbmV1cmFsLWtub3dsZWRnZS9jb250cmFjdHMvZ2VuL2dvL3Rhbmsvc2l0ZS92MTtzaXRldjGiAgNUU1iqAgxUYW5rLlNpdGUuVjHKAgxUYW5rXFNpdGVcVjHiAhhUYW5rXFNpdGVcVjFcR1BCTWV0YWRhdGHqAg5UYW5rOjpTaXRlOjpWMWIGcHJvdG8z");
+  fileDesc("Chd0YW5rL3NpdGUvdjEvc2l0ZS5wcm90bxIMdGFuay5zaXRlLnYxIiYKFEdldEV4cGVyaWVuY2VSZXF1ZXN0Eg4KBnByb21wdBgBIAEoCSJFChVHZXRFeHBlcmllbmNlUmVzcG9uc2USLAoKZXhwZXJpZW5jZRgBIAEoCzIYLnRhbmsuc2l0ZS52MS5FeHBlcmllbmNlIqcBCgpFeHBlcmllbmNlEhAKCGhlYWRsaW5lGAEgASgJEgwKBGxlZGUYAiABKAkSMQoIc2VjdGlvbnMYAyADKAsyHy50YW5rLnNpdGUudjEuRXhwZXJpZW5jZVNlY3Rpb24SDwoHY2xvc2luZxgEIAEoCRIPCgdjbG9zZXN0GAUgASgIEhMKC3dyaXR0ZW5fZm9yGAYgASgJEg8KB3BlcnNvbmEYByABKAkiQQoRRXhwZXJpZW5jZVNlY3Rpb24SDwoHZmVhdHVyZRgBIAEoCRINCgV0aXRsZRgCIAEoCRIMCgRib2R5GAMgASgJMmcKC1NpdGVTZXJ2aWNlElgKDUdldEV4cGVyaWVuY2USIi50YW5rLnNpdGUudjEuR2V0RXhwZXJpZW5jZVJlcXVlc3QaIy50YW5rLnNpdGUudjEuR2V0RXhwZXJpZW5jZVJlc3BvbnNlQsABChBjb20udGFuay5zaXRlLnYxQglTaXRlUHJvdG9QAVpPZ2l0aHViLmNvbS90YWN0aWNhbC1hZ2VudC1uZXVyYWwta25vd2xlZGdlL2NvbnRyYWN0cy9nZW4vZ28vdGFuay9zaXRlL3YxO3NpdGV2MaICA1RTWKoCDFRhbmsuU2l0ZS5WMcoCDFRhbmtcU2l0ZVxWMeICGFRhbmtcU2l0ZVxWMVxHUEJNZXRhZGF0YeoCDlRhbms6OlNpdGU6OlYxYgZwcm90bzM");
 
 /**
  * @generated from message tank.site.v1.GetExperienceRequest
@@ -90,6 +90,15 @@ export type Experience = Message<"tank.site.v1.Experience"> & {
    * @generated from field: string written_for = 6;
    */
   writtenFor: string;
+
+  /**
+   * Which of the site's personas the visitor is closest to, by its key in the site's
+   * experiences.json (the model's choice, or the saved page's own). The site shows that
+   * persona's demo, sections and accent. Empty from an api that does not choose one.
+   *
+   * @generated from field: string persona = 7;
+   */
+  persona: string;
 };
 
 /**

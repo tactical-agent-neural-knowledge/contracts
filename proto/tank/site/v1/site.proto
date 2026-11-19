@@ -38,6 +38,10 @@ message Experience {
   bool closest = 5;
   // The prompt the page was written for; differs from the request when closest is set.
   string written_for = 6;
+  // Which of the site's personas the visitor is closest to, by its key in the site's
+  // experiences.json (the model's choice, or the saved page's own). The site shows that
+  // persona's demo, sections and accent. Empty from an api that does not choose one.
+  string persona = 7;
 }
 
 message ExperienceSection {
