@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package tank.site.v1;
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/site/v1;sitev1";
+
+// SiteService is what the marketing site (tank.chat) asks of TANK without an account.
+//
+// "Choose your experience" (Robby, 2026-11-19): not every visitor is an engineer, and the
+// homepage read as if they were. A visitor says who they are in a prompt ("I'm the CEO of a
+// FinTech company, how can TANK be used in my organization") and Neural 1.0 writes the
+// homepage for their field: a headline, an opening, and a handful of sections, each about
+// one feature that is live today. TANK's own model only. When Neural is asleep or busy, the
+// answer is the saved page whose prompt is closest to what was typed.
+service SiteService {
+  // GetExperience is public and rate limited. It never wakes the model.
+  rpc GetExperience(GetExperienceRequest) returns (GetExperienceResponse);
+}
+
+message GetExperienceRequest {
+  // What the visitor typed or the suggestion they picked. At most 300 characters.
+  string prompt = 1;
+}
+
+message GetExperienceResponse {
+  // Absent when there is nothing to show (no saved page yet and the model is not answering):
+  // the site keeps its standard homepage.
+  Experience experience = 1;
+}
+
+message Experience {
+  string headline = 1;
+  string lede = 2;
+  repeated ExperienceSection sections = 3;
+  // One closing line above the call to action.
+  string closing = 4;
+  // True when this is a saved page for another prompt, the closest to what was asked.
+  bool closest = 5;
+  // The prompt the page was written for; differs from the request when closest is set.
+  string written_for = 6;
+}
+
+message ExperienceSection {
+  // A key from the site's feature list (tank.chat/features.json), always one that is live.
+  string feature = 1;
+  string title = 2;
+  string body = 3;
+}
