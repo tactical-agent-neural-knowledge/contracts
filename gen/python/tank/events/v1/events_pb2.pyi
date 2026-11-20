@@ -193,6 +193,18 @@ class AgentStatus(_message.Message):
     status: str
     def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., run_id: _Optional[str] = ..., status: _Optional[str] = ...) -> None: ...
 
+class PreparationUpdate(_message.Message):
+    __slots__ = ("channel_id", "thread_root_id", "preparation_id", "state")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    PREPARATION_ID_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    thread_root_id: str
+    preparation_id: str
+    state: _workspace_pb2.PreparationState
+    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., preparation_id: _Optional[str] = ..., state: _Optional[_Union[_workspace_pb2.PreparationState, str]] = ...) -> None: ...
+
 class FileReady(_message.Message):
     __slots__ = ("file",)
     FILE_FIELD_NUMBER: _ClassVar[int]

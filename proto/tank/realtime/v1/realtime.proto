@@ -133,5 +133,6 @@ message ServerFrame {
     tank.events.v1.AgentStatus agent_status = 9;
     tank.events.v1.CanvasEditing canvas_editing = 10;
     tank.events.v1.BoardPointer board_pointer = 11;
+    tank.events.v1.PreparationUpdate preparation = 12;
   }
 }

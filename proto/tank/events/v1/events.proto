@@ -120,6 +120,14 @@ message AgentStatus {
   string run_id = 3;
   string status = 4; // "reading repo", "running tests", ...
 }
+// preparation.updated on evt.{ws}.user.{uid}: the sandbox being prepared for that user's
+// composer draft changed state, so every device shows the same "getting ready" indicator.
+message PreparationUpdate {
+  string channel_id = 1;
+  string thread_root_id = 2; // empty for the channel composer
+  string preparation_id = 3;
+  tank.workspace.v1.PreparationState state = 4;
+}
 // file.ready on evt.{ws}.user.{uploader}: the upload is verified and readable.
 // Also published on evt.{ws}.ch.{channel} for every channel the file is
 // shared in, and on evt.{ws}.thread.{root} when the sharing message is a reply.

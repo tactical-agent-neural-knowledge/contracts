@@ -104,7 +104,7 @@ class Agent(_message.Message):
     def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., principal_id: _Optional[str] = ..., name: _Optional[str] = ..., scopes: _Optional[_Iterable[str]] = ..., title: _Optional[str] = ..., skill: _Optional[str] = ...) -> None: ...
 
 class Run(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "state", "branch", "pr_url", "cost_usd", "status_message_id", "started_at", "ended_at", "plan_hash", "pending_gate_id")
+    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "state", "branch", "pr_url", "cost_usd", "status_message_id", "started_at", "ended_at", "plan_hash", "pending_gate_id", "prepared", "acked_at", "sandbox_ready_at", "first_reply_at")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -120,6 +120,10 @@ class Run(_message.Message):
     ENDED_AT_FIELD_NUMBER: _ClassVar[int]
     PLAN_HASH_FIELD_NUMBER: _ClassVar[int]
     PENDING_GATE_ID_FIELD_NUMBER: _ClassVar[int]
+    PREPARED_FIELD_NUMBER: _ClassVar[int]
+    ACKED_AT_FIELD_NUMBER: _ClassVar[int]
+    SANDBOX_READY_AT_FIELD_NUMBER: _ClassVar[int]
+    FIRST_REPLY_AT_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -135,33 +139,41 @@ class Run(_message.Message):
     ended_at: _timestamp_pb2.Timestamp
     plan_hash: str
     pending_gate_id: str
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., state: _Optional[_Union[RunState, str]] = ..., branch: _Optional[str] = ..., pr_url: _Optional[str] = ..., cost_usd: _Optional[float] = ..., status_message_id: _Optional[str] = ..., started_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., ended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., plan_hash: _Optional[str] = ..., pending_gate_id: _Optional[str] = ...) -> None: ...
+    prepared: bool
+    acked_at: _timestamp_pb2.Timestamp
+    sandbox_ready_at: _timestamp_pb2.Timestamp
+    first_reply_at: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., state: _Optional[_Union[RunState, str]] = ..., branch: _Optional[str] = ..., pr_url: _Optional[str] = ..., cost_usd: _Optional[float] = ..., status_message_id: _Optional[str] = ..., started_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., ended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., plan_hash: _Optional[str] = ..., pending_gate_id: _Optional[str] = ..., prepared: bool = ..., acked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., sandbox_ready_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., first_reply_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class StartRunRequest(_message.Message):
-    __slots__ = ("thread_root_id", "agent_id", "instructions", "requested_by", "parent_run_id")
+    __slots__ = ("thread_root_id", "agent_id", "instructions", "requested_by", "parent_run_id", "preparation_id")
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     AGENT_ID_FIELD_NUMBER: _ClassVar[int]
     INSTRUCTIONS_FIELD_NUMBER: _ClassVar[int]
     REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
     PARENT_RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    PREPARATION_ID_FIELD_NUMBER: _ClassVar[int]
     thread_root_id: str
     agent_id: str
     instructions: str
     requested_by: str
     parent_run_id: str
-    def __init__(self, thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., instructions: _Optional[str] = ..., requested_by: _Optional[str] = ..., parent_run_id: _Optional[str] = ...) -> None: ...
+    preparation_id: str
+    def __init__(self, thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., instructions: _Optional[str] = ..., requested_by: _Optional[str] = ..., parent_run_id: _Optional[str] = ..., preparation_id: _Optional[str] = ...) -> None: ...
 
 class StartRunResponse(_message.Message):
-    __slots__ = ("run", "agent_session_token", "token_expires_at", "refusal")
+    __slots__ = ("run", "agent_session_token", "token_expires_at", "refusal", "ack_message_id")
     RUN_FIELD_NUMBER: _ClassVar[int]
     AGENT_SESSION_TOKEN_FIELD_NUMBER: _ClassVar[int]
     TOKEN_EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
     REFUSAL_FIELD_NUMBER: _ClassVar[int]
+    ACK_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     run: Run
     agent_session_token: str
     token_expires_at: _timestamp_pb2.Timestamp
     refusal: RunRefusal
-    def __init__(self, run: _Optional[_Union[Run, _Mapping]] = ..., agent_session_token: _Optional[str] = ..., token_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., refusal: _Optional[_Union[RunRefusal, _Mapping]] = ...) -> None: ...
+    ack_message_id: str
+    def __init__(self, run: _Optional[_Union[Run, _Mapping]] = ..., agent_session_token: _Optional[str] = ..., token_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., refusal: _Optional[_Union[RunRefusal, _Mapping]] = ..., ack_message_id: _Optional[str] = ...) -> None: ...
 
 class RunRefusal(_message.Message):
     __slots__ = ("reason", "action", "message", "action_label")

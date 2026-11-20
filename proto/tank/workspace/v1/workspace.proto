@@ -464,6 +464,32 @@ message Draft {
   string text = 4;
   repeated string file_ids = 5;
   google.protobuf.Timestamp updated_at = 6;
+  // Set by the server on every PutDraft, never by the client: the agents the draft
+  // text tags, resolved the way @ autocomplete resolves them. Empty when none.
+  repeated string mentioned_agent_ids = 7;
+  // Set while a sandbox is being prepared for this draft, empty otherwise. Send it as
+  // StartRunRequest.preparation_id when the message is sent so the run adopts the sandbox.
+  string preparation_id = 8;
+  PreparationState preparation_state = 9;
+  // When an unused preparation gives its sandbox back on its own.
+  google.protobuf.Timestamp preparation_expires_at = 10;
+}
+
+// Where the sandbox being prepared for a draft is. The trigger is PutDraft: when a saved
+// draft tags an agent the server starts a preparation. It ends in exactly one of READY
+// (adopted by StartRun), EXPIRED or one of the CANCELLED_* values. All of these cancel it:
+// DeleteDraft, a PutDraft whose text no longer tags the agent, and the message being sent
+// without the tag (or to a different thread). An unused preparation expires on its own at
+// Draft.preparation_expires_at, so tagging an agent and walking away never holds a sandbox.
+enum PreparationState {
+  PREPARATION_STATE_UNSPECIFIED = 0;
+  PREPARATION_STATE_PREPARING = 1; // sandbox is warming
+  PREPARATION_STATE_READY = 2;     // sandbox is warm and waiting for the message to be sent
+  PREPARATION_STATE_EXPIRED = 3;   // nobody sent the message in time
+  PREPARATION_STATE_CANCELLED = 4; // cancelled for a reason not listed below
+  PREPARATION_STATE_CANCELLED_MENTION_REMOVED = 5; // an edit dropped the @mention
+  PREPARATION_STATE_CANCELLED_DRAFT_DELETED = 6;   // DeleteDraft
+  PREPARATION_STATE_CANCELLED_SENT_ELSEWHERE = 7;  // sent without the tag, or to another thread
 }
 
 message GetDraftRequest {
