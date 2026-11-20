@@ -96,9 +96,38 @@ message StartRunResponse {
   // Agent-session token scoped to this thread; TTL = max run duration.
   string agent_session_token = 2;
   google.protobuf.Timestamp token_expires_at = 3;
+  // Set instead of run when the workspace may not start a run: the typed reason, so the
+  // reply and its button are the same on every client. A refusal is a normal answer, not
+  // an error.
+  RunRefusal refusal = 4;
   // The thread message posted the moment the run row exists, before the talker call or
   // planning, so the person sees a reply at once. Empty when no acknowledgement was posted.
-  string ack_message_id = 4;
+  string ack_message_id = 5;
+}
+
+enum RunRefusalReason {
+  RUN_REFUSAL_REASON_UNSPECIFIED = 0;
+  // The workspace is on the free plan; agent time needs premium.
+  RUN_REFUSAL_REASON_FREE_PLAN = 1;
+  // Prepaid agent time is spent and no auto-refill covered it.
+  RUN_REFUSAL_REASON_OUT_OF_FUNDS = 2;
+}
+
+enum RunRefusalAction {
+  RUN_REFUSAL_ACTION_UNSPECIFIED = 0;
+  // The button opens BillingService.StartUpgradeCheckout.
+  RUN_REFUSAL_ACTION_UPGRADE = 1;
+  // The button opens BillingService.StartAgentTimeCheckout.
+  RUN_REFUSAL_ACTION_REFILL = 2;
+}
+
+message RunRefusal {
+  RunRefusalReason reason = 1;
+  RunRefusalAction action = 2;
+  // The sentence the agent's reply carries, in words people read.
+  string message = 3;
+  // Label for the button, e.g. "Upgrade" or "Refill".
+  string action_label = 4;
 }
 
 // Open a new thread in a Tread as one of the workspace's agents: the root of an Ops

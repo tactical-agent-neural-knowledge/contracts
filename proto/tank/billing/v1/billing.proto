@@ -193,6 +193,14 @@ message AgentTime {
   bool can_manage = 12;                   // the caller may buy and change auto-refill
   bool prepaid = 13;                      // false: the workspace is not on prepaid agent time yet
   bool no_charge = 14;                    // the workspace pays nothing: never blocked, nothing to buy
+  // Same answer as Entitlements.agent_time_state: free | ok | low | out. low is
+  // available_cents under low_cents; out is blocked. A failed auto-refill reads out.
+  string state = 15;
+  int64 available_cents = 16;             // included_left_cents + balance_cents, never below zero
+  int64 low_cents = 17;                   // the threshold "low" is judged against
+  // The last auto-refill charge failed and the workspace was sent to the out-of-funds
+  // flow; clears when funds are bought. AutoRefill.last_error says why.
+  bool auto_refill_failed = 18;
 }
 
 message AutoRefill {
@@ -208,6 +216,21 @@ message AgentTimeEntry {
   int64 cents = 2;
   google.protobuf.Timestamp at = 3;
   string note = 4;
+}
+
+// AutoRefillCharged is one auto-refill attempt, recorded once. The #general post ("a
+// charge was just made"), the spend entry (Books source "refill"), the BillingRecord
+// (kind "auto_refill") and the AgentTimeEntry (kind "auto_refill") are all written from
+// it, so they cannot disagree. A failed attempt (succeeded false) puts the workspace in
+// state "out" and sets AgentTime.auto_refill_failed.
+message AutoRefillCharged {
+  string workspace_id = 1;
+  int64 amount_cents = 2;                 // what the refill tried to buy
+  int64 balance_after_cents = 3;          // purchased balance once it was applied; unchanged on failure
+  bool succeeded = 4;
+  string error = 5;                       // why it failed, in words people read; empty on success
+  string billing_record_id = 6;           // the BillingRecord written for it
+  google.protobuf.Timestamp at = 7;
 }
 
 message GetAgentTimeRequest { string workspace_id = 1; }
