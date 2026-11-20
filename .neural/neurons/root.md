@@ -18,3 +18,6 @@ refreshed 2026-11-16 · d7aa1845d1fb
 - `npx --yes @bufbuild/buf lint` — passed
 - `go build ./...` — passed
 - `go vet ./...` — passed
+
+## Learned in runs
+- In a fresh sandbox bare `pnpm` (corepack) fails with ENETUNREACH until the download is cached: run `NODE_USE_ENV_PROXY=1 pnpm --version` once so corepack goes through the egress proxy; open_pull_request's checks call bare pnpm. (learned 2026-11-20, run 382144774980115034)
