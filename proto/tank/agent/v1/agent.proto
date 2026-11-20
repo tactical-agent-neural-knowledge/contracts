@@ -61,6 +61,15 @@ message Run {
   google.protobuf.Timestamp ended_at = 13;
   string plan_hash = 14;       // hash of the approved plan, set by the control plane
   string pending_gate_id = 15; // gate the run is blocked on, if any
+  // True when the run took a sandbox prepared from the composer draft instead of
+  // provisioning one, so a client and the metrics can tell a warm start from a cold one.
+  bool prepared = 16;
+  // Delay breakdown, so the wait before the first reply is measured per workspace.
+  // acked_at: the immediate acknowledgement was posted. sandbox_ready_at: the sandbox
+  // could take work. first_reply_at: the first reply with content (not the ack) was posted.
+  google.protobuf.Timestamp acked_at = 17;
+  google.protobuf.Timestamp sandbox_ready_at = 18;
+  google.protobuf.Timestamp first_reply_at = 19;
 }
 
 message StartRunRequest {
@@ -77,12 +86,19 @@ message StartRunRequest {
   // that run; empty for a run a person started. Spend attributes the child to the same
   // person, and the tree hangs off this.
   string parent_run_id = 5;
+  // The preparation id from the sender's Draft (tank.workspace.v1.Draft.preparation_id).
+  // When it names a live preparation for this thread and agent, the run adopts that warm
+  // sandbox; when it is empty, expired or cancelled the run provisions one as before.
+  string preparation_id = 6;
 }
 message StartRunResponse {
   Run run = 1;
   // Agent-session token scoped to this thread; TTL = max run duration.
   string agent_session_token = 2;
   google.protobuf.Timestamp token_expires_at = 3;
+  // The thread message posted the moment the run row exists, before the talker call or
+  // planning, so the person sees a reply at once. Empty when no acknowledgement was posted.
+  string ack_message_id = 4;
 }
 
 // Open a new thread in a Tread as one of the workspace's agents: the root of an Ops

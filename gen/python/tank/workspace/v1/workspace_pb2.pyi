@@ -20,6 +20,17 @@ class Role(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     ROLE_GUEST: _ClassVar[Role]
     ROLE_BOT: _ClassVar[Role]
 
+class PreparationState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    PREPARATION_STATE_UNSPECIFIED: _ClassVar[PreparationState]
+    PREPARATION_STATE_PREPARING: _ClassVar[PreparationState]
+    PREPARATION_STATE_READY: _ClassVar[PreparationState]
+    PREPARATION_STATE_EXPIRED: _ClassVar[PreparationState]
+    PREPARATION_STATE_CANCELLED: _ClassVar[PreparationState]
+    PREPARATION_STATE_CANCELLED_MENTION_REMOVED: _ClassVar[PreparationState]
+    PREPARATION_STATE_CANCELLED_DRAFT_DELETED: _ClassVar[PreparationState]
+    PREPARATION_STATE_CANCELLED_SENT_ELSEWHERE: _ClassVar[PreparationState]
+
 class ArtKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     ART_KIND_UNSPECIFIED: _ClassVar[ArtKind]
@@ -31,6 +42,14 @@ ROLE_ADMIN: Role
 ROLE_MEMBER: Role
 ROLE_GUEST: Role
 ROLE_BOT: Role
+PREPARATION_STATE_UNSPECIFIED: PreparationState
+PREPARATION_STATE_PREPARING: PreparationState
+PREPARATION_STATE_READY: PreparationState
+PREPARATION_STATE_EXPIRED: PreparationState
+PREPARATION_STATE_CANCELLED: PreparationState
+PREPARATION_STATE_CANCELLED_MENTION_REMOVED: PreparationState
+PREPARATION_STATE_CANCELLED_DRAFT_DELETED: PreparationState
+PREPARATION_STATE_CANCELLED_SENT_ELSEWHERE: PreparationState
 ART_KIND_UNSPECIFIED: ArtKind
 ART_KIND_ICON: ArtKind
 ART_KIND_EMOJI: ArtKind
@@ -642,20 +661,28 @@ class RemoveBookmarkResponse(_message.Message):
     def __init__(self) -> None: ...
 
 class Draft(_message.Message):
-    __slots__ = ("channel_id", "thread_root_id", "rich_text", "text", "file_ids", "updated_at")
+    __slots__ = ("channel_id", "thread_root_id", "rich_text", "text", "file_ids", "updated_at", "mentioned_agent_ids", "preparation_id", "preparation_state", "preparation_expires_at")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     RICH_TEXT_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
     FILE_IDS_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    MENTIONED_AGENT_IDS_FIELD_NUMBER: _ClassVar[int]
+    PREPARATION_ID_FIELD_NUMBER: _ClassVar[int]
+    PREPARATION_STATE_FIELD_NUMBER: _ClassVar[int]
+    PREPARATION_EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
     thread_root_id: str
     rich_text: _richtext_pb2.RichText
     text: str
     file_ids: _containers.RepeatedScalarFieldContainer[str]
     updated_at: _timestamp_pb2.Timestamp
-    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., text: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    mentioned_agent_ids: _containers.RepeatedScalarFieldContainer[str]
+    preparation_id: str
+    preparation_state: PreparationState
+    preparation_expires_at: _timestamp_pb2.Timestamp
+    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., text: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., mentioned_agent_ids: _Optional[_Iterable[str]] = ..., preparation_id: _Optional[str] = ..., preparation_state: _Optional[_Union[PreparationState, str]] = ..., preparation_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class GetDraftRequest(_message.Message):
     __slots__ = ("channel_id", "thread_root_id")
