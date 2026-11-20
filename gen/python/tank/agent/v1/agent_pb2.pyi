@@ -363,6 +363,24 @@ class GetRunResponse(_message.Message):
     run: Run
     def __init__(self, run: _Optional[_Union[Run, _Mapping]] = ...) -> None: ...
 
+class GetRunStreamTailRequest(_message.Message):
+    __slots__ = ("run_id",)
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    def __init__(self, run_id: _Optional[str] = ...) -> None: ...
+
+class GetRunStreamTailResponse(_message.Message):
+    __slots__ = ("text", "status", "last_seq", "live")
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    LAST_SEQ_FIELD_NUMBER: _ClassVar[int]
+    LIVE_FIELD_NUMBER: _ClassVar[int]
+    text: str
+    status: str
+    last_seq: int
+    live: bool
+    def __init__(self, text: _Optional[str] = ..., status: _Optional[str] = ..., last_seq: _Optional[int] = ..., live: bool = ...) -> None: ...
+
 class ListRunsRequest(_message.Message):
     __slots__ = ("workspace_id", "channel_id", "thread_root_id", "cursor", "limit")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]

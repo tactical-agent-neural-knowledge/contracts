@@ -233,6 +233,20 @@ message GetRunResponse {
   Run run = 1;
 }
 
+// What a run has said so far, for a person who turns Preferences.live_agent_stream on mid-run
+// or opens the thread mid-run, on any device. Same content rules as AgentStreamDelta: only
+// assistant text and the latest status line, never tool input or output. Held only while the
+// run is live; once it ends the stored message is the answer and `live` is false.
+message GetRunStreamTailRequest {
+  string run_id = 1;
+}
+message GetRunStreamTailResponse {
+  string text = 1;        // the assistant text so far, joined
+  string status = 2;      // the latest status line; empty if none
+  int64 last_seq = 3;     // seq of the last AgentStreamDelta folded in; the next delta must be last_seq + 1
+  bool live = 4;          // false once the run has ended, with text and status empty
+}
+
 message ListRunsRequest {
   string workspace_id = 1;
   string channel_id = 2;
@@ -654,6 +668,7 @@ service AgentService {
   rpc SetProductLanding(SetProductLandingRequest) returns (SetProductLandingResponse);
   rpc RecordProductFinding(RecordProductFindingRequest) returns (RecordProductFindingResponse);
   rpc GetRun(GetRunRequest) returns (GetRunResponse);
+  rpc GetRunStreamTail(GetRunStreamTailRequest) returns (GetRunStreamTailResponse);
   rpc ListRuns(ListRunsRequest) returns (ListRunsResponse);
   rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse);
 

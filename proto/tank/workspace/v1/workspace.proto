@@ -292,6 +292,10 @@ message Preferences {
   // "Use my location": the profile's time zone follows the device's, kept in step by the
   // client each time it opens. TANK reads the device's time-zone setting, never its position.
   bool timezone_from_device = 13;
+  // Show the agent's live output (status lines and text arriving as it is written) in threads.
+  // Per person, per workspace, off until they turn it on. Write it with SetLiveAgentStream: the
+  // thread toggle and the settings screen both do, on every platform, so they cannot disagree.
+  bool live_agent_stream = 14;
 }
 
 // A notification sound set, chosen from TANK's packs by a vibe. Each field names
@@ -338,6 +342,18 @@ message UpdatePreferencesRequest {
   Preferences preferences = 2; // replaces the stored preferences
 }
 message UpdatePreferencesResponse {
+  Preferences preferences = 1;
+}
+
+// Changes only live_agent_stream and leaves every other preference as stored, so a client
+// that predates the field cannot clobber it with a whole-message UpdatePreferences. The
+// server publishes preferences.updated on the person's user subject afterwards, which is
+// how turning it off in one thread turns it off on every device and in every open thread.
+message SetLiveAgentStreamRequest {
+  string workspace_id = 1;
+  bool enabled = 2;
+}
+message SetLiveAgentStreamResponse {
   Preferences preferences = 1;
 }
 
@@ -666,6 +682,7 @@ service WorkspaceService {
   rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
   rpc GetPreferences(GetPreferencesRequest) returns (GetPreferencesResponse);
   rpc UpdatePreferences(UpdatePreferencesRequest) returns (UpdatePreferencesResponse);
+  rpc SetLiveAgentStream(SetLiveAgentStreamRequest) returns (SetLiveAgentStreamResponse);
   // A new model's notice, shown once per person at the top of the workspace until they
   // dismiss it; owners and admins answer the data question for the workspace in place.
   rpc GetModelNotice(GetModelNoticeRequest) returns (GetModelNoticeResponse);
