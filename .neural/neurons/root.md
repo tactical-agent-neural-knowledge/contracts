@@ -18,3 +18,6 @@ refreshed 2026-11-16 · d7aa1845d1fb
 - `npx --yes @bufbuild/buf lint` — passed
 - `go build ./...` — passed
 - `go vet ./...` — passed
+
+## Learned in runs
+- Downstream repos (api, sdk-ts, agent-control) must pin the squash-merged commit on main, not the contracts PR head: the head vanishes after merge and go/CI fail with "unknown revision"; regenerate the pseudo-version with the commit's UTC committer time and a 12-char sha. (learned 2026-11-20, run 382278438810688978)
