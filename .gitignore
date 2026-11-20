@@ -3,3 +3,4 @@ gen/ts/dist/
 gen/ts/*.tgz
 __pycache__/
 .tools/
+attachments/
