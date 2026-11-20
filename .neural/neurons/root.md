@@ -18,3 +18,6 @@ refreshed 2026-11-16 · d7aa1845d1fb
 - `npx --yes @bufbuild/buf lint` — passed
 - `go build ./...` — passed
 - `go vet ./...` — passed
+
+## Learned in runs
+- In the sandbox corepack's fetch ignores the egress proxy, so `pnpm` fails to download itself; run `NODE_USE_ENV_PROXY=1 corepack pnpm --version` once to seed the corepack cache, after which plain `pnpm` works (and open_pull_request's verification passes). (learned 2026-11-20, run 382149355898202234)
