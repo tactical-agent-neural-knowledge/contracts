@@ -173,6 +173,32 @@ message PreferencesUpdated {
   string user_id = 1;
   tank.workspace.v1.Preferences preferences = 2;
 }
+// One piece of an agent's live output, carried only on the realtime socket
+// (ServerFrame.agent_stream). Never stored, never replayed, never an Envelope on the bus
+// history: the stored message is the record and always wins. Carries only assistant text
+// and status lines, never tool input or output.
+message AgentStreamDelta {
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    // text is a chunk to append to the partial text, not the text so far.
+    KIND_TEXT = 1;
+    // text is a short status line ("Reading the repository") replacing the previous one.
+    KIND_STATUS = 2;
+    // The run finished or stopped; drop any partial text and show the stored message.
+    KIND_END = 3;
+  }
+  string channel_id = 1;
+  string thread_root_id = 2;
+  string run_id = 3;
+  // Starts at 1 for each run and rises by one per delta on a subscription. A gap means
+  // a delta was missed: drop the partial text and wait for the stored message.
+  uint64 seq = 4;
+  Kind kind = 5;
+  string text = 6;
+  // True on the first delta of a new turn within the run: clear the partial text first.
+  bool reset = 7;
+}
+
 // channel_preference.updated on evt.{ws}.user.{uid}.
 message ChannelPreferenceUpdated {
   string user_id = 1;

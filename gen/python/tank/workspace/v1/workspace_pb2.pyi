@@ -389,7 +389,7 @@ class ArmorModeSchedule(_message.Message):
     def __init__(self, enabled: bool = ..., start: _Optional[str] = ..., end: _Optional[str] = ..., days: _Optional[_Iterable[int]] = ..., timezone: _Optional[str] = ..., allow_critical: bool = ...) -> None: ...
 
 class Preferences(_message.Message):
-    __slots__ = ("notify_default", "dm_notify_default", "theme", "armor_mode_schedule", "email_digest", "desktop_sound", "push_on_mention_only", "topo", "custom_theme", "home", "digest_voice", "sounds", "timezone_from_device")
+    __slots__ = ("notify_default", "dm_notify_default", "theme", "armor_mode_schedule", "email_digest", "desktop_sound", "push_on_mention_only", "topo", "custom_theme", "home", "digest_voice", "sounds", "timezone_from_device", "live_agent_stream")
     NOTIFY_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     DM_NOTIFY_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     THEME_FIELD_NUMBER: _ClassVar[int]
@@ -403,6 +403,7 @@ class Preferences(_message.Message):
     DIGEST_VOICE_FIELD_NUMBER: _ClassVar[int]
     SOUNDS_FIELD_NUMBER: _ClassVar[int]
     TIMEZONE_FROM_DEVICE_FIELD_NUMBER: _ClassVar[int]
+    LIVE_AGENT_STREAM_FIELD_NUMBER: _ClassVar[int]
     notify_default: _channel_pb2.NotifyPref
     dm_notify_default: _channel_pb2.NotifyPref
     theme: str
@@ -416,7 +417,8 @@ class Preferences(_message.Message):
     digest_voice: str
     sounds: SoundChoice
     timezone_from_device: bool
-    def __init__(self, notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., dm_notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., theme: _Optional[str] = ..., armor_mode_schedule: _Optional[_Union[ArmorModeSchedule, _Mapping]] = ..., email_digest: bool = ..., desktop_sound: bool = ..., push_on_mention_only: bool = ..., topo: _Optional[_Union[TopoPreferences, _Mapping]] = ..., custom_theme: _Optional[_Union[Theme, _Mapping]] = ..., home: _Optional[_Union[HomeLayout, _Mapping]] = ..., digest_voice: _Optional[str] = ..., sounds: _Optional[_Union[SoundChoice, _Mapping]] = ..., timezone_from_device: bool = ...) -> None: ...
+    live_agent_stream: bool
+    def __init__(self, notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., dm_notify_default: _Optional[_Union[_channel_pb2.NotifyPref, str]] = ..., theme: _Optional[str] = ..., armor_mode_schedule: _Optional[_Union[ArmorModeSchedule, _Mapping]] = ..., email_digest: bool = ..., desktop_sound: bool = ..., push_on_mention_only: bool = ..., topo: _Optional[_Union[TopoPreferences, _Mapping]] = ..., custom_theme: _Optional[_Union[Theme, _Mapping]] = ..., home: _Optional[_Union[HomeLayout, _Mapping]] = ..., digest_voice: _Optional[str] = ..., sounds: _Optional[_Union[SoundChoice, _Mapping]] = ..., timezone_from_device: bool = ..., live_agent_stream: bool = ...) -> None: ...
 
 class SoundChoice(_message.Message):
     __slots__ = ("pack", "mention", "dm", "agent", "description")
@@ -461,6 +463,20 @@ class GetPreferencesRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
 
 class GetPreferencesResponse(_message.Message):
+    __slots__ = ("preferences",)
+    PREFERENCES_FIELD_NUMBER: _ClassVar[int]
+    preferences: Preferences
+    def __init__(self, preferences: _Optional[_Union[Preferences, _Mapping]] = ...) -> None: ...
+
+class SetLiveAgentStreamRequest(_message.Message):
+    __slots__ = ("workspace_id", "enabled")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    enabled: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., enabled: bool = ...) -> None: ...
+
+class SetLiveAgentStreamResponse(_message.Message):
     __slots__ = ("preferences",)
     PREFERENCES_FIELD_NUMBER: _ClassVar[int]
     preferences: Preferences

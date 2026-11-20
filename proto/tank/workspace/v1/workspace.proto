@@ -294,6 +294,25 @@ message Preferences {
   // "Use my location": the profile's time zone follows the device's, kept in step by the
   // client each time it opens. TANK reads the device's time-zone setting, never its position.
   bool timezone_from_device = 13;
+  // Live agent output: while an agent works in a thread, show its status lines and
+  // stream its reply text as it is written, instead of only the final message. Per
+  // person, across the whole workspace, off by default. Written only through
+  // SetLiveAgentStream (never UpdatePreferences from a thread toggle), and synced to the
+  // person's other devices and open threads by preferences.updated.
+  //
+  // Client behaviour, identical on web (Safari, Chrome, Edge), desktop (macOS, Windows,
+  // Linux) and mobile (iOS, Android); no field depends on platform, browser or OS and
+  // there is no capability flag:
+  //  - The toggle sits in the thread header of a thread an agent is working in, off
+  //    until the person turns it on, and always shows this value.
+  //  - On: show STATUS lines as they arrive and animate TEXT chunks in as they arrive.
+  //    With the OS or browser reduced-motion setting, show each chunk at once, unanimated.
+  //  - Off: show nothing until the stored message arrives. Turning it off in any thread
+  //    or on any device turns it off everywhere.
+  //  - On a seq gap, a reconnect or a resync, drop the partial text; the stored message
+  //    wins. On opening a thread or turning the toggle on mid-run, call GetRunStreamTail
+  //    first to show what was already said.
+  bool live_agent_stream = 14;
 }
 
 // A notification sound set, chosen from TANK's packs by a vibe. Each field names
@@ -333,6 +352,14 @@ message GetPreferencesRequest {
 }
 message GetPreferencesResponse {
   Preferences preferences = 1;
+}
+
+message SetLiveAgentStreamRequest {
+  string workspace_id = 1;
+  bool enabled = 2;
+}
+message SetLiveAgentStreamResponse {
+  Preferences preferences = 1; // the stored preferences after the change
 }
 
 message UpdatePreferencesRequest {
@@ -694,6 +721,10 @@ service WorkspaceService {
   rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
   rpc GetPreferences(GetPreferencesRequest) returns (GetPreferencesResponse);
   rpc UpdatePreferences(UpdatePreferencesRequest) returns (UpdatePreferencesResponse);
+  // Turns live agent output on or off for the caller in this workspace, leaving every
+  // other preference as stored. The thread toggle and the settings screen on every
+  // platform call this and nothing else; emits preferences.updated.
+  rpc SetLiveAgentStream(SetLiveAgentStreamRequest) returns (SetLiveAgentStreamResponse);
   // A new model's notice, shown once per person at the top of the workspace until they
   // dismiss it; owners and admins answer the data question for the workspace in place.
   rpc GetModelNotice(GetModelNoticeRequest) returns (GetModelNoticeResponse);

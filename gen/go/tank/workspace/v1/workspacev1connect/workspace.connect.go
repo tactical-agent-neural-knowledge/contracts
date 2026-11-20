@@ -87,6 +87,9 @@ const (
 	// WorkspaceServiceUpdatePreferencesProcedure is the fully-qualified name of the WorkspaceService's
 	// UpdatePreferences RPC.
 	WorkspaceServiceUpdatePreferencesProcedure = "/tank.workspace.v1.WorkspaceService/UpdatePreferences"
+	// WorkspaceServiceSetLiveAgentStreamProcedure is the fully-qualified name of the WorkspaceService's
+	// SetLiveAgentStream RPC.
+	WorkspaceServiceSetLiveAgentStreamProcedure = "/tank.workspace.v1.WorkspaceService/SetLiveAgentStream"
 	// WorkspaceServiceGetModelNoticeProcedure is the fully-qualified name of the WorkspaceService's
 	// GetModelNotice RPC.
 	WorkspaceServiceGetModelNoticeProcedure = "/tank.workspace.v1.WorkspaceService/GetModelNotice"
@@ -198,6 +201,10 @@ type WorkspaceServiceClient interface {
 	UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error)
 	GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error)
 	UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error)
+	// Turns live agent output on or off for the caller in this workspace, leaving every
+	// other preference as stored. The thread toggle and the settings screen on every
+	// platform call this and nothing else; emits preferences.updated.
+	SetLiveAgentStream(context.Context, *connect.Request[v1.SetLiveAgentStreamRequest]) (*connect.Response[v1.SetLiveAgentStreamResponse], error)
 	// A new model's notice, shown once per person at the top of the workspace until they
 	// dismiss it; owners and admins answer the data question for the workspace in place.
 	GetModelNotice(context.Context, *connect.Request[v1.GetModelNoticeRequest]) (*connect.Response[v1.GetModelNoticeResponse], error)
@@ -353,6 +360,12 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			httpClient,
 			baseURL+WorkspaceServiceUpdatePreferencesProcedure,
 			connect.WithSchema(workspaceServiceMethods.ByName("UpdatePreferences")),
+			connect.WithClientOptions(opts...),
+		),
+		setLiveAgentStream: connect.NewClient[v1.SetLiveAgentStreamRequest, v1.SetLiveAgentStreamResponse](
+			httpClient,
+			baseURL+WorkspaceServiceSetLiveAgentStreamProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("SetLiveAgentStream")),
 			connect.WithClientOptions(opts...),
 		),
 		getModelNotice: connect.NewClient[v1.GetModelNoticeRequest, v1.GetModelNoticeResponse](
@@ -552,6 +565,7 @@ type workspaceServiceClient struct {
 	updateProfile          *connect.Client[v1.UpdateProfileRequest, v1.UpdateProfileResponse]
 	getPreferences         *connect.Client[v1.GetPreferencesRequest, v1.GetPreferencesResponse]
 	updatePreferences      *connect.Client[v1.UpdatePreferencesRequest, v1.UpdatePreferencesResponse]
+	setLiveAgentStream     *connect.Client[v1.SetLiveAgentStreamRequest, v1.SetLiveAgentStreamResponse]
 	getModelNotice         *connect.Client[v1.GetModelNoticeRequest, v1.GetModelNoticeResponse]
 	dismissModelNotice     *connect.Client[v1.DismissModelNoticeRequest, v1.DismissModelNoticeResponse]
 	setTrainingConsent     *connect.Client[v1.SetTrainingConsentRequest, v1.SetTrainingConsentResponse]
@@ -671,6 +685,11 @@ func (c *workspaceServiceClient) GetPreferences(ctx context.Context, req *connec
 // UpdatePreferences calls tank.workspace.v1.WorkspaceService.UpdatePreferences.
 func (c *workspaceServiceClient) UpdatePreferences(ctx context.Context, req *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error) {
 	return c.updatePreferences.CallUnary(ctx, req)
+}
+
+// SetLiveAgentStream calls tank.workspace.v1.WorkspaceService.SetLiveAgentStream.
+func (c *workspaceServiceClient) SetLiveAgentStream(ctx context.Context, req *connect.Request[v1.SetLiveAgentStreamRequest]) (*connect.Response[v1.SetLiveAgentStreamResponse], error) {
+	return c.setLiveAgentStream.CallUnary(ctx, req)
 }
 
 // GetModelNotice calls tank.workspace.v1.WorkspaceService.GetModelNotice.
@@ -840,6 +859,10 @@ type WorkspaceServiceHandler interface {
 	UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error)
 	GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error)
 	UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error)
+	// Turns live agent output on or off for the caller in this workspace, leaving every
+	// other preference as stored. The thread toggle and the settings screen on every
+	// platform call this and nothing else; emits preferences.updated.
+	SetLiveAgentStream(context.Context, *connect.Request[v1.SetLiveAgentStreamRequest]) (*connect.Response[v1.SetLiveAgentStreamResponse], error)
 	// A new model's notice, shown once per person at the top of the workspace until they
 	// dismiss it; owners and admins answer the data question for the workspace in place.
 	GetModelNotice(context.Context, *connect.Request[v1.GetModelNoticeRequest]) (*connect.Response[v1.GetModelNoticeResponse], error)
@@ -991,6 +1014,12 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 		WorkspaceServiceUpdatePreferencesProcedure,
 		svc.UpdatePreferences,
 		connect.WithSchema(workspaceServiceMethods.ByName("UpdatePreferences")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceSetLiveAgentStreamHandler := connect.NewUnaryHandler(
+		WorkspaceServiceSetLiveAgentStreamProcedure,
+		svc.SetLiveAgentStream,
+		connect.WithSchema(workspaceServiceMethods.ByName("SetLiveAgentStream")),
 		connect.WithHandlerOptions(opts...),
 	)
 	workspaceServiceGetModelNoticeHandler := connect.NewUnaryHandler(
@@ -1205,6 +1234,8 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 			workspaceServiceGetPreferencesHandler.ServeHTTP(w, r)
 		case WorkspaceServiceUpdatePreferencesProcedure:
 			workspaceServiceUpdatePreferencesHandler.ServeHTTP(w, r)
+		case WorkspaceServiceSetLiveAgentStreamProcedure:
+			workspaceServiceSetLiveAgentStreamHandler.ServeHTTP(w, r)
 		case WorkspaceServiceGetModelNoticeProcedure:
 			workspaceServiceGetModelNoticeHandler.ServeHTTP(w, r)
 		case WorkspaceServiceDismissModelNoticeProcedure:
@@ -1342,6 +1373,10 @@ func (UnimplementedWorkspaceServiceHandler) GetPreferences(context.Context, *con
 
 func (UnimplementedWorkspaceServiceHandler) UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.UpdatePreferences is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) SetLiveAgentStream(context.Context, *connect.Request[v1.SetLiveAgentStreamRequest]) (*connect.Response[v1.SetLiveAgentStreamResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.SetLiveAgentStream is not implemented"))
 }
 
 func (UnimplementedWorkspaceServiceHandler) GetModelNotice(context.Context, *connect.Request[v1.GetModelNoticeRequest]) (*connect.Response[v1.GetModelNoticeResponse], error) {
