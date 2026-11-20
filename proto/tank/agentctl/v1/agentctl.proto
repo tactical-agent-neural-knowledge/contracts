@@ -14,6 +14,7 @@ import "tank/guardrails/v1/guardrails.proto";
 import "tank/infra/v1/infra.proto";
 import "tank/neural/v1/neural.proto";
 import "tank/social/v1/social.proto";
+import "tank/workspace/v1/workspace.proto";
 
 // Runner <-> control-plane contract. The in-sandbox agent runner talks only to
 // agent-control (never to the messaging core directly): every thread post, card
@@ -173,6 +174,11 @@ message RunContext {
   // The workspace's test logins this run may use (2026-11-13): accounts on the workspace's
   // own apps that TANK's browser signs in with (test_login_open). Never a password.
   repeated TestLoginBrief test_logins = 41;
+  // True for a run started by PrepareRun that no message has adopted yet: `instructions`
+  // is empty, the sandbox is up, and the runner does its setup (clone, tools) and then
+  // calls AwaitStart instead of beginning work. The run's token is the same one every run
+  // gets; adoption changes nothing about who holds it.
+  bool standby = 42;
 }
 
 // An Ops team as a run sees it (tank.agentops.v1 holds the full record).
@@ -1124,10 +1130,26 @@ message PollInboxResponse {
   repeated InboxItem items = 1;
 }
 
+// Long-poll for a standby run (RunContext.standby): returns when the run is adopted by
+// StartRun, cancelled or expired, or after wait_ms with state still PREPARING so the
+// runner asks again. When adopted, `context` is the run's full RunContext with
+// `instructions` filled in and `standby` false, and the runner carries on exactly as if
+// it had started with it.
+message AwaitStartRequest {
+  int32 wait_ms = 1;
+}
+message AwaitStartResponse {
+  // PREPARING: nothing yet, ask again. READY: adopted, `context` is set. EXPIRED or any
+  // CANCELLED_* value: the run is over and the runner exits cleanly.
+  tank.workspace.v1.PreparationState state = 1;
+  RunContext context = 2;
+}
+
 // RunnerService is the only network surface the sandbox may reach besides the
 // LLM gateway. Every call carries "Authorization: Bearer <RUN_TOKEN>".
 service RunnerService {
   rpc GetRunContext(GetRunContextRequest) returns (GetRunContextResponse);
+  rpc AwaitStart(AwaitStartRequest) returns (AwaitStartResponse);
   rpc GetGitCredential(GetGitCredentialRequest) returns (GetGitCredentialResponse);
   rpc PushBranch(stream PushBranchRequest) returns (PushBranchResponse);
 
@@ -1265,9 +1287,53 @@ message StartRunRequest {
   string continue_run_id = 12;
   // What a person said when sending the work back, verbatim.
   string note = 13;
+  // The preparation (PrepareRun) whose standby run this message takes over. The control
+  // plane adopts that run instead of creating one: the run keeps its id and its warm
+  // sandbox, `instructions` and the rest of this request fill in what was unknown while
+  // the person was still typing, and Run.prepared is true. If the preparation has expired,
+  // been cancelled or belongs to a different agent or thread, it is ignored and the run
+  // starts cold; a stale preparation_id is never an error.
+  string preparation_id = 14;
 }
 message StartRunResponse {
   tank.agent.v1.Run run = 1;
+  // The thread message posted the moment the run row exists, before the talker or planning.
+  // Empty when the run did not post one (a Neural Knowledge refresh, a team shift).
+  string ack_message_id = 2;
+}
+
+// PrepareRun starts a standby run for a draft that tags an agent: the real run row, its
+// sandbox provisioned and set up, doing nothing until StartRun adopts it. Called by the
+// api from PutDraft, never by a client. Idempotent per (workspace, channel, thread, agent,
+// requested_by): a second call while one is live returns it and extends its expiry.
+// Refused with no preparation when the run could not start anyway (free plan for a
+// premium-only agent, out of funds, no repository bound): the draft then shows no
+// preparation and the person's send takes the ordinary path with its ordinary refusal.
+message PrepareRunRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string thread_root_id = 3; // empty for a draft that starts a new thread
+  string agent_id = 4;
+  string requested_by = 5;
+  // How long an unused preparation lives; 0 takes the server default (a few minutes).
+  // The control plane caps it.
+  int32 ttl_seconds = 6;
+}
+message PrepareRunResponse {
+  string preparation_id = 1;
+  tank.workspace.v1.PreparationState state = 2;
+  google.protobuf.Timestamp expires_at = 3;
+}
+
+// CancelPreparation gives a standby run's sandbox back. `reason` is one of the
+// CANCELLED_* states (CANCELLED when unsure). Idempotent: an unknown, finished or already
+// adopted preparation answers with its current state and changes nothing.
+message CancelPreparationRequest {
+  string preparation_id = 1;
+  tank.workspace.v1.PreparationState reason = 2;
+}
+message CancelPreparationResponse {
+  tank.workspace.v1.PreparationState state = 1;
 }
 
 message GetRunRequest {
@@ -1410,6 +1476,8 @@ service ControlService {
   rpc CreateInfraRelay(CreateInfraRelayRequest) returns (CreateInfraRelayResponse);
   rpc RevokeInfraRelay(RevokeInfraRelayRequest) returns (RevokeInfraRelayResponse);
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
+  rpc PrepareRun(PrepareRunRequest) returns (PrepareRunResponse);
+  rpc CancelPreparation(CancelPreparationRequest) returns (CancelPreparationResponse);
   rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
   rpc RefreshNeuralKnowledge(RefreshNeuralKnowledgeRequest) returns (RefreshNeuralKnowledgeResponse);
   rpc GetRun(GetRunRequest) returns (GetRunResponse);
