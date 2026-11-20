@@ -43,6 +43,13 @@ class RunRefusalAction(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     RUN_REFUSAL_ACTION_UPGRADE: _ClassVar[RunRefusalAction]
     RUN_REFUSAL_ACTION_REFILL: _ClassVar[RunRefusalAction]
 
+class RunStreamKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    RUN_STREAM_KIND_UNSPECIFIED: _ClassVar[RunStreamKind]
+    RUN_STREAM_KIND_TEXT: _ClassVar[RunStreamKind]
+    RUN_STREAM_KIND_STATUS: _ClassVar[RunStreamKind]
+    RUN_STREAM_KIND_END: _ClassVar[RunStreamKind]
+
 class PlanItemStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     PLAN_ITEM_STATUS_UNSPECIFIED: _ClassVar[PlanItemStatus]
@@ -78,6 +85,10 @@ RUN_REFUSAL_REASON_OUT_OF_FUNDS: RunRefusalReason
 RUN_REFUSAL_ACTION_UNSPECIFIED: RunRefusalAction
 RUN_REFUSAL_ACTION_UPGRADE: RunRefusalAction
 RUN_REFUSAL_ACTION_REFILL: RunRefusalAction
+RUN_STREAM_KIND_UNSPECIFIED: RunStreamKind
+RUN_STREAM_KIND_TEXT: RunStreamKind
+RUN_STREAM_KIND_STATUS: RunStreamKind
+RUN_STREAM_KIND_END: RunStreamKind
 PLAN_ITEM_STATUS_UNSPECIFIED: PlanItemStatus
 PLAN_ITEM_STATUS_TODO: PlanItemStatus
 PLAN_ITEM_STATUS_DOING: PlanItemStatus
@@ -374,6 +385,42 @@ class GetRunResponse(_message.Message):
     RUN_FIELD_NUMBER: _ClassVar[int]
     run: Run
     def __init__(self, run: _Optional[_Union[Run, _Mapping]] = ...) -> None: ...
+
+class GetRunStreamTailRequest(_message.Message):
+    __slots__ = ("run_id",)
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    def __init__(self, run_id: _Optional[str] = ...) -> None: ...
+
+class GetRunStreamTailResponse(_message.Message):
+    __slots__ = ("text", "status", "last_seq", "live")
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    LAST_SEQ_FIELD_NUMBER: _ClassVar[int]
+    LIVE_FIELD_NUMBER: _ClassVar[int]
+    text: str
+    status: str
+    last_seq: int
+    live: bool
+    def __init__(self, text: _Optional[str] = ..., status: _Optional[str] = ..., last_seq: _Optional[int] = ..., live: bool = ...) -> None: ...
+
+class PublishRunStreamRequest(_message.Message):
+    __slots__ = ("run_id", "seq", "kind", "text", "reset")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    SEQ_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    RESET_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    seq: int
+    kind: RunStreamKind
+    text: str
+    reset: bool
+    def __init__(self, run_id: _Optional[str] = ..., seq: _Optional[int] = ..., kind: _Optional[_Union[RunStreamKind, str]] = ..., text: _Optional[str] = ..., reset: bool = ...) -> None: ...
+
+class PublishRunStreamResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
 
 class ListRunsRequest(_message.Message):
     __slots__ = ("workspace_id", "channel_id", "thread_root_id", "cursor", "limit")

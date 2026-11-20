@@ -128,6 +128,36 @@ message PreparationUpdate {
   string preparation_id = 3;
   tank.workspace.v1.PreparationState state = 4;
 }
+
+
+// Live output of an agent run, for a person who turned Preferences.live_agent_stream on.
+// Ephemeral: never stored on JetStream and never replayed. The stored message that ends the
+// run is the truth; this is only what a client shows while waiting for it.
+//
+// It carries only the agent's own assistant text and its status lines. Tool input and tool
+// output are never in it, whatever the run did.
+//
+// Every client behaves the same way: text is a chunk to append (not the text so far) and
+// animates in; with reduced motion on it appears without animation. `seq` rises by one per
+// run with no gaps. A gap, a reconnect or a Resume means the client drops its partial text,
+// shows the stored message when it arrives, and may call AgentService.GetRunStreamTail to
+// catch up. Nothing in it depends on the platform, browser or OS, and there is no capability flag.
+message AgentStreamDelta {
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    KIND_TEXT = 1;   // `text` is a chunk of the assistant's reply to append
+    KIND_STATUS = 2; // `text` is a status line ("reading repo"); replaces the previous one
+    KIND_END = 3;    // the run's output is complete; drop the partial text for the stored message
+  }
+  string channel_id = 1;
+  string thread_root_id = 2;
+  string run_id = 3;
+  int64 seq = 4;   // per run, starting at 1
+  Kind kind = 5;
+  string text = 6; // a chunk, never cumulative; empty for KIND_END
+  // A new turn of the same run begins: clear the partial text before applying this delta.
+  bool reset = 7;
+}
 // file.ready on evt.{ws}.user.{uploader}: the upload is verified and readable.
 // Also published on evt.{ws}.ch.{channel} for every channel the file is
 // shared in, and on evt.{ws}.thread.{root} when the sharing message is a reply.

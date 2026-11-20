@@ -249,6 +249,40 @@ message GetRunResponse {
   Run run = 1;
 }
 
+// What a run has said so far, for a person who turns Preferences.live_agent_stream on mid-run
+// or opens the thread mid-run, on any device. Same content rules as AgentStreamDelta: only
+// assistant text and the latest status line, never tool input or output. Held only while the
+// run is live; once it ends the stored message is the answer and `live` is false.
+message GetRunStreamTailRequest {
+  string run_id = 1;
+}
+message GetRunStreamTailResponse {
+  string text = 1;        // the assistant text so far, joined
+  string status = 2;      // the latest status line; empty if none
+  int64 last_seq = 3;     // seq of the last AgentStreamDelta folded in; the next delta must be last_seq + 1
+  bool live = 4;          // false once the run has ended, with text and status empty
+}
+
+// PublishRunStream is how agent-control hands the API one piece of a run's live output (the
+// run's own agent-session token authenticates it). The API adds the channel and thread from the
+// run and fans it out as an AgentStreamDelta to people who turned live output on. Best effort:
+// the stored message stays the truth, so a lost or refused publish is never retried into order.
+// Only assistant text and status lines go through here, never tool input or output.
+enum RunStreamKind {
+  RUN_STREAM_KIND_UNSPECIFIED = 0;
+  RUN_STREAM_KIND_TEXT = 1;   // `text` is a chunk to append
+  RUN_STREAM_KIND_STATUS = 2; // `text` is the latest status line
+  RUN_STREAM_KIND_END = 3;    // the run's output is complete
+}
+message PublishRunStreamRequest {
+  string run_id = 1;
+  int64 seq = 2;            // per run, starting at 1, assigned by agent-control
+  RunStreamKind kind = 3;
+  string text = 4;          // a chunk, never cumulative; empty for END
+  bool reset = 5;           // a new turn begins: clear the partial text first
+}
+message PublishRunStreamResponse {}
+
 message ListRunsRequest {
   string workspace_id = 1;
   string channel_id = 2;
@@ -670,6 +704,9 @@ service AgentService {
   rpc SetProductLanding(SetProductLandingRequest) returns (SetProductLandingResponse);
   rpc RecordProductFinding(RecordProductFindingRequest) returns (RecordProductFindingResponse);
   rpc GetRun(GetRunRequest) returns (GetRunResponse);
+  rpc GetRunStreamTail(GetRunStreamTailRequest) returns (GetRunStreamTailResponse);
+  // From agent-control, with the run's token: one piece of the run's live output.
+  rpc PublishRunStream(PublishRunStreamRequest) returns (PublishRunStreamResponse);
   rpc ListRuns(ListRunsRequest) returns (ListRunsResponse);
   rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse);
 

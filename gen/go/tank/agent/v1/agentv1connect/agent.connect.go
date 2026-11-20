@@ -66,6 +66,12 @@ const (
 	AgentServiceRecordProductFindingProcedure = "/tank.agent.v1.AgentService/RecordProductFinding"
 	// AgentServiceGetRunProcedure is the fully-qualified name of the AgentService's GetRun RPC.
 	AgentServiceGetRunProcedure = "/tank.agent.v1.AgentService/GetRun"
+	// AgentServiceGetRunStreamTailProcedure is the fully-qualified name of the AgentService's
+	// GetRunStreamTail RPC.
+	AgentServiceGetRunStreamTailProcedure = "/tank.agent.v1.AgentService/GetRunStreamTail"
+	// AgentServicePublishRunStreamProcedure is the fully-qualified name of the AgentService's
+	// PublishRunStream RPC.
+	AgentServicePublishRunStreamProcedure = "/tank.agent.v1.AgentService/PublishRunStream"
 	// AgentServiceListRunsProcedure is the fully-qualified name of the AgentService's ListRuns RPC.
 	AgentServiceListRunsProcedure = "/tank.agent.v1.AgentService/ListRuns"
 	// AgentServiceListAgentsProcedure is the fully-qualified name of the AgentService's ListAgents RPC.
@@ -131,6 +137,9 @@ type AgentServiceClient interface {
 	SetProductLanding(context.Context, *connect.Request[v1.SetProductLandingRequest]) (*connect.Response[v1.SetProductLandingResponse], error)
 	RecordProductFinding(context.Context, *connect.Request[v1.RecordProductFindingRequest]) (*connect.Response[v1.RecordProductFindingResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
+	GetRunStreamTail(context.Context, *connect.Request[v1.GetRunStreamTailRequest]) (*connect.Response[v1.GetRunStreamTailResponse], error)
+	// From agent-control, with the run's token: one piece of the run's live output.
+	PublishRunStream(context.Context, *connect.Request[v1.PublishRunStreamRequest]) (*connect.Response[v1.PublishRunStreamResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
 	ListAgents(context.Context, *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error)
 	// Connecting a Tread to code. A Radar is private and so is this: only workspace
@@ -253,6 +262,18 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("GetRun")),
 			connect.WithClientOptions(opts...),
 		),
+		getRunStreamTail: connect.NewClient[v1.GetRunStreamTailRequest, v1.GetRunStreamTailResponse](
+			httpClient,
+			baseURL+AgentServiceGetRunStreamTailProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("GetRunStreamTail")),
+			connect.WithClientOptions(opts...),
+		),
+		publishRunStream: connect.NewClient[v1.PublishRunStreamRequest, v1.PublishRunStreamResponse](
+			httpClient,
+			baseURL+AgentServicePublishRunStreamProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("PublishRunStream")),
+			connect.WithClientOptions(opts...),
+		),
 		listRuns: connect.NewClient[v1.ListRunsRequest, v1.ListRunsResponse](
 			httpClient,
 			baseURL+AgentServiceListRunsProcedure,
@@ -373,6 +394,8 @@ type agentServiceClient struct {
 	setProductLanding         *connect.Client[v1.SetProductLandingRequest, v1.SetProductLandingResponse]
 	recordProductFinding      *connect.Client[v1.RecordProductFindingRequest, v1.RecordProductFindingResponse]
 	getRun                    *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	getRunStreamTail          *connect.Client[v1.GetRunStreamTailRequest, v1.GetRunStreamTailResponse]
+	publishRunStream          *connect.Client[v1.PublishRunStreamRequest, v1.PublishRunStreamResponse]
 	listRuns                  *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
 	listAgents                *connect.Client[v1.ListAgentsRequest, v1.ListAgentsResponse]
 	getRepoConnection         *connect.Client[v1.GetRepoConnectionRequest, v1.GetRepoConnectionResponse]
@@ -455,6 +478,16 @@ func (c *agentServiceClient) RecordProductFinding(ctx context.Context, req *conn
 // GetRun calls tank.agent.v1.AgentService.GetRun.
 func (c *agentServiceClient) GetRun(ctx context.Context, req *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error) {
 	return c.getRun.CallUnary(ctx, req)
+}
+
+// GetRunStreamTail calls tank.agent.v1.AgentService.GetRunStreamTail.
+func (c *agentServiceClient) GetRunStreamTail(ctx context.Context, req *connect.Request[v1.GetRunStreamTailRequest]) (*connect.Response[v1.GetRunStreamTailResponse], error) {
+	return c.getRunStreamTail.CallUnary(ctx, req)
+}
+
+// PublishRunStream calls tank.agent.v1.AgentService.PublishRunStream.
+func (c *agentServiceClient) PublishRunStream(ctx context.Context, req *connect.Request[v1.PublishRunStreamRequest]) (*connect.Response[v1.PublishRunStreamResponse], error) {
+	return c.publishRunStream.CallUnary(ctx, req)
 }
 
 // ListRuns calls tank.agent.v1.AgentService.ListRuns.
@@ -558,6 +591,9 @@ type AgentServiceHandler interface {
 	SetProductLanding(context.Context, *connect.Request[v1.SetProductLandingRequest]) (*connect.Response[v1.SetProductLandingResponse], error)
 	RecordProductFinding(context.Context, *connect.Request[v1.RecordProductFindingRequest]) (*connect.Response[v1.RecordProductFindingResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
+	GetRunStreamTail(context.Context, *connect.Request[v1.GetRunStreamTailRequest]) (*connect.Response[v1.GetRunStreamTailResponse], error)
+	// From agent-control, with the run's token: one piece of the run's live output.
+	PublishRunStream(context.Context, *connect.Request[v1.PublishRunStreamRequest]) (*connect.Response[v1.PublishRunStreamResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
 	ListAgents(context.Context, *connect.Request[v1.ListAgentsRequest]) (*connect.Response[v1.ListAgentsResponse], error)
 	// Connecting a Tread to code. A Radar is private and so is this: only workspace
@@ -674,6 +710,18 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		AgentServiceGetRunProcedure,
 		svc.GetRun,
 		connect.WithSchema(agentServiceMethods.ByName("GetRun")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceGetRunStreamTailHandler := connect.NewUnaryHandler(
+		AgentServiceGetRunStreamTailProcedure,
+		svc.GetRunStreamTail,
+		connect.WithSchema(agentServiceMethods.ByName("GetRunStreamTail")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServicePublishRunStreamHandler := connect.NewUnaryHandler(
+		AgentServicePublishRunStreamProcedure,
+		svc.PublishRunStream,
+		connect.WithSchema(agentServiceMethods.ByName("PublishRunStream")),
 		connect.WithHandlerOptions(opts...),
 	)
 	agentServiceListRunsHandler := connect.NewUnaryHandler(
@@ -806,6 +854,10 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceRecordProductFindingHandler.ServeHTTP(w, r)
 		case AgentServiceGetRunProcedure:
 			agentServiceGetRunHandler.ServeHTTP(w, r)
+		case AgentServiceGetRunStreamTailProcedure:
+			agentServiceGetRunStreamTailHandler.ServeHTTP(w, r)
+		case AgentServicePublishRunStreamProcedure:
+			agentServicePublishRunStreamHandler.ServeHTTP(w, r)
 		case AgentServiceListRunsProcedure:
 			agentServiceListRunsHandler.ServeHTTP(w, r)
 		case AgentServiceListAgentsProcedure:
@@ -899,6 +951,14 @@ func (UnimplementedAgentServiceHandler) RecordProductFinding(context.Context, *c
 
 func (UnimplementedAgentServiceHandler) GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.GetRun is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) GetRunStreamTail(context.Context, *connect.Request[v1.GetRunStreamTailRequest]) (*connect.Response[v1.GetRunStreamTailResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.GetRunStreamTail is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) PublishRunStream(context.Context, *connect.Request[v1.PublishRunStreamRequest]) (*connect.Response[v1.PublishRunStreamResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.PublishRunStream is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error) {

@@ -4661,7 +4661,7 @@ export type RunEvent = Message<"tank.agentctl.v1.RunEvent"> & {
   sdkSessionId: string;
 
   /**
-   * assistant_delta text, status, log line
+   * assistant_delta: a chunk to append, not the text so far; status; log line
    *
    * @generated from field: string text = 5;
    */
@@ -10331,6 +10331,11 @@ export const RunPhaseSchema: GenEnum<RunPhase> = /*@__PURE__*/
   enumDesc(file_tank_agentctl_v1_agentctl, 0);
 
 /**
+ * What a client may see live. Only ASSISTANT_DELTA and STATUS become
+ * tank.events.v1.AgentStreamDelta (the planning phase included), and only for a person whose
+ * Preferences.live_agent_stream is on. TOOL_CALL, TOOL_RESULT, PERMISSION_REQUEST, USAGE and
+ * LOG are never forwarded, and RunEvent.tool_input and tool_output never reach a client.
+ *
  * @generated from enum tank.agentctl.v1.RunEventKind
  */
 export enum RunEventKind {

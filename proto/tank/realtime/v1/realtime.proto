@@ -134,5 +134,10 @@ message ServerFrame {
     tank.events.v1.CanvasEditing canvas_editing = 10;
     tank.events.v1.BoardPointer board_pointer = 11;
     tank.events.v1.PreparationUpdate preparation = 12;
+    // Live agent output. Sent only for threads this connection subscribed to, and only to a
+    // user whose Preferences.live_agent_stream is on. Never stored, and Resume does not
+    // replay it: after a seq gap or a reconnect the client drops the partial text and waits
+    // for the stored message. The same frame for every client; no platform has its own path.
+    tank.events.v1.AgentStreamDelta agent_stream = 13;
   }
 }

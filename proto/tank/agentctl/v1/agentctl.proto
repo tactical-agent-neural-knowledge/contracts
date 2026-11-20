@@ -977,6 +977,10 @@ message RememberResponse {}
 
 // ----------------------------------------------------------------- run events
 
+// What a client may see live. Only ASSISTANT_DELTA and STATUS become
+// tank.events.v1.AgentStreamDelta (the planning phase included), and only for a person whose
+// Preferences.live_agent_stream is on. TOOL_CALL, TOOL_RESULT, PERMISSION_REQUEST, USAGE and
+// LOG are never forwarded, and RunEvent.tool_input and tool_output never reach a client.
 enum RunEventKind {
   RUN_EVENT_KIND_UNSPECIFIED = 0;
   RUN_EVENT_KIND_ASSISTANT_DELTA = 1;
@@ -1003,7 +1007,7 @@ message RunEvent {
   google.protobuf.Timestamp at = 2;
   RunEventKind kind = 3;
   string sdk_session_id = 4;
-  string text = 5;                      // assistant_delta text, status, log line
+  string text = 5;                      // assistant_delta: a chunk to append, not the text so far; status; log line
   string tool_name = 6;                 // tool_call / tool_result / permission_request
   string tool_use_id = 7;
   google.protobuf.Struct tool_input = 8;

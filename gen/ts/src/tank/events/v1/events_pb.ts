@@ -2,8 +2,8 @@
 // @generated from file tank/events/v1/events.proto (package tank.events.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
-import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
+import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
+import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
 import type { Any, Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_any, file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { AuditEntry, ExportJob, WorkspaceSettings } from "../../admin/v1/admin_pb.js";
@@ -40,7 +40,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tank/events/v1/events.proto.
  */
 export const file_tank_events_v1_events: GenFile = /*@__PURE__*/
-  fileDesc("Cht0YW5rL2V2ZW50cy92MS9ldmVudHMucHJvdG8SDnRhbmsuZXZlbnRzLnYxIrkBCghFbnZlbG9wZRIKCgJpZBgBIAEoCRIUCgx3b3Jrc3BhY2VfaWQYAiABKAkSDAoEdHlwZRgDIAEoCRIPCgdzdWJqZWN0GAQgASgJEi8KC29jY3VycmVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIUCgx0cmFjZV9wYXJlbnQYBiABKAkSJQoHcGF5bG9hZBgHIAEoCzIULmdvb2dsZS5wcm90b2J1Zi5BbnkiOwoOTWVzc2FnZUNyZWF0ZWQSKQoHbWVzc2FnZRgBIAEoCzIYLnRhbmsubWVzc2FnZS52MS5NZXNzYWdlIjsKDk1lc3NhZ2VVcGRhdGVkEikKB21lc3NhZ2UYASABKAsyGC50YW5rLm1lc3NhZ2UudjEuTWVzc2FnZSJQCg5NZXNzYWdlRGVsZXRlZBISCgptZXNzYWdlX2lkGAEgASgJEhIKCmNoYW5uZWxfaWQYAiABKAkSFgoOdGhyZWFkX3Jvb3RfaWQYAyABKAkiZQoNVGhyZWFkRGVsZXRlZBIWCg50aHJlYWRfcm9vdF9pZBgBIAEoCRISCgpjaGFubmVsX2lkGAIgASgJEhAKCGFjdG9yX2lkGAMgASgJEhYKDmNhbmNlbGxlZF9ydW5zGAQgASgFIkkKC0ZpbGVEZWxldGVkEg8KB2ZpbGVfaWQYASABKAkSFAoMd29ya3NwYWNlX2lkGAIgASgJEhMKC21lc3NhZ2VfaWRzGAMgAygJIkMKDVJlYWN0aW9uQWRkZWQSEgoKbWVzc2FnZV9pZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEg0KBWVtb2ppGAMgASgJIkUKD1JlYWN0aW9uUmVtb3ZlZBISCgptZXNzYWdlX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSDQoFZW1vamkYAyABKAkihAEKEFJlYWRTdGF0ZVVwZGF0ZWQSDwoHdXNlcl9pZBgBIAEoCRISCgpjaGFubmVsX2lkGAIgASgJEhUKDWxhc3RfcmVhZF9zZXEYAyABKAMSFgoOdGhyZWFkX3Jvb3RfaWQYBCABKAkSHAoUbGFzdF9yZWFkX3RocmVhZF9zZXEYBSABKAMiTwoOQ2hhbm5lbFVwZGF0ZWQSEgoKY2hhbm5lbF9pZBgBIAEoCRIpCgdjaGFubmVsGAIgASgLMhgudGFuay5jaGFubmVsLnYxLkNoYW5uZWwiNgoOQ2hhbm5lbERlbGV0ZWQSEgoKY2hhbm5lbF9pZBgBIAEoCRIQCghhY3Rvcl9pZBgCIAEoCSJhChhDaGFubmVsTWVtYmVyc2hpcENoYW5nZWQSEgoKY2hhbm5lbF9pZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEg4KBmpvaW5lZBgDIAEoCBIQCghhY3Rvcl9pZBgEIAEoCSI5CgpDYXJkQWN0aW9uEisKBmFjdGlvbhgBIAEoCzIbLnRhbmsuYmxvY2tzLnYxLkJsb2NrQWN0aW9uImgKCkFwcENvbW1hbmQSDwoHY29tbWFuZBgBIAEoCRIMCgR0ZXh0GAIgASgJEg8KB3VzZXJfaWQYAyABKAkSEgoKY2hhbm5lbF9pZBgEIAEoCRIWCg50aHJlYWRfcm9vdF9pZBgFIAEoCSI/Cg9QcmVzZW5jZUNoYW5nZWQSLAoIcHJlc2VuY2UYASABKAsyGi50YW5rLnByZXNlbmNlLnYxLlByZXNlbmNlIkUKBlR5cGluZxISCgpjaGFubmVsX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSFgoOdGhyZWFkX3Jvb3RfaWQYAyABKAkiWQoLQWdlbnRTdGF0dXMSEgoKY2hhbm5lbF9pZBgBIAEoCRIWCg50aHJlYWRfcm9vdF9pZBgCIAEoCRIOCgZydW5faWQYAyABKAkSDgoGc3RhdHVzGAQgASgJIosBChFQcmVwYXJhdGlvblVwZGF0ZRISCgpjaGFubmVsX2lkGAEgASgJEhYKDnRocmVhZF9yb290X2lkGAIgASgJEhYKDnByZXBhcmF0aW9uX2lkGAMgASgJEjIKBXN0YXRlGAQgASgOMiMudGFuay53b3Jrc3BhY2UudjEuUHJlcGFyYXRpb25TdGF0ZSIuCglGaWxlUmVhZHkSIQoEZmlsZRgBIAEoCzITLnRhbmsuZmlsZXMudjEuRmlsZSJOChBNZXNzYWdlRXBoZW1lcmFsEikKB21lc3NhZ2UYASABKAsyGC50YW5rLm1lc3NhZ2UudjEuTWVzc2FnZRIPCgd1c2VyX2lkGAIgASgJIi0KEU5vdGlmaWNhdGlvbnNSZWFkEhgKEG5vdGlmaWNhdGlvbl9pZHMYASADKAkiMgoPQWdlbnRSdW5VcGRhdGVkEh8KA3J1bhgBIAEoCzISLnRhbmsuYWdlbnQudjEuUnVuInYKE05vdGlmaWNhdGlvbkNyZWF0ZWQSFwoPbm90aWZpY2F0aW9uX2lkGAEgASgJEgwKBGtpbmQYAiABKAkSEgoKbWVzc2FnZV9pZBgDIAEoCRISCgpjaGFubmVsX2lkGAQgASgJEhAKCGFjdG9yX2lkGAUgASgJIlUKClBpbkNoYW5nZWQSEgoKbWVzc2FnZV9pZBgBIAEoCRISCgpjaGFubmVsX2lkGAIgASgJEg8KB3VzZXJfaWQYAyABKAkSDgoGcGlubmVkGAQgASgIIlwKDEVtb2ppQ2hhbmdlZBItCgVlbW9qaRgBIAEoCzIeLnRhbmsud29ya3NwYWNlLnYxLkN1c3RvbUVtb2ppEg8KB2RlbGV0ZWQYAiABKAgSDAoEaGFzaBgDIAEoCSJaChJQcmVmZXJlbmNlc1VwZGF0ZWQSDwoHdXNlcl9pZBgBIAEoCRIzCgtwcmVmZXJlbmNlcxgCIAEoCzIeLnRhbmsud29ya3NwYWNlLnYxLlByZWZlcmVuY2VzImIKGENoYW5uZWxQcmVmZXJlbmNlVXBkYXRlZBIPCgd1c2VyX2lkGAEgASgJEjUKCnJlYWRfc3RhdGUYAiABKAsyIS50YW5rLmNoYW5uZWwudjEuQ2hhbm5lbFJlYWRTdGF0ZSJZCgxEcmFmdFVwZGF0ZWQSDwoHdXNlcl9pZBgBIAEoCRInCgVkcmFmdBgCIAEoCzIYLnRhbmsud29ya3NwYWNlLnYxLkRyYWZ0Eg8KB2RlbGV0ZWQYAyABKAgiTgoUU2NoZWR1bGVkTWVzc2FnZVNlbnQSNgoJc2NoZWR1bGVkGAEgASgLMiMudGFuay53b3Jrc3BhY2UudjEuU2NoZWR1bGVkTWVzc2FnZSJQChBVc2VyR3JvdXBVcGRhdGVkEisKBWdyb3VwGAEgASgLMhwudGFuay53b3Jrc3BhY2UudjEuVXNlckdyb3VwEg8KB2RlbGV0ZWQYAiABKAgiWAoPQm9va21hcmtDaGFuZ2VkEjQKCGJvb2ttYXJrGAEgASgLMiIudGFuay53b3Jrc3BhY2UudjEuQ2hhbm5lbEJvb2ttYXJrEg8KB3JlbW92ZWQYAiABKAgiOgoNTWVtYmVyVXBkYXRlZBIpCgZtZW1iZXIYASABKAsyGS50YW5rLndvcmtzcGFjZS52MS5NZW1iZXIiNwoNSHVkZGxlU3RhcnRlZBImCgZodWRkbGUYASABKAsyFi50YW5rLmh1ZGRsZS52MS5IdWRkbGUiNQoLSHVkZGxlRW5kZWQSJgoGaHVkZGxlGAEgASgLMhYudGFuay5odWRkbGUudjEuSHVkZGxlIkMKGUh1ZGRsZVBhcnRpY2lwYW50c0NoYW5nZWQSJgoGaHVkZGxlGAEgASgLMhYudGFuay5odWRkbGUudjEuSHVkZGxlIoABChFNZW1iZXJSb2xlQ2hhbmdlZBIpCgZtZW1iZXIYASABKAsyGS50YW5rLndvcmtzcGFjZS52MS5NZW1iZXISLgoNcHJldmlvdXNfcm9sZRgCIAEoDjIXLnRhbmsud29ya3NwYWNlLnYxLlJvbGUSEAoIYWN0b3JfaWQYAyABKAkidgoRTWVtYmVyRGVhY3RpdmF0ZWQSKQoGbWVtYmVyGAEgASgLMhkudGFuay53b3Jrc3BhY2UudjEuTWVtYmVyEhMKC3JlYWN0aXZhdGVkGAIgASgIEg8KB3JlbW92ZWQYAyABKAgSEAoIYWN0b3JfaWQYBCABKAkiYAoYV29ya3NwYWNlU2V0dGluZ3NVcGRhdGVkEjIKCHNldHRpbmdzGAEgASgLMiAudGFuay5hZG1pbi52MS5Xb3Jrc3BhY2VTZXR0aW5ncxIQCghhY3Rvcl9pZBgCIAEoCSI3CgtBdWRpdExvZ2dlZBIoCgVlbnRyeRgBIAEoCzIZLnRhbmsuYWRtaW4udjEuQXVkaXRFbnRyeSI0CgtFeHBvcnRSZWFkeRIlCgNqb2IYASABKAsyGC50YW5rLmFkbWluLnYxLkV4cG9ydEpvYiIzCg9Ub3BvTWFya1VwZGF0ZWQSIAoEbWFyaxgBIAEoCzISLnRhbmsudG9wby52MS5NYXJrIj8KFE1vbml0b3JXaWRnZXRVcGRhdGVkEicKBndpZGdldBgBIAEoCzIXLnRhbmsubW9uaXRvci52MS5XaWRnZXQiaAoSTW9uaXRvcldpZGdldEFsZXJ0EicKBndpZGdldBgBIAEoCzIXLnRhbmsubW9uaXRvci52MS5XaWRnZXQSKQoIcHJldmlvdXMYAiABKA4yFy50YW5rLm1vbml0b3IudjEuSGVhbHRoIpkBChJDYW52YXNCbG9ja0NoYW5nZWQSEQoJY2FudmFzX2lkGAEgASgJEiQKBWJsb2NrGAIgASgLMhUudGFuay5jYW52YXMudjEuQmxvY2sSFgoOYWZ0ZXJfYmxvY2tfaWQYAyABKAkSDwoHZGVsZXRlZBgEIAEoCBIQCghhY3Rvcl9pZBgFIAEoCRIPCgd2ZXJzaW9uGAYgASgFIkkKDUNhbnZhc0NoYW5nZWQSJgoGY2FudmFzGAEgASgLMhYudGFuay5jYW52YXMudjEuQ2FudmFzEhAKCGFjdG9yX2lkGAIgASgJIlMKDUNhbnZhc0VkaXRpbmcSEQoJY2FudmFzX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSEAoIYmxvY2tfaWQYAyABKAkSDAoEbGVmdBgEIAEoCCKMAQoTQm9hcmRPYmplY3RzQ2hhbmdlZBIQCghib2FyZF9pZBgBIAEoCRIrCgdvYmplY3RzGAIgAygLMhoudGFuay5ib2FyZC52MS5Cb2FyZE9iamVjdBITCgtkZWxldGVkX2lkcxgDIAMoCRIQCghhY3Rvcl9pZBgEIAEoCRIPCgd2ZXJzaW9uGAUgASgFIkUKDEJvYXJkQ2hhbmdlZBIjCgVib2FyZBgBIAEoCzIULnRhbmsuYm9hcmQudjEuQm9hcmQSEAoIYWN0b3JfaWQYAiABKAkieQoMQm9hcmRQb2ludGVyEhAKCGJvYXJkX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSCQoBeBgDIAEoARIJCgF5GAQgASgBEhQKDHNlbGVjdGVkX2lkcxgFIAMoCRIMCgRsZWZ0GAYgASgIEgwKBGtpbmQYByABKAkiQQoLVGFza0NoYW5nZWQSIAoEdGFzaxgBIAEoCzISLnRhbmsudGFzay52MS5UYXNrEhAKCGFjdG9yX2lkGAIgASgJQtABChJjb20udGFuay5ldmVudHMudjFCC0V2ZW50c1Byb3RvUAFaU2dpdGh1Yi5jb20vdGFjdGljYWwtYWdlbnQtbmV1cmFsLWtub3dsZWRnZS9jb250cmFjdHMvZ2VuL2dvL3RhbmsvZXZlbnRzL3YxO2V2ZW50c3YxogIDVEVYqgIOVGFuay5FdmVudHMuVjHKAg5UYW5rXEV2ZW50c1xWMeICGlRhbmtcRXZlbnRzXFYxXEdQQk1ldGFkYXRh6gIQVGFuazo6RXZlbnRzOjpWMWIGcHJvdG8z", [file_google_protobuf_any, file_google_protobuf_timestamp, file_tank_admin_v1_admin, file_tank_agent_v1_agent, file_tank_blocks_v1_blocks, file_tank_board_v1_board, file_tank_canvas_v1_canvas, file_tank_channel_v1_channel, file_tank_files_v1_files, file_tank_huddle_v1_huddle, file_tank_message_v1_message, file_tank_monitor_v1_monitor, file_tank_presence_v1_presence, file_tank_task_v1_task, file_tank_topo_v1_topo, file_tank_workspace_v1_workspace]);
+  fileDesc("Cht0YW5rL2V2ZW50cy92MS9ldmVudHMucHJvdG8SDnRhbmsuZXZlbnRzLnYxIrkBCghFbnZlbG9wZRIKCgJpZBgBIAEoCRIUCgx3b3Jrc3BhY2VfaWQYAiABKAkSDAoEdHlwZRgDIAEoCRIPCgdzdWJqZWN0GAQgASgJEi8KC29jY3VycmVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIUCgx0cmFjZV9wYXJlbnQYBiABKAkSJQoHcGF5bG9hZBgHIAEoCzIULmdvb2dsZS5wcm90b2J1Zi5BbnkiOwoOTWVzc2FnZUNyZWF0ZWQSKQoHbWVzc2FnZRgBIAEoCzIYLnRhbmsubWVzc2FnZS52MS5NZXNzYWdlIjsKDk1lc3NhZ2VVcGRhdGVkEikKB21lc3NhZ2UYASABKAsyGC50YW5rLm1lc3NhZ2UudjEuTWVzc2FnZSJQCg5NZXNzYWdlRGVsZXRlZBISCgptZXNzYWdlX2lkGAEgASgJEhIKCmNoYW5uZWxfaWQYAiABKAkSFgoOdGhyZWFkX3Jvb3RfaWQYAyABKAkiZQoNVGhyZWFkRGVsZXRlZBIWCg50aHJlYWRfcm9vdF9pZBgBIAEoCRISCgpjaGFubmVsX2lkGAIgASgJEhAKCGFjdG9yX2lkGAMgASgJEhYKDmNhbmNlbGxlZF9ydW5zGAQgASgFIkkKC0ZpbGVEZWxldGVkEg8KB2ZpbGVfaWQYASABKAkSFAoMd29ya3NwYWNlX2lkGAIgASgJEhMKC21lc3NhZ2VfaWRzGAMgAygJIkMKDVJlYWN0aW9uQWRkZWQSEgoKbWVzc2FnZV9pZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEg0KBWVtb2ppGAMgASgJIkUKD1JlYWN0aW9uUmVtb3ZlZBISCgptZXNzYWdlX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSDQoFZW1vamkYAyABKAkihAEKEFJlYWRTdGF0ZVVwZGF0ZWQSDwoHdXNlcl9pZBgBIAEoCRISCgpjaGFubmVsX2lkGAIgASgJEhUKDWxhc3RfcmVhZF9zZXEYAyABKAMSFgoOdGhyZWFkX3Jvb3RfaWQYBCABKAkSHAoUbGFzdF9yZWFkX3RocmVhZF9zZXEYBSABKAMiTwoOQ2hhbm5lbFVwZGF0ZWQSEgoKY2hhbm5lbF9pZBgBIAEoCRIpCgdjaGFubmVsGAIgASgLMhgudGFuay5jaGFubmVsLnYxLkNoYW5uZWwiNgoOQ2hhbm5lbERlbGV0ZWQSEgoKY2hhbm5lbF9pZBgBIAEoCRIQCghhY3Rvcl9pZBgCIAEoCSJhChhDaGFubmVsTWVtYmVyc2hpcENoYW5nZWQSEgoKY2hhbm5lbF9pZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEg4KBmpvaW5lZBgDIAEoCBIQCghhY3Rvcl9pZBgEIAEoCSI5CgpDYXJkQWN0aW9uEisKBmFjdGlvbhgBIAEoCzIbLnRhbmsuYmxvY2tzLnYxLkJsb2NrQWN0aW9uImgKCkFwcENvbW1hbmQSDwoHY29tbWFuZBgBIAEoCRIMCgR0ZXh0GAIgASgJEg8KB3VzZXJfaWQYAyABKAkSEgoKY2hhbm5lbF9pZBgEIAEoCRIWCg50aHJlYWRfcm9vdF9pZBgFIAEoCSI/Cg9QcmVzZW5jZUNoYW5nZWQSLAoIcHJlc2VuY2UYASABKAsyGi50YW5rLnByZXNlbmNlLnYxLlByZXNlbmNlIkUKBlR5cGluZxISCgpjaGFubmVsX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSFgoOdGhyZWFkX3Jvb3RfaWQYAyABKAkiWQoLQWdlbnRTdGF0dXMSEgoKY2hhbm5lbF9pZBgBIAEoCRIWCg50aHJlYWRfcm9vdF9pZBgCIAEoCRIOCgZydW5faWQYAyABKAkSDgoGc3RhdHVzGAQgASgJIosBChFQcmVwYXJhdGlvblVwZGF0ZRISCgpjaGFubmVsX2lkGAEgASgJEhYKDnRocmVhZF9yb290X2lkGAIgASgJEhYKDnByZXBhcmF0aW9uX2lkGAMgASgJEjIKBXN0YXRlGAQgASgOMiMudGFuay53b3Jrc3BhY2UudjEuUHJlcGFyYXRpb25TdGF0ZSL5AQoQQWdlbnRTdHJlYW1EZWx0YRISCgpjaGFubmVsX2lkGAEgASgJEhYKDnRocmVhZF9yb290X2lkGAIgASgJEg4KBnJ1bl9pZBgDIAEoCRILCgNzZXEYBCABKAMSMwoEa2luZBgFIAEoDjIlLnRhbmsuZXZlbnRzLnYxLkFnZW50U3RyZWFtRGVsdGEuS2luZBIMCgR0ZXh0GAYgASgJEg0KBXJlc2V0GAcgASgIIkoKBEtpbmQSFAoQS0lORF9VTlNQRUNJRklFRBAAEg0KCUtJTkRfVEVYVBABEg8KC0tJTkRfU1RBVFVTEAISDAoIS0lORF9FTkQQAyIuCglGaWxlUmVhZHkSIQoEZmlsZRgBIAEoCzITLnRhbmsuZmlsZXMudjEuRmlsZSJOChBNZXNzYWdlRXBoZW1lcmFsEikKB21lc3NhZ2UYASABKAsyGC50YW5rLm1lc3NhZ2UudjEuTWVzc2FnZRIPCgd1c2VyX2lkGAIgASgJIi0KEU5vdGlmaWNhdGlvbnNSZWFkEhgKEG5vdGlmaWNhdGlvbl9pZHMYASADKAkiMgoPQWdlbnRSdW5VcGRhdGVkEh8KA3J1bhgBIAEoCzISLnRhbmsuYWdlbnQudjEuUnVuInYKE05vdGlmaWNhdGlvbkNyZWF0ZWQSFwoPbm90aWZpY2F0aW9uX2lkGAEgASgJEgwKBGtpbmQYAiABKAkSEgoKbWVzc2FnZV9pZBgDIAEoCRISCgpjaGFubmVsX2lkGAQgASgJEhAKCGFjdG9yX2lkGAUgASgJIlUKClBpbkNoYW5nZWQSEgoKbWVzc2FnZV9pZBgBIAEoCRISCgpjaGFubmVsX2lkGAIgASgJEg8KB3VzZXJfaWQYAyABKAkSDgoGcGlubmVkGAQgASgIIlwKDEVtb2ppQ2hhbmdlZBItCgVlbW9qaRgBIAEoCzIeLnRhbmsud29ya3NwYWNlLnYxLkN1c3RvbUVtb2ppEg8KB2RlbGV0ZWQYAiABKAgSDAoEaGFzaBgDIAEoCSJaChJQcmVmZXJlbmNlc1VwZGF0ZWQSDwoHdXNlcl9pZBgBIAEoCRIzCgtwcmVmZXJlbmNlcxgCIAEoCzIeLnRhbmsud29ya3NwYWNlLnYxLlByZWZlcmVuY2VzImIKGENoYW5uZWxQcmVmZXJlbmNlVXBkYXRlZBIPCgd1c2VyX2lkGAEgASgJEjUKCnJlYWRfc3RhdGUYAiABKAsyIS50YW5rLmNoYW5uZWwudjEuQ2hhbm5lbFJlYWRTdGF0ZSJZCgxEcmFmdFVwZGF0ZWQSDwoHdXNlcl9pZBgBIAEoCRInCgVkcmFmdBgCIAEoCzIYLnRhbmsud29ya3NwYWNlLnYxLkRyYWZ0Eg8KB2RlbGV0ZWQYAyABKAgiTgoUU2NoZWR1bGVkTWVzc2FnZVNlbnQSNgoJc2NoZWR1bGVkGAEgASgLMiMudGFuay53b3Jrc3BhY2UudjEuU2NoZWR1bGVkTWVzc2FnZSJQChBVc2VyR3JvdXBVcGRhdGVkEisKBWdyb3VwGAEgASgLMhwudGFuay53b3Jrc3BhY2UudjEuVXNlckdyb3VwEg8KB2RlbGV0ZWQYAiABKAgiWAoPQm9va21hcmtDaGFuZ2VkEjQKCGJvb2ttYXJrGAEgASgLMiIudGFuay53b3Jrc3BhY2UudjEuQ2hhbm5lbEJvb2ttYXJrEg8KB3JlbW92ZWQYAiABKAgiOgoNTWVtYmVyVXBkYXRlZBIpCgZtZW1iZXIYASABKAsyGS50YW5rLndvcmtzcGFjZS52MS5NZW1iZXIiNwoNSHVkZGxlU3RhcnRlZBImCgZodWRkbGUYASABKAsyFi50YW5rLmh1ZGRsZS52MS5IdWRkbGUiNQoLSHVkZGxlRW5kZWQSJgoGaHVkZGxlGAEgASgLMhYudGFuay5odWRkbGUudjEuSHVkZGxlIkMKGUh1ZGRsZVBhcnRpY2lwYW50c0NoYW5nZWQSJgoGaHVkZGxlGAEgASgLMhYudGFuay5odWRkbGUudjEuSHVkZGxlIoABChFNZW1iZXJSb2xlQ2hhbmdlZBIpCgZtZW1iZXIYASABKAsyGS50YW5rLndvcmtzcGFjZS52MS5NZW1iZXISLgoNcHJldmlvdXNfcm9sZRgCIAEoDjIXLnRhbmsud29ya3NwYWNlLnYxLlJvbGUSEAoIYWN0b3JfaWQYAyABKAkidgoRTWVtYmVyRGVhY3RpdmF0ZWQSKQoGbWVtYmVyGAEgASgLMhkudGFuay53b3Jrc3BhY2UudjEuTWVtYmVyEhMKC3JlYWN0aXZhdGVkGAIgASgIEg8KB3JlbW92ZWQYAyABKAgSEAoIYWN0b3JfaWQYBCABKAkiYAoYV29ya3NwYWNlU2V0dGluZ3NVcGRhdGVkEjIKCHNldHRpbmdzGAEgASgLMiAudGFuay5hZG1pbi52MS5Xb3Jrc3BhY2VTZXR0aW5ncxIQCghhY3Rvcl9pZBgCIAEoCSI3CgtBdWRpdExvZ2dlZBIoCgVlbnRyeRgBIAEoCzIZLnRhbmsuYWRtaW4udjEuQXVkaXRFbnRyeSI0CgtFeHBvcnRSZWFkeRIlCgNqb2IYASABKAsyGC50YW5rLmFkbWluLnYxLkV4cG9ydEpvYiIzCg9Ub3BvTWFya1VwZGF0ZWQSIAoEbWFyaxgBIAEoCzISLnRhbmsudG9wby52MS5NYXJrIj8KFE1vbml0b3JXaWRnZXRVcGRhdGVkEicKBndpZGdldBgBIAEoCzIXLnRhbmsubW9uaXRvci52MS5XaWRnZXQiaAoSTW9uaXRvcldpZGdldEFsZXJ0EicKBndpZGdldBgBIAEoCzIXLnRhbmsubW9uaXRvci52MS5XaWRnZXQSKQoIcHJldmlvdXMYAiABKA4yFy50YW5rLm1vbml0b3IudjEuSGVhbHRoIpkBChJDYW52YXNCbG9ja0NoYW5nZWQSEQoJY2FudmFzX2lkGAEgASgJEiQKBWJsb2NrGAIgASgLMhUudGFuay5jYW52YXMudjEuQmxvY2sSFgoOYWZ0ZXJfYmxvY2tfaWQYAyABKAkSDwoHZGVsZXRlZBgEIAEoCBIQCghhY3Rvcl9pZBgFIAEoCRIPCgd2ZXJzaW9uGAYgASgFIkkKDUNhbnZhc0NoYW5nZWQSJgoGY2FudmFzGAEgASgLMhYudGFuay5jYW52YXMudjEuQ2FudmFzEhAKCGFjdG9yX2lkGAIgASgJIlMKDUNhbnZhc0VkaXRpbmcSEQoJY2FudmFzX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSEAoIYmxvY2tfaWQYAyABKAkSDAoEbGVmdBgEIAEoCCKMAQoTQm9hcmRPYmplY3RzQ2hhbmdlZBIQCghib2FyZF9pZBgBIAEoCRIrCgdvYmplY3RzGAIgAygLMhoudGFuay5ib2FyZC52MS5Cb2FyZE9iamVjdBITCgtkZWxldGVkX2lkcxgDIAMoCRIQCghhY3Rvcl9pZBgEIAEoCRIPCgd2ZXJzaW9uGAUgASgFIkUKDEJvYXJkQ2hhbmdlZBIjCgVib2FyZBgBIAEoCzIULnRhbmsuYm9hcmQudjEuQm9hcmQSEAoIYWN0b3JfaWQYAiABKAkieQoMQm9hcmRQb2ludGVyEhAKCGJvYXJkX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSCQoBeBgDIAEoARIJCgF5GAQgASgBEhQKDHNlbGVjdGVkX2lkcxgFIAMoCRIMCgRsZWZ0GAYgASgIEgwKBGtpbmQYByABKAkiQQoLVGFza0NoYW5nZWQSIAoEdGFzaxgBIAEoCzISLnRhbmsudGFzay52MS5UYXNrEhAKCGFjdG9yX2lkGAIgASgJQtABChJjb20udGFuay5ldmVudHMudjFCC0V2ZW50c1Byb3RvUAFaU2dpdGh1Yi5jb20vdGFjdGljYWwtYWdlbnQtbmV1cmFsLWtub3dsZWRnZS9jb250cmFjdHMvZ2VuL2dvL3RhbmsvZXZlbnRzL3YxO2V2ZW50c3YxogIDVEVYqgIOVGFuay5FdmVudHMuVjHKAg5UYW5rXEV2ZW50c1xWMeICGlRhbmtcRXZlbnRzXFYxXEdQQk1ldGFkYXRh6gIQVGFuazo6RXZlbnRzOjpWMWIGcHJvdG8z", [file_google_protobuf_any, file_google_protobuf_timestamp, file_tank_admin_v1_admin, file_tank_agent_v1_agent, file_tank_blocks_v1_blocks, file_tank_board_v1_board, file_tank_canvas_v1_canvas, file_tank_channel_v1_channel, file_tank_files_v1_files, file_tank_huddle_v1_huddle, file_tank_message_v1_message, file_tank_monitor_v1_monitor, file_tank_presence_v1_presence, file_tank_task_v1_task, file_tank_topo_v1_topo, file_tank_workspace_v1_workspace]);
 
 /**
  * Every durable event on the bus and every realtime frame payload is one of
@@ -574,6 +574,109 @@ export const PreparationUpdateSchema: GenMessage<PreparationUpdate> = /*@__PURE_
   messageDesc(file_tank_events_v1_events, 17);
 
 /**
+ * Live output of an agent run, for a person who turned Preferences.live_agent_stream on.
+ * Ephemeral: never stored on JetStream and never replayed. The stored message that ends the
+ * run is the truth; this is only what a client shows while waiting for it.
+ *
+ * It carries only the agent's own assistant text and its status lines. Tool input and tool
+ * output are never in it, whatever the run did.
+ *
+ * Every client behaves the same way: text is a chunk to append (not the text so far) and
+ * animates in; with reduced motion on it appears without animation. `seq` rises by one per
+ * run with no gaps. A gap, a reconnect or a Resume means the client drops its partial text,
+ * shows the stored message when it arrives, and may call AgentService.GetRunStreamTail to
+ * catch up. Nothing in it depends on the platform, browser or OS, and there is no capability flag.
+ *
+ * @generated from message tank.events.v1.AgentStreamDelta
+ */
+export type AgentStreamDelta = Message<"tank.events.v1.AgentStreamDelta"> & {
+  /**
+   * @generated from field: string channel_id = 1;
+   */
+  channelId: string;
+
+  /**
+   * @generated from field: string thread_root_id = 2;
+   */
+  threadRootId: string;
+
+  /**
+   * @generated from field: string run_id = 3;
+   */
+  runId: string;
+
+  /**
+   * per run, starting at 1
+   *
+   * @generated from field: int64 seq = 4;
+   */
+  seq: bigint;
+
+  /**
+   * @generated from field: tank.events.v1.AgentStreamDelta.Kind kind = 5;
+   */
+  kind: AgentStreamDelta_Kind;
+
+  /**
+   * a chunk, never cumulative; empty for KIND_END
+   *
+   * @generated from field: string text = 6;
+   */
+  text: string;
+
+  /**
+   * A new turn of the same run begins: clear the partial text before applying this delta.
+   *
+   * @generated from field: bool reset = 7;
+   */
+  reset: boolean;
+};
+
+/**
+ * Describes the message tank.events.v1.AgentStreamDelta.
+ * Use `create(AgentStreamDeltaSchema)` to create a new message.
+ */
+export const AgentStreamDeltaSchema: GenMessage<AgentStreamDelta> = /*@__PURE__*/
+  messageDesc(file_tank_events_v1_events, 18);
+
+/**
+ * @generated from enum tank.events.v1.AgentStreamDelta.Kind
+ */
+export enum AgentStreamDelta_Kind {
+  /**
+   * @generated from enum value: KIND_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * `text` is a chunk of the assistant's reply to append
+   *
+   * @generated from enum value: KIND_TEXT = 1;
+   */
+  TEXT = 1,
+
+  /**
+   * `text` is a status line ("reading repo"); replaces the previous one
+   *
+   * @generated from enum value: KIND_STATUS = 2;
+   */
+  STATUS = 2,
+
+  /**
+   * the run's output is complete; drop the partial text for the stored message
+   *
+   * @generated from enum value: KIND_END = 3;
+   */
+  END = 3,
+}
+
+/**
+ * Describes the enum tank.events.v1.AgentStreamDelta.Kind.
+ */
+export const AgentStreamDelta_KindSchema: GenEnum<AgentStreamDelta_Kind> = /*@__PURE__*/
+  enumDesc(file_tank_events_v1_events, 18, 0);
+
+/**
  * file.ready on evt.{ws}.user.{uploader}: the upload is verified and readable.
  * Also published on evt.{ws}.ch.{channel} for every channel the file is
  * shared in, and on evt.{ws}.thread.{root} when the sharing message is a reply.
@@ -592,7 +695,7 @@ export type FileReady = Message<"tank.events.v1.FileReady"> & {
  * Use `create(FileReadySchema)` to create a new message.
  */
 export const FileReadySchema: GenMessage<FileReady> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 18);
+  messageDesc(file_tank_events_v1_events, 19);
 
 /**
  * message.ephemeral on evt.{ws}.user.{uid}: never stored, shown only to user_id.
@@ -616,7 +719,7 @@ export type MessageEphemeral = Message<"tank.events.v1.MessageEphemeral"> & {
  * Use `create(MessageEphemeralSchema)` to create a new message.
  */
 export const MessageEphemeralSchema: GenMessage<MessageEphemeral> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 19);
+  messageDesc(file_tank_events_v1_events, 20);
 
 /**
  * notifications.read on evt.{ws}.user.{uid}: cross-device badge sync.
@@ -637,7 +740,7 @@ export type NotificationsRead = Message<"tank.events.v1.NotificationsRead"> & {
  * Use `create(NotificationsReadSchema)` to create a new message.
  */
 export const NotificationsReadSchema: GenMessage<NotificationsRead> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 20);
+  messageDesc(file_tank_events_v1_events, 21);
 
 /**
  * agent.run.updated on evt.{ws}.thread.{root}: state, status message or cost changed.
@@ -656,7 +759,7 @@ export type AgentRunUpdated = Message<"tank.events.v1.AgentRunUpdated"> & {
  * Use `create(AgentRunUpdatedSchema)` to create a new message.
  */
 export const AgentRunUpdatedSchema: GenMessage<AgentRunUpdated> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 21);
+  messageDesc(file_tank_events_v1_events, 22);
 
 /**
  * @generated from message tank.events.v1.NotificationCreated
@@ -693,7 +796,7 @@ export type NotificationCreated = Message<"tank.events.v1.NotificationCreated"> 
  * Use `create(NotificationCreatedSchema)` to create a new message.
  */
 export const NotificationCreatedSchema: GenMessage<NotificationCreated> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 22);
+  messageDesc(file_tank_events_v1_events, 23);
 
 /**
  * pin.changed on evt.{ws}.ch.{channel}.
@@ -727,7 +830,7 @@ export type PinChanged = Message<"tank.events.v1.PinChanged"> & {
  * Use `create(PinChangedSchema)` to create a new message.
  */
 export const PinChangedSchema: GenMessage<PinChanged> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 23);
+  messageDesc(file_tank_events_v1_events, 24);
 
 /**
  * emoji.changed on evt.{ws}.ws: the custom emoji set changed; hash matches
@@ -757,7 +860,7 @@ export type EmojiChanged = Message<"tank.events.v1.EmojiChanged"> & {
  * Use `create(EmojiChangedSchema)` to create a new message.
  */
 export const EmojiChangedSchema: GenMessage<EmojiChanged> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 24);
+  messageDesc(file_tank_events_v1_events, 25);
 
 /**
  * preferences.updated on evt.{ws}.user.{uid}: cross-device sync.
@@ -781,7 +884,7 @@ export type PreferencesUpdated = Message<"tank.events.v1.PreferencesUpdated"> & 
  * Use `create(PreferencesUpdatedSchema)` to create a new message.
  */
 export const PreferencesUpdatedSchema: GenMessage<PreferencesUpdated> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 25);
+  messageDesc(file_tank_events_v1_events, 26);
 
 /**
  * channel_preference.updated on evt.{ws}.user.{uid}.
@@ -805,7 +908,7 @@ export type ChannelPreferenceUpdated = Message<"tank.events.v1.ChannelPreference
  * Use `create(ChannelPreferenceUpdatedSchema)` to create a new message.
  */
 export const ChannelPreferenceUpdatedSchema: GenMessage<ChannelPreferenceUpdated> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 26);
+  messageDesc(file_tank_events_v1_events, 27);
 
 /**
  * draft.updated on evt.{ws}.user.{uid}: cross-device draft sync.
@@ -834,7 +937,7 @@ export type DraftUpdated = Message<"tank.events.v1.DraftUpdated"> & {
  * Use `create(DraftUpdatedSchema)` to create a new message.
  */
 export const DraftUpdatedSchema: GenMessage<DraftUpdated> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 27);
+  messageDesc(file_tank_events_v1_events, 28);
 
 /**
  * scheduled_message.sent on evt.{ws}.user.{uid}: the scheduler posted (or
@@ -854,7 +957,7 @@ export type ScheduledMessageSent = Message<"tank.events.v1.ScheduledMessageSent"
  * Use `create(ScheduledMessageSentSchema)` to create a new message.
  */
 export const ScheduledMessageSentSchema: GenMessage<ScheduledMessageSent> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 28);
+  messageDesc(file_tank_events_v1_events, 29);
 
 /**
  * user_group.updated on evt.{ws}.ws.
@@ -878,7 +981,7 @@ export type UserGroupUpdated = Message<"tank.events.v1.UserGroupUpdated"> & {
  * Use `create(UserGroupUpdatedSchema)` to create a new message.
  */
 export const UserGroupUpdatedSchema: GenMessage<UserGroupUpdated> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 29);
+  messageDesc(file_tank_events_v1_events, 30);
 
 /**
  * bookmark.changed on evt.{ws}.ch.{channel}.
@@ -902,7 +1005,7 @@ export type BookmarkChanged = Message<"tank.events.v1.BookmarkChanged"> & {
  * Use `create(BookmarkChangedSchema)` to create a new message.
  */
 export const BookmarkChangedSchema: GenMessage<BookmarkChanged> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 30);
+  messageDesc(file_tank_events_v1_events, 31);
 
 /**
  * member.updated on evt.{ws}.ws: a member changed their profile (display
@@ -922,7 +1025,7 @@ export type MemberUpdated = Message<"tank.events.v1.MemberUpdated"> & {
  * Use `create(MemberUpdatedSchema)` to create a new message.
  */
 export const MemberUpdatedSchema: GenMessage<MemberUpdated> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 31);
+  messageDesc(file_tank_events_v1_events, 32);
 
 /**
  * huddle.started on evt.{ws}.ch.{channel} (and evt.{ws}.ws for public channels).
@@ -941,7 +1044,7 @@ export type HuddleStarted = Message<"tank.events.v1.HuddleStarted"> & {
  * Use `create(HuddleStartedSchema)` to create a new message.
  */
 export const HuddleStartedSchema: GenMessage<HuddleStarted> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 32);
+  messageDesc(file_tank_events_v1_events, 33);
 
 /**
  * huddle.ended on the same subjects as huddle.started.
@@ -960,7 +1063,7 @@ export type HuddleEnded = Message<"tank.events.v1.HuddleEnded"> & {
  * Use `create(HuddleEndedSchema)` to create a new message.
  */
 export const HuddleEndedSchema: GenMessage<HuddleEnded> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 33);
+  messageDesc(file_tank_events_v1_events, 34);
 
 /**
  * huddle.participants.changed on the same subjects: someone joined, left or
@@ -980,7 +1083,7 @@ export type HuddleParticipantsChanged = Message<"tank.events.v1.HuddleParticipan
  * Use `create(HuddleParticipantsChangedSchema)` to create a new message.
  */
 export const HuddleParticipantsChangedSchema: GenMessage<HuddleParticipantsChanged> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 34);
+  messageDesc(file_tank_events_v1_events, 35);
 
 /**
  * member.role_changed on evt.{ws}.ws and on the member's user subject.
@@ -1009,7 +1112,7 @@ export type MemberRoleChanged = Message<"tank.events.v1.MemberRoleChanged"> & {
  * Use `create(MemberRoleChangedSchema)` to create a new message.
  */
 export const MemberRoleChangedSchema: GenMessage<MemberRoleChanged> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 35);
+  messageDesc(file_tank_events_v1_events, 36);
 
 /**
  * member.deactivated on evt.{ws}.ws (also for reactivation and removal;
@@ -1044,7 +1147,7 @@ export type MemberDeactivated = Message<"tank.events.v1.MemberDeactivated"> & {
  * Use `create(MemberDeactivatedSchema)` to create a new message.
  */
 export const MemberDeactivatedSchema: GenMessage<MemberDeactivated> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 36);
+  messageDesc(file_tank_events_v1_events, 37);
 
 /**
  * workspace.settings_updated on evt.{ws}.ws.
@@ -1068,7 +1171,7 @@ export type WorkspaceSettingsUpdated = Message<"tank.events.v1.WorkspaceSettings
  * Use `create(WorkspaceSettingsUpdatedSchema)` to create a new message.
  */
 export const WorkspaceSettingsUpdatedSchema: GenMessage<WorkspaceSettingsUpdated> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 37);
+  messageDesc(file_tank_events_v1_events, 38);
 
 /**
  * audit.logged on evt.{ws}.audit.{entry}: internal (SIEM forwarders, the
@@ -1088,7 +1191,7 @@ export type AuditLogged = Message<"tank.events.v1.AuditLogged"> & {
  * Use `create(AuditLoggedSchema)` to create a new message.
  */
 export const AuditLoggedSchema: GenMessage<AuditLogged> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 38);
+  messageDesc(file_tank_events_v1_events, 39);
 
 /**
  * export.ready on the requester's user subject: the zip can be downloaded
@@ -1108,7 +1211,7 @@ export type ExportReady = Message<"tank.events.v1.ExportReady"> & {
  * Use `create(ExportReadySchema)` to create a new message.
  */
 export const ExportReadySchema: GenMessage<ExportReady> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 39);
+  messageDesc(file_tank_events_v1_events, 40);
 
 /**
  * topo.mark.updated on the channel subject: a stored mark was created,
@@ -1129,7 +1232,7 @@ export type TopoMarkUpdated = Message<"tank.events.v1.TopoMarkUpdated"> & {
  * Use `create(TopoMarkUpdatedSchema)` to create a new message.
  */
 export const TopoMarkUpdatedSchema: GenMessage<TopoMarkUpdated> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 40);
+  messageDesc(file_tank_events_v1_events, 41);
 
 /**
  * monitor.widget.updated on evt.{ws}.ch.{channel}: a Radar widget has a new
@@ -1149,7 +1252,7 @@ export type MonitorWidgetUpdated = Message<"tank.events.v1.MonitorWidgetUpdated"
  * Use `create(MonitorWidgetUpdatedSchema)` to create a new message.
  */
 export const MonitorWidgetUpdatedSchema: GenMessage<MonitorWidgetUpdated> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 41);
+  messageDesc(file_tank_events_v1_events, 42);
 
 /**
  * A widget crossed into warning or critical and asks to be told about it. Only the
@@ -1174,7 +1277,7 @@ export type MonitorWidgetAlert = Message<"tank.events.v1.MonitorWidgetAlert"> & 
  * Use `create(MonitorWidgetAlertSchema)` to create a new message.
  */
 export const MonitorWidgetAlertSchema: GenMessage<MonitorWidgetAlert> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 42);
+  messageDesc(file_tank_events_v1_events, 43);
 
 /**
  * canvas.block.changed on evt.{ws}.canvas.{canvas}: one block of a page was
@@ -1223,7 +1326,7 @@ export type CanvasBlockChanged = Message<"tank.events.v1.CanvasBlockChanged"> & 
  * Use `create(CanvasBlockChangedSchema)` to create a new message.
  */
 export const CanvasBlockChangedSchema: GenMessage<CanvasBlockChanged> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 43);
+  messageDesc(file_tank_events_v1_events, 44);
 
 /**
  * canvas.changed on the same subject: the page's own fields moved (title, icon,
@@ -1248,7 +1351,7 @@ export type CanvasChanged = Message<"tank.events.v1.CanvasChanged"> & {
  * Use `create(CanvasChangedSchema)` to create a new message.
  */
 export const CanvasChangedSchema: GenMessage<CanvasChanged> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 44);
+  messageDesc(file_tank_events_v1_events, 45);
 
 /**
  * Ephemeral, on typ.{ws}.canvas.{canvas}: who is in this page and where. Never
@@ -1283,7 +1386,7 @@ export type CanvasEditing = Message<"tank.events.v1.CanvasEditing"> & {
  * Use `create(CanvasEditingSchema)` to create a new message.
  */
 export const CanvasEditingSchema: GenMessage<CanvasEditing> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 45);
+  messageDesc(file_tank_events_v1_events, 46);
 
 /**
  * board.objects.changed on evt.{ws}.board.{board}: objects were written or removed on
@@ -1324,7 +1427,7 @@ export type BoardObjectsChanged = Message<"tank.events.v1.BoardObjectsChanged"> 
  * Use `create(BoardObjectsChangedSchema)` to create a new message.
  */
 export const BoardObjectsChangedSchema: GenMessage<BoardObjectsChanged> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 46);
+  messageDesc(file_tank_events_v1_events, 47);
 
 /**
  * board.changed on the same subject: the board's own fields moved (title, icon).
@@ -1348,7 +1451,7 @@ export type BoardChanged = Message<"tank.events.v1.BoardChanged"> & {
  * Use `create(BoardChangedSchema)` to create a new message.
  */
 export const BoardChangedSchema: GenMessage<BoardChanged> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 47);
+  messageDesc(file_tank_events_v1_events, 48);
 
 /**
  * Ephemeral, on typ.{ws}.board.{board}: a pointer moving across the board, and what
@@ -1401,7 +1504,7 @@ export type BoardPointer = Message<"tank.events.v1.BoardPointer"> & {
  * Use `create(BoardPointerSchema)` to create a new message.
  */
 export const BoardPointerSchema: GenMessage<BoardPointer> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 48);
+  messageDesc(file_tank_events_v1_events, 49);
 
 /**
  * task.changed on evt.{ws}.ch.{channel}, and on evt.{ws}.ws for a public Tread, so a
@@ -1426,5 +1529,5 @@ export type TaskChanged = Message<"tank.events.v1.TaskChanged"> & {
  * Use `create(TaskChangedSchema)` to create a new message.
  */
 export const TaskChangedSchema: GenMessage<TaskChanged> = /*@__PURE__*/
-  messageDesc(file_tank_events_v1_events, 49);
+  messageDesc(file_tank_events_v1_events, 50);
 
