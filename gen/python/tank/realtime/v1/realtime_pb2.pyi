@@ -191,7 +191,7 @@ class Error(_message.Message):
     def __init__(self, code: _Optional[_Union[ErrorCode, str]] = ..., message: _Optional[str] = ...) -> None: ...
 
 class ServerFrame(_message.Message):
-    __slots__ = ("ready", "resumed", "resync_required", "event", "pong", "error", "typing", "presence", "agent_status", "canvas_editing", "board_pointer", "agent_stream")
+    __slots__ = ("ready", "resumed", "resync_required", "event", "pong", "error", "typing", "presence", "agent_status", "canvas_editing", "board_pointer", "preparation", "agent_stream")
     READY_FIELD_NUMBER: _ClassVar[int]
     RESUMED_FIELD_NUMBER: _ClassVar[int]
     RESYNC_REQUIRED_FIELD_NUMBER: _ClassVar[int]
@@ -203,6 +203,7 @@ class ServerFrame(_message.Message):
     AGENT_STATUS_FIELD_NUMBER: _ClassVar[int]
     CANVAS_EDITING_FIELD_NUMBER: _ClassVar[int]
     BOARD_POINTER_FIELD_NUMBER: _ClassVar[int]
+    PREPARATION_FIELD_NUMBER: _ClassVar[int]
     AGENT_STREAM_FIELD_NUMBER: _ClassVar[int]
     ready: Ready
     resumed: Resumed
@@ -215,5 +216,6 @@ class ServerFrame(_message.Message):
     agent_status: _events_pb2.AgentStatus
     canvas_editing: _events_pb2.CanvasEditing
     board_pointer: _events_pb2.BoardPointer
+    preparation: _events_pb2.PreparationUpdate
     agent_stream: _events_pb2.AgentStreamDelta
-    def __init__(self, ready: _Optional[_Union[Ready, _Mapping]] = ..., resumed: _Optional[_Union[Resumed, _Mapping]] = ..., resync_required: _Optional[_Union[ResyncRequired, _Mapping]] = ..., event: _Optional[_Union[Event, _Mapping]] = ..., pong: _Optional[_Union[Pong, _Mapping]] = ..., error: _Optional[_Union[Error, _Mapping]] = ..., typing: _Optional[_Union[_events_pb2.Typing, _Mapping]] = ..., presence: _Optional[_Union[_events_pb2.PresenceChanged, _Mapping]] = ..., agent_status: _Optional[_Union[_events_pb2.AgentStatus, _Mapping]] = ..., canvas_editing: _Optional[_Union[_events_pb2.CanvasEditing, _Mapping]] = ..., board_pointer: _Optional[_Union[_events_pb2.BoardPointer, _Mapping]] = ..., agent_stream: _Optional[_Union[_events_pb2.AgentStreamDelta, _Mapping]] = ...) -> None: ...
+    def __init__(self, ready: _Optional[_Union[Ready, _Mapping]] = ..., resumed: _Optional[_Union[Resumed, _Mapping]] = ..., resync_required: _Optional[_Union[ResyncRequired, _Mapping]] = ..., event: _Optional[_Union[Event, _Mapping]] = ..., pong: _Optional[_Union[Pong, _Mapping]] = ..., error: _Optional[_Union[Error, _Mapping]] = ..., typing: _Optional[_Union[_events_pb2.Typing, _Mapping]] = ..., presence: _Optional[_Union[_events_pb2.PresenceChanged, _Mapping]] = ..., agent_status: _Optional[_Union[_events_pb2.AgentStatus, _Mapping]] = ..., canvas_editing: _Optional[_Union[_events_pb2.CanvasEditing, _Mapping]] = ..., board_pointer: _Optional[_Union[_events_pb2.BoardPointer, _Mapping]] = ..., preparation: _Optional[_Union[_events_pb2.PreparationUpdate, _Mapping]] = ..., agent_stream: _Optional[_Union[_events_pb2.AgentStreamDelta, _Mapping]] = ...) -> None: ...
