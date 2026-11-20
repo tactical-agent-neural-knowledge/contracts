@@ -154,6 +154,11 @@ message Entitlements {
   int64 agent_time_low_cents = 16;
   // Auto-refill is on, so running out buys more instead of stopping runs.
   bool agent_time_auto_refill = 17;
+  // @neural, the premium agent pinned to the Neural model (agent.v1 AGENT_KIND_NEURAL), is
+  // available to this workspace. Every client lists it in the mention picker from this one
+  // field: usable when true, grayed with an upgrade button when false. The server refuses a
+  // run for it regardless (RUN_REFUSAL_REASON_PREMIUM_ONLY_AGENT).
+  bool neural_agent = 18;
 }
 
 message ListMembersRequest {

@@ -96,7 +96,7 @@ class ThreadMessage(_message.Message):
     def __init__(self, message_id: _Optional[str] = ..., author_id: _Optional[str] = ..., author_name: _Optional[str] = ..., author_kind: _Optional[str] = ..., text: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ...) -> None: ...
 
 class PolicySummary(_message.Message):
-    __slots__ = ("mode", "tools_deny", "network_allowed_hosts", "default_model", "subagent_model", "max_turns", "max_budget_usd", "rules", "tools_gate_destructive")
+    __slots__ = ("mode", "tools_deny", "network_allowed_hosts", "default_model", "subagent_model", "max_turns", "max_budget_usd", "rules", "tools_gate_destructive", "model_locked")
     MODE_FIELD_NUMBER: _ClassVar[int]
     TOOLS_DENY_FIELD_NUMBER: _ClassVar[int]
     NETWORK_ALLOWED_HOSTS_FIELD_NUMBER: _ClassVar[int]
@@ -106,6 +106,7 @@ class PolicySummary(_message.Message):
     MAX_BUDGET_USD_FIELD_NUMBER: _ClassVar[int]
     RULES_FIELD_NUMBER: _ClassVar[int]
     TOOLS_GATE_DESTRUCTIVE_FIELD_NUMBER: _ClassVar[int]
+    MODEL_LOCKED_FIELD_NUMBER: _ClassVar[int]
     mode: str
     tools_deny: _containers.RepeatedScalarFieldContainer[str]
     network_allowed_hosts: _containers.RepeatedScalarFieldContainer[str]
@@ -115,7 +116,8 @@ class PolicySummary(_message.Message):
     max_budget_usd: float
     rules: _containers.RepeatedScalarFieldContainer[str]
     tools_gate_destructive: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, mode: _Optional[str] = ..., tools_deny: _Optional[_Iterable[str]] = ..., network_allowed_hosts: _Optional[_Iterable[str]] = ..., default_model: _Optional[str] = ..., subagent_model: _Optional[str] = ..., max_turns: _Optional[int] = ..., max_budget_usd: _Optional[float] = ..., rules: _Optional[_Iterable[str]] = ..., tools_gate_destructive: _Optional[_Iterable[str]] = ...) -> None: ...
+    model_locked: bool
+    def __init__(self, mode: _Optional[str] = ..., tools_deny: _Optional[_Iterable[str]] = ..., network_allowed_hosts: _Optional[_Iterable[str]] = ..., default_model: _Optional[str] = ..., subagent_model: _Optional[str] = ..., max_turns: _Optional[int] = ..., max_budget_usd: _Optional[float] = ..., rules: _Optional[_Iterable[str]] = ..., tools_gate_destructive: _Optional[_Iterable[str]] = ..., model_locked: bool = ...) -> None: ...
 
 class ApprovedPlan(_message.Message):
     __slots__ = ("plan_hash", "summary", "steps", "risks", "approved_by", "approved_at", "feedback")

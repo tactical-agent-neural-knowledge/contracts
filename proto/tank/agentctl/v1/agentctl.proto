@@ -72,6 +72,10 @@ message PolicySummary {
   // ever told about them — so the gate the policy promised could not open and
   // the command simply ran. A deny list the runner cannot see denies nothing.
   repeated string tools_gate_destructive = 9;
+  // True for a run of a pinned agent (@neural): default_model is the only model the run may
+  // use. The runner refuses any other model, including subagent_model, never escalates or
+  // falls back, and records the resolved model in the run record.
+  bool model_locked = 10;
 }
 
 message ApprovedPlan {

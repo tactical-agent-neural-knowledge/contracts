@@ -43,6 +43,35 @@ message Agent {
   // A Crew member's title and skill (tank.crew.v1); empty for the workspace agent.
   string title = 6;
   string skill = 7;
+  // Which kind of principal this is. A client draws and gates an agent from this, never
+  // from its name or handle.
+  AgentKind kind = 8;
+  // The one model this agent runs on, when model_pinned is set (e.g. "tank-neural-1").
+  // Empty for an agent that uses the Tread's policy ladder.
+  string model = 9;
+  // True means the model above is the only model the agent may use: no ladder, no
+  // default-model routing, no escalation to a stronger model, no subagent model and no
+  // fallback when it is not being served (the run is refused with
+  // RUN_REFUSAL_REASON_MODEL_UNAVAILABLE). TreadSettings.model and TreadSettings.strongest_model
+  // are ignored for a pinned agent; the pin is never overridable by Tread or workspace settings.
+  bool model_pinned = 10;
+  // The lowest plan that may run this agent: "" for any plan, "premium" for premium only.
+  // StartRun checks it server-side; a free workspace is refused with
+  // RUN_REFUSAL_REASON_PREMIUM_ONLY_AGENT and no trial run is spent.
+  string min_plan = 11;
+}
+
+// What an agent principal is. @neural is the agent of kind AGENT_KIND_NEURAL: it resolves to
+// that principal in any Tread of a workspace that has it, whatever the workspace's Crew or
+// Ops handles are. It is the same on web, desktop and mobile: it appears in the mention
+// picker when workspace.v1.Entitlements.neural_agent is true, is shown as the Neural agent
+// with its pinned model name, and a refusal renders the same typed message and button on
+// every surface.
+enum AgentKind {
+  AGENT_KIND_UNSPECIFIED = 0;  // the workspace agent, or a client that predates this field
+  AGENT_KIND_WORKSPACE = 1;    // the workspace's own agent (@tank)
+  AGENT_KIND_CREW = 2;         // a Crew member (tank.crew.v1)
+  AGENT_KIND_NEURAL = 3;       // the built-in Neural agent: premium, pinned to the Neural model
 }
 
 message Run {
@@ -95,6 +124,14 @@ enum RunRefusalReason {
   RUN_REFUSAL_REASON_FREE_PLAN = 1;
   // Prepaid agent time is spent and no auto-refill covered it.
   RUN_REFUSAL_REASON_OUT_OF_FUNDS = 2;
+  // A free workspace mentioned an agent whose min_plan is "premium" (@neural). The action is
+  // UPGRADE, the same button as FREE_PLAN, and no free trial run is spent on it. StartRun
+  // checks min_plan server-side. Out-of-funds and low-funds behaviour is unchanged: a premium
+  // workspace with no agent time left is refused with OUT_OF_FUNDS as for any agent.
+  RUN_REFUSAL_REASON_PREMIUM_ONLY_AGENT = 3;
+  // The agent is pinned to a model that is not being served right now. The run is refused with
+  // no action; it never falls back to another model.
+  RUN_REFUSAL_REASON_MODEL_UNAVAILABLE = 4;
 }
 
 enum RunRefusalAction {
