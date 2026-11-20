@@ -211,7 +211,7 @@ class ListBillingHistoryResponse(_message.Message):
     def __init__(self, records: _Optional[_Iterable[_Union[BillingRecord, _Mapping]]] = ...) -> None: ...
 
 class AgentTime(_message.Message):
-    __slots__ = ("balance_cents", "included_cents", "included_left_cents", "used_this_month_cents", "blocked", "auto_refill", "auto_refilled_this_month_cents", "has_payment_method", "history", "pack_cents", "min_custom_cents", "can_manage", "prepaid", "no_charge")
+    __slots__ = ("balance_cents", "included_cents", "included_left_cents", "used_this_month_cents", "blocked", "auto_refill", "auto_refilled_this_month_cents", "has_payment_method", "history", "pack_cents", "min_custom_cents", "can_manage", "prepaid", "no_charge", "state", "available_cents", "low_cents", "auto_refill_failed")
     BALANCE_CENTS_FIELD_NUMBER: _ClassVar[int]
     INCLUDED_CENTS_FIELD_NUMBER: _ClassVar[int]
     INCLUDED_LEFT_CENTS_FIELD_NUMBER: _ClassVar[int]
@@ -226,6 +226,10 @@ class AgentTime(_message.Message):
     CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
     PREPAID_FIELD_NUMBER: _ClassVar[int]
     NO_CHARGE_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    AVAILABLE_CENTS_FIELD_NUMBER: _ClassVar[int]
+    LOW_CENTS_FIELD_NUMBER: _ClassVar[int]
+    AUTO_REFILL_FAILED_FIELD_NUMBER: _ClassVar[int]
     balance_cents: int
     included_cents: int
     included_left_cents: int
@@ -240,7 +244,11 @@ class AgentTime(_message.Message):
     can_manage: bool
     prepaid: bool
     no_charge: bool
-    def __init__(self, balance_cents: _Optional[int] = ..., included_cents: _Optional[int] = ..., included_left_cents: _Optional[int] = ..., used_this_month_cents: _Optional[int] = ..., blocked: bool = ..., auto_refill: _Optional[_Union[AutoRefill, _Mapping]] = ..., auto_refilled_this_month_cents: _Optional[int] = ..., has_payment_method: bool = ..., history: _Optional[_Iterable[_Union[AgentTimeEntry, _Mapping]]] = ..., pack_cents: _Optional[_Iterable[int]] = ..., min_custom_cents: _Optional[int] = ..., can_manage: bool = ..., prepaid: bool = ..., no_charge: bool = ...) -> None: ...
+    state: str
+    available_cents: int
+    low_cents: int
+    auto_refill_failed: bool
+    def __init__(self, balance_cents: _Optional[int] = ..., included_cents: _Optional[int] = ..., included_left_cents: _Optional[int] = ..., used_this_month_cents: _Optional[int] = ..., blocked: bool = ..., auto_refill: _Optional[_Union[AutoRefill, _Mapping]] = ..., auto_refilled_this_month_cents: _Optional[int] = ..., has_payment_method: bool = ..., history: _Optional[_Iterable[_Union[AgentTimeEntry, _Mapping]]] = ..., pack_cents: _Optional[_Iterable[int]] = ..., min_custom_cents: _Optional[int] = ..., can_manage: bool = ..., prepaid: bool = ..., no_charge: bool = ..., state: _Optional[str] = ..., available_cents: _Optional[int] = ..., low_cents: _Optional[int] = ..., auto_refill_failed: bool = ...) -> None: ...
 
 class AutoRefill(_message.Message):
     __slots__ = ("enabled", "below_cents", "amount_cents", "monthly_cap_cents", "last_error")
@@ -267,6 +275,24 @@ class AgentTimeEntry(_message.Message):
     at: _timestamp_pb2.Timestamp
     note: str
     def __init__(self, kind: _Optional[str] = ..., cents: _Optional[int] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., note: _Optional[str] = ...) -> None: ...
+
+class AutoRefillCharged(_message.Message):
+    __slots__ = ("workspace_id", "amount_cents", "balance_after_cents", "succeeded", "error", "billing_record_id", "at")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    AMOUNT_CENTS_FIELD_NUMBER: _ClassVar[int]
+    BALANCE_AFTER_CENTS_FIELD_NUMBER: _ClassVar[int]
+    SUCCEEDED_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    BILLING_RECORD_ID_FIELD_NUMBER: _ClassVar[int]
+    AT_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    amount_cents: int
+    balance_after_cents: int
+    succeeded: bool
+    error: str
+    billing_record_id: str
+    at: _timestamp_pb2.Timestamp
+    def __init__(self, workspace_id: _Optional[str] = ..., amount_cents: _Optional[int] = ..., balance_after_cents: _Optional[int] = ..., succeeded: bool = ..., error: _Optional[str] = ..., billing_record_id: _Optional[str] = ..., at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class GetAgentTimeRequest(_message.Message):
     __slots__ = ("workspace_id",)

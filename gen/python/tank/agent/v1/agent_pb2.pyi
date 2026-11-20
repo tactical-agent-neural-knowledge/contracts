@@ -31,6 +31,18 @@ class RunState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     RUN_STATE_BLOCKED: _ClassVar[RunState]
     RUN_STATE_AWAITING_ANSWER: _ClassVar[RunState]
 
+class RunRefusalReason(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    RUN_REFUSAL_REASON_UNSPECIFIED: _ClassVar[RunRefusalReason]
+    RUN_REFUSAL_REASON_FREE_PLAN: _ClassVar[RunRefusalReason]
+    RUN_REFUSAL_REASON_OUT_OF_FUNDS: _ClassVar[RunRefusalReason]
+
+class RunRefusalAction(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    RUN_REFUSAL_ACTION_UNSPECIFIED: _ClassVar[RunRefusalAction]
+    RUN_REFUSAL_ACTION_UPGRADE: _ClassVar[RunRefusalAction]
+    RUN_REFUSAL_ACTION_REFILL: _ClassVar[RunRefusalAction]
+
 class PlanItemStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     PLAN_ITEM_STATUS_UNSPECIFIED: _ClassVar[PlanItemStatus]
@@ -60,6 +72,12 @@ RUN_STATE_TIMED_OUT: RunState
 RUN_STATE_APPROVAL_EXPIRED: RunState
 RUN_STATE_BLOCKED: RunState
 RUN_STATE_AWAITING_ANSWER: RunState
+RUN_REFUSAL_REASON_UNSPECIFIED: RunRefusalReason
+RUN_REFUSAL_REASON_FREE_PLAN: RunRefusalReason
+RUN_REFUSAL_REASON_OUT_OF_FUNDS: RunRefusalReason
+RUN_REFUSAL_ACTION_UNSPECIFIED: RunRefusalAction
+RUN_REFUSAL_ACTION_UPGRADE: RunRefusalAction
+RUN_REFUSAL_ACTION_REFILL: RunRefusalAction
 PLAN_ITEM_STATUS_UNSPECIFIED: PlanItemStatus
 PLAN_ITEM_STATUS_TODO: PlanItemStatus
 PLAN_ITEM_STATUS_DOING: PlanItemStatus
@@ -134,14 +152,28 @@ class StartRunRequest(_message.Message):
     def __init__(self, thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., instructions: _Optional[str] = ..., requested_by: _Optional[str] = ..., parent_run_id: _Optional[str] = ...) -> None: ...
 
 class StartRunResponse(_message.Message):
-    __slots__ = ("run", "agent_session_token", "token_expires_at")
+    __slots__ = ("run", "agent_session_token", "token_expires_at", "refusal")
     RUN_FIELD_NUMBER: _ClassVar[int]
     AGENT_SESSION_TOKEN_FIELD_NUMBER: _ClassVar[int]
     TOKEN_EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    REFUSAL_FIELD_NUMBER: _ClassVar[int]
     run: Run
     agent_session_token: str
     token_expires_at: _timestamp_pb2.Timestamp
-    def __init__(self, run: _Optional[_Union[Run, _Mapping]] = ..., agent_session_token: _Optional[str] = ..., token_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    refusal: RunRefusal
+    def __init__(self, run: _Optional[_Union[Run, _Mapping]] = ..., agent_session_token: _Optional[str] = ..., token_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., refusal: _Optional[_Union[RunRefusal, _Mapping]] = ...) -> None: ...
+
+class RunRefusal(_message.Message):
+    __slots__ = ("reason", "action", "message", "action_label")
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    ACTION_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    ACTION_LABEL_FIELD_NUMBER: _ClassVar[int]
+    reason: RunRefusalReason
+    action: RunRefusalAction
+    message: str
+    action_label: str
+    def __init__(self, reason: _Optional[_Union[RunRefusalReason, str]] = ..., action: _Optional[_Union[RunRefusalAction, str]] = ..., message: _Optional[str] = ..., action_label: _Optional[str] = ...) -> None: ...
 
 class OpenThreadRequest(_message.Message):
     __slots__ = ("channel_id", "agent_id", "requested_by", "text", "parent_run_id", "kind")
