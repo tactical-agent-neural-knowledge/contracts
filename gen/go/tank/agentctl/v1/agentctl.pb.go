@@ -85,10 +85,16 @@ func (RunPhase) EnumDescriptor() ([]byte, []int) {
 	return file_tank_agentctl_v1_agentctl_proto_rawDescGZIP(), []int{0}
 }
 
+// What the control plane forwards to people from a runner's event stream: only
+// ASSISTANT_DELTA and STATUS (the planning phase included) become
+// tank.events.v1.AgentStreamDelta, and only to users whose live_agent_stream is on.
+// Tool input and output (TOOL_CALL, TOOL_RESULT, PERMISSION_REQUEST), usage, results and
+// log lines are never forwarded as stream deltas.
 type RunEventKind int32
 
 const (
-	RunEventKind_RUN_EVENT_KIND_UNSPECIFIED        RunEventKind = 0
+	RunEventKind_RUN_EVENT_KIND_UNSPECIFIED RunEventKind = 0
+	// RunEvent.text is a chunk to append, not the text so far.
 	RunEventKind_RUN_EVENT_KIND_ASSISTANT_DELTA    RunEventKind = 1
 	RunEventKind_RUN_EVENT_KIND_TOOL_CALL          RunEventKind = 2
 	RunEventKind_RUN_EVENT_KIND_TOOL_RESULT        RunEventKind = 3
@@ -9282,7 +9288,7 @@ type RunEvent struct {
 	At               *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=at,proto3" json:"at,omitempty"`
 	Kind             RunEventKind           `protobuf:"varint,3,opt,name=kind,proto3,enum=tank.agentctl.v1.RunEventKind" json:"kind,omitempty"`
 	SdkSessionId     string                 `protobuf:"bytes,4,opt,name=sdk_session_id,json=sdkSessionId,proto3" json:"sdk_session_id,omitempty"`
-	Text             string                 `protobuf:"bytes,5,opt,name=text,proto3" json:"text,omitempty"`                         // assistant_delta text, status, log line
+	Text             string                 `protobuf:"bytes,5,opt,name=text,proto3" json:"text,omitempty"`                         // assistant_delta chunk (appended, not cumulative), status, log line
 	ToolName         string                 `protobuf:"bytes,6,opt,name=tool_name,json=toolName,proto3" json:"tool_name,omitempty"` // tool_call / tool_result / permission_request
 	ToolUseId        string                 `protobuf:"bytes,7,opt,name=tool_use_id,json=toolUseId,proto3" json:"tool_use_id,omitempty"`
 	ToolInput        *structpb.Struct       `protobuf:"bytes,8,opt,name=tool_input,json=toolInput,proto3" json:"tool_input,omitempty"`

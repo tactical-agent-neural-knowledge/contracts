@@ -134,5 +134,10 @@ message ServerFrame {
     tank.events.v1.CanvasEditing canvas_editing = 10;
     tank.events.v1.BoardPointer board_pointer = 11;
     tank.events.v1.PreparationUpdate preparation = 12;
+    // Live agent output. Sent only for threads the connection is subscribed to, and only
+    // to a user whose Preferences.live_agent_stream is on. The same frame on every
+    // client. Resume does not replay it: after a reconnect, drop partial text and wait
+    // for the stored message (GetRunStreamTail shows what was said so far).
+    tank.events.v1.AgentStreamDelta agent_stream = 13;
   }
 }

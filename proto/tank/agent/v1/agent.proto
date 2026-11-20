@@ -233,6 +233,20 @@ message RenewRunTokenResponse {
   google.protobuf.Timestamp token_expires_at = 2;
 }
 
+// The live output of a run so far, for a person who opens the thread or turns
+// Preferences.live_agent_stream on mid-run, on any device. Same assistant text and
+// status only as AgentStreamDelta, never tool input or output. The control plane keeps a
+// bounded in-memory tail while the run is live; a finished run has an empty tail and
+// the stored message is the record.
+message GetRunStreamTailRequest {
+  string run_id = 1;
+}
+message GetRunStreamTailResponse {
+  string text = 1;       // assistant text so far in the current turn
+  string status = 2;     // the latest status line, empty if none
+  uint64 last_seq = 3;   // seq of the last delta included; continue from last_seq + 1
+}
+
 message SetStatusRequest {
   string run_id = 1;
   RunState state = 2;
@@ -701,6 +715,7 @@ service AgentService {
   rpc StopRun(StopRunRequest) returns (StopRunResponse);
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
   rpc RenewRunToken(RenewRunTokenRequest) returns (RenewRunTokenResponse);
+  rpc GetRunStreamTail(GetRunStreamTailRequest) returns (GetRunStreamTailResponse);
   rpc SetStatus(SetStatusRequest) returns (SetStatusResponse);
   // A product's brand and landing page, set by the run working in it (an agenture only).
   rpc SetProductBrand(SetProductBrandRequest) returns (SetProductBrandResponse);

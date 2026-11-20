@@ -15,6 +15,7 @@ from tank.task.v1 import task_pb2 as _task_pb2
 from tank.topo.v1 import topo_pb2 as _topo_pb2
 from tank.workspace.v1 import workspace_pb2 as _workspace_pb2
 from google.protobuf.internal import containers as _containers
+from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
@@ -274,6 +275,34 @@ class PreferencesUpdated(_message.Message):
     user_id: str
     preferences: _workspace_pb2.Preferences
     def __init__(self, user_id: _Optional[str] = ..., preferences: _Optional[_Union[_workspace_pb2.Preferences, _Mapping]] = ...) -> None: ...
+
+class AgentStreamDelta(_message.Message):
+    __slots__ = ("channel_id", "thread_root_id", "run_id", "seq", "kind", "text", "reset")
+    class Kind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+        __slots__ = ()
+        KIND_UNSPECIFIED: _ClassVar[AgentStreamDelta.Kind]
+        KIND_TEXT: _ClassVar[AgentStreamDelta.Kind]
+        KIND_STATUS: _ClassVar[AgentStreamDelta.Kind]
+        KIND_END: _ClassVar[AgentStreamDelta.Kind]
+    KIND_UNSPECIFIED: AgentStreamDelta.Kind
+    KIND_TEXT: AgentStreamDelta.Kind
+    KIND_STATUS: AgentStreamDelta.Kind
+    KIND_END: AgentStreamDelta.Kind
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    SEQ_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    RESET_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    thread_root_id: str
+    run_id: str
+    seq: int
+    kind: AgentStreamDelta.Kind
+    text: str
+    reset: bool
+    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., run_id: _Optional[str] = ..., seq: _Optional[int] = ..., kind: _Optional[_Union[AgentStreamDelta.Kind, str]] = ..., text: _Optional[str] = ..., reset: bool = ...) -> None: ...
 
 class ChannelPreferenceUpdated(_message.Message):
     __slots__ = ("user_id", "read_state")
