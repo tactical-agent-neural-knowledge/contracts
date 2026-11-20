@@ -55,7 +55,7 @@ ART_KIND_ICON: ArtKind
 ART_KIND_EMOJI: ArtKind
 
 class Workspace(_message.Message):
-    __slots__ = ("id", "slug", "name", "icon_url", "created_at", "theme", "icon_file_id")
+    __slots__ = ("id", "slug", "name", "icon_url", "created_at", "theme", "icon_file_id", "neural_involvement")
     ID_FIELD_NUMBER: _ClassVar[int]
     SLUG_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
@@ -63,6 +63,7 @@ class Workspace(_message.Message):
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     THEME_FIELD_NUMBER: _ClassVar[int]
     ICON_FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    NEURAL_INVOLVEMENT_FIELD_NUMBER: _ClassVar[int]
     id: str
     slug: str
     name: str
@@ -70,7 +71,8 @@ class Workspace(_message.Message):
     created_at: _timestamp_pb2.Timestamp
     theme: Theme
     icon_file_id: str
-    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., icon_url: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., theme: _Optional[_Union[Theme, _Mapping]] = ..., icon_file_id: _Optional[str] = ...) -> None: ...
+    neural_involvement: int
+    def __init__(self, id: _Optional[str] = ..., slug: _Optional[str] = ..., name: _Optional[str] = ..., icon_url: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., theme: _Optional[_Union[Theme, _Mapping]] = ..., icon_file_id: _Optional[str] = ..., neural_involvement: _Optional[int] = ...) -> None: ...
 
 class Theme(_message.Message):
     __slots__ = ("description", "name", "scheme", "primary", "secondary", "background", "surface", "on_surface", "accent")
@@ -985,6 +987,20 @@ class SetWorkspaceThemeRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ..., theme: _Optional[_Union[Theme, _Mapping]] = ...) -> None: ...
 
 class SetWorkspaceThemeResponse(_message.Message):
+    __slots__ = ("workspace",)
+    WORKSPACE_FIELD_NUMBER: _ClassVar[int]
+    workspace: Workspace
+    def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ...) -> None: ...
+
+class SetNeuralInvolvementRequest(_message.Message):
+    __slots__ = ("workspace_id", "level")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    LEVEL_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    level: int
+    def __init__(self, workspace_id: _Optional[str] = ..., level: _Optional[int] = ...) -> None: ...
+
+class SetNeuralInvolvementResponse(_message.Message):
     __slots__ = ("workspace",)
     WORKSPACE_FIELD_NUMBER: _ClassVar[int]
     workspace: Workspace
