@@ -281,6 +281,22 @@ class RenewRunTokenResponse(_message.Message):
     token_expires_at: _timestamp_pb2.Timestamp
     def __init__(self, agent_session_token: _Optional[str] = ..., token_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
+class GetRunStreamTailRequest(_message.Message):
+    __slots__ = ("run_id",)
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    def __init__(self, run_id: _Optional[str] = ...) -> None: ...
+
+class GetRunStreamTailResponse(_message.Message):
+    __slots__ = ("text", "status", "last_seq")
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    LAST_SEQ_FIELD_NUMBER: _ClassVar[int]
+    text: str
+    status: str
+    last_seq: int
+    def __init__(self, text: _Optional[str] = ..., status: _Optional[str] = ..., last_seq: _Optional[int] = ...) -> None: ...
+
 class SetStatusRequest(_message.Message):
     __slots__ = ("run_id", "state", "status", "branch", "pr_url", "cost_usd")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
