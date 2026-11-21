@@ -201,6 +201,26 @@ message RenewRunTokenResponse {
 // status only as AgentStreamDelta, never tool input or output. The control plane keeps a
 // bounded in-memory tail while the run is live; a finished run has an empty tail and
 // the stored message is the record.
+// One piece of a run's live output, handed to the api by the control plane (called with the
+// run's own token) to fan out as AgentStreamDelta and to fold into GetRunStreamTail. Only
+// assistant text and status lines are ever sent; tool input and output never are. The
+// control plane has already scrubbed the text. Best effort: the api may drop what it
+// cannot place, and a run that has ended is not an error.
+enum RunStreamKind {
+  RUN_STREAM_KIND_UNSPECIFIED = 0;
+  RUN_STREAM_KIND_TEXT = 1;   // text is a chunk of the assistant's reply to append
+  RUN_STREAM_KIND_STATUS = 2; // text is a status line replacing the previous one
+  RUN_STREAM_KIND_END = 3;    // the turn's output is complete
+}
+message PublishRunStreamRequest {
+  string run_id = 1;
+  uint64 seq = 2;            // per run, starting at 1, assigned by the control plane
+  RunStreamKind kind = 3;
+  string text = 4;
+  bool reset = 5;            // a new turn begins: clear the partial text first
+}
+message PublishRunStreamResponse {}
+
 message GetRunStreamTailRequest {
   string run_id = 1;
 }
@@ -679,6 +699,7 @@ service AgentService {
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
   rpc RenewRunToken(RenewRunTokenRequest) returns (RenewRunTokenResponse);
   rpc GetRunStreamTail(GetRunStreamTailRequest) returns (GetRunStreamTailResponse);
+  rpc PublishRunStream(PublishRunStreamRequest) returns (PublishRunStreamResponse);
   rpc SetStatus(SetStatusRequest) returns (SetStatusResponse);
   // A product's brand and landing page, set by the run working in it (an agenture only).
   rpc SetProductBrand(SetProductBrandRequest) returns (SetProductBrandResponse);

@@ -56,6 +56,9 @@ const (
 	// AgentServiceGetRunStreamTailProcedure is the fully-qualified name of the AgentService's
 	// GetRunStreamTail RPC.
 	AgentServiceGetRunStreamTailProcedure = "/tank.agent.v1.AgentService/GetRunStreamTail"
+	// AgentServicePublishRunStreamProcedure is the fully-qualified name of the AgentService's
+	// PublishRunStream RPC.
+	AgentServicePublishRunStreamProcedure = "/tank.agent.v1.AgentService/PublishRunStream"
 	// AgentServiceSetStatusProcedure is the fully-qualified name of the AgentService's SetStatus RPC.
 	AgentServiceSetStatusProcedure = "/tank.agent.v1.AgentService/SetStatus"
 	// AgentServiceSetProductBrandProcedure is the fully-qualified name of the AgentService's
@@ -129,6 +132,7 @@ type AgentServiceClient interface {
 	Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error)
 	RenewRunToken(context.Context, *connect.Request[v1.RenewRunTokenRequest]) (*connect.Response[v1.RenewRunTokenResponse], error)
 	GetRunStreamTail(context.Context, *connect.Request[v1.GetRunStreamTailRequest]) (*connect.Response[v1.GetRunStreamTailResponse], error)
+	PublishRunStream(context.Context, *connect.Request[v1.PublishRunStreamRequest]) (*connect.Response[v1.PublishRunStreamResponse], error)
 	SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error)
 	// A product's brand and landing page, set by the run working in it (an agenture only).
 	SetProductBrand(context.Context, *connect.Request[v1.SetProductBrandRequest]) (*connect.Response[v1.SetProductBrandResponse], error)
@@ -231,6 +235,12 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			httpClient,
 			baseURL+AgentServiceGetRunStreamTailProcedure,
 			connect.WithSchema(agentServiceMethods.ByName("GetRunStreamTail")),
+			connect.WithClientOptions(opts...),
+		),
+		publishRunStream: connect.NewClient[v1.PublishRunStreamRequest, v1.PublishRunStreamResponse](
+			httpClient,
+			baseURL+AgentServicePublishRunStreamProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("PublishRunStream")),
 			connect.WithClientOptions(opts...),
 		),
 		setStatus: connect.NewClient[v1.SetStatusRequest, v1.SetStatusResponse](
@@ -379,6 +389,7 @@ type agentServiceClient struct {
 	heartbeat                 *connect.Client[v1.HeartbeatRequest, v1.HeartbeatResponse]
 	renewRunToken             *connect.Client[v1.RenewRunTokenRequest, v1.RenewRunTokenResponse]
 	getRunStreamTail          *connect.Client[v1.GetRunStreamTailRequest, v1.GetRunStreamTailResponse]
+	publishRunStream          *connect.Client[v1.PublishRunStreamRequest, v1.PublishRunStreamResponse]
 	setStatus                 *connect.Client[v1.SetStatusRequest, v1.SetStatusResponse]
 	setProductBrand           *connect.Client[v1.SetProductBrandRequest, v1.SetProductBrandResponse]
 	setProductLanding         *connect.Client[v1.SetProductLandingRequest, v1.SetProductLandingResponse]
@@ -446,6 +457,11 @@ func (c *agentServiceClient) RenewRunToken(ctx context.Context, req *connect.Req
 // GetRunStreamTail calls tank.agent.v1.AgentService.GetRunStreamTail.
 func (c *agentServiceClient) GetRunStreamTail(ctx context.Context, req *connect.Request[v1.GetRunStreamTailRequest]) (*connect.Response[v1.GetRunStreamTailResponse], error) {
 	return c.getRunStreamTail.CallUnary(ctx, req)
+}
+
+// PublishRunStream calls tank.agent.v1.AgentService.PublishRunStream.
+func (c *agentServiceClient) PublishRunStream(ctx context.Context, req *connect.Request[v1.PublishRunStreamRequest]) (*connect.Response[v1.PublishRunStreamResponse], error) {
+	return c.publishRunStream.CallUnary(ctx, req)
 }
 
 // SetStatus calls tank.agent.v1.AgentService.SetStatus.
@@ -569,6 +585,7 @@ type AgentServiceHandler interface {
 	Heartbeat(context.Context, *connect.Request[v1.HeartbeatRequest]) (*connect.Response[v1.HeartbeatResponse], error)
 	RenewRunToken(context.Context, *connect.Request[v1.RenewRunTokenRequest]) (*connect.Response[v1.RenewRunTokenResponse], error)
 	GetRunStreamTail(context.Context, *connect.Request[v1.GetRunStreamTailRequest]) (*connect.Response[v1.GetRunStreamTailResponse], error)
+	PublishRunStream(context.Context, *connect.Request[v1.PublishRunStreamRequest]) (*connect.Response[v1.PublishRunStreamResponse], error)
 	SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error)
 	// A product's brand and landing page, set by the run working in it (an agenture only).
 	SetProductBrand(context.Context, *connect.Request[v1.SetProductBrandRequest]) (*connect.Response[v1.SetProductBrandResponse], error)
@@ -667,6 +684,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		AgentServiceGetRunStreamTailProcedure,
 		svc.GetRunStreamTail,
 		connect.WithSchema(agentServiceMethods.ByName("GetRunStreamTail")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServicePublishRunStreamHandler := connect.NewUnaryHandler(
+		AgentServicePublishRunStreamProcedure,
+		svc.PublishRunStream,
+		connect.WithSchema(agentServiceMethods.ByName("PublishRunStream")),
 		connect.WithHandlerOptions(opts...),
 	)
 	agentServiceSetStatusHandler := connect.NewUnaryHandler(
@@ -821,6 +844,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceRenewRunTokenHandler.ServeHTTP(w, r)
 		case AgentServiceGetRunStreamTailProcedure:
 			agentServiceGetRunStreamTailHandler.ServeHTTP(w, r)
+		case AgentServicePublishRunStreamProcedure:
+			agentServicePublishRunStreamHandler.ServeHTTP(w, r)
 		case AgentServiceSetStatusProcedure:
 			agentServiceSetStatusHandler.ServeHTTP(w, r)
 		case AgentServiceSetProductBrandProcedure:
@@ -908,6 +933,10 @@ func (UnimplementedAgentServiceHandler) RenewRunToken(context.Context, *connect.
 
 func (UnimplementedAgentServiceHandler) GetRunStreamTail(context.Context, *connect.Request[v1.GetRunStreamTailRequest]) (*connect.Response[v1.GetRunStreamTailResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.GetRunStreamTail is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) PublishRunStream(context.Context, *connect.Request[v1.PublishRunStreamRequest]) (*connect.Response[v1.PublishRunStreamResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.PublishRunStream is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) SetStatus(context.Context, *connect.Request[v1.SetStatusRequest]) (*connect.Response[v1.SetStatusResponse], error) {
