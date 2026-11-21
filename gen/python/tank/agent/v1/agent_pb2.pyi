@@ -31,11 +31,20 @@ class RunState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     RUN_STATE_BLOCKED: _ClassVar[RunState]
     RUN_STATE_AWAITING_ANSWER: _ClassVar[RunState]
 
+class AgentKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    AGENT_KIND_UNSPECIFIED: _ClassVar[AgentKind]
+    AGENT_KIND_WORKSPACE: _ClassVar[AgentKind]
+    AGENT_KIND_CREW: _ClassVar[AgentKind]
+    AGENT_KIND_NEURAL: _ClassVar[AgentKind]
+
 class RunRefusalReason(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     RUN_REFUSAL_REASON_UNSPECIFIED: _ClassVar[RunRefusalReason]
     RUN_REFUSAL_REASON_FREE_PLAN: _ClassVar[RunRefusalReason]
     RUN_REFUSAL_REASON_OUT_OF_FUNDS: _ClassVar[RunRefusalReason]
+    RUN_REFUSAL_REASON_PREMIUM_ONLY_AGENT: _ClassVar[RunRefusalReason]
+    RUN_REFUSAL_REASON_MODEL_UNAVAILABLE: _ClassVar[RunRefusalReason]
 
 class RunRefusalAction(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -79,9 +88,15 @@ RUN_STATE_TIMED_OUT: RunState
 RUN_STATE_APPROVAL_EXPIRED: RunState
 RUN_STATE_BLOCKED: RunState
 RUN_STATE_AWAITING_ANSWER: RunState
+AGENT_KIND_UNSPECIFIED: AgentKind
+AGENT_KIND_WORKSPACE: AgentKind
+AGENT_KIND_CREW: AgentKind
+AGENT_KIND_NEURAL: AgentKind
 RUN_REFUSAL_REASON_UNSPECIFIED: RunRefusalReason
 RUN_REFUSAL_REASON_FREE_PLAN: RunRefusalReason
 RUN_REFUSAL_REASON_OUT_OF_FUNDS: RunRefusalReason
+RUN_REFUSAL_REASON_PREMIUM_ONLY_AGENT: RunRefusalReason
+RUN_REFUSAL_REASON_MODEL_UNAVAILABLE: RunRefusalReason
 RUN_REFUSAL_ACTION_UNSPECIFIED: RunRefusalAction
 RUN_REFUSAL_ACTION_UPGRADE: RunRefusalAction
 RUN_REFUSAL_ACTION_REFILL: RunRefusalAction
@@ -97,7 +112,7 @@ PLAN_ITEM_STATUS_NEEDS_PERSON: PlanItemStatus
 PLAN_ITEM_STATUS_DROPPED: PlanItemStatus
 
 class Agent(_message.Message):
-    __slots__ = ("id", "workspace_id", "principal_id", "name", "scopes", "title", "skill")
+    __slots__ = ("id", "workspace_id", "principal_id", "name", "scopes", "title", "skill", "kind", "model", "model_pinned", "min_plan")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     PRINCIPAL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -105,6 +120,10 @@ class Agent(_message.Message):
     SCOPES_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     SKILL_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    MODEL_FIELD_NUMBER: _ClassVar[int]
+    MODEL_PINNED_FIELD_NUMBER: _ClassVar[int]
+    MIN_PLAN_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     principal_id: str
@@ -112,7 +131,11 @@ class Agent(_message.Message):
     scopes: _containers.RepeatedScalarFieldContainer[str]
     title: str
     skill: str
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., principal_id: _Optional[str] = ..., name: _Optional[str] = ..., scopes: _Optional[_Iterable[str]] = ..., title: _Optional[str] = ..., skill: _Optional[str] = ...) -> None: ...
+    kind: AgentKind
+    model: str
+    model_pinned: bool
+    min_plan: str
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., principal_id: _Optional[str] = ..., name: _Optional[str] = ..., scopes: _Optional[_Iterable[str]] = ..., title: _Optional[str] = ..., skill: _Optional[str] = ..., kind: _Optional[_Union[AgentKind, str]] = ..., model: _Optional[str] = ..., model_pinned: bool = ..., min_plan: _Optional[str] = ...) -> None: ...
 
 class Run(_message.Message):
     __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "state", "branch", "pr_url", "cost_usd", "status_message_id", "started_at", "ended_at", "plan_hash", "pending_gate_id", "prepared", "acked_at", "sandbox_ready_at", "first_reply_at")
