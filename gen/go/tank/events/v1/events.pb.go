@@ -1654,9 +1654,8 @@ func (x *PreferencesUpdated) GetPreferences() *v14.Preferences {
 	return nil
 }
 
-// thread_live_stream.updated on evt.{ws}.user.{uid}: cross-device sync of one person's
-// live-agent-output setting for one thread, so the thread-header toggle reads the same on
-// every device. setting.enabled=false means the setting is off (no stored row).
+// thread_live_stream.updated on evt.{ws}.user.{uid}: the person's live output setting for
+// one thread, so the toggle reads the same on every device.
 type ThreadLiveStreamUpdated struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -1713,7 +1712,7 @@ func (x *ThreadLiveStreamUpdated) GetSetting() *v14.ThreadLiveStream {
 // (ServerFrame.agent_stream). Never stored, never replayed, never an Envelope on the bus
 // history: the stored message is the record and always wins. Carries only assistant text
 // and status lines, never tool input or output. Sent only to users whose setting for this
-// thread (channel_id plus thread_root_id) is on; see tank.workspace.v1.ThreadLiveStream.
+// thread (channel_id plus thread_root_id) is on.
 type AgentStreamDelta struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
 	ChannelId    string                 `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`

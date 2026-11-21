@@ -96,9 +96,6 @@ const (
 	// WorkspaceServiceGetThreadLiveStreamProcedure is the fully-qualified name of the
 	// WorkspaceService's GetThreadLiveStream RPC.
 	WorkspaceServiceGetThreadLiveStreamProcedure = "/tank.workspace.v1.WorkspaceService/GetThreadLiveStream"
-	// WorkspaceServiceListThreadLiveStreamsProcedure is the fully-qualified name of the
-	// WorkspaceService's ListThreadLiveStreams RPC.
-	WorkspaceServiceListThreadLiveStreamsProcedure = "/tank.workspace.v1.WorkspaceService/ListThreadLiveStreams"
 	// WorkspaceServiceGetModelNoticeProcedure is the fully-qualified name of the WorkspaceService's
 	// GetModelNotice RPC.
 	WorkspaceServiceGetModelNoticeProcedure = "/tank.workspace.v1.WorkspaceService/GetModelNotice"
@@ -210,23 +207,16 @@ type WorkspaceServiceClient interface {
 	UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error)
 	GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error)
 	UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error)
-	// Deprecated: live agent output is now a per-thread setting, see SetThreadLiveStream.
-	// The stored value is ignored for fan-out. Kept on the wire until every client has
-	// shipped without it, then removed and reserved in a later change.
+	// Deprecated: the workspace-wide switch, ignored for fan-out. Use SetThreadLiveStream.
 	//
 	// Deprecated: do not use.
 	SetLiveAgentStream(context.Context, *connect.Request[v1.SetLiveAgentStreamRequest]) (*connect.Response[v1.SetLiveAgentStreamResponse], error)
-	// Turns live agent output on or off for the caller in one thread, leaving every other
-	// thread as stored. The thread-header toggle on every platform calls this and nothing
-	// else; emits thread_live_stream.updated. Off is the default and is stored as no row,
-	// so turning it off deletes the caller's row for that thread.
+	// Turns live agent output on or off for the caller in one thread. The thread-header
+	// toggle on every platform calls this; emits thread_live_stream.updated. Turning it off
+	// removes the stored row.
 	SetThreadLiveStream(context.Context, *connect.Request[v1.SetThreadLiveStreamRequest]) (*connect.Response[v1.SetThreadLiveStreamResponse], error)
-	// The caller's setting for one thread, for a client that opens it. A thread the
-	// caller never set returns enabled=false.
+	// The caller's setting for one thread, for a client that opens it.
 	GetThreadLiveStream(context.Context, *connect.Request[v1.GetThreadLiveStreamRequest]) (*connect.Response[v1.GetThreadLiveStreamResponse], error)
-	// Every thread the caller has live output on for, in one call, for the realtime
-	// gateway and for clients at start-up. Threads that are off are not listed.
-	ListThreadLiveStreams(context.Context, *connect.Request[v1.ListThreadLiveStreamsRequest]) (*connect.Response[v1.ListThreadLiveStreamsResponse], error)
 	// A new model's notice, shown once per person at the top of the workspace until they
 	// dismiss it; owners and admins answer the data question for the workspace in place.
 	GetModelNotice(context.Context, *connect.Request[v1.GetModelNoticeRequest]) (*connect.Response[v1.GetModelNoticeResponse], error)
@@ -400,12 +390,6 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			httpClient,
 			baseURL+WorkspaceServiceGetThreadLiveStreamProcedure,
 			connect.WithSchema(workspaceServiceMethods.ByName("GetThreadLiveStream")),
-			connect.WithClientOptions(opts...),
-		),
-		listThreadLiveStreams: connect.NewClient[v1.ListThreadLiveStreamsRequest, v1.ListThreadLiveStreamsResponse](
-			httpClient,
-			baseURL+WorkspaceServiceListThreadLiveStreamsProcedure,
-			connect.WithSchema(workspaceServiceMethods.ByName("ListThreadLiveStreams")),
 			connect.WithClientOptions(opts...),
 		),
 		getModelNotice: connect.NewClient[v1.GetModelNoticeRequest, v1.GetModelNoticeResponse](
@@ -608,7 +592,6 @@ type workspaceServiceClient struct {
 	setLiveAgentStream     *connect.Client[v1.SetLiveAgentStreamRequest, v1.SetLiveAgentStreamResponse]
 	setThreadLiveStream    *connect.Client[v1.SetThreadLiveStreamRequest, v1.SetThreadLiveStreamResponse]
 	getThreadLiveStream    *connect.Client[v1.GetThreadLiveStreamRequest, v1.GetThreadLiveStreamResponse]
-	listThreadLiveStreams  *connect.Client[v1.ListThreadLiveStreamsRequest, v1.ListThreadLiveStreamsResponse]
 	getModelNotice         *connect.Client[v1.GetModelNoticeRequest, v1.GetModelNoticeResponse]
 	dismissModelNotice     *connect.Client[v1.DismissModelNoticeRequest, v1.DismissModelNoticeResponse]
 	setTrainingConsent     *connect.Client[v1.SetTrainingConsentRequest, v1.SetTrainingConsentResponse]
@@ -745,11 +728,6 @@ func (c *workspaceServiceClient) SetThreadLiveStream(ctx context.Context, req *c
 // GetThreadLiveStream calls tank.workspace.v1.WorkspaceService.GetThreadLiveStream.
 func (c *workspaceServiceClient) GetThreadLiveStream(ctx context.Context, req *connect.Request[v1.GetThreadLiveStreamRequest]) (*connect.Response[v1.GetThreadLiveStreamResponse], error) {
 	return c.getThreadLiveStream.CallUnary(ctx, req)
-}
-
-// ListThreadLiveStreams calls tank.workspace.v1.WorkspaceService.ListThreadLiveStreams.
-func (c *workspaceServiceClient) ListThreadLiveStreams(ctx context.Context, req *connect.Request[v1.ListThreadLiveStreamsRequest]) (*connect.Response[v1.ListThreadLiveStreamsResponse], error) {
-	return c.listThreadLiveStreams.CallUnary(ctx, req)
 }
 
 // GetModelNotice calls tank.workspace.v1.WorkspaceService.GetModelNotice.
@@ -919,23 +897,16 @@ type WorkspaceServiceHandler interface {
 	UpdateProfile(context.Context, *connect.Request[v1.UpdateProfileRequest]) (*connect.Response[v1.UpdateProfileResponse], error)
 	GetPreferences(context.Context, *connect.Request[v1.GetPreferencesRequest]) (*connect.Response[v1.GetPreferencesResponse], error)
 	UpdatePreferences(context.Context, *connect.Request[v1.UpdatePreferencesRequest]) (*connect.Response[v1.UpdatePreferencesResponse], error)
-	// Deprecated: live agent output is now a per-thread setting, see SetThreadLiveStream.
-	// The stored value is ignored for fan-out. Kept on the wire until every client has
-	// shipped without it, then removed and reserved in a later change.
+	// Deprecated: the workspace-wide switch, ignored for fan-out. Use SetThreadLiveStream.
 	//
 	// Deprecated: do not use.
 	SetLiveAgentStream(context.Context, *connect.Request[v1.SetLiveAgentStreamRequest]) (*connect.Response[v1.SetLiveAgentStreamResponse], error)
-	// Turns live agent output on or off for the caller in one thread, leaving every other
-	// thread as stored. The thread-header toggle on every platform calls this and nothing
-	// else; emits thread_live_stream.updated. Off is the default and is stored as no row,
-	// so turning it off deletes the caller's row for that thread.
+	// Turns live agent output on or off for the caller in one thread. The thread-header
+	// toggle on every platform calls this; emits thread_live_stream.updated. Turning it off
+	// removes the stored row.
 	SetThreadLiveStream(context.Context, *connect.Request[v1.SetThreadLiveStreamRequest]) (*connect.Response[v1.SetThreadLiveStreamResponse], error)
-	// The caller's setting for one thread, for a client that opens it. A thread the
-	// caller never set returns enabled=false.
+	// The caller's setting for one thread, for a client that opens it.
 	GetThreadLiveStream(context.Context, *connect.Request[v1.GetThreadLiveStreamRequest]) (*connect.Response[v1.GetThreadLiveStreamResponse], error)
-	// Every thread the caller has live output on for, in one call, for the realtime
-	// gateway and for clients at start-up. Threads that are off are not listed.
-	ListThreadLiveStreams(context.Context, *connect.Request[v1.ListThreadLiveStreamsRequest]) (*connect.Response[v1.ListThreadLiveStreamsResponse], error)
 	// A new model's notice, shown once per person at the top of the workspace until they
 	// dismiss it; owners and admins answer the data question for the workspace in place.
 	GetModelNotice(context.Context, *connect.Request[v1.GetModelNoticeRequest]) (*connect.Response[v1.GetModelNoticeResponse], error)
@@ -1105,12 +1076,6 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 		WorkspaceServiceGetThreadLiveStreamProcedure,
 		svc.GetThreadLiveStream,
 		connect.WithSchema(workspaceServiceMethods.ByName("GetThreadLiveStream")),
-		connect.WithHandlerOptions(opts...),
-	)
-	workspaceServiceListThreadLiveStreamsHandler := connect.NewUnaryHandler(
-		WorkspaceServiceListThreadLiveStreamsProcedure,
-		svc.ListThreadLiveStreams,
-		connect.WithSchema(workspaceServiceMethods.ByName("ListThreadLiveStreams")),
 		connect.WithHandlerOptions(opts...),
 	)
 	workspaceServiceGetModelNoticeHandler := connect.NewUnaryHandler(
@@ -1331,8 +1296,6 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 			workspaceServiceSetThreadLiveStreamHandler.ServeHTTP(w, r)
 		case WorkspaceServiceGetThreadLiveStreamProcedure:
 			workspaceServiceGetThreadLiveStreamHandler.ServeHTTP(w, r)
-		case WorkspaceServiceListThreadLiveStreamsProcedure:
-			workspaceServiceListThreadLiveStreamsHandler.ServeHTTP(w, r)
 		case WorkspaceServiceGetModelNoticeProcedure:
 			workspaceServiceGetModelNoticeHandler.ServeHTTP(w, r)
 		case WorkspaceServiceDismissModelNoticeProcedure:
@@ -1482,10 +1445,6 @@ func (UnimplementedWorkspaceServiceHandler) SetThreadLiveStream(context.Context,
 
 func (UnimplementedWorkspaceServiceHandler) GetThreadLiveStream(context.Context, *connect.Request[v1.GetThreadLiveStreamRequest]) (*connect.Response[v1.GetThreadLiveStreamResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.GetThreadLiveStream is not implemented"))
-}
-
-func (UnimplementedWorkspaceServiceHandler) ListThreadLiveStreams(context.Context, *connect.Request[v1.ListThreadLiveStreamsRequest]) (*connect.Response[v1.ListThreadLiveStreamsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.ListThreadLiveStreams is not implemented"))
 }
 
 func (UnimplementedWorkspaceServiceHandler) GetModelNotice(context.Context, *connect.Request[v1.GetModelNoticeRequest]) (*connect.Response[v1.GetModelNoticeResponse], error) {
