@@ -10,6 +10,7 @@ from tank.guardrails.v1 import guardrails_pb2 as _guardrails_pb2
 from tank.infra.v1 import infra_pb2 as _infra_pb2
 from tank.neural.v1 import neural_pb2 as _neural_pb2
 from tank.social.v1 import social_pb2 as _social_pb2
+from tank.workspace.v1 import workspace_pb2 as _workspace_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
@@ -136,7 +137,7 @@ class ApprovedPlan(_message.Message):
     def __init__(self, plan_hash: _Optional[str] = ..., summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[_blocks_pb2.PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., approved_by: _Optional[str] = ..., approved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback: _Optional[str] = ...) -> None: ...
 
 class RunContext(_message.Message):
-    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan", "mode", "team", "parent_run_id", "handoff", "envelope_left", "git_proxy_url", "guardrails", "infra_connections", "test_logins")
+    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan", "mode", "team", "parent_run_id", "handoff", "envelope_left", "git_proxy_url", "guardrails", "infra_connections", "test_logins", "standby")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -178,6 +179,7 @@ class RunContext(_message.Message):
     GUARDRAILS_FIELD_NUMBER: _ClassVar[int]
     INFRA_CONNECTIONS_FIELD_NUMBER: _ClassVar[int]
     TEST_LOGINS_FIELD_NUMBER: _ClassVar[int]
+    STANDBY_FIELD_NUMBER: _ClassVar[int]
     run_id: str
     workspace_id: str
     channel_id: str
@@ -219,7 +221,8 @@ class RunContext(_message.Message):
     guardrails: _containers.RepeatedCompositeFieldContainer[_guardrails_pb2.Guardrail]
     infra_connections: _containers.RepeatedCompositeFieldContainer[InfraConnectionBrief]
     test_logins: _containers.RepeatedCompositeFieldContainer[TestLoginBrief]
-    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ..., git_proxy_url: _Optional[str] = ..., guardrails: _Optional[_Iterable[_Union[_guardrails_pb2.Guardrail, _Mapping]]] = ..., infra_connections: _Optional[_Iterable[_Union[InfraConnectionBrief, _Mapping]]] = ..., test_logins: _Optional[_Iterable[_Union[TestLoginBrief, _Mapping]]] = ...) -> None: ...
+    standby: bool
+    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ..., git_proxy_url: _Optional[str] = ..., guardrails: _Optional[_Iterable[_Union[_guardrails_pb2.Guardrail, _Mapping]]] = ..., infra_connections: _Optional[_Iterable[_Union[InfraConnectionBrief, _Mapping]]] = ..., test_logins: _Optional[_Iterable[_Union[TestLoginBrief, _Mapping]]] = ..., standby: bool = ...) -> None: ...
 
 class TeamContext(_message.Message):
     __slots__ = ("team_id", "name", "handle", "purpose", "members", "member_id", "coordinator", "board_id", "paused", "cap_note", "memory")
@@ -1765,8 +1768,22 @@ class PollInboxResponse(_message.Message):
     items: _containers.RepeatedCompositeFieldContainer[InboxItem]
     def __init__(self, items: _Optional[_Iterable[_Union[InboxItem, _Mapping]]] = ...) -> None: ...
 
+class AwaitStartRequest(_message.Message):
+    __slots__ = ("wait_ms",)
+    WAIT_MS_FIELD_NUMBER: _ClassVar[int]
+    wait_ms: int
+    def __init__(self, wait_ms: _Optional[int] = ...) -> None: ...
+
+class AwaitStartResponse(_message.Message):
+    __slots__ = ("state", "context")
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    CONTEXT_FIELD_NUMBER: _ClassVar[int]
+    state: _workspace_pb2.PreparationState
+    context: RunContext
+    def __init__(self, state: _Optional[_Union[_workspace_pb2.PreparationState, str]] = ..., context: _Optional[_Union[RunContext, _Mapping]] = ...) -> None: ...
+
 class StartRunRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "instructions", "mode", "repo", "skip_neural_knowledge", "envelope_usd", "task_id", "continue_run_id", "note")
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "instructions", "mode", "repo", "skip_neural_knowledge", "envelope_usd", "task_id", "continue_run_id", "note", "preparation_id")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
@@ -1780,6 +1797,7 @@ class StartRunRequest(_message.Message):
     TASK_ID_FIELD_NUMBER: _ClassVar[int]
     CONTINUE_RUN_ID_FIELD_NUMBER: _ClassVar[int]
     NOTE_FIELD_NUMBER: _ClassVar[int]
+    PREPARATION_ID_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     thread_root_id: str
@@ -1793,13 +1811,56 @@ class StartRunRequest(_message.Message):
     task_id: str
     continue_run_id: str
     note: str
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., instructions: _Optional[str] = ..., mode: _Optional[str] = ..., repo: _Optional[str] = ..., skip_neural_knowledge: bool = ..., envelope_usd: _Optional[float] = ..., task_id: _Optional[str] = ..., continue_run_id: _Optional[str] = ..., note: _Optional[str] = ...) -> None: ...
+    preparation_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., instructions: _Optional[str] = ..., mode: _Optional[str] = ..., repo: _Optional[str] = ..., skip_neural_knowledge: bool = ..., envelope_usd: _Optional[float] = ..., task_id: _Optional[str] = ..., continue_run_id: _Optional[str] = ..., note: _Optional[str] = ..., preparation_id: _Optional[str] = ...) -> None: ...
 
 class StartRunResponse(_message.Message):
-    __slots__ = ("run",)
+    __slots__ = ("run", "ack_message_id")
     RUN_FIELD_NUMBER: _ClassVar[int]
+    ACK_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     run: _agent_pb2.Run
-    def __init__(self, run: _Optional[_Union[_agent_pb2.Run, _Mapping]] = ...) -> None: ...
+    ack_message_id: str
+    def __init__(self, run: _Optional[_Union[_agent_pb2.Run, _Mapping]] = ..., ack_message_id: _Optional[str] = ...) -> None: ...
+
+class PrepareRunRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "ttl_seconds")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    AGENT_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    TTL_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    thread_root_id: str
+    agent_id: str
+    requested_by: str
+    ttl_seconds: int
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., ttl_seconds: _Optional[int] = ...) -> None: ...
+
+class PrepareRunResponse(_message.Message):
+    __slots__ = ("preparation_id", "state", "expires_at")
+    PREPARATION_ID_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    preparation_id: str
+    state: _workspace_pb2.PreparationState
+    expires_at: _timestamp_pb2.Timestamp
+    def __init__(self, preparation_id: _Optional[str] = ..., state: _Optional[_Union[_workspace_pb2.PreparationState, str]] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class CancelPreparationRequest(_message.Message):
+    __slots__ = ("preparation_id", "reason")
+    PREPARATION_ID_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    preparation_id: str
+    reason: _workspace_pb2.PreparationState
+    def __init__(self, preparation_id: _Optional[str] = ..., reason: _Optional[_Union[_workspace_pb2.PreparationState, str]] = ...) -> None: ...
+
+class CancelPreparationResponse(_message.Message):
+    __slots__ = ("state",)
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    state: _workspace_pb2.PreparationState
+    def __init__(self, state: _Optional[_Union[_workspace_pb2.PreparationState, str]] = ...) -> None: ...
 
 class GetRunRequest(_message.Message):
     __slots__ = ("run_id",)
