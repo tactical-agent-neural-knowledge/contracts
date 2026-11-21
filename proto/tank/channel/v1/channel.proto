@@ -73,6 +73,10 @@ message Channel {
   string system = 17;
   // The view for people who have not chosen one; a Tread admin sets it.
   ChannelView default_view = 18;
+  // How active @neural is in this Tread unprompted, 0 (off) to 4. Unset follows the workspace.
+  optional int32 neural_involvement_override = 19;
+  // What applies: the override when set, otherwise the workspace's level.
+  int32 neural_involvement = 20;
 }
 
 // Where the viewer has read to in one thread. Served with the bootstrap so a
@@ -218,6 +222,10 @@ message UpdateChannelRequest {
   optional string purpose = 4;
   optional bool read_receipts = 5;
   optional ChannelView default_view = 6;
+  // 0 (off) to 4. Sets this Tread's own level; refused outside the range.
+  optional int32 neural_involvement_override = 7;
+  // Clears the override so the Tread follows the workspace again. Not allowed with an override.
+  bool reset_neural_involvement = 8;
 }
 message UpdateChannelResponse {
   Channel channel = 1;

@@ -105,6 +105,9 @@ const (
 	// WorkspaceServiceSetWorkspaceThemeProcedure is the fully-qualified name of the WorkspaceService's
 	// SetWorkspaceTheme RPC.
 	WorkspaceServiceSetWorkspaceThemeProcedure = "/tank.workspace.v1.WorkspaceService/SetWorkspaceTheme"
+	// WorkspaceServiceSetNeuralInvolvementProcedure is the fully-qualified name of the
+	// WorkspaceService's SetNeuralInvolvement RPC.
+	WorkspaceServiceSetNeuralInvolvementProcedure = "/tank.workspace.v1.WorkspaceService/SetNeuralInvolvement"
 	// WorkspaceServiceGenerateArtProcedure is the fully-qualified name of the WorkspaceService's
 	// GenerateArt RPC.
 	WorkspaceServiceGenerateArtProcedure = "/tank.workspace.v1.WorkspaceService/GenerateArt"
@@ -211,6 +214,8 @@ type WorkspaceServiceClient interface {
 	GenerateTheme(context.Context, *connect.Request[v1.GenerateThemeRequest]) (*connect.Response[v1.GenerateThemeResponse], error)
 	// Admins only: the workspace's theme, or a reset when theme is unset.
 	SetWorkspaceTheme(context.Context, *connect.Request[v1.SetWorkspaceThemeRequest]) (*connect.Response[v1.SetWorkspaceThemeResponse], error)
+	// Admins only: how active @neural is across the workspace, 0 (off) to 4.
+	SetNeuralInvolvement(context.Context, *connect.Request[v1.SetNeuralInvolvementRequest]) (*connect.Response[v1.SetNeuralInvolvementResponse], error)
 	// Turn up to fifteen words into an icon or emoji picture. The file is saved; nothing is applied.
 	GenerateArt(context.Context, *connect.Request[v1.GenerateArtRequest]) (*connect.Response[v1.GenerateArtResponse], error)
 	// Admins only: the workspace icon, or a reset when file_id is empty.
@@ -393,6 +398,12 @@ func NewWorkspaceServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(workspaceServiceMethods.ByName("SetWorkspaceTheme")),
 			connect.WithClientOptions(opts...),
 		),
+		setNeuralInvolvement: connect.NewClient[v1.SetNeuralInvolvementRequest, v1.SetNeuralInvolvementResponse](
+			httpClient,
+			baseURL+WorkspaceServiceSetNeuralInvolvementProcedure,
+			connect.WithSchema(workspaceServiceMethods.ByName("SetNeuralInvolvement")),
+			connect.WithClientOptions(opts...),
+		),
 		generateArt: connect.NewClient[v1.GenerateArtRequest, v1.GenerateArtResponse](
 			httpClient,
 			baseURL+WorkspaceServiceGenerateArtProcedure,
@@ -560,6 +571,7 @@ type workspaceServiceClient struct {
 	setTrainingConsent     *connect.Client[v1.SetTrainingConsentRequest, v1.SetTrainingConsentResponse]
 	generateTheme          *connect.Client[v1.GenerateThemeRequest, v1.GenerateThemeResponse]
 	setWorkspaceTheme      *connect.Client[v1.SetWorkspaceThemeRequest, v1.SetWorkspaceThemeResponse]
+	setNeuralInvolvement   *connect.Client[v1.SetNeuralInvolvementRequest, v1.SetNeuralInvolvementResponse]
 	generateArt            *connect.Client[v1.GenerateArtRequest, v1.GenerateArtResponse]
 	setWorkspaceIcon       *connect.Client[v1.SetWorkspaceIconRequest, v1.SetWorkspaceIconResponse]
 	describeHomeLayout     *connect.Client[v1.DescribeHomeLayoutRequest, v1.DescribeHomeLayoutResponse]
@@ -703,6 +715,11 @@ func (c *workspaceServiceClient) GenerateTheme(ctx context.Context, req *connect
 // SetWorkspaceTheme calls tank.workspace.v1.WorkspaceService.SetWorkspaceTheme.
 func (c *workspaceServiceClient) SetWorkspaceTheme(ctx context.Context, req *connect.Request[v1.SetWorkspaceThemeRequest]) (*connect.Response[v1.SetWorkspaceThemeResponse], error) {
 	return c.setWorkspaceTheme.CallUnary(ctx, req)
+}
+
+// SetNeuralInvolvement calls tank.workspace.v1.WorkspaceService.SetNeuralInvolvement.
+func (c *workspaceServiceClient) SetNeuralInvolvement(ctx context.Context, req *connect.Request[v1.SetNeuralInvolvementRequest]) (*connect.Response[v1.SetNeuralInvolvementResponse], error) {
+	return c.setNeuralInvolvement.CallUnary(ctx, req)
 }
 
 // GenerateArt calls tank.workspace.v1.WorkspaceService.GenerateArt.
@@ -855,6 +872,8 @@ type WorkspaceServiceHandler interface {
 	GenerateTheme(context.Context, *connect.Request[v1.GenerateThemeRequest]) (*connect.Response[v1.GenerateThemeResponse], error)
 	// Admins only: the workspace's theme, or a reset when theme is unset.
 	SetWorkspaceTheme(context.Context, *connect.Request[v1.SetWorkspaceThemeRequest]) (*connect.Response[v1.SetWorkspaceThemeResponse], error)
+	// Admins only: how active @neural is across the workspace, 0 (off) to 4.
+	SetNeuralInvolvement(context.Context, *connect.Request[v1.SetNeuralInvolvementRequest]) (*connect.Response[v1.SetNeuralInvolvementResponse], error)
 	// Turn up to fifteen words into an icon or emoji picture. The file is saved; nothing is applied.
 	GenerateArt(context.Context, *connect.Request[v1.GenerateArtRequest]) (*connect.Response[v1.GenerateArtResponse], error)
 	// Admins only: the workspace icon, or a reset when file_id is empty.
@@ -1031,6 +1050,12 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 		WorkspaceServiceSetWorkspaceThemeProcedure,
 		svc.SetWorkspaceTheme,
 		connect.WithSchema(workspaceServiceMethods.ByName("SetWorkspaceTheme")),
+		connect.WithHandlerOptions(opts...),
+	)
+	workspaceServiceSetNeuralInvolvementHandler := connect.NewUnaryHandler(
+		WorkspaceServiceSetNeuralInvolvementProcedure,
+		svc.SetNeuralInvolvement,
+		connect.WithSchema(workspaceServiceMethods.ByName("SetNeuralInvolvement")),
 		connect.WithHandlerOptions(opts...),
 	)
 	workspaceServiceGenerateArtHandler := connect.NewUnaryHandler(
@@ -1221,6 +1246,8 @@ func NewWorkspaceServiceHandler(svc WorkspaceServiceHandler, opts ...connect.Han
 			workspaceServiceGenerateThemeHandler.ServeHTTP(w, r)
 		case WorkspaceServiceSetWorkspaceThemeProcedure:
 			workspaceServiceSetWorkspaceThemeHandler.ServeHTTP(w, r)
+		case WorkspaceServiceSetNeuralInvolvementProcedure:
+			workspaceServiceSetNeuralInvolvementHandler.ServeHTTP(w, r)
 		case WorkspaceServiceGenerateArtProcedure:
 			workspaceServiceGenerateArtHandler.ServeHTTP(w, r)
 		case WorkspaceServiceSetWorkspaceIconProcedure:
@@ -1370,6 +1397,10 @@ func (UnimplementedWorkspaceServiceHandler) GenerateTheme(context.Context, *conn
 
 func (UnimplementedWorkspaceServiceHandler) SetWorkspaceTheme(context.Context, *connect.Request[v1.SetWorkspaceThemeRequest]) (*connect.Response[v1.SetWorkspaceThemeResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.SetWorkspaceTheme is not implemented"))
+}
+
+func (UnimplementedWorkspaceServiceHandler) SetNeuralInvolvement(context.Context, *connect.Request[v1.SetNeuralInvolvementRequest]) (*connect.Response[v1.SetNeuralInvolvementResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.workspace.v1.WorkspaceService.SetNeuralInvolvement is not implemented"))
 }
 
 func (UnimplementedWorkspaceServiceHandler) GenerateArt(context.Context, *connect.Request[v1.GenerateArtRequest]) (*connect.Response[v1.GenerateArtResponse], error) {

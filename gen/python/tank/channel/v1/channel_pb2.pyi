@@ -57,7 +57,7 @@ class TreadGoal(_message.Message):
     def __init__(self, goal: _Optional[str] = ..., assignee_ids: _Optional[_Iterable[str]] = ..., pipeline_status: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ...) -> None: ...
 
 class Channel(_message.Message):
-    __slots__ = ("id", "workspace_id", "type", "name", "topic", "purpose", "last_seq", "member_count", "last_message_at", "archived_at", "created_at", "goal", "member_ids", "joined", "icon_file_id", "read_receipts", "system", "default_view")
+    __slots__ = ("id", "workspace_id", "type", "name", "topic", "purpose", "last_seq", "member_count", "last_message_at", "archived_at", "created_at", "goal", "member_ids", "joined", "icon_file_id", "read_receipts", "system", "default_view", "neural_involvement_override", "neural_involvement")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     TYPE_FIELD_NUMBER: _ClassVar[int]
@@ -76,6 +76,8 @@ class Channel(_message.Message):
     READ_RECEIPTS_FIELD_NUMBER: _ClassVar[int]
     SYSTEM_FIELD_NUMBER: _ClassVar[int]
     DEFAULT_VIEW_FIELD_NUMBER: _ClassVar[int]
+    NEURAL_INVOLVEMENT_OVERRIDE_FIELD_NUMBER: _ClassVar[int]
+    NEURAL_INVOLVEMENT_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     type: ChannelType
@@ -94,7 +96,9 @@ class Channel(_message.Message):
     read_receipts: bool
     system: str
     default_view: ChannelView
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., type: _Optional[_Union[ChannelType, str]] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., last_seq: _Optional[int] = ..., member_count: _Optional[int] = ..., last_message_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., archived_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., goal: _Optional[_Union[TreadGoal, _Mapping]] = ..., member_ids: _Optional[_Iterable[str]] = ..., joined: bool = ..., icon_file_id: _Optional[str] = ..., read_receipts: bool = ..., system: _Optional[str] = ..., default_view: _Optional[_Union[ChannelView, str]] = ...) -> None: ...
+    neural_involvement_override: int
+    neural_involvement: int
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., type: _Optional[_Union[ChannelType, str]] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., last_seq: _Optional[int] = ..., member_count: _Optional[int] = ..., last_message_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., archived_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., goal: _Optional[_Union[TreadGoal, _Mapping]] = ..., member_ids: _Optional[_Iterable[str]] = ..., joined: bool = ..., icon_file_id: _Optional[str] = ..., read_receipts: bool = ..., system: _Optional[str] = ..., default_view: _Optional[_Union[ChannelView, str]] = ..., neural_involvement_override: _Optional[int] = ..., neural_involvement: _Optional[int] = ...) -> None: ...
 
 class ThreadReadState(_message.Message):
     __slots__ = ("thread_root_id", "last_read_thread_seq")
@@ -317,20 +321,24 @@ class ListChannelMembersResponse(_message.Message):
     def __init__(self, member_ids: _Optional[_Iterable[str]] = ..., next_cursor: _Optional[str] = ...) -> None: ...
 
 class UpdateChannelRequest(_message.Message):
-    __slots__ = ("channel_id", "name", "topic", "purpose", "read_receipts", "default_view")
+    __slots__ = ("channel_id", "name", "topic", "purpose", "read_receipts", "default_view", "neural_involvement_override", "reset_neural_involvement")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     TOPIC_FIELD_NUMBER: _ClassVar[int]
     PURPOSE_FIELD_NUMBER: _ClassVar[int]
     READ_RECEIPTS_FIELD_NUMBER: _ClassVar[int]
     DEFAULT_VIEW_FIELD_NUMBER: _ClassVar[int]
+    NEURAL_INVOLVEMENT_OVERRIDE_FIELD_NUMBER: _ClassVar[int]
+    RESET_NEURAL_INVOLVEMENT_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
     name: str
     topic: str
     purpose: str
     read_receipts: bool
     default_view: ChannelView
-    def __init__(self, channel_id: _Optional[str] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., read_receipts: bool = ..., default_view: _Optional[_Union[ChannelView, str]] = ...) -> None: ...
+    neural_involvement_override: int
+    reset_neural_involvement: bool
+    def __init__(self, channel_id: _Optional[str] = ..., name: _Optional[str] = ..., topic: _Optional[str] = ..., purpose: _Optional[str] = ..., read_receipts: bool = ..., default_view: _Optional[_Union[ChannelView, str]] = ..., neural_involvement_override: _Optional[int] = ..., reset_neural_involvement: bool = ...) -> None: ...
 
 class UpdateChannelResponse(_message.Message):
     __slots__ = ("channel",)

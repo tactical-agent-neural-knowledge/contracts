@@ -27,6 +27,8 @@ message Workspace {
   Theme theme = 6;
   // A generated or uploaded picture for the workspace; empty means the TANK mark.
   string icon_file_id = 7;
+  // How active @neural is in Treads that have not set their own, 0 (off) to 4. Starts at 0.
+  int32 neural_involvement = 8;
 }
 
 // A colour theme made from a few words. Every colour is a #rrggbb hex; the
@@ -732,6 +734,8 @@ service WorkspaceService {
   rpc GenerateTheme(GenerateThemeRequest) returns (GenerateThemeResponse);
   // Admins only: the workspace's theme, or a reset when theme is unset.
   rpc SetWorkspaceTheme(SetWorkspaceThemeRequest) returns (SetWorkspaceThemeResponse);
+  // Admins only: how active @neural is across the workspace, 0 (off) to 4.
+  rpc SetNeuralInvolvement(SetNeuralInvolvementRequest) returns (SetNeuralInvolvementResponse);
   // Turn up to fifteen words into an icon or emoji picture. The file is saved; nothing is applied.
   rpc GenerateArt(GenerateArtRequest) returns (GenerateArtResponse);
   // Admins only: the workspace icon, or a reset when file_id is empty.
@@ -773,6 +777,14 @@ message SetWorkspaceThemeRequest {
   Theme theme = 2;
 }
 message SetWorkspaceThemeResponse {
+  Workspace workspace = 1;
+}
+
+message SetNeuralInvolvementRequest {
+  string workspace_id = 1;
+  int32 level = 2;
+}
+message SetNeuralInvolvementResponse {
   Workspace workspace = 1;
 }
 
