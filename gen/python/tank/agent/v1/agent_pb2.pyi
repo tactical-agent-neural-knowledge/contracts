@@ -52,6 +52,13 @@ class RunRefusalAction(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     RUN_REFUSAL_ACTION_UPGRADE: _ClassVar[RunRefusalAction]
     RUN_REFUSAL_ACTION_REFILL: _ClassVar[RunRefusalAction]
 
+class RunStreamKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    RUN_STREAM_KIND_UNSPECIFIED: _ClassVar[RunStreamKind]
+    RUN_STREAM_KIND_TEXT: _ClassVar[RunStreamKind]
+    RUN_STREAM_KIND_STATUS: _ClassVar[RunStreamKind]
+    RUN_STREAM_KIND_END: _ClassVar[RunStreamKind]
+
 class PlanItemStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     PLAN_ITEM_STATUS_UNSPECIFIED: _ClassVar[PlanItemStatus]
@@ -93,6 +100,10 @@ RUN_REFUSAL_REASON_MODEL_UNAVAILABLE: RunRefusalReason
 RUN_REFUSAL_ACTION_UNSPECIFIED: RunRefusalAction
 RUN_REFUSAL_ACTION_UPGRADE: RunRefusalAction
 RUN_REFUSAL_ACTION_REFILL: RunRefusalAction
+RUN_STREAM_KIND_UNSPECIFIED: RunStreamKind
+RUN_STREAM_KIND_TEXT: RunStreamKind
+RUN_STREAM_KIND_STATUS: RunStreamKind
+RUN_STREAM_KIND_END: RunStreamKind
 PLAN_ITEM_STATUS_UNSPECIFIED: PlanItemStatus
 PLAN_ITEM_STATUS_TODO: PlanItemStatus
 PLAN_ITEM_STATUS_DOING: PlanItemStatus
@@ -303,6 +314,24 @@ class RenewRunTokenResponse(_message.Message):
     agent_session_token: str
     token_expires_at: _timestamp_pb2.Timestamp
     def __init__(self, agent_session_token: _Optional[str] = ..., token_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class PublishRunStreamRequest(_message.Message):
+    __slots__ = ("run_id", "seq", "kind", "text", "reset")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    SEQ_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    RESET_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    seq: int
+    kind: RunStreamKind
+    text: str
+    reset: bool
+    def __init__(self, run_id: _Optional[str] = ..., seq: _Optional[int] = ..., kind: _Optional[_Union[RunStreamKind, str]] = ..., text: _Optional[str] = ..., reset: bool = ...) -> None: ...
+
+class PublishRunStreamResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
 
 class GetRunStreamTailRequest(_message.Message):
     __slots__ = ("run_id",)

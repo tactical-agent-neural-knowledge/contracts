@@ -38,6 +38,9 @@ const (
 	// RunnerServiceGetRunContextProcedure is the fully-qualified name of the RunnerService's
 	// GetRunContext RPC.
 	RunnerServiceGetRunContextProcedure = "/tank.agentctl.v1.RunnerService/GetRunContext"
+	// RunnerServiceAwaitStartProcedure is the fully-qualified name of the RunnerService's AwaitStart
+	// RPC.
+	RunnerServiceAwaitStartProcedure = "/tank.agentctl.v1.RunnerService/AwaitStart"
 	// RunnerServiceGetGitCredentialProcedure is the fully-qualified name of the RunnerService's
 	// GetGitCredential RPC.
 	RunnerServiceGetGitCredentialProcedure = "/tank.agentctl.v1.RunnerService/GetGitCredential"
@@ -346,6 +349,12 @@ const (
 	ControlServiceRevokeInfraRelayProcedure = "/tank.agentctl.v1.ControlService/RevokeInfraRelay"
 	// ControlServiceStartRunProcedure is the fully-qualified name of the ControlService's StartRun RPC.
 	ControlServiceStartRunProcedure = "/tank.agentctl.v1.ControlService/StartRun"
+	// ControlServicePrepareRunProcedure is the fully-qualified name of the ControlService's PrepareRun
+	// RPC.
+	ControlServicePrepareRunProcedure = "/tank.agentctl.v1.ControlService/PrepareRun"
+	// ControlServiceCancelPreparationProcedure is the fully-qualified name of the ControlService's
+	// CancelPreparation RPC.
+	ControlServiceCancelPreparationProcedure = "/tank.agentctl.v1.ControlService/CancelPreparation"
 	// ControlServiceOpenThreadProcedure is the fully-qualified name of the ControlService's OpenThread
 	// RPC.
 	ControlServiceOpenThreadProcedure = "/tank.agentctl.v1.ControlService/OpenThread"
@@ -461,6 +470,7 @@ const (
 // RunnerServiceClient is a client for the tank.agentctl.v1.RunnerService service.
 type RunnerServiceClient interface {
 	GetRunContext(context.Context, *connect.Request[v1.GetRunContextRequest]) (*connect.Response[v1.GetRunContextResponse], error)
+	AwaitStart(context.Context, *connect.Request[v1.AwaitStartRequest]) (*connect.Response[v1.AwaitStartResponse], error)
 	GetGitCredential(context.Context, *connect.Request[v1.GetGitCredentialRequest]) (*connect.Response[v1.GetGitCredentialResponse], error)
 	PushBranch(context.Context) *connect.ClientStreamForClient[v1.PushBranchRequest, v1.PushBranchResponse]
 	PostToThread(context.Context, *connect.Request[v1.PostToThreadRequest]) (*connect.Response[v1.PostToThreadResponse], error)
@@ -580,6 +590,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			httpClient,
 			baseURL+RunnerServiceGetRunContextProcedure,
 			connect.WithSchema(runnerServiceMethods.ByName("GetRunContext")),
+			connect.WithClientOptions(opts...),
+		),
+		awaitStart: connect.NewClient[v1.AwaitStartRequest, v1.AwaitStartResponse](
+			httpClient,
+			baseURL+RunnerServiceAwaitStartProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("AwaitStart")),
 			connect.WithClientOptions(opts...),
 		),
 		getGitCredential: connect.NewClient[v1.GetGitCredentialRequest, v1.GetGitCredentialResponse](
@@ -1056,6 +1072,7 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 // runnerServiceClient implements RunnerServiceClient.
 type runnerServiceClient struct {
 	getRunContext            *connect.Client[v1.GetRunContextRequest, v1.GetRunContextResponse]
+	awaitStart               *connect.Client[v1.AwaitStartRequest, v1.AwaitStartResponse]
 	getGitCredential         *connect.Client[v1.GetGitCredentialRequest, v1.GetGitCredentialResponse]
 	pushBranch               *connect.Client[v1.PushBranchRequest, v1.PushBranchResponse]
 	postToThread             *connect.Client[v1.PostToThreadRequest, v1.PostToThreadResponse]
@@ -1139,6 +1156,11 @@ type runnerServiceClient struct {
 // GetRunContext calls tank.agentctl.v1.RunnerService.GetRunContext.
 func (c *runnerServiceClient) GetRunContext(ctx context.Context, req *connect.Request[v1.GetRunContextRequest]) (*connect.Response[v1.GetRunContextResponse], error) {
 	return c.getRunContext.CallUnary(ctx, req)
+}
+
+// AwaitStart calls tank.agentctl.v1.RunnerService.AwaitStart.
+func (c *runnerServiceClient) AwaitStart(ctx context.Context, req *connect.Request[v1.AwaitStartRequest]) (*connect.Response[v1.AwaitStartResponse], error) {
+	return c.awaitStart.CallUnary(ctx, req)
 }
 
 // GetGitCredential calls tank.agentctl.v1.RunnerService.GetGitCredential.
@@ -1534,6 +1556,7 @@ func (c *runnerServiceClient) SessionStoreDelete(ctx context.Context, req *conne
 // RunnerServiceHandler is an implementation of the tank.agentctl.v1.RunnerService service.
 type RunnerServiceHandler interface {
 	GetRunContext(context.Context, *connect.Request[v1.GetRunContextRequest]) (*connect.Response[v1.GetRunContextResponse], error)
+	AwaitStart(context.Context, *connect.Request[v1.AwaitStartRequest]) (*connect.Response[v1.AwaitStartResponse], error)
 	GetGitCredential(context.Context, *connect.Request[v1.GetGitCredentialRequest]) (*connect.Response[v1.GetGitCredentialResponse], error)
 	PushBranch(context.Context, *connect.ClientStream[v1.PushBranchRequest]) (*connect.Response[v1.PushBranchResponse], error)
 	PostToThread(context.Context, *connect.Request[v1.PostToThreadRequest]) (*connect.Response[v1.PostToThreadResponse], error)
@@ -1649,6 +1672,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		RunnerServiceGetRunContextProcedure,
 		svc.GetRunContext,
 		connect.WithSchema(runnerServiceMethods.ByName("GetRunContext")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceAwaitStartHandler := connect.NewUnaryHandler(
+		RunnerServiceAwaitStartProcedure,
+		svc.AwaitStart,
+		connect.WithSchema(runnerServiceMethods.ByName("AwaitStart")),
 		connect.WithHandlerOptions(opts...),
 	)
 	runnerServiceGetGitCredentialHandler := connect.NewUnaryHandler(
@@ -2123,6 +2152,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		switch r.URL.Path {
 		case RunnerServiceGetRunContextProcedure:
 			runnerServiceGetRunContextHandler.ServeHTTP(w, r)
+		case RunnerServiceAwaitStartProcedure:
+			runnerServiceAwaitStartHandler.ServeHTTP(w, r)
 		case RunnerServiceGetGitCredentialProcedure:
 			runnerServiceGetGitCredentialHandler.ServeHTTP(w, r)
 		case RunnerServicePushBranchProcedure:
@@ -2290,6 +2321,10 @@ type UnimplementedRunnerServiceHandler struct{}
 
 func (UnimplementedRunnerServiceHandler) GetRunContext(context.Context, *connect.Request[v1.GetRunContextRequest]) (*connect.Response[v1.GetRunContextResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.GetRunContext is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) AwaitStart(context.Context, *connect.Request[v1.AwaitStartRequest]) (*connect.Response[v1.AwaitStartResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.AwaitStart is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) GetGitCredential(context.Context, *connect.Request[v1.GetGitCredentialRequest]) (*connect.Response[v1.GetGitCredentialResponse], error) {
@@ -2648,6 +2683,8 @@ type ControlServiceClient interface {
 	CreateInfraRelay(context.Context, *connect.Request[v1.CreateInfraRelayRequest]) (*connect.Response[v1.CreateInfraRelayResponse], error)
 	RevokeInfraRelay(context.Context, *connect.Request[v1.RevokeInfraRelayRequest]) (*connect.Response[v1.RevokeInfraRelayResponse], error)
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
+	PrepareRun(context.Context, *connect.Request[v1.PrepareRunRequest]) (*connect.Response[v1.PrepareRunResponse], error)
+	CancelPreparation(context.Context, *connect.Request[v1.CancelPreparationRequest]) (*connect.Response[v1.CancelPreparationResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
@@ -2921,6 +2958,18 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("StartRun")),
 			connect.WithClientOptions(opts...),
 		),
+		prepareRun: connect.NewClient[v1.PrepareRunRequest, v1.PrepareRunResponse](
+			httpClient,
+			baseURL+ControlServicePrepareRunProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("PrepareRun")),
+			connect.WithClientOptions(opts...),
+		),
+		cancelPreparation: connect.NewClient[v1.CancelPreparationRequest, v1.CancelPreparationResponse](
+			httpClient,
+			baseURL+ControlServiceCancelPreparationProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("CancelPreparation")),
+			connect.WithClientOptions(opts...),
+		),
 		openThread: connect.NewClient[v1.OpenThreadRequest, v1.OpenThreadResponse](
 			httpClient,
 			baseURL+ControlServiceOpenThreadProcedure,
@@ -3183,6 +3232,8 @@ type controlServiceClient struct {
 	createInfraRelay            *connect.Client[v1.CreateInfraRelayRequest, v1.CreateInfraRelayResponse]
 	revokeInfraRelay            *connect.Client[v1.RevokeInfraRelayRequest, v1.RevokeInfraRelayResponse]
 	startRun                    *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	prepareRun                  *connect.Client[v1.PrepareRunRequest, v1.PrepareRunResponse]
+	cancelPreparation           *connect.Client[v1.CancelPreparationRequest, v1.CancelPreparationResponse]
 	openThread                  *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
 	refreshNeuralKnowledge      *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
 	getRun                      *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
@@ -3366,6 +3417,16 @@ func (c *controlServiceClient) RevokeInfraRelay(ctx context.Context, req *connec
 // StartRun calls tank.agentctl.v1.ControlService.StartRun.
 func (c *controlServiceClient) StartRun(ctx context.Context, req *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error) {
 	return c.startRun.CallUnary(ctx, req)
+}
+
+// PrepareRun calls tank.agentctl.v1.ControlService.PrepareRun.
+func (c *controlServiceClient) PrepareRun(ctx context.Context, req *connect.Request[v1.PrepareRunRequest]) (*connect.Response[v1.PrepareRunResponse], error) {
+	return c.prepareRun.CallUnary(ctx, req)
+}
+
+// CancelPreparation calls tank.agentctl.v1.ControlService.CancelPreparation.
+func (c *controlServiceClient) CancelPreparation(ctx context.Context, req *connect.Request[v1.CancelPreparationRequest]) (*connect.Response[v1.CancelPreparationResponse], error) {
+	return c.cancelPreparation.CallUnary(ctx, req)
 }
 
 // OpenThread calls tank.agentctl.v1.ControlService.OpenThread.
@@ -3602,6 +3663,8 @@ type ControlServiceHandler interface {
 	CreateInfraRelay(context.Context, *connect.Request[v1.CreateInfraRelayRequest]) (*connect.Response[v1.CreateInfraRelayResponse], error)
 	RevokeInfraRelay(context.Context, *connect.Request[v1.RevokeInfraRelayRequest]) (*connect.Response[v1.RevokeInfraRelayResponse], error)
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
+	PrepareRun(context.Context, *connect.Request[v1.PrepareRunRequest]) (*connect.Response[v1.PrepareRunResponse], error)
+	CancelPreparation(context.Context, *connect.Request[v1.CancelPreparationRequest]) (*connect.Response[v1.CancelPreparationResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
@@ -3869,6 +3932,18 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		ControlServiceStartRunProcedure,
 		svc.StartRun,
 		connect.WithSchema(controlServiceMethods.ByName("StartRun")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServicePrepareRunHandler := connect.NewUnaryHandler(
+		ControlServicePrepareRunProcedure,
+		svc.PrepareRun,
+		connect.WithSchema(controlServiceMethods.ByName("PrepareRun")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceCancelPreparationHandler := connect.NewUnaryHandler(
+		ControlServiceCancelPreparationProcedure,
+		svc.CancelPreparation,
+		connect.WithSchema(controlServiceMethods.ByName("CancelPreparation")),
 		connect.WithHandlerOptions(opts...),
 	)
 	controlServiceOpenThreadHandler := connect.NewUnaryHandler(
@@ -4159,6 +4234,10 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceRevokeInfraRelayHandler.ServeHTTP(w, r)
 		case ControlServiceStartRunProcedure:
 			controlServiceStartRunHandler.ServeHTTP(w, r)
+		case ControlServicePrepareRunProcedure:
+			controlServicePrepareRunHandler.ServeHTTP(w, r)
+		case ControlServiceCancelPreparationProcedure:
+			controlServiceCancelPreparationHandler.ServeHTTP(w, r)
 		case ControlServiceOpenThreadProcedure:
 			controlServiceOpenThreadHandler.ServeHTTP(w, r)
 		case ControlServiceRefreshNeuralKnowledgeProcedure:
@@ -4358,6 +4437,14 @@ func (UnimplementedControlServiceHandler) RevokeInfraRelay(context.Context, *con
 
 func (UnimplementedControlServiceHandler) StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.StartRun is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) PrepareRun(context.Context, *connect.Request[v1.PrepareRunRequest]) (*connect.Response[v1.PrepareRunResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.PrepareRun is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) CancelPreparation(context.Context, *connect.Request[v1.CancelPreparationRequest]) (*connect.Response[v1.CancelPreparationResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.CancelPreparation is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error) {
