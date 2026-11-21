@@ -173,10 +173,18 @@ message PreferencesUpdated {
   string user_id = 1;
   tank.workspace.v1.Preferences preferences = 2;
 }
+// thread_live_stream.updated on evt.{ws}.user.{uid}: cross-device sync of one person's
+// live-agent-output setting for one thread, so the thread-header toggle reads the same on
+// every device. setting.enabled=false means the setting is off (no stored row).
+message ThreadLiveStreamUpdated {
+  string user_id = 1;
+  tank.workspace.v1.ThreadLiveStream setting = 2;
+}
 // One piece of an agent's live output, carried only on the realtime socket
 // (ServerFrame.agent_stream). Never stored, never replayed, never an Envelope on the bus
 // history: the stored message is the record and always wins. Carries only assistant text
-// and status lines, never tool input or output.
+// and status lines, never tool input or output. Sent only to users whose setting for this
+// thread (channel_id plus thread_root_id) is on; see tank.workspace.v1.ThreadLiveStream.
 message AgentStreamDelta {
   enum Kind {
     KIND_UNSPECIFIED = 0;

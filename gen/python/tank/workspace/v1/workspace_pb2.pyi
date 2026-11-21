@@ -484,6 +484,62 @@ class SetLiveAgentStreamResponse(_message.Message):
     preferences: Preferences
     def __init__(self, preferences: _Optional[_Union[Preferences, _Mapping]] = ...) -> None: ...
 
+class ThreadLiveStream(_message.Message):
+    __slots__ = ("channel_id", "thread_root_id", "enabled")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    thread_root_id: str
+    enabled: bool
+    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., enabled: bool = ...) -> None: ...
+
+class SetThreadLiveStreamRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "enabled")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    thread_root_id: str
+    enabled: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., enabled: bool = ...) -> None: ...
+
+class SetThreadLiveStreamResponse(_message.Message):
+    __slots__ = ("setting",)
+    SETTING_FIELD_NUMBER: _ClassVar[int]
+    setting: ThreadLiveStream
+    def __init__(self, setting: _Optional[_Union[ThreadLiveStream, _Mapping]] = ...) -> None: ...
+
+class GetThreadLiveStreamRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    thread_root_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ...) -> None: ...
+
+class GetThreadLiveStreamResponse(_message.Message):
+    __slots__ = ("setting",)
+    SETTING_FIELD_NUMBER: _ClassVar[int]
+    setting: ThreadLiveStream
+    def __init__(self, setting: _Optional[_Union[ThreadLiveStream, _Mapping]] = ...) -> None: ...
+
+class ListThreadLiveStreamsRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class ListThreadLiveStreamsResponse(_message.Message):
+    __slots__ = ("settings",)
+    SETTINGS_FIELD_NUMBER: _ClassVar[int]
+    settings: _containers.RepeatedCompositeFieldContainer[ThreadLiveStream]
+    def __init__(self, settings: _Optional[_Iterable[_Union[ThreadLiveStream, _Mapping]]] = ...) -> None: ...
+
 class UpdatePreferencesRequest(_message.Message):
     __slots__ = ("workspace_id", "preferences")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
