@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package tank.envvars.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/envvars/v1;envvarsv1";
+
+// Workspace environment variables (Settings > Environment). A name and a value a workspace
+// keeps for its agents and products. Two kinds, fixed when the variable is made:
+//
+//   plain  the value is readable and editable by workspace owners and admins.
+//   secret the value is write-only: it is sealed on arrival, and no call, log or event ever
+//          returns it again. A client sees only that it is set and when it last changed;
+//          setting a new value replaces it.
+//
+// Owners and admins create, change and delete both kinds; other members see nothing.
+// Names are upper-case letters, digits and underscores, not starting with a digit, at most
+// 128 characters; a value is at most 8 KiB. A name is unique in a workspace across both kinds.
+
+message EnvVar {
+  string name = 1;
+  // The value of a plain variable. Always empty for a secret.
+  string value = 2;
+  bool secret = 3;
+  // For a secret: whether a value is stored. A listed secret is always set.
+  bool is_set = 4;
+  google.protobuf.Timestamp updated_at = 5;
+  // The member who last changed it.
+  string updated_by = 6;
+}
+
+message ListEnvVarsRequest {
+  string workspace_id = 1;
+}
+message ListEnvVarsResponse {
+  // Plain variables first, then secrets, each by name.
+  repeated EnvVar vars = 1;
+}
+
+message PutEnvVarRequest {
+  string workspace_id = 1;
+  string name = 2;
+  string value = 3;
+  // Required when the name is new; for an existing name it must match its kind, because a
+  // variable never changes kind (delete it and make it again).
+  bool secret = 4;
+  // True to make a new variable only: the call fails if the name already exists.
+  bool create_only = 5;
+}
+message PutEnvVarResponse {
+  // A secret's value is never echoed.
+  EnvVar var = 1;
+  // True when the name did not exist before.
+  bool created = 2;
+}
+
+message DeleteEnvVarRequest {
+  string workspace_id = 1;
+  string name = 2;
+}
+message DeleteEnvVarResponse {}
+
+service EnvVarService {
+  rpc ListEnvVars(ListEnvVarsRequest) returns (ListEnvVarsResponse);
+  rpc PutEnvVar(PutEnvVarRequest) returns (PutEnvVarResponse);
+  rpc DeleteEnvVar(DeleteEnvVarRequest) returns (DeleteEnvVarResponse);
+}
