@@ -3158,12 +3158,13 @@ export const RunRefusalActionSchema: GenEnum<RunRefusalAction> = /*@__PURE__*/
 
 /**
  * The live output of a run so far, for a person who opens the thread or turns
- * Preferences.live_agent_stream on mid-run, on any device. Same assistant text and
+ * the live output setting for that thread (ThreadLiveStream) on mid-run, on any device. Same assistant text and
  * status only as AgentStreamDelta, never tool input or output. The control plane keeps a
  * bounded in-memory tail while the run is live; a finished run has an empty tail and
  * the stored message is the record.
  * One piece of a run's live output, handed to the api by the control plane (called with the
- * run's own token) to fan out as AgentStreamDelta and to fold into GetRunStreamTail. Only
+ * run's own token) to fan out as AgentStreamDelta, only to users whose setting for the run's
+ * thread (channel_id plus thread_root_id) is on, and to fold into GetRunStreamTail. Only
  * assistant text and status lines are ever sent; tool input and output never are. The
  * control plane has already scrubbed the text. Best effort: the api may drop what it
  * cannot place, and a run that has ended is not an error.

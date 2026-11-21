@@ -112,6 +112,10 @@ message GetBootstrapResponse {
   // active first; capped. Threads not listed are read to wherever the client
   // last marked them, or unread if it never has.
   repeated tank.channel.v1.ThreadReadState thread_read_states = 11;
+  // The threads where the caller has live agent output turned on (every entry has
+  // enabled = true; a thread not listed is off). Loaded once so a client and the realtime
+  // gateway know the setting without a call per thread.
+  repeated ThreadLiveStream thread_live_streams = 12;
 }
 
 // Everything Slack does is free. The agent and the Neural Vault are what a
@@ -299,25 +303,11 @@ message Preferences {
   // "Use my location": the profile's time zone follows the device's, kept in step by the
   // client each time it opens. TANK reads the device's time-zone setting, never its position.
   bool timezone_from_device = 13;
-  // Live agent output: while an agent works in a thread, show its status lines and
-  // stream its reply text as it is written, instead of only the final message. Per
-  // person, across the whole workspace, off by default. Written only through
-  // SetLiveAgentStream (never UpdatePreferences from a thread toggle), and synced to the
-  // person's other devices and open threads by preferences.updated.
-  //
-  // Client behaviour, identical on web (Safari, Chrome, Edge), desktop (macOS, Windows,
-  // Linux) and mobile (iOS, Android); no field depends on platform, browser or OS and
-  // there is no capability flag:
-  //  - The toggle sits in the thread header of a thread an agent is working in, off
-  //    until the person turns it on, and always shows this value.
-  //  - On: show STATUS lines as they arrive and animate TEXT chunks in as they arrive.
-  //    With the OS or browser reduced-motion setting, show each chunk at once, unanimated.
-  //  - Off: show nothing until the stored message arrives. Turning it off in any thread
-  //    or on any device turns it off everywhere.
-  //  - On a seq gap, a reconnect or a resync, drop the partial text; the stored message
-  //    wins. On opening a thread or turning the toggle on mid-run, call GetRunStreamTail
-  //    first to show what was already said.
-  bool live_agent_stream = 14;
+  // Deprecated: the workspace-wide live output switch. The setting is now per thread
+  // (ThreadLiveStream, SetThreadLiveStream). The server ignores this field when it fans
+  // out agent_stream frames, and clients stop reading and writing it. It stays on the wire
+  // until every client has shipped without it, then it is reserved in a later change.
+  bool live_agent_stream = 14 [deprecated = true];
 }
 
 // A notification sound set, chosen from TANK's packs by a vibe. Each field names
@@ -359,12 +349,58 @@ message GetPreferencesResponse {
   Preferences preferences = 1;
 }
 
+// Deprecated with Preferences.live_agent_stream: the call is accepted and stored but
+// no longer decides who receives agent_stream frames. Use SetThreadLiveStream.
 message SetLiveAgentStreamRequest {
   string workspace_id = 1;
   bool enabled = 2;
 }
 message SetLiveAgentStreamResponse {
   Preferences preferences = 1; // the stored preferences after the change
+}
+
+// Live agent output for one person in one thread: while an agent works there, show its
+// status lines and stream its reply text as it is written, instead of only the final
+// message. Per person and per thread, off by default; off is the absence of a stored row.
+// Written only through SetThreadLiveStream and synced to the person's other devices by
+// thread_live_stream.updated.
+//
+// Client behaviour, identical on web (Safari, Chrome, Edge), desktop (macOS, Windows,
+// Linux) and mobile (iOS, Android); no field depends on platform, browser or OS and
+// there is no capability flag:
+//  - The toggle sits in the thread header of a thread an agent is working in, off until
+//    the person turns it on, remembered for that thread, and always shows this value.
+//  - On: show STATUS lines as they arrive and animate TEXT chunks in as they arrive.
+//    With the OS or browser reduced-motion setting, show each chunk at once, unanimated.
+//  - Off: show nothing until the stored message arrives. Turning it on or off in one
+//    thread does not change any other thread.
+//  - On a seq gap, a reconnect or a resync, drop the partial text; the stored message
+//    wins. On opening a thread with the setting on, or turning the toggle on mid-run,
+//    call GetRunStreamTail first to show what was already said.
+message ThreadLiveStream {
+  string channel_id = 1;
+  // The thread's root message id; a thread is always identified by channel and root.
+  string thread_root_id = 2;
+  bool enabled = 3;
+}
+
+message SetThreadLiveStreamRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string thread_root_id = 3;
+  bool enabled = 4;
+}
+message SetThreadLiveStreamResponse {
+  ThreadLiveStream setting = 1; // the stored setting after the change
+}
+
+message GetThreadLiveStreamRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string thread_root_id = 3;
+}
+message GetThreadLiveStreamResponse {
+  ThreadLiveStream setting = 1; // enabled = false when nothing is stored
 }
 
 message UpdatePreferencesRequest {
@@ -726,10 +762,16 @@ service WorkspaceService {
   rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
   rpc GetPreferences(GetPreferencesRequest) returns (GetPreferencesResponse);
   rpc UpdatePreferences(UpdatePreferencesRequest) returns (UpdatePreferencesResponse);
-  // Turns live agent output on or off for the caller in this workspace, leaving every
-  // other preference as stored. The thread toggle and the settings screen on every
-  // platform call this and nothing else; emits preferences.updated.
-  rpc SetLiveAgentStream(SetLiveAgentStreamRequest) returns (SetLiveAgentStreamResponse);
+  // Deprecated: the workspace-wide switch, ignored for fan-out. Use SetThreadLiveStream.
+  rpc SetLiveAgentStream(SetLiveAgentStreamRequest) returns (SetLiveAgentStreamResponse) {
+    option deprecated = true;
+  }
+  // Turns live agent output on or off for the caller in one thread. The thread-header
+  // toggle on every platform calls this; emits thread_live_stream.updated. Turning it off
+  // removes the stored row.
+  rpc SetThreadLiveStream(SetThreadLiveStreamRequest) returns (SetThreadLiveStreamResponse);
+  // The caller's setting for one thread, for a client that opens it.
+  rpc GetThreadLiveStream(GetThreadLiveStreamRequest) returns (GetThreadLiveStreamResponse);
   // A new model's notice, shown once per person at the top of the workspace until they
   // dismiss it; owners and admins answer the data question for the workspace in place.
   rpc GetModelNotice(GetModelNoticeRequest) returns (GetModelNoticeResponse);
