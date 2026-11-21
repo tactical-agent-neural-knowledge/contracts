@@ -276,6 +276,14 @@ class PreferencesUpdated(_message.Message):
     preferences: _workspace_pb2.Preferences
     def __init__(self, user_id: _Optional[str] = ..., preferences: _Optional[_Union[_workspace_pb2.Preferences, _Mapping]] = ...) -> None: ...
 
+class ThreadLiveStreamUpdated(_message.Message):
+    __slots__ = ("user_id", "setting")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    SETTING_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    setting: _workspace_pb2.ThreadLiveStream
+    def __init__(self, user_id: _Optional[str] = ..., setting: _Optional[_Union[_workspace_pb2.ThreadLiveStream, _Mapping]] = ...) -> None: ...
+
 class AgentStreamDelta(_message.Message):
     __slots__ = ("channel_id", "thread_root_id", "run_id", "seq", "kind", "text", "reset")
     class Kind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):

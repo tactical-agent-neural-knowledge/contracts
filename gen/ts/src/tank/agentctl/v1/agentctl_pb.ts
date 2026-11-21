@@ -10547,7 +10547,8 @@ export const RunPhaseSchema: GenEnum<RunPhase> = /*@__PURE__*/
 /**
  * What the control plane forwards to people from a runner's event stream: only
  * ASSISTANT_DELTA and STATUS (the planning phase included) become
- * tank.events.v1.AgentStreamDelta, and only to users whose live_agent_stream is on.
+ * tank.events.v1.AgentStreamDelta, and only to users whose live output setting for that
+ * thread (channel_id plus thread_root_id) is on.
  * Tool input and output (TOOL_CALL, TOOL_RESULT, PERMISSION_REQUEST), usage, results and
  * log lines are never forwarded as stream deltas.
  *

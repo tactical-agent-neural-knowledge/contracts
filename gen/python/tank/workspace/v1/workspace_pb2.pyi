@@ -163,7 +163,7 @@ class GetBootstrapRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
 
 class GetBootstrapResponse(_message.Message):
-    __slots__ = ("workspace", "me", "channels", "read_states", "members", "custom_emoji_hash", "unread_notification_count", "preferences", "user_groups", "entitlements", "thread_read_states")
+    __slots__ = ("workspace", "me", "channels", "read_states", "members", "custom_emoji_hash", "unread_notification_count", "preferences", "user_groups", "entitlements", "thread_read_states", "thread_live_streams")
     WORKSPACE_FIELD_NUMBER: _ClassVar[int]
     ME_FIELD_NUMBER: _ClassVar[int]
     CHANNELS_FIELD_NUMBER: _ClassVar[int]
@@ -175,6 +175,7 @@ class GetBootstrapResponse(_message.Message):
     USER_GROUPS_FIELD_NUMBER: _ClassVar[int]
     ENTITLEMENTS_FIELD_NUMBER: _ClassVar[int]
     THREAD_READ_STATES_FIELD_NUMBER: _ClassVar[int]
+    THREAD_LIVE_STREAMS_FIELD_NUMBER: _ClassVar[int]
     workspace: Workspace
     me: Member
     channels: _containers.RepeatedCompositeFieldContainer[_channel_pb2.Channel]
@@ -186,7 +187,8 @@ class GetBootstrapResponse(_message.Message):
     user_groups: _containers.RepeatedCompositeFieldContainer[UserGroup]
     entitlements: Entitlements
     thread_read_states: _containers.RepeatedCompositeFieldContainer[_channel_pb2.ThreadReadState]
-    def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ..., me: _Optional[_Union[Member, _Mapping]] = ..., channels: _Optional[_Iterable[_Union[_channel_pb2.Channel, _Mapping]]] = ..., read_states: _Optional[_Iterable[_Union[_channel_pb2.ChannelReadState, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., custom_emoji_hash: _Optional[str] = ..., unread_notification_count: _Optional[int] = ..., preferences: _Optional[_Union[Preferences, _Mapping]] = ..., user_groups: _Optional[_Iterable[_Union[UserGroup, _Mapping]]] = ..., entitlements: _Optional[_Union[Entitlements, _Mapping]] = ..., thread_read_states: _Optional[_Iterable[_Union[_channel_pb2.ThreadReadState, _Mapping]]] = ...) -> None: ...
+    thread_live_streams: _containers.RepeatedCompositeFieldContainer[ThreadLiveStream]
+    def __init__(self, workspace: _Optional[_Union[Workspace, _Mapping]] = ..., me: _Optional[_Union[Member, _Mapping]] = ..., channels: _Optional[_Iterable[_Union[_channel_pb2.Channel, _Mapping]]] = ..., read_states: _Optional[_Iterable[_Union[_channel_pb2.ChannelReadState, _Mapping]]] = ..., members: _Optional[_Iterable[_Union[Member, _Mapping]]] = ..., custom_emoji_hash: _Optional[str] = ..., unread_notification_count: _Optional[int] = ..., preferences: _Optional[_Union[Preferences, _Mapping]] = ..., user_groups: _Optional[_Iterable[_Union[UserGroup, _Mapping]]] = ..., entitlements: _Optional[_Union[Entitlements, _Mapping]] = ..., thread_read_states: _Optional[_Iterable[_Union[_channel_pb2.ThreadReadState, _Mapping]]] = ..., thread_live_streams: _Optional[_Iterable[_Union[ThreadLiveStream, _Mapping]]] = ...) -> None: ...
 
 class Entitlements(_message.Message):
     __slots__ = ("plan", "agent_runs", "neural_vault", "agent_runs_used", "agent_runs_limit", "vault_queries_used", "vault_queries_limit", "contact_email", "conditional_sends", "addons", "agent_usage_cents", "agent_cap_cents", "payment_state", "agent_time_state", "agent_time_available_cents", "agent_time_low_cents", "agent_time_auto_refill", "neural_agent")
@@ -483,6 +485,50 @@ class SetLiveAgentStreamResponse(_message.Message):
     PREFERENCES_FIELD_NUMBER: _ClassVar[int]
     preferences: Preferences
     def __init__(self, preferences: _Optional[_Union[Preferences, _Mapping]] = ...) -> None: ...
+
+class ThreadLiveStream(_message.Message):
+    __slots__ = ("channel_id", "thread_root_id", "enabled")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    thread_root_id: str
+    enabled: bool
+    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., enabled: bool = ...) -> None: ...
+
+class SetThreadLiveStreamRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "enabled")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    thread_root_id: str
+    enabled: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., enabled: bool = ...) -> None: ...
+
+class SetThreadLiveStreamResponse(_message.Message):
+    __slots__ = ("setting",)
+    SETTING_FIELD_NUMBER: _ClassVar[int]
+    setting: ThreadLiveStream
+    def __init__(self, setting: _Optional[_Union[ThreadLiveStream, _Mapping]] = ...) -> None: ...
+
+class GetThreadLiveStreamRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    thread_root_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ...) -> None: ...
+
+class GetThreadLiveStreamResponse(_message.Message):
+    __slots__ = ("setting",)
+    SETTING_FIELD_NUMBER: _ClassVar[int]
+    setting: ThreadLiveStream
+    def __init__(self, setting: _Optional[_Union[ThreadLiveStream, _Mapping]] = ...) -> None: ...
 
 class UpdatePreferencesRequest(_message.Message):
     __slots__ = ("workspace_id", "preferences")
