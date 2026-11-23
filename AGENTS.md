@@ -1,4 +1,4 @@
-# Neural Knowledge by TANK · refreshed 2026-11-16 · d7aa1845d1fb
+# Neural Knowledge by TANK · refreshed 2026-11-23 · 1670e4e249b5
 
 This repository is the single source of truth for every wire contract between TANK's services. Hand-written Protocol Buffer definitions live under `proto/tank/<domain>/v1/`; generated Go, TypeScript and Python bindings are committed under `gen/` so consumers never fetch at build time. A change to a `.proto` file lands in the same PR as the regenerated output for all three languages, and CI rejects a PR whose `gen/` is stale.
 
@@ -19,7 +19,7 @@ make check                                                      # lint, gen, bui
 
 - `.` — repo root: Makefile, buf.yaml, buf.gen.yaml, go.mod, CLAUDE.md; read `.neural/neurons/root.md`
 - `.github` — CI workflows (`ci.yml`, `security.yml`); read `.neural/neurons/github.md`
-- `proto` — 41 `.proto` files, one package per domain under `proto/tank/<domain>/v1/`; read `.neural/neurons/proto.md`
+- `proto` — 43 `.proto` files, one package per domain under `proto/tank/<domain>/v1/`; read `.neural/neurons/proto.md`
 
 ## Rules
 

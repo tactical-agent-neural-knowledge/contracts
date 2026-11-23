@@ -1,7 +1,7 @@
 {
   "generated_by": "TANK Neural Knowledge",
-  "commit": "d7aa1845d1fb0a2c496e0cf09a3b8e2eda410bc4",
-  "refreshed_at": "2026-11-16T00:46:02.654Z",
+  "commit": "1670e4e249b5c075ae5296a77908b5ac19d0e1e7",
+  "refreshed_at": "2026-11-23T00:22:18.568Z",
   "areas": {
     ".": {
       "neurons": ".neural/neurons/root.md",
@@ -39,11 +39,11 @@
       "neurons": ".neural/neurons/proto.md",
       "hot": [
         "proto/tank/agentctl/v1/agentctl.proto",
-        "proto/tank/ai/v1/ai.proto",
         "proto/tank/agent/v1/agent.proto",
+        "proto/tank/ai/v1/ai.proto",
         "proto/tank/board/v1/board.proto",
-        "proto/tank/platform/v1/platform.proto",
-        "proto/tank/workspace/v1/workspace.proto"
+        "proto/tank/workspace/v1/workspace.proto",
+        "proto/tank/platform/v1/platform.proto"
       ],
       "files": [
         "proto/tank/access/v1/access.proto",
@@ -66,6 +66,7 @@
         "proto/tank/crew/v1/crew.proto",
         "proto/tank/devices/v1/devices.proto",
         "proto/tank/environment/v1/environment.proto",
+        "proto/tank/envvars/v1/envvars.proto",
         "proto/tank/events/v1/events.proto",
         "proto/tank/files/v1/files.proto",
         "proto/tank/guardrails/v1/guardrails.proto",
@@ -83,6 +84,7 @@
         "proto/tank/richtext/v1/richtext.proto",
         "proto/tank/search/v1/search.proto",
         "proto/tank/security/v1/security.proto",
+        "proto/tank/site/v1/site.proto",
         "proto/tank/social/v1/social.proto",
         "proto/tank/task/v1/task.proto",
         "proto/tank/topo/v1/topo.proto",
