@@ -139,7 +139,7 @@ class ApprovedPlan(_message.Message):
     def __init__(self, plan_hash: _Optional[str] = ..., summary: _Optional[str] = ..., steps: _Optional[_Iterable[_Union[_blocks_pb2.PlanStep, _Mapping]]] = ..., risks: _Optional[_Iterable[str]] = ..., approved_by: _Optional[str] = ..., approved_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., feedback: _Optional[str] = ...) -> None: ...
 
 class RunContext(_message.Message):
-    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan", "mode", "team", "parent_run_id", "handoff", "envelope_left", "git_proxy_url", "guardrails", "infra_connections", "test_logins", "standby")
+    __slots__ = ("run_id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "agent_name", "requested_by", "phase", "instructions", "thread_excerpt", "repo", "base_branch", "branch", "toolchain", "policy", "operating_rules", "approved_plan", "sdk_session_id", "workspace_dir", "git_remote_url", "attachments", "repo_access", "product_run", "channel_purpose", "channel_goal", "agent_title", "agent_skill", "skip_neural_knowledge", "task_class", "workbench_board_id", "tread_brief", "tread_plan", "mode", "team", "parent_run_id", "handoff", "envelope_left", "git_proxy_url", "guardrails", "infra_connections", "test_logins", "standby", "preview_env", "preview_ca_pem")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -182,6 +182,8 @@ class RunContext(_message.Message):
     INFRA_CONNECTIONS_FIELD_NUMBER: _ClassVar[int]
     TEST_LOGINS_FIELD_NUMBER: _ClassVar[int]
     STANDBY_FIELD_NUMBER: _ClassVar[int]
+    PREVIEW_ENV_FIELD_NUMBER: _ClassVar[int]
+    PREVIEW_CA_PEM_FIELD_NUMBER: _ClassVar[int]
     run_id: str
     workspace_id: str
     channel_id: str
@@ -224,7 +226,79 @@ class RunContext(_message.Message):
     infra_connections: _containers.RepeatedCompositeFieldContainer[InfraConnectionBrief]
     test_logins: _containers.RepeatedCompositeFieldContainer[TestLoginBrief]
     standby: bool
-    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ..., git_proxy_url: _Optional[str] = ..., guardrails: _Optional[_Iterable[_Union[_guardrails_pb2.Guardrail, _Mapping]]] = ..., infra_connections: _Optional[_Iterable[_Union[InfraConnectionBrief, _Mapping]]] = ..., test_logins: _Optional[_Iterable[_Union[TestLoginBrief, _Mapping]]] = ..., standby: bool = ...) -> None: ...
+    preview_env: _containers.RepeatedCompositeFieldContainer[PreviewSecretEnv]
+    preview_ca_pem: str
+    def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ..., git_proxy_url: _Optional[str] = ..., guardrails: _Optional[_Iterable[_Union[_guardrails_pb2.Guardrail, _Mapping]]] = ..., infra_connections: _Optional[_Iterable[_Union[InfraConnectionBrief, _Mapping]]] = ..., test_logins: _Optional[_Iterable[_Union[TestLoginBrief, _Mapping]]] = ..., standby: bool = ..., preview_env: _Optional[_Iterable[_Union[PreviewSecretEnv, _Mapping]]] = ..., preview_ca_pem: _Optional[str] = ...) -> None: ...
+
+class PreviewSecretEnv(_message.Message):
+    __slots__ = ("name", "value", "kind")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    value: str
+    kind: str
+    def __init__(self, name: _Optional[str] = ..., value: _Optional[str] = ..., kind: _Optional[str] = ...) -> None: ...
+
+class PreviewSecret(_message.Message):
+    __slots__ = ("name", "kind", "hosts", "in_body", "is_set", "updated_at")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    HOSTS_FIELD_NUMBER: _ClassVar[int]
+    IN_BODY_FIELD_NUMBER: _ClassVar[int]
+    IS_SET_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    kind: str
+    hosts: _containers.RepeatedScalarFieldContainer[str]
+    in_body: bool
+    is_set: bool
+    updated_at: _timestamp_pb2.Timestamp
+    def __init__(self, name: _Optional[str] = ..., kind: _Optional[str] = ..., hosts: _Optional[_Iterable[str]] = ..., in_body: bool = ..., is_set: bool = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ListPreviewSecretsRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class ListPreviewSecretsResponse(_message.Message):
+    __slots__ = ("secrets",)
+    SECRETS_FIELD_NUMBER: _ClassVar[int]
+    secrets: _containers.RepeatedCompositeFieldContainer[PreviewSecret]
+    def __init__(self, secrets: _Optional[_Iterable[_Union[PreviewSecret, _Mapping]]] = ...) -> None: ...
+
+class PutPreviewSecretRequest(_message.Message):
+    __slots__ = ("workspace_id", "secret", "value", "requested_by")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    SECRET_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    secret: PreviewSecret
+    value: str
+    requested_by: str
+    def __init__(self, workspace_id: _Optional[str] = ..., secret: _Optional[_Union[PreviewSecret, _Mapping]] = ..., value: _Optional[str] = ..., requested_by: _Optional[str] = ...) -> None: ...
+
+class PutPreviewSecretResponse(_message.Message):
+    __slots__ = ("secret",)
+    SECRET_FIELD_NUMBER: _ClassVar[int]
+    secret: PreviewSecret
+    def __init__(self, secret: _Optional[_Union[PreviewSecret, _Mapping]] = ...) -> None: ...
+
+class DeletePreviewSecretRequest(_message.Message):
+    __slots__ = ("workspace_id", "name", "requested_by")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    name: str
+    requested_by: str
+    def __init__(self, workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., requested_by: _Optional[str] = ...) -> None: ...
+
+class DeletePreviewSecretResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
 
 class TeamContext(_message.Message):
     __slots__ = ("team_id", "name", "handle", "purpose", "members", "member_id", "coordinator", "board_id", "paused", "cap_note", "memory")

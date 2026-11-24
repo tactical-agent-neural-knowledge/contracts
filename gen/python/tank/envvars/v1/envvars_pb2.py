@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1dtank/envvars/v1/envvars.proto\x12\x0ftank.envvars.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbb\x01\n\x06\x45nvVar\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n\x05value\x18\x02 \x01(\tR\x05value\x12\x16\n\x06secret\x18\x03 \x01(\x08R\x06secret\x12\x15\n\x06is_set\x18\x04 \x01(\x08R\x05isSet\x12\x39\n\nupdated_at\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x1d\n\nupdated_by\x18\x06 \x01(\tR\tupdatedBy\"7\n\x12ListEnvVarsRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\"B\n\x13ListEnvVarsResponse\x12+\n\x04vars\x18\x01 \x03(\x0b\x32\x17.tank.envvars.v1.EnvVarR\x04vars\"\x98\x01\n\x10PutEnvVarRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05value\x18\x03 \x01(\tR\x05value\x12\x16\n\x06secret\x18\x04 \x01(\x08R\x06secret\x12\x1f\n\x0b\x63reate_only\x18\x05 \x01(\x08R\ncreateOnly\"X\n\x11PutEnvVarResponse\x12)\n\x03var\x18\x01 \x01(\x0b\x32\x17.tank.envvars.v1.EnvVarR\x03var\x12\x18\n\x07\x63reated\x18\x02 \x01(\x08R\x07\x63reated\"L\n\x13\x44\x65leteEnvVarRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\"\x16\n\x14\x44\x65leteEnvVarResponse2\x9a\x02\n\rEnvVarService\x12X\n\x0bListEnvVars\x12#.tank.envvars.v1.ListEnvVarsRequest\x1a$.tank.envvars.v1.ListEnvVarsResponse\x12R\n\tPutEnvVar\x12!.tank.envvars.v1.PutEnvVarRequest\x1a\".tank.envvars.v1.PutEnvVarResponse\x12[\n\x0c\x44\x65leteEnvVar\x12$.tank.envvars.v1.DeleteEnvVarRequest\x1a%.tank.envvars.v1.DeleteEnvVarResponseB\xd8\x01\n\x13\x63om.tank.envvars.v1B\x0c\x45nvvarsProtoP\x01ZUgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/envvars/v1;envvarsv1\xa2\x02\x03TEX\xaa\x02\x0fTank.Envvars.V1\xca\x02\x0fTank\\Envvars\\V1\xe2\x02\x1bTank\\Envvars\\V1\\GPBMetadata\xea\x02\x11Tank::Envvars::V1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1dtank/envvars/v1/envvars.proto\x12\x0ftank.envvars.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa9\x02\n\x06\x45nvVar\x12\x12\n\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n\x05value\x18\x02 \x01(\tR\x05value\x12\x16\n\x06secret\x18\x03 \x01(\x08R\x06secret\x12\x15\n\x06is_set\x18\x04 \x01(\x08R\x05isSet\x12\x39\n\nupdated_at\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x1d\n\nupdated_by\x18\x06 \x01(\tR\tupdatedBy\x12\x1f\n\x0bpreview_set\x18\x07 \x01(\x08R\npreviewSet\x12#\n\rpreview_hosts\x18\x08 \x03(\tR\x0cpreviewHosts\x12&\n\x0fpreview_in_body\x18\t \x01(\x08R\rpreviewInBody\"7\n\x12ListEnvVarsRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\"B\n\x13ListEnvVarsResponse\x12+\n\x04vars\x18\x01 \x03(\x0b\x32\x17.tank.envvars.v1.EnvVarR\x04vars\"\x98\x01\n\x10PutEnvVarRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05value\x18\x03 \x01(\tR\x05value\x12\x16\n\x06secret\x18\x04 \x01(\x08R\x06secret\x12\x1f\n\x0b\x63reate_only\x18\x05 \x01(\x08R\ncreateOnly\"X\n\x11PutEnvVarResponse\x12)\n\x03var\x18\x01 \x01(\x0b\x32\x17.tank.envvars.v1.EnvVarR\x03var\x12\x18\n\x07\x63reated\x18\x02 \x01(\x08R\x07\x63reated\"L\n\x13\x44\x65leteEnvVarRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\"\x16\n\x14\x44\x65leteEnvVarResponse\"\x94\x01\n\x16PutPreviewValueRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n\x05value\x18\x03 \x01(\tR\x05value\x12\x14\n\x05hosts\x18\x04 \x03(\tR\x05hosts\x12\x17\n\x07in_body\x18\x05 \x01(\x08R\x06inBody\"D\n\x17PutPreviewValueResponse\x12)\n\x03var\x18\x01 \x01(\x0b\x32\x17.tank.envvars.v1.EnvVarR\x03var\"Q\n\x18\x43learPreviewValueRequest\x12!\n\x0cworkspace_id\x18\x01 \x01(\tR\x0bworkspaceId\x12\x12\n\x04name\x18\x02 \x01(\tR\x04name\"F\n\x19\x43learPreviewValueResponse\x12)\n\x03var\x18\x01 \x01(\x0b\x32\x17.tank.envvars.v1.EnvVarR\x03var2\xec\x03\n\rEnvVarService\x12X\n\x0bListEnvVars\x12#.tank.envvars.v1.ListEnvVarsRequest\x1a$.tank.envvars.v1.ListEnvVarsResponse\x12R\n\tPutEnvVar\x12!.tank.envvars.v1.PutEnvVarRequest\x1a\".tank.envvars.v1.PutEnvVarResponse\x12[\n\x0c\x44\x65leteEnvVar\x12$.tank.envvars.v1.DeleteEnvVarRequest\x1a%.tank.envvars.v1.DeleteEnvVarResponse\x12\x64\n\x0fPutPreviewValue\x12\'.tank.envvars.v1.PutPreviewValueRequest\x1a(.tank.envvars.v1.PutPreviewValueResponse\x12j\n\x11\x43learPreviewValue\x12).tank.envvars.v1.ClearPreviewValueRequest\x1a*.tank.envvars.v1.ClearPreviewValueResponseB\xd8\x01\n\x13\x63om.tank.envvars.v1B\x0c\x45nvvarsProtoP\x01ZUgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/envvars/v1;envvarsv1\xa2\x02\x03TEX\xaa\x02\x0fTank.Envvars.V1\xca\x02\x0fTank\\Envvars\\V1\xe2\x02\x1bTank\\Envvars\\V1\\GPBMetadata\xea\x02\x11Tank::Envvars::V1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,19 +34,27 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\023com.tank.envvars.v1B\014EnvvarsProtoP\001ZUgithub.com/tactical-agent-neural-knowledge/contracts/gen/go/tank/envvars/v1;envvarsv1\242\002\003TEX\252\002\017Tank.Envvars.V1\312\002\017Tank\\Envvars\\V1\342\002\033Tank\\Envvars\\V1\\GPBMetadata\352\002\021Tank::Envvars::V1'
   _globals['_ENVVAR']._serialized_start=84
-  _globals['_ENVVAR']._serialized_end=271
-  _globals['_LISTENVVARSREQUEST']._serialized_start=273
-  _globals['_LISTENVVARSREQUEST']._serialized_end=328
-  _globals['_LISTENVVARSRESPONSE']._serialized_start=330
-  _globals['_LISTENVVARSRESPONSE']._serialized_end=396
-  _globals['_PUTENVVARREQUEST']._serialized_start=399
-  _globals['_PUTENVVARREQUEST']._serialized_end=551
-  _globals['_PUTENVVARRESPONSE']._serialized_start=553
-  _globals['_PUTENVVARRESPONSE']._serialized_end=641
-  _globals['_DELETEENVVARREQUEST']._serialized_start=643
-  _globals['_DELETEENVVARREQUEST']._serialized_end=719
-  _globals['_DELETEENVVARRESPONSE']._serialized_start=721
-  _globals['_DELETEENVVARRESPONSE']._serialized_end=743
-  _globals['_ENVVARSERVICE']._serialized_start=746
-  _globals['_ENVVARSERVICE']._serialized_end=1028
+  _globals['_ENVVAR']._serialized_end=381
+  _globals['_LISTENVVARSREQUEST']._serialized_start=383
+  _globals['_LISTENVVARSREQUEST']._serialized_end=438
+  _globals['_LISTENVVARSRESPONSE']._serialized_start=440
+  _globals['_LISTENVVARSRESPONSE']._serialized_end=506
+  _globals['_PUTENVVARREQUEST']._serialized_start=509
+  _globals['_PUTENVVARREQUEST']._serialized_end=661
+  _globals['_PUTENVVARRESPONSE']._serialized_start=663
+  _globals['_PUTENVVARRESPONSE']._serialized_end=751
+  _globals['_DELETEENVVARREQUEST']._serialized_start=753
+  _globals['_DELETEENVVARREQUEST']._serialized_end=829
+  _globals['_DELETEENVVARRESPONSE']._serialized_start=831
+  _globals['_DELETEENVVARRESPONSE']._serialized_end=853
+  _globals['_PUTPREVIEWVALUEREQUEST']._serialized_start=856
+  _globals['_PUTPREVIEWVALUEREQUEST']._serialized_end=1004
+  _globals['_PUTPREVIEWVALUERESPONSE']._serialized_start=1006
+  _globals['_PUTPREVIEWVALUERESPONSE']._serialized_end=1074
+  _globals['_CLEARPREVIEWVALUEREQUEST']._serialized_start=1076
+  _globals['_CLEARPREVIEWVALUEREQUEST']._serialized_end=1157
+  _globals['_CLEARPREVIEWVALUERESPONSE']._serialized_start=1159
+  _globals['_CLEARPREVIEWVALUERESPONSE']._serialized_end=1229
+  _globals['_ENVVARSERVICE']._serialized_start=1232
+  _globals['_ENVVARSERVICE']._serialized_end=1724
 # @@protoc_insertion_point(module_scope)

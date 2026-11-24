@@ -272,6 +272,15 @@ const (
 	// ControlServicePutGuardrailProcedure is the fully-qualified name of the ControlService's
 	// PutGuardrail RPC.
 	ControlServicePutGuardrailProcedure = "/tank.agentctl.v1.ControlService/PutGuardrail"
+	// ControlServiceListPreviewSecretsProcedure is the fully-qualified name of the ControlService's
+	// ListPreviewSecrets RPC.
+	ControlServiceListPreviewSecretsProcedure = "/tank.agentctl.v1.ControlService/ListPreviewSecrets"
+	// ControlServicePutPreviewSecretProcedure is the fully-qualified name of the ControlService's
+	// PutPreviewSecret RPC.
+	ControlServicePutPreviewSecretProcedure = "/tank.agentctl.v1.ControlService/PutPreviewSecret"
+	// ControlServiceDeletePreviewSecretProcedure is the fully-qualified name of the ControlService's
+	// DeletePreviewSecret RPC.
+	ControlServiceDeletePreviewSecretProcedure = "/tank.agentctl.v1.ControlService/DeletePreviewSecret"
 	// ControlServiceDeleteGuardrailProcedure is the fully-qualified name of the ControlService's
 	// DeleteGuardrail RPC.
 	ControlServiceDeleteGuardrailProcedure = "/tank.agentctl.v1.ControlService/DeleteGuardrail"
@@ -2664,6 +2673,11 @@ type ControlServiceClient interface {
 	// the verdicts live here, the rating is computed here.
 	ListGuardrails(context.Context, *connect.Request[v1.ListGuardrailsRequest]) (*connect.Response[v1.ListGuardrailsResponse], error)
 	PutGuardrail(context.Context, *connect.Request[v1.PutGuardrailRequest]) (*connect.Response[v1.PutGuardrailResponse], error)
+	// Preview secrets, for the messaging core's Settings > Environment: the rows live here,
+	// each value in the Lockbox Agent vault.
+	ListPreviewSecrets(context.Context, *connect.Request[v1.ListPreviewSecretsRequest]) (*connect.Response[v1.ListPreviewSecretsResponse], error)
+	PutPreviewSecret(context.Context, *connect.Request[v1.PutPreviewSecretRequest]) (*connect.Response[v1.PutPreviewSecretResponse], error)
+	DeletePreviewSecret(context.Context, *connect.Request[v1.DeletePreviewSecretRequest]) (*connect.Response[v1.DeletePreviewSecretResponse], error)
 	DeleteGuardrail(context.Context, *connect.Request[v1.DeleteGuardrailRequest]) (*connect.Response[v1.DeleteGuardrailResponse], error)
 	RateGuardrail(context.Context, *connect.Request[v1.RateGuardrailRequest]) (*connect.Response[v1.RateGuardrailResponse], error)
 	ListGuardrailVerdicts(context.Context, *connect.Request[v1.ListGuardrailVerdictsRequest]) (*connect.Response[v1.ListGuardrailVerdictsResponse], error)
@@ -2826,6 +2840,24 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			httpClient,
 			baseURL+ControlServicePutGuardrailProcedure,
 			connect.WithSchema(controlServiceMethods.ByName("PutGuardrail")),
+			connect.WithClientOptions(opts...),
+		),
+		listPreviewSecrets: connect.NewClient[v1.ListPreviewSecretsRequest, v1.ListPreviewSecretsResponse](
+			httpClient,
+			baseURL+ControlServiceListPreviewSecretsProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListPreviewSecrets")),
+			connect.WithClientOptions(opts...),
+		),
+		putPreviewSecret: connect.NewClient[v1.PutPreviewSecretRequest, v1.PutPreviewSecretResponse](
+			httpClient,
+			baseURL+ControlServicePutPreviewSecretProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("PutPreviewSecret")),
+			connect.WithClientOptions(opts...),
+		),
+		deletePreviewSecret: connect.NewClient[v1.DeletePreviewSecretRequest, v1.DeletePreviewSecretResponse](
+			httpClient,
+			baseURL+ControlServiceDeletePreviewSecretProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("DeletePreviewSecret")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteGuardrail: connect.NewClient[v1.DeleteGuardrailRequest, v1.DeleteGuardrailResponse](
@@ -3262,6 +3294,9 @@ type controlServiceClient struct {
 	arenaTurn                     *connect.Client[v1.ArenaTurnRequest, v1.ArenaTurnResponse]
 	listGuardrails                *connect.Client[v1.ListGuardrailsRequest, v1.ListGuardrailsResponse]
 	putGuardrail                  *connect.Client[v1.PutGuardrailRequest, v1.PutGuardrailResponse]
+	listPreviewSecrets            *connect.Client[v1.ListPreviewSecretsRequest, v1.ListPreviewSecretsResponse]
+	putPreviewSecret              *connect.Client[v1.PutPreviewSecretRequest, v1.PutPreviewSecretResponse]
+	deletePreviewSecret           *connect.Client[v1.DeletePreviewSecretRequest, v1.DeletePreviewSecretResponse]
 	deleteGuardrail               *connect.Client[v1.DeleteGuardrailRequest, v1.DeleteGuardrailResponse]
 	rateGuardrail                 *connect.Client[v1.RateGuardrailRequest, v1.RateGuardrailResponse]
 	listGuardrailVerdicts         *connect.Client[v1.ListGuardrailVerdictsRequest, v1.ListGuardrailVerdictsResponse]
@@ -3348,6 +3383,21 @@ func (c *controlServiceClient) ListGuardrails(ctx context.Context, req *connect.
 // PutGuardrail calls tank.agentctl.v1.ControlService.PutGuardrail.
 func (c *controlServiceClient) PutGuardrail(ctx context.Context, req *connect.Request[v1.PutGuardrailRequest]) (*connect.Response[v1.PutGuardrailResponse], error) {
 	return c.putGuardrail.CallUnary(ctx, req)
+}
+
+// ListPreviewSecrets calls tank.agentctl.v1.ControlService.ListPreviewSecrets.
+func (c *controlServiceClient) ListPreviewSecrets(ctx context.Context, req *connect.Request[v1.ListPreviewSecretsRequest]) (*connect.Response[v1.ListPreviewSecretsResponse], error) {
+	return c.listPreviewSecrets.CallUnary(ctx, req)
+}
+
+// PutPreviewSecret calls tank.agentctl.v1.ControlService.PutPreviewSecret.
+func (c *controlServiceClient) PutPreviewSecret(ctx context.Context, req *connect.Request[v1.PutPreviewSecretRequest]) (*connect.Response[v1.PutPreviewSecretResponse], error) {
+	return c.putPreviewSecret.CallUnary(ctx, req)
+}
+
+// DeletePreviewSecret calls tank.agentctl.v1.ControlService.DeletePreviewSecret.
+func (c *controlServiceClient) DeletePreviewSecret(ctx context.Context, req *connect.Request[v1.DeletePreviewSecretRequest]) (*connect.Response[v1.DeletePreviewSecretResponse], error) {
+	return c.deletePreviewSecret.CallUnary(ctx, req)
 }
 
 // DeleteGuardrail calls tank.agentctl.v1.ControlService.DeleteGuardrail.
@@ -3716,6 +3766,11 @@ type ControlServiceHandler interface {
 	// the verdicts live here, the rating is computed here.
 	ListGuardrails(context.Context, *connect.Request[v1.ListGuardrailsRequest]) (*connect.Response[v1.ListGuardrailsResponse], error)
 	PutGuardrail(context.Context, *connect.Request[v1.PutGuardrailRequest]) (*connect.Response[v1.PutGuardrailResponse], error)
+	// Preview secrets, for the messaging core's Settings > Environment: the rows live here,
+	// each value in the Lockbox Agent vault.
+	ListPreviewSecrets(context.Context, *connect.Request[v1.ListPreviewSecretsRequest]) (*connect.Response[v1.ListPreviewSecretsResponse], error)
+	PutPreviewSecret(context.Context, *connect.Request[v1.PutPreviewSecretRequest]) (*connect.Response[v1.PutPreviewSecretResponse], error)
+	DeletePreviewSecret(context.Context, *connect.Request[v1.DeletePreviewSecretRequest]) (*connect.Response[v1.DeletePreviewSecretResponse], error)
 	DeleteGuardrail(context.Context, *connect.Request[v1.DeleteGuardrailRequest]) (*connect.Response[v1.DeleteGuardrailResponse], error)
 	RateGuardrail(context.Context, *connect.Request[v1.RateGuardrailRequest]) (*connect.Response[v1.RateGuardrailResponse], error)
 	ListGuardrailVerdicts(context.Context, *connect.Request[v1.ListGuardrailVerdictsRequest]) (*connect.Response[v1.ListGuardrailVerdictsResponse], error)
@@ -3874,6 +3929,24 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		ControlServicePutGuardrailProcedure,
 		svc.PutGuardrail,
 		connect.WithSchema(controlServiceMethods.ByName("PutGuardrail")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceListPreviewSecretsHandler := connect.NewUnaryHandler(
+		ControlServiceListPreviewSecretsProcedure,
+		svc.ListPreviewSecrets,
+		connect.WithSchema(controlServiceMethods.ByName("ListPreviewSecrets")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServicePutPreviewSecretHandler := connect.NewUnaryHandler(
+		ControlServicePutPreviewSecretProcedure,
+		svc.PutPreviewSecret,
+		connect.WithSchema(controlServiceMethods.ByName("PutPreviewSecret")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceDeletePreviewSecretHandler := connect.NewUnaryHandler(
+		ControlServiceDeletePreviewSecretProcedure,
+		svc.DeletePreviewSecret,
+		connect.WithSchema(controlServiceMethods.ByName("DeletePreviewSecret")),
 		connect.WithHandlerOptions(opts...),
 	)
 	controlServiceDeleteGuardrailHandler := connect.NewUnaryHandler(
@@ -4310,6 +4383,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceListGuardrailsHandler.ServeHTTP(w, r)
 		case ControlServicePutGuardrailProcedure:
 			controlServicePutGuardrailHandler.ServeHTTP(w, r)
+		case ControlServiceListPreviewSecretsProcedure:
+			controlServiceListPreviewSecretsHandler.ServeHTTP(w, r)
+		case ControlServicePutPreviewSecretProcedure:
+			controlServicePutPreviewSecretHandler.ServeHTTP(w, r)
+		case ControlServiceDeletePreviewSecretProcedure:
+			controlServiceDeletePreviewSecretHandler.ServeHTTP(w, r)
 		case ControlServiceDeleteGuardrailProcedure:
 			controlServiceDeleteGuardrailHandler.ServeHTTP(w, r)
 		case ControlServiceRateGuardrailProcedure:
@@ -4471,6 +4550,18 @@ func (UnimplementedControlServiceHandler) ListGuardrails(context.Context, *conne
 
 func (UnimplementedControlServiceHandler) PutGuardrail(context.Context, *connect.Request[v1.PutGuardrailRequest]) (*connect.Response[v1.PutGuardrailResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.PutGuardrail is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListPreviewSecrets(context.Context, *connect.Request[v1.ListPreviewSecretsRequest]) (*connect.Response[v1.ListPreviewSecretsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListPreviewSecrets is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) PutPreviewSecret(context.Context, *connect.Request[v1.PutPreviewSecretRequest]) (*connect.Response[v1.PutPreviewSecretResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.PutPreviewSecret is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) DeletePreviewSecret(context.Context, *connect.Request[v1.DeletePreviewSecretRequest]) (*connect.Response[v1.DeletePreviewSecretResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.DeletePreviewSecret is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) DeleteGuardrail(context.Context, *connect.Request[v1.DeleteGuardrailRequest]) (*connect.Response[v1.DeleteGuardrailResponse], error) {
