@@ -229,6 +229,11 @@ enum TaskRunEvent {
   TASK_RUN_EVENT_PROGRESS = 3; // the progress line changed
   TASK_RUN_EVENT_READY = 4;    // finished with proof: → READY_TO_CHECK
   TASK_RUN_EVENT_STUCK = 5;    // failed, stopped, out of agent time, or at a guardrail
+  // Finished with nothing left for a person to check (2026-11-24): a merge a person
+  // approved and TANK confirmed live (the approval was the check; checked_by names the
+  // approver), or work that changed nothing to approve (an answer, a live check, a
+  // read-only ask). → DONE, with proof.
+  TASK_RUN_EVENT_DONE = 6;
 }
 
 // Control plane only: the run's own token or the control plane's bot token with
@@ -241,6 +246,7 @@ message RecordTaskRunRequest {
   TaskProof proof = 5;
   string reason = 6;  // STUCK: one sentence a person reads
   string progress = 7;
+  string checked_by = 8; // DONE: the person whose approval was the check; empty when nothing needed one
 }
 message RecordTaskRunResponse {
   Task task = 1;
