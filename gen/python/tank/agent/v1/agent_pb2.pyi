@@ -1147,7 +1147,7 @@ class SetRepoDeliveryResponse(_message.Message):
     def __init__(self, repo: _Optional[_Union[RepoDelivery, _Mapping]] = ..., report_token: _Optional[str] = ...) -> None: ...
 
 class PredictedWork(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "task_id", "title", "summary", "source", "state", "repo", "branch", "preview_url", "migration_proof", "migration_ms", "created_at", "ready_at", "run_id")
+    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "task_id", "title", "summary", "source", "state", "repo", "branch", "preview_url", "migration_proof", "migration_ms", "created_at", "ready_at", "run_id", "source_task_id")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -1165,6 +1165,7 @@ class PredictedWork(_message.Message):
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     READY_AT_FIELD_NUMBER: _ClassVar[int]
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_TASK_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -1182,7 +1183,8 @@ class PredictedWork(_message.Message):
     created_at: _timestamp_pb2.Timestamp
     ready_at: _timestamp_pb2.Timestamp
     run_id: str
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., task_id: _Optional[str] = ..., title: _Optional[str] = ..., summary: _Optional[str] = ..., source: _Optional[str] = ..., state: _Optional[str] = ..., repo: _Optional[str] = ..., branch: _Optional[str] = ..., preview_url: _Optional[str] = ..., migration_proof: _Optional[str] = ..., migration_ms: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., ready_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., run_id: _Optional[str] = ...) -> None: ...
+    source_task_id: str
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., task_id: _Optional[str] = ..., title: _Optional[str] = ..., summary: _Optional[str] = ..., source: _Optional[str] = ..., state: _Optional[str] = ..., repo: _Optional[str] = ..., branch: _Optional[str] = ..., preview_url: _Optional[str] = ..., migration_proof: _Optional[str] = ..., migration_ms: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., ready_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., run_id: _Optional[str] = ..., source_task_id: _Optional[str] = ...) -> None: ...
 
 class ListPredictedWorkRequest(_message.Message):
     __slots__ = ("workspace_id", "task_id", "thread_root_id", "include_closed")
