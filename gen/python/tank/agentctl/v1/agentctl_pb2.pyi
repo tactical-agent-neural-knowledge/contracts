@@ -2056,6 +2056,22 @@ class GetRunRequest(_message.Message):
     run_id: str
     def __init__(self, run_id: _Optional[str] = ...) -> None: ...
 
+class GetRunReplayRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "run_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    run_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., run_id: _Optional[str] = ...) -> None: ...
+
+class GetRunReplayResponse(_message.Message):
+    __slots__ = ("replay",)
+    REPLAY_FIELD_NUMBER: _ClassVar[int]
+    replay: _board_pb2.RunReplay
+    def __init__(self, replay: _Optional[_Union[_board_pb2.RunReplay, _Mapping]] = ...) -> None: ...
+
 class GetRunResponse(_message.Message):
     __slots__ = ("run", "sdk_session_id", "head_sha", "gates")
     RUN_FIELD_NUMBER: _ClassVar[int]

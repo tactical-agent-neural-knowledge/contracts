@@ -1163,3 +1163,111 @@ class RemoveBoardAccessResponse(_message.Message):
     GRANTS_FIELD_NUMBER: _ClassVar[int]
     grants: _containers.RepeatedCompositeFieldContainer[_access_pb2.Grant]
     def __init__(self, grants: _Optional[_Iterable[_Union[_access_pb2.Grant, _Mapping]]] = ...) -> None: ...
+
+class ReplayFrame(_message.Message):
+    __slots__ = ("at", "objects", "delete_ids", "live", "state")
+    AT_FIELD_NUMBER: _ClassVar[int]
+    OBJECTS_FIELD_NUMBER: _ClassVar[int]
+    DELETE_IDS_FIELD_NUMBER: _ClassVar[int]
+    LIVE_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    at: _timestamp_pb2.Timestamp
+    objects: _containers.RepeatedCompositeFieldContainer[BoardObject]
+    delete_ids: _containers.RepeatedScalarFieldContainer[str]
+    live: str
+    state: str
+    def __init__(self, at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., objects: _Optional[_Iterable[_Union[BoardObject, _Mapping]]] = ..., delete_ids: _Optional[_Iterable[str]] = ..., live: _Optional[str] = ..., state: _Optional[str] = ...) -> None: ...
+
+class RunReplay(_message.Message):
+    __slots__ = ("run_id", "title", "started_at", "ended_at", "state", "frames", "board_id", "runs")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    STARTED_AT_FIELD_NUMBER: _ClassVar[int]
+    ENDED_AT_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    FRAMES_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    RUNS_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    title: str
+    started_at: _timestamp_pb2.Timestamp
+    ended_at: _timestamp_pb2.Timestamp
+    state: str
+    frames: _containers.RepeatedCompositeFieldContainer[ReplayFrame]
+    board_id: str
+    runs: _containers.RepeatedCompositeFieldContainer[RunReplaySummary]
+    def __init__(self, run_id: _Optional[str] = ..., title: _Optional[str] = ..., started_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., ended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., state: _Optional[str] = ..., frames: _Optional[_Iterable[_Union[ReplayFrame, _Mapping]]] = ..., board_id: _Optional[str] = ..., runs: _Optional[_Iterable[_Union[RunReplaySummary, _Mapping]]] = ...) -> None: ...
+
+class RunReplaySummary(_message.Message):
+    __slots__ = ("run_id", "title", "started_at", "state")
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    STARTED_AT_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    run_id: str
+    title: str
+    started_at: _timestamp_pb2.Timestamp
+    state: str
+    def __init__(self, run_id: _Optional[str] = ..., title: _Optional[str] = ..., started_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., state: _Optional[str] = ...) -> None: ...
+
+class GetRunReplayRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "run_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    run_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., run_id: _Optional[str] = ...) -> None: ...
+
+class GetRunReplayResponse(_message.Message):
+    __slots__ = ("replay",)
+    REPLAY_FIELD_NUMBER: _ClassVar[int]
+    replay: RunReplay
+    def __init__(self, replay: _Optional[_Union[RunReplay, _Mapping]] = ...) -> None: ...
+
+class ShareRunReplayRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id", "run_id", "hours")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    HOURS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    run_id: str
+    hours: int
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ..., run_id: _Optional[str] = ..., hours: _Optional[int] = ...) -> None: ...
+
+class ShareRunReplayResponse(_message.Message):
+    __slots__ = ("url", "expires_at")
+    URL_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    expires_at: _timestamp_pb2.Timestamp
+    def __init__(self, url: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class StopRunReplaySharesRequest(_message.Message):
+    __slots__ = ("workspace_id", "board_id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    BOARD_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    board_id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., board_id: _Optional[str] = ...) -> None: ...
+
+class StopRunReplaySharesResponse(_message.Message):
+    __slots__ = ("stopped",)
+    STOPPED_FIELD_NUMBER: _ClassVar[int]
+    stopped: int
+    def __init__(self, stopped: _Optional[int] = ...) -> None: ...
+
+class GetSharedRunReplayRequest(_message.Message):
+    __slots__ = ("token",)
+    TOKEN_FIELD_NUMBER: _ClassVar[int]
+    token: str
+    def __init__(self, token: _Optional[str] = ...) -> None: ...
+
+class GetSharedRunReplayResponse(_message.Message):
+    __slots__ = ("replay",)
+    REPLAY_FIELD_NUMBER: _ClassVar[int]
+    replay: RunReplay
+    def __init__(self, replay: _Optional[_Union[RunReplay, _Mapping]] = ...) -> None: ...

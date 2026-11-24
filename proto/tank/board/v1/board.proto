@@ -814,3 +814,74 @@ message RemoveBoardAccessRequest {
   string user_id = 3;
 }
 message RemoveBoardAccessResponse { repeated tank.access.v1.Grant grants = 1; }
+
+// Replay (Overdrive, 2026-11-24): a run's live view as it happened. Every write the run made to
+// its Workbench and every line people read while it worked ("Running the tests"), in order,
+// so a page can scrub through the task from its first step to its last. Private to the people
+// who may read the bench; shared outside only by a link that expires and can be stopped.
+message ReplayFrame {
+  google.protobuf.Timestamp at = 1;
+  // The bench objects written at this moment, whole, and the ones taken off.
+  repeated BoardObject objects = 2;
+  repeated string delete_ids = 3;
+  // The live line when it changed; empty when it did not.
+  string live = 4;
+  // The run's state when it changed (running, done, failed, …); empty when it did not.
+  string state = 5;
+}
+message RunReplay {
+  string run_id = 1;
+  string title = 2;                       // the ask, one line
+  google.protobuf.Timestamp started_at = 3;
+  google.protobuf.Timestamp ended_at = 4; // unset while it works
+  string state = 5;
+  repeated ReplayFrame frames = 6;        // oldest first
+  string board_id = 7;
+  // Other runs that worked on this bench, newest first, for a picker: id, title, started_at.
+  repeated RunReplaySummary runs = 8;
+}
+message RunReplaySummary {
+  string run_id = 1;
+  string title = 2;
+  google.protobuf.Timestamp started_at = 3;
+  string state = 4;
+}
+
+message GetRunReplayRequest {
+  string workspace_id = 1;
+  string board_id = 2;                    // the Workbench
+  string run_id = 3;                      // empty: the latest run on it
+}
+message GetRunReplayResponse { RunReplay replay = 1; }
+
+// A link to one run's replay for somebody outside the workspace, for as long as the person
+// sharing chose (1 to 720 hours; 0 = 24), until somebody stops it. Managers of the bench only.
+message ShareRunReplayRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  string run_id = 3;
+  int32 hours = 4;
+}
+message ShareRunReplayResponse {
+  // The link, present only in the response that made it: it is a credential and is never
+  // stored or read back.
+  string url = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+// Stops every outside link to the replays of this bench's runs.
+message StopRunReplaySharesRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+}
+message StopRunReplaySharesResponse { int32 stopped = 1; }
+// What a shared link opens, with no sign-in: the one run's replay, or NotFound.
+message GetSharedRunReplayRequest { string token = 1; }
+message GetSharedRunReplayResponse { RunReplay replay = 1; }
+
+service RunReplayService {
+  rpc GetRunReplay(GetRunReplayRequest) returns (GetRunReplayResponse);
+  rpc ShareRunReplay(ShareRunReplayRequest) returns (ShareRunReplayResponse);
+  rpc StopRunReplayShares(StopRunReplaySharesRequest) returns (StopRunReplaySharesResponse);
+  // Public: the token is the credential.
+  rpc GetSharedRunReplay(GetSharedRunReplayRequest) returns (GetSharedRunReplayResponse);
+}

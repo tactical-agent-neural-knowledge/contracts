@@ -23,6 +23,8 @@ const _ = connect.IsAtLeastVersion1_13_0
 const (
 	// BoardServiceName is the fully-qualified name of the BoardService service.
 	BoardServiceName = "tank.board.v1.BoardService"
+	// RunReplayServiceName is the fully-qualified name of the RunReplayService service.
+	RunReplayServiceName = "tank.board.v1.RunReplayService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -133,6 +135,18 @@ const (
 	// BoardServiceApproveChangeProcedure is the fully-qualified name of the BoardService's
 	// ApproveChange RPC.
 	BoardServiceApproveChangeProcedure = "/tank.board.v1.BoardService/ApproveChange"
+	// RunReplayServiceGetRunReplayProcedure is the fully-qualified name of the RunReplayService's
+	// GetRunReplay RPC.
+	RunReplayServiceGetRunReplayProcedure = "/tank.board.v1.RunReplayService/GetRunReplay"
+	// RunReplayServiceShareRunReplayProcedure is the fully-qualified name of the RunReplayService's
+	// ShareRunReplay RPC.
+	RunReplayServiceShareRunReplayProcedure = "/tank.board.v1.RunReplayService/ShareRunReplay"
+	// RunReplayServiceStopRunReplaySharesProcedure is the fully-qualified name of the
+	// RunReplayService's StopRunReplayShares RPC.
+	RunReplayServiceStopRunReplaySharesProcedure = "/tank.board.v1.RunReplayService/StopRunReplayShares"
+	// RunReplayServiceGetSharedRunReplayProcedure is the fully-qualified name of the RunReplayService's
+	// GetSharedRunReplay RPC.
+	RunReplayServiceGetSharedRunReplayProcedure = "/tank.board.v1.RunReplayService/GetSharedRunReplay"
 )
 
 // BoardServiceClient is a client for the tank.board.v1.BoardService service.
@@ -1093,4 +1107,154 @@ func (UnimplementedBoardServiceHandler) RemoveBoardAccess(context.Context, *conn
 
 func (UnimplementedBoardServiceHandler) ApproveChange(context.Context, *connect.Request[v1.ApproveChangeRequest]) (*connect.Response[v1.ApproveChangeResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.BoardService.ApproveChange is not implemented"))
+}
+
+// RunReplayServiceClient is a client for the tank.board.v1.RunReplayService service.
+type RunReplayServiceClient interface {
+	GetRunReplay(context.Context, *connect.Request[v1.GetRunReplayRequest]) (*connect.Response[v1.GetRunReplayResponse], error)
+	ShareRunReplay(context.Context, *connect.Request[v1.ShareRunReplayRequest]) (*connect.Response[v1.ShareRunReplayResponse], error)
+	StopRunReplayShares(context.Context, *connect.Request[v1.StopRunReplaySharesRequest]) (*connect.Response[v1.StopRunReplaySharesResponse], error)
+	// Public: the token is the credential.
+	GetSharedRunReplay(context.Context, *connect.Request[v1.GetSharedRunReplayRequest]) (*connect.Response[v1.GetSharedRunReplayResponse], error)
+}
+
+// NewRunReplayServiceClient constructs a client for the tank.board.v1.RunReplayService service. By
+// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
+// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
+//
+// The URL supplied here should be the base URL for the Connect or gRPC server (for example,
+// http://api.acme.com or https://acme.com/grpc).
+func NewRunReplayServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) RunReplayServiceClient {
+	baseURL = strings.TrimRight(baseURL, "/")
+	runReplayServiceMethods := v1.File_tank_board_v1_board_proto.Services().ByName("RunReplayService").Methods()
+	return &runReplayServiceClient{
+		getRunReplay: connect.NewClient[v1.GetRunReplayRequest, v1.GetRunReplayResponse](
+			httpClient,
+			baseURL+RunReplayServiceGetRunReplayProcedure,
+			connect.WithSchema(runReplayServiceMethods.ByName("GetRunReplay")),
+			connect.WithClientOptions(opts...),
+		),
+		shareRunReplay: connect.NewClient[v1.ShareRunReplayRequest, v1.ShareRunReplayResponse](
+			httpClient,
+			baseURL+RunReplayServiceShareRunReplayProcedure,
+			connect.WithSchema(runReplayServiceMethods.ByName("ShareRunReplay")),
+			connect.WithClientOptions(opts...),
+		),
+		stopRunReplayShares: connect.NewClient[v1.StopRunReplaySharesRequest, v1.StopRunReplaySharesResponse](
+			httpClient,
+			baseURL+RunReplayServiceStopRunReplaySharesProcedure,
+			connect.WithSchema(runReplayServiceMethods.ByName("StopRunReplayShares")),
+			connect.WithClientOptions(opts...),
+		),
+		getSharedRunReplay: connect.NewClient[v1.GetSharedRunReplayRequest, v1.GetSharedRunReplayResponse](
+			httpClient,
+			baseURL+RunReplayServiceGetSharedRunReplayProcedure,
+			connect.WithSchema(runReplayServiceMethods.ByName("GetSharedRunReplay")),
+			connect.WithClientOptions(opts...),
+		),
+	}
+}
+
+// runReplayServiceClient implements RunReplayServiceClient.
+type runReplayServiceClient struct {
+	getRunReplay        *connect.Client[v1.GetRunReplayRequest, v1.GetRunReplayResponse]
+	shareRunReplay      *connect.Client[v1.ShareRunReplayRequest, v1.ShareRunReplayResponse]
+	stopRunReplayShares *connect.Client[v1.StopRunReplaySharesRequest, v1.StopRunReplaySharesResponse]
+	getSharedRunReplay  *connect.Client[v1.GetSharedRunReplayRequest, v1.GetSharedRunReplayResponse]
+}
+
+// GetRunReplay calls tank.board.v1.RunReplayService.GetRunReplay.
+func (c *runReplayServiceClient) GetRunReplay(ctx context.Context, req *connect.Request[v1.GetRunReplayRequest]) (*connect.Response[v1.GetRunReplayResponse], error) {
+	return c.getRunReplay.CallUnary(ctx, req)
+}
+
+// ShareRunReplay calls tank.board.v1.RunReplayService.ShareRunReplay.
+func (c *runReplayServiceClient) ShareRunReplay(ctx context.Context, req *connect.Request[v1.ShareRunReplayRequest]) (*connect.Response[v1.ShareRunReplayResponse], error) {
+	return c.shareRunReplay.CallUnary(ctx, req)
+}
+
+// StopRunReplayShares calls tank.board.v1.RunReplayService.StopRunReplayShares.
+func (c *runReplayServiceClient) StopRunReplayShares(ctx context.Context, req *connect.Request[v1.StopRunReplaySharesRequest]) (*connect.Response[v1.StopRunReplaySharesResponse], error) {
+	return c.stopRunReplayShares.CallUnary(ctx, req)
+}
+
+// GetSharedRunReplay calls tank.board.v1.RunReplayService.GetSharedRunReplay.
+func (c *runReplayServiceClient) GetSharedRunReplay(ctx context.Context, req *connect.Request[v1.GetSharedRunReplayRequest]) (*connect.Response[v1.GetSharedRunReplayResponse], error) {
+	return c.getSharedRunReplay.CallUnary(ctx, req)
+}
+
+// RunReplayServiceHandler is an implementation of the tank.board.v1.RunReplayService service.
+type RunReplayServiceHandler interface {
+	GetRunReplay(context.Context, *connect.Request[v1.GetRunReplayRequest]) (*connect.Response[v1.GetRunReplayResponse], error)
+	ShareRunReplay(context.Context, *connect.Request[v1.ShareRunReplayRequest]) (*connect.Response[v1.ShareRunReplayResponse], error)
+	StopRunReplayShares(context.Context, *connect.Request[v1.StopRunReplaySharesRequest]) (*connect.Response[v1.StopRunReplaySharesResponse], error)
+	// Public: the token is the credential.
+	GetSharedRunReplay(context.Context, *connect.Request[v1.GetSharedRunReplayRequest]) (*connect.Response[v1.GetSharedRunReplayResponse], error)
+}
+
+// NewRunReplayServiceHandler builds an HTTP handler from the service implementation. It returns the
+// path on which to mount the handler and the handler itself.
+//
+// By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
+// and JSON codecs. They also support gzip compression.
+func NewRunReplayServiceHandler(svc RunReplayServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	runReplayServiceMethods := v1.File_tank_board_v1_board_proto.Services().ByName("RunReplayService").Methods()
+	runReplayServiceGetRunReplayHandler := connect.NewUnaryHandler(
+		RunReplayServiceGetRunReplayProcedure,
+		svc.GetRunReplay,
+		connect.WithSchema(runReplayServiceMethods.ByName("GetRunReplay")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runReplayServiceShareRunReplayHandler := connect.NewUnaryHandler(
+		RunReplayServiceShareRunReplayProcedure,
+		svc.ShareRunReplay,
+		connect.WithSchema(runReplayServiceMethods.ByName("ShareRunReplay")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runReplayServiceStopRunReplaySharesHandler := connect.NewUnaryHandler(
+		RunReplayServiceStopRunReplaySharesProcedure,
+		svc.StopRunReplayShares,
+		connect.WithSchema(runReplayServiceMethods.ByName("StopRunReplayShares")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runReplayServiceGetSharedRunReplayHandler := connect.NewUnaryHandler(
+		RunReplayServiceGetSharedRunReplayProcedure,
+		svc.GetSharedRunReplay,
+		connect.WithSchema(runReplayServiceMethods.ByName("GetSharedRunReplay")),
+		connect.WithHandlerOptions(opts...),
+	)
+	return "/tank.board.v1.RunReplayService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case RunReplayServiceGetRunReplayProcedure:
+			runReplayServiceGetRunReplayHandler.ServeHTTP(w, r)
+		case RunReplayServiceShareRunReplayProcedure:
+			runReplayServiceShareRunReplayHandler.ServeHTTP(w, r)
+		case RunReplayServiceStopRunReplaySharesProcedure:
+			runReplayServiceStopRunReplaySharesHandler.ServeHTTP(w, r)
+		case RunReplayServiceGetSharedRunReplayProcedure:
+			runReplayServiceGetSharedRunReplayHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+}
+
+// UnimplementedRunReplayServiceHandler returns CodeUnimplemented from all methods.
+type UnimplementedRunReplayServiceHandler struct{}
+
+func (UnimplementedRunReplayServiceHandler) GetRunReplay(context.Context, *connect.Request[v1.GetRunReplayRequest]) (*connect.Response[v1.GetRunReplayResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.RunReplayService.GetRunReplay is not implemented"))
+}
+
+func (UnimplementedRunReplayServiceHandler) ShareRunReplay(context.Context, *connect.Request[v1.ShareRunReplayRequest]) (*connect.Response[v1.ShareRunReplayResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.RunReplayService.ShareRunReplay is not implemented"))
+}
+
+func (UnimplementedRunReplayServiceHandler) StopRunReplayShares(context.Context, *connect.Request[v1.StopRunReplaySharesRequest]) (*connect.Response[v1.StopRunReplaySharesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.RunReplayService.StopRunReplayShares is not implemented"))
+}
+
+func (UnimplementedRunReplayServiceHandler) GetSharedRunReplay(context.Context, *connect.Request[v1.GetSharedRunReplayRequest]) (*connect.Response[v1.GetSharedRunReplayResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.board.v1.RunReplayService.GetSharedRunReplay is not implemented"))
 }
