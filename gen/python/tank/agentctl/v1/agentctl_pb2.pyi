@@ -231,14 +231,16 @@ class RunContext(_message.Message):
     def __init__(self, run_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., agent_name: _Optional[str] = ..., requested_by: _Optional[str] = ..., phase: _Optional[_Union[RunPhase, str]] = ..., instructions: _Optional[str] = ..., thread_excerpt: _Optional[_Iterable[_Union[ThreadMessage, _Mapping]]] = ..., repo: _Optional[str] = ..., base_branch: _Optional[str] = ..., branch: _Optional[str] = ..., toolchain: _Optional[str] = ..., policy: _Optional[_Union[PolicySummary, _Mapping]] = ..., operating_rules: _Optional[str] = ..., approved_plan: _Optional[_Union[ApprovedPlan, _Mapping]] = ..., sdk_session_id: _Optional[str] = ..., workspace_dir: _Optional[str] = ..., git_remote_url: _Optional[str] = ..., attachments: _Optional[_Iterable[_Union[Attachment, _Mapping]]] = ..., repo_access: _Optional[_Iterable[_Union[RepoAccess, _Mapping]]] = ..., product_run: bool = ..., channel_purpose: _Optional[str] = ..., channel_goal: _Optional[str] = ..., agent_title: _Optional[str] = ..., agent_skill: _Optional[str] = ..., skip_neural_knowledge: bool = ..., task_class: _Optional[str] = ..., workbench_board_id: _Optional[str] = ..., tread_brief: _Optional[str] = ..., tread_plan: _Optional[_Union[_agent_pb2.TreadPlan, _Mapping]] = ..., mode: _Optional[str] = ..., team: _Optional[_Union[TeamContext, _Mapping]] = ..., parent_run_id: _Optional[str] = ..., handoff: _Optional[_Union[Handoff, _Mapping]] = ..., envelope_left: _Optional[_Union[Envelope, _Mapping]] = ..., git_proxy_url: _Optional[str] = ..., guardrails: _Optional[_Iterable[_Union[_guardrails_pb2.Guardrail, _Mapping]]] = ..., infra_connections: _Optional[_Iterable[_Union[InfraConnectionBrief, _Mapping]]] = ..., test_logins: _Optional[_Iterable[_Union[TestLoginBrief, _Mapping]]] = ..., standby: bool = ..., preview_env: _Optional[_Iterable[_Union[PreviewSecretEnv, _Mapping]]] = ..., preview_ca_pem: _Optional[str] = ...) -> None: ...
 
 class PreviewSecretEnv(_message.Message):
-    __slots__ = ("name", "value", "kind")
+    __slots__ = ("name", "value", "kind", "hosts")
     NAME_FIELD_NUMBER: _ClassVar[int]
     VALUE_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
+    HOSTS_FIELD_NUMBER: _ClassVar[int]
     name: str
     value: str
     kind: str
-    def __init__(self, name: _Optional[str] = ..., value: _Optional[str] = ..., kind: _Optional[str] = ...) -> None: ...
+    hosts: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, name: _Optional[str] = ..., value: _Optional[str] = ..., kind: _Optional[str] = ..., hosts: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class PreviewSecret(_message.Message):
     __slots__ = ("name", "kind", "hosts", "in_body", "is_set", "updated_at")

@@ -202,6 +202,9 @@ message PreviewSecretEnv {
   // placeholder. generated: a value made for this run.
   string value = 2;
   string kind = 3; // http | postgres | mysql | redis | generated
+  // Where the value is sent (http) or which database it is (db kinds). Not secret: the app
+  // and a probe may read it, so a request can be aimed at the right host.
+  repeated string hosts = 4;
 }
 
 // A workspace's preview secret as the control plane keeps it. The value is write-only:
