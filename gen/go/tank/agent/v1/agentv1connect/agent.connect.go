@@ -103,6 +103,18 @@ const (
 	// AgentServiceListRepoPreviewSetupsProcedure is the fully-qualified name of the AgentService's
 	// ListRepoPreviewSetups RPC.
 	AgentServiceListRepoPreviewSetupsProcedure = "/tank.agent.v1.AgentService/ListRepoPreviewSetups"
+	// AgentServiceListRepoDeliveryProcedure is the fully-qualified name of the AgentService's
+	// ListRepoDelivery RPC.
+	AgentServiceListRepoDeliveryProcedure = "/tank.agent.v1.AgentService/ListRepoDelivery"
+	// AgentServiceSetRepoDeliveryProcedure is the fully-qualified name of the AgentService's
+	// SetRepoDelivery RPC.
+	AgentServiceSetRepoDeliveryProcedure = "/tank.agent.v1.AgentService/SetRepoDelivery"
+	// AgentServiceListPredictedWorkProcedure is the fully-qualified name of the AgentService's
+	// ListPredictedWork RPC.
+	AgentServiceListPredictedWorkProcedure = "/tank.agent.v1.AgentService/ListPredictedWork"
+	// AgentServiceDismissPredictedWorkProcedure is the fully-qualified name of the AgentService's
+	// DismissPredictedWork RPC.
+	AgentServiceDismissPredictedWorkProcedure = "/tank.agent.v1.AgentService/DismissPredictedWork"
 	// AgentServiceGetTreadSwitchboardProcedure is the fully-qualified name of the AgentService's
 	// GetTreadSwitchboard RPC.
 	AgentServiceGetTreadSwitchboardProcedure = "/tank.agent.v1.AgentService/GetTreadSwitchboard"
@@ -165,6 +177,12 @@ type AgentServiceClient interface {
 	// token that CI will need. Admins only, premium only, never a side effect.
 	SetUpRepoPreviews(context.Context, *connect.Request[v1.SetUpRepoPreviewsRequest]) (*connect.Response[v1.SetUpRepoPreviewsResponse], error)
 	ListRepoPreviewSetups(context.Context, *connect.Request[v1.ListRepoPreviewSetupsRequest]) (*connect.Response[v1.ListRepoPreviewSetupsResponse], error)
+	// Overdrive: where each connected repository builds and deploys, and the work TANK
+	// has built ahead for the workspace. Admins set; members read.
+	ListRepoDelivery(context.Context, *connect.Request[v1.ListRepoDeliveryRequest]) (*connect.Response[v1.ListRepoDeliveryResponse], error)
+	SetRepoDelivery(context.Context, *connect.Request[v1.SetRepoDeliveryRequest]) (*connect.Response[v1.SetRepoDeliveryResponse], error)
+	ListPredictedWork(context.Context, *connect.Request[v1.ListPredictedWorkRequest]) (*connect.Response[v1.ListPredictedWorkResponse], error)
+	DismissPredictedWork(context.Context, *connect.Request[v1.DismissPredictedWorkRequest]) (*connect.Response[v1.DismissPredictedWorkResponse], error)
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
@@ -354,6 +372,30 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("ListRepoPreviewSetups")),
 			connect.WithClientOptions(opts...),
 		),
+		listRepoDelivery: connect.NewClient[v1.ListRepoDeliveryRequest, v1.ListRepoDeliveryResponse](
+			httpClient,
+			baseURL+AgentServiceListRepoDeliveryProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("ListRepoDelivery")),
+			connect.WithClientOptions(opts...),
+		),
+		setRepoDelivery: connect.NewClient[v1.SetRepoDeliveryRequest, v1.SetRepoDeliveryResponse](
+			httpClient,
+			baseURL+AgentServiceSetRepoDeliveryProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("SetRepoDelivery")),
+			connect.WithClientOptions(opts...),
+		),
+		listPredictedWork: connect.NewClient[v1.ListPredictedWorkRequest, v1.ListPredictedWorkResponse](
+			httpClient,
+			baseURL+AgentServiceListPredictedWorkProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("ListPredictedWork")),
+			connect.WithClientOptions(opts...),
+		),
+		dismissPredictedWork: connect.NewClient[v1.DismissPredictedWorkRequest, v1.DismissPredictedWorkResponse](
+			httpClient,
+			baseURL+AgentServiceDismissPredictedWorkProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("DismissPredictedWork")),
+			connect.WithClientOptions(opts...),
+		),
 		getTreadSwitchboard: connect.NewClient[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse](
 			httpClient,
 			baseURL+AgentServiceGetTreadSwitchboardProcedure,
@@ -422,6 +464,10 @@ type agentServiceClient struct {
 	setTreadDeployment        *connect.Client[v1.SetTreadDeploymentRequest, v1.SetTreadDeploymentResponse]
 	setUpRepoPreviews         *connect.Client[v1.SetUpRepoPreviewsRequest, v1.SetUpRepoPreviewsResponse]
 	listRepoPreviewSetups     *connect.Client[v1.ListRepoPreviewSetupsRequest, v1.ListRepoPreviewSetupsResponse]
+	listRepoDelivery          *connect.Client[v1.ListRepoDeliveryRequest, v1.ListRepoDeliveryResponse]
+	setRepoDelivery           *connect.Client[v1.SetRepoDeliveryRequest, v1.SetRepoDeliveryResponse]
+	listPredictedWork         *connect.Client[v1.ListPredictedWorkRequest, v1.ListPredictedWorkResponse]
+	dismissPredictedWork      *connect.Client[v1.DismissPredictedWorkRequest, v1.DismissPredictedWorkResponse]
 	getTreadSwitchboard       *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
 	setTreadSettings          *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
 	getWorkspaceSpend         *connect.Client[v1.GetWorkspaceSpendRequest, v1.GetWorkspaceSpendResponse]
@@ -565,6 +611,26 @@ func (c *agentServiceClient) ListRepoPreviewSetups(ctx context.Context, req *con
 	return c.listRepoPreviewSetups.CallUnary(ctx, req)
 }
 
+// ListRepoDelivery calls tank.agent.v1.AgentService.ListRepoDelivery.
+func (c *agentServiceClient) ListRepoDelivery(ctx context.Context, req *connect.Request[v1.ListRepoDeliveryRequest]) (*connect.Response[v1.ListRepoDeliveryResponse], error) {
+	return c.listRepoDelivery.CallUnary(ctx, req)
+}
+
+// SetRepoDelivery calls tank.agent.v1.AgentService.SetRepoDelivery.
+func (c *agentServiceClient) SetRepoDelivery(ctx context.Context, req *connect.Request[v1.SetRepoDeliveryRequest]) (*connect.Response[v1.SetRepoDeliveryResponse], error) {
+	return c.setRepoDelivery.CallUnary(ctx, req)
+}
+
+// ListPredictedWork calls tank.agent.v1.AgentService.ListPredictedWork.
+func (c *agentServiceClient) ListPredictedWork(ctx context.Context, req *connect.Request[v1.ListPredictedWorkRequest]) (*connect.Response[v1.ListPredictedWorkResponse], error) {
+	return c.listPredictedWork.CallUnary(ctx, req)
+}
+
+// DismissPredictedWork calls tank.agent.v1.AgentService.DismissPredictedWork.
+func (c *agentServiceClient) DismissPredictedWork(ctx context.Context, req *connect.Request[v1.DismissPredictedWorkRequest]) (*connect.Response[v1.DismissPredictedWorkResponse], error) {
+	return c.dismissPredictedWork.CallUnary(ctx, req)
+}
+
 // GetTreadSwitchboard calls tank.agent.v1.AgentService.GetTreadSwitchboard.
 func (c *agentServiceClient) GetTreadSwitchboard(ctx context.Context, req *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error) {
 	return c.getTreadSwitchboard.CallUnary(ctx, req)
@@ -637,6 +703,12 @@ type AgentServiceHandler interface {
 	// token that CI will need. Admins only, premium only, never a side effect.
 	SetUpRepoPreviews(context.Context, *connect.Request[v1.SetUpRepoPreviewsRequest]) (*connect.Response[v1.SetUpRepoPreviewsResponse], error)
 	ListRepoPreviewSetups(context.Context, *connect.Request[v1.ListRepoPreviewSetupsRequest]) (*connect.Response[v1.ListRepoPreviewSetupsResponse], error)
+	// Overdrive: where each connected repository builds and deploys, and the work TANK
+	// has built ahead for the workspace. Admins set; members read.
+	ListRepoDelivery(context.Context, *connect.Request[v1.ListRepoDeliveryRequest]) (*connect.Response[v1.ListRepoDeliveryResponse], error)
+	SetRepoDelivery(context.Context, *connect.Request[v1.SetRepoDeliveryRequest]) (*connect.Response[v1.SetRepoDeliveryResponse], error)
+	ListPredictedWork(context.Context, *connect.Request[v1.ListPredictedWorkRequest]) (*connect.Response[v1.ListPredictedWorkResponse], error)
+	DismissPredictedWork(context.Context, *connect.Request[v1.DismissPredictedWorkRequest]) (*connect.Response[v1.DismissPredictedWorkResponse], error)
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
@@ -822,6 +894,30 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("ListRepoPreviewSetups")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceListRepoDeliveryHandler := connect.NewUnaryHandler(
+		AgentServiceListRepoDeliveryProcedure,
+		svc.ListRepoDelivery,
+		connect.WithSchema(agentServiceMethods.ByName("ListRepoDelivery")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceSetRepoDeliveryHandler := connect.NewUnaryHandler(
+		AgentServiceSetRepoDeliveryProcedure,
+		svc.SetRepoDelivery,
+		connect.WithSchema(agentServiceMethods.ByName("SetRepoDelivery")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceListPredictedWorkHandler := connect.NewUnaryHandler(
+		AgentServiceListPredictedWorkProcedure,
+		svc.ListPredictedWork,
+		connect.WithSchema(agentServiceMethods.ByName("ListPredictedWork")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceDismissPredictedWorkHandler := connect.NewUnaryHandler(
+		AgentServiceDismissPredictedWorkProcedure,
+		svc.DismissPredictedWork,
+		connect.WithSchema(agentServiceMethods.ByName("DismissPredictedWork")),
+		connect.WithHandlerOptions(opts...),
+	)
 	agentServiceGetTreadSwitchboardHandler := connect.NewUnaryHandler(
 		AgentServiceGetTreadSwitchboardProcedure,
 		svc.GetTreadSwitchboard,
@@ -914,6 +1010,14 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceSetUpRepoPreviewsHandler.ServeHTTP(w, r)
 		case AgentServiceListRepoPreviewSetupsProcedure:
 			agentServiceListRepoPreviewSetupsHandler.ServeHTTP(w, r)
+		case AgentServiceListRepoDeliveryProcedure:
+			agentServiceListRepoDeliveryHandler.ServeHTTP(w, r)
+		case AgentServiceSetRepoDeliveryProcedure:
+			agentServiceSetRepoDeliveryHandler.ServeHTTP(w, r)
+		case AgentServiceListPredictedWorkProcedure:
+			agentServiceListPredictedWorkHandler.ServeHTTP(w, r)
+		case AgentServiceDismissPredictedWorkProcedure:
+			agentServiceDismissPredictedWorkHandler.ServeHTTP(w, r)
 		case AgentServiceGetTreadSwitchboardProcedure:
 			agentServiceGetTreadSwitchboardHandler.ServeHTTP(w, r)
 		case AgentServiceSetTreadSettingsProcedure:
@@ -1041,6 +1145,22 @@ func (UnimplementedAgentServiceHandler) SetUpRepoPreviews(context.Context, *conn
 
 func (UnimplementedAgentServiceHandler) ListRepoPreviewSetups(context.Context, *connect.Request[v1.ListRepoPreviewSetupsRequest]) (*connect.Response[v1.ListRepoPreviewSetupsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.ListRepoPreviewSetups is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) ListRepoDelivery(context.Context, *connect.Request[v1.ListRepoDeliveryRequest]) (*connect.Response[v1.ListRepoDeliveryResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.ListRepoDelivery is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) SetRepoDelivery(context.Context, *connect.Request[v1.SetRepoDeliveryRequest]) (*connect.Response[v1.SetRepoDeliveryResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetRepoDelivery is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) ListPredictedWork(context.Context, *connect.Request[v1.ListPredictedWorkRequest]) (*connect.Response[v1.ListPredictedWorkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.ListPredictedWork is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) DismissPredictedWork(context.Context, *connect.Request[v1.DismissPredictedWorkRequest]) (*connect.Response[v1.DismissPredictedWorkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.DismissPredictedWork is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error) {

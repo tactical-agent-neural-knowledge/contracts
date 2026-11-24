@@ -787,6 +787,12 @@ service AgentService {
   // token that CI will need. Admins only, premium only, never a side effect.
   rpc SetUpRepoPreviews(SetUpRepoPreviewsRequest) returns (SetUpRepoPreviewsResponse);
   rpc ListRepoPreviewSetups(ListRepoPreviewSetupsRequest) returns (ListRepoPreviewSetupsResponse);
+  // Overdrive: where each connected repository builds and deploys, and the work TANK
+  // has built ahead for the workspace. Admins set; members read.
+  rpc ListRepoDelivery(ListRepoDeliveryRequest) returns (ListRepoDeliveryResponse);
+  rpc SetRepoDelivery(SetRepoDeliveryRequest) returns (SetRepoDeliveryResponse);
+  rpc ListPredictedWork(ListPredictedWorkRequest) returns (ListPredictedWorkResponse);
+  rpc DismissPredictedWork(DismissPredictedWorkRequest) returns (DismissPredictedWorkResponse);
   // The Tread's switchboard: metrics for members, settings for admins.
   rpc GetTreadSwitchboard(GetTreadSwitchboardRequest) returns (GetTreadSwitchboardResponse);
   rpc SetTreadSettings(SetTreadSettingsRequest) returns (SetTreadSettingsResponse);
@@ -812,3 +818,115 @@ message EnsureAgentTreadResponse {
   string channel_id = 1;
   bool created = 2;
 }
+
+// ---- Overdrive: where a repository builds and deploys (Robby, 2026-11-23) ----
+
+// DeliveryMode is who runs a repository's CI. Whichever it is, the repository's own
+// workflow files stay the definition of passing, and its deploy still goes where it
+// goes today.
+enum DeliveryMode {
+  DELIVERY_MODE_UNSPECIFIED = 0;
+  // TANK's runners: TANK opens one pull request switching the repository's jobs to the
+  // workspace's own runner label. Its secrets stay in GitHub.
+  DELIVERY_MODE_TANK_RUNNERS = 1;
+  // The CI it has today: nothing moves. TANK hears results by webhook, reads the
+  // failure log and fixes it.
+  DELIVERY_MODE_OWN_CI = 2;
+  // Another CI system: it reports each result to TANK with one call, authenticated by
+  // the report token. The same fix loop follows.
+  DELIVERY_MODE_OTHER_CI = 3;
+}
+
+// RepoDelivery is one repository's setting. A repository with no setting behaves as
+// DELIVERY_MODE_OWN_CI, which is how every repository worked before the setting existed.
+message RepoDelivery {
+  string repo = 1;  // owner/name
+  DeliveryMode mode = 2;
+  // TANK_RUNNERS: the pull request that switches the jobs, and where it stands:
+  // none | opened | merged | refused.
+  string switch_pull_request_url = 3;
+  string switch_status = 4;
+  string reason = 5;  // why a switch was refused, in a sentence; empty otherwise
+  // OTHER_CI: whether a report token exists, and where reports are sent. The token
+  // itself is only ever in the response to the SetRepoDelivery that issued it.
+  bool has_report_token = 6;
+  string report_url = 7;
+  // The address TANK checks after a deploy to say whether the change is live; empty
+  // when the repository has no environment to check.
+  string live_check_url = 8;
+  // False until the workspace's runners are approved for it: TANK_RUNNERS cannot be
+  // chosen while this is false, and the reason says why.
+  bool tank_runners_available = 9;
+  string tank_runners_reason = 10;
+  google.protobuf.Timestamp updated_at = 11;
+  string updated_by = 12;
+}
+
+message ListRepoDeliveryRequest { string workspace_id = 1; }
+message ListRepoDeliveryResponse { repeated RepoDelivery repos = 1; }
+
+message SetRepoDeliveryRequest {
+  string workspace_id = 1;
+  string repo = 2;
+  DeliveryMode mode = 3;
+  // OTHER_CI: issue a new report token and revoke the one before it.
+  bool rotate_report_token = 4;
+}
+message SetRepoDeliveryResponse {
+  RepoDelivery repo = 1;
+  // Shown once, when a token was issued by this call.
+  string report_token = 2;
+}
+
+// ---- Overdrive: predicted work, an add-on (Robby, 2026-11-23) ----
+
+// PredictedWork is something TANK built, or proposes to build, before it was asked for.
+// It lives on a branch that is never merged until a person takes it.
+message PredictedWork {
+  string id = 1;
+  string workspace_id = 2;
+  string channel_id = 3;
+  string thread_root_id = 4;
+  string task_id = 5;      // the finished task it is offered on as a next step, if any
+  string title = 6;
+  string summary = 7;
+  // Where the prediction came from, most certain first:
+  // queued_task | plan_step | conversation | guess.
+  string source = 8;
+  // idea: a suggestion only (the workspace does not have the add-on).
+  // building | ready: on a branch, checks green and a preview ready when ready.
+  // stale: main moved and it has not been brought up to date yet.
+  // taken | dismissed | expired.
+  string state = 9;
+  string repo = 10;
+  string branch = 11;
+  string preview_url = 12;
+  // A database change proven ahead: none | structure | questions | clone, the furthest
+  // tier it was proven at, and how long it took to apply there.
+  string migration_proof = 13;
+  int32 migration_ms = 14;
+  google.protobuf.Timestamp created_at = 15;
+  google.protobuf.Timestamp ready_at = 16;
+  string run_id = 17;      // the run that built it, when one did
+}
+
+message ListPredictedWorkRequest {
+  string workspace_id = 1;
+  string task_id = 2;         // only the next suggestions for this task (at most three)
+  string thread_root_id = 3;  // only this thread's
+  bool include_closed = 4;    // taken, dismissed and expired too
+}
+message ListPredictedWorkResponse {
+  repeated PredictedWork work = 1;
+  // Whether the workspace has the add-on: without it every item is an idea.
+  bool addon = 2;
+  // Of the items offered in the last 30 days, how many were taken.
+  int32 offered_30d = 3;
+  int32 taken_30d = 4;
+}
+
+message DismissPredictedWorkRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message DismissPredictedWorkResponse {}

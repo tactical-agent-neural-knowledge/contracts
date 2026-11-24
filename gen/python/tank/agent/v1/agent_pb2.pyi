@@ -67,6 +67,13 @@ class PlanItemStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     PLAN_ITEM_STATUS_DONE: _ClassVar[PlanItemStatus]
     PLAN_ITEM_STATUS_NEEDS_PERSON: _ClassVar[PlanItemStatus]
     PLAN_ITEM_STATUS_DROPPED: _ClassVar[PlanItemStatus]
+
+class DeliveryMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    DELIVERY_MODE_UNSPECIFIED: _ClassVar[DeliveryMode]
+    DELIVERY_MODE_TANK_RUNNERS: _ClassVar[DeliveryMode]
+    DELIVERY_MODE_OWN_CI: _ClassVar[DeliveryMode]
+    DELIVERY_MODE_OTHER_CI: _ClassVar[DeliveryMode]
 RUN_STATE_UNSPECIFIED: RunState
 RUN_STATE_REQUESTED: RunState
 RUN_STATE_ADMITTED: RunState
@@ -110,6 +117,10 @@ PLAN_ITEM_STATUS_DOING: PlanItemStatus
 PLAN_ITEM_STATUS_DONE: PlanItemStatus
 PLAN_ITEM_STATUS_NEEDS_PERSON: PlanItemStatus
 PLAN_ITEM_STATUS_DROPPED: PlanItemStatus
+DELIVERY_MODE_UNSPECIFIED: DeliveryMode
+DELIVERY_MODE_TANK_RUNNERS: DeliveryMode
+DELIVERY_MODE_OWN_CI: DeliveryMode
+DELIVERY_MODE_OTHER_CI: DeliveryMode
 
 class Agent(_message.Message):
     __slots__ = ("id", "workspace_id", "principal_id", "name", "scopes", "title", "skill", "kind", "model", "model_pinned", "min_plan")
@@ -1074,3 +1085,137 @@ class EnsureAgentTreadResponse(_message.Message):
     channel_id: str
     created: bool
     def __init__(self, channel_id: _Optional[str] = ..., created: bool = ...) -> None: ...
+
+class RepoDelivery(_message.Message):
+    __slots__ = ("repo", "mode", "switch_pull_request_url", "switch_status", "reason", "has_report_token", "report_url", "live_check_url", "tank_runners_available", "tank_runners_reason", "updated_at", "updated_by")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    MODE_FIELD_NUMBER: _ClassVar[int]
+    SWITCH_PULL_REQUEST_URL_FIELD_NUMBER: _ClassVar[int]
+    SWITCH_STATUS_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    HAS_REPORT_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    REPORT_URL_FIELD_NUMBER: _ClassVar[int]
+    LIVE_CHECK_URL_FIELD_NUMBER: _ClassVar[int]
+    TANK_RUNNERS_AVAILABLE_FIELD_NUMBER: _ClassVar[int]
+    TANK_RUNNERS_REASON_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_BY_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    mode: DeliveryMode
+    switch_pull_request_url: str
+    switch_status: str
+    reason: str
+    has_report_token: bool
+    report_url: str
+    live_check_url: str
+    tank_runners_available: bool
+    tank_runners_reason: str
+    updated_at: _timestamp_pb2.Timestamp
+    updated_by: str
+    def __init__(self, repo: _Optional[str] = ..., mode: _Optional[_Union[DeliveryMode, str]] = ..., switch_pull_request_url: _Optional[str] = ..., switch_status: _Optional[str] = ..., reason: _Optional[str] = ..., has_report_token: bool = ..., report_url: _Optional[str] = ..., live_check_url: _Optional[str] = ..., tank_runners_available: bool = ..., tank_runners_reason: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ...) -> None: ...
+
+class ListRepoDeliveryRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class ListRepoDeliveryResponse(_message.Message):
+    __slots__ = ("repos",)
+    REPOS_FIELD_NUMBER: _ClassVar[int]
+    repos: _containers.RepeatedCompositeFieldContainer[RepoDelivery]
+    def __init__(self, repos: _Optional[_Iterable[_Union[RepoDelivery, _Mapping]]] = ...) -> None: ...
+
+class SetRepoDeliveryRequest(_message.Message):
+    __slots__ = ("workspace_id", "repo", "mode", "rotate_report_token")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    MODE_FIELD_NUMBER: _ClassVar[int]
+    ROTATE_REPORT_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    repo: str
+    mode: DeliveryMode
+    rotate_report_token: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., mode: _Optional[_Union[DeliveryMode, str]] = ..., rotate_report_token: bool = ...) -> None: ...
+
+class SetRepoDeliveryResponse(_message.Message):
+    __slots__ = ("repo", "report_token")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    REPORT_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    repo: RepoDelivery
+    report_token: str
+    def __init__(self, repo: _Optional[_Union[RepoDelivery, _Mapping]] = ..., report_token: _Optional[str] = ...) -> None: ...
+
+class PredictedWork(_message.Message):
+    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "task_id", "title", "summary", "source", "state", "repo", "branch", "preview_url", "migration_proof", "migration_ms", "created_at", "ready_at", "run_id")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    TASK_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    SUMMARY_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    BRANCH_FIELD_NUMBER: _ClassVar[int]
+    PREVIEW_URL_FIELD_NUMBER: _ClassVar[int]
+    MIGRATION_PROOF_FIELD_NUMBER: _ClassVar[int]
+    MIGRATION_MS_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    READY_AT_FIELD_NUMBER: _ClassVar[int]
+    RUN_ID_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    workspace_id: str
+    channel_id: str
+    thread_root_id: str
+    task_id: str
+    title: str
+    summary: str
+    source: str
+    state: str
+    repo: str
+    branch: str
+    preview_url: str
+    migration_proof: str
+    migration_ms: int
+    created_at: _timestamp_pb2.Timestamp
+    ready_at: _timestamp_pb2.Timestamp
+    run_id: str
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., task_id: _Optional[str] = ..., title: _Optional[str] = ..., summary: _Optional[str] = ..., source: _Optional[str] = ..., state: _Optional[str] = ..., repo: _Optional[str] = ..., branch: _Optional[str] = ..., preview_url: _Optional[str] = ..., migration_proof: _Optional[str] = ..., migration_ms: _Optional[int] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., ready_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., run_id: _Optional[str] = ...) -> None: ...
+
+class ListPredictedWorkRequest(_message.Message):
+    __slots__ = ("workspace_id", "task_id", "thread_root_id", "include_closed")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    TASK_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    INCLUDE_CLOSED_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    task_id: str
+    thread_root_id: str
+    include_closed: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., task_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., include_closed: bool = ...) -> None: ...
+
+class ListPredictedWorkResponse(_message.Message):
+    __slots__ = ("work", "addon", "offered_30d", "taken_30d")
+    WORK_FIELD_NUMBER: _ClassVar[int]
+    ADDON_FIELD_NUMBER: _ClassVar[int]
+    OFFERED_30D_FIELD_NUMBER: _ClassVar[int]
+    TAKEN_30D_FIELD_NUMBER: _ClassVar[int]
+    work: _containers.RepeatedCompositeFieldContainer[PredictedWork]
+    addon: bool
+    offered_30d: int
+    taken_30d: int
+    def __init__(self, work: _Optional[_Iterable[_Union[PredictedWork, _Mapping]]] = ..., addon: bool = ..., offered_30d: _Optional[int] = ..., taken_30d: _Optional[int] = ...) -> None: ...
+
+class DismissPredictedWorkRequest(_message.Message):
+    __slots__ = ("workspace_id", "id")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    id: str
+    def __init__(self, workspace_id: _Optional[str] = ..., id: _Optional[str] = ...) -> None: ...
+
+class DismissPredictedWorkResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...

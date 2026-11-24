@@ -1639,6 +1639,11 @@ service ControlService {
   rpc CreateGitHubConnectState(CreateGitHubConnectStateRequest) returns (CreateGitHubConnectStateResponse);
   rpc SetChannelAgentSettings(SetChannelAgentSettingsRequest) returns (SetChannelAgentSettingsResponse);
   rpc SetWorkspaceAgentPolicy(SetWorkspaceAgentPolicyRequest) returns (SetWorkspaceAgentPolicyResponse);
+  // Overdrive: the messaging core authorizes, the control plane owns the rows.
+  rpc ListWorkspaceRepoDelivery(ListWorkspaceRepoDeliveryRequest) returns (ListWorkspaceRepoDeliveryResponse);
+  rpc SetWorkspaceRepoDelivery(SetWorkspaceRepoDeliveryRequest) returns (SetWorkspaceRepoDeliveryResponse);
+  rpc ListWorkspacePredictedWork(ListWorkspacePredictedWorkRequest) returns (ListWorkspacePredictedWorkResponse);
+  rpc DismissWorkspacePredictedWork(DismissWorkspacePredictedWorkRequest) returns (DismissWorkspacePredictedWorkResponse);
 }
 
 // The control plane composes the workflow file itself: only it can see the repository,
@@ -2446,3 +2451,23 @@ message CreateInfraRelayRequest { tank.infra.v1.CreateRelayRequest request = 1; 
 message CreateInfraRelayResponse { tank.infra.v1.CreateRelayResponse response = 1; }
 message RevokeInfraRelayRequest { tank.infra.v1.RevokeRelayRequest request = 1; }
 message RevokeInfraRelayResponse { tank.infra.v1.RevokeRelayResponse response = 1; }
+
+// Overdrive. The api has already checked who is asking; actor_id is that person, for
+// the audit row. addon says whether the workspace has predicted work.
+message ListWorkspaceRepoDeliveryRequest { tank.agent.v1.ListRepoDeliveryRequest request = 1; }
+message ListWorkspaceRepoDeliveryResponse { tank.agent.v1.ListRepoDeliveryResponse response = 1; }
+message SetWorkspaceRepoDeliveryRequest {
+  tank.agent.v1.SetRepoDeliveryRequest request = 1;
+  string actor_id = 2;
+}
+message SetWorkspaceRepoDeliveryResponse { tank.agent.v1.SetRepoDeliveryResponse response = 1; }
+message ListWorkspacePredictedWorkRequest {
+  tank.agent.v1.ListPredictedWorkRequest request = 1;
+  bool addon = 2;
+}
+message ListWorkspacePredictedWorkResponse { tank.agent.v1.ListPredictedWorkResponse response = 1; }
+message DismissWorkspacePredictedWorkRequest {
+  tank.agent.v1.DismissPredictedWorkRequest request = 1;
+  string actor_id = 2;
+}
+message DismissWorkspacePredictedWorkResponse {}

@@ -3667,3 +3667,55 @@ class RevokeInfraRelayResponse(_message.Message):
     RESPONSE_FIELD_NUMBER: _ClassVar[int]
     response: _infra_pb2.RevokeRelayResponse
     def __init__(self, response: _Optional[_Union[_infra_pb2.RevokeRelayResponse, _Mapping]] = ...) -> None: ...
+
+class ListWorkspaceRepoDeliveryRequest(_message.Message):
+    __slots__ = ("request",)
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    request: _agent_pb2.ListRepoDeliveryRequest
+    def __init__(self, request: _Optional[_Union[_agent_pb2.ListRepoDeliveryRequest, _Mapping]] = ...) -> None: ...
+
+class ListWorkspaceRepoDeliveryResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _agent_pb2.ListRepoDeliveryResponse
+    def __init__(self, response: _Optional[_Union[_agent_pb2.ListRepoDeliveryResponse, _Mapping]] = ...) -> None: ...
+
+class SetWorkspaceRepoDeliveryRequest(_message.Message):
+    __slots__ = ("request", "actor_id")
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    request: _agent_pb2.SetRepoDeliveryRequest
+    actor_id: str
+    def __init__(self, request: _Optional[_Union[_agent_pb2.SetRepoDeliveryRequest, _Mapping]] = ..., actor_id: _Optional[str] = ...) -> None: ...
+
+class SetWorkspaceRepoDeliveryResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _agent_pb2.SetRepoDeliveryResponse
+    def __init__(self, response: _Optional[_Union[_agent_pb2.SetRepoDeliveryResponse, _Mapping]] = ...) -> None: ...
+
+class ListWorkspacePredictedWorkRequest(_message.Message):
+    __slots__ = ("request", "addon")
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    ADDON_FIELD_NUMBER: _ClassVar[int]
+    request: _agent_pb2.ListPredictedWorkRequest
+    addon: bool
+    def __init__(self, request: _Optional[_Union[_agent_pb2.ListPredictedWorkRequest, _Mapping]] = ..., addon: bool = ...) -> None: ...
+
+class ListWorkspacePredictedWorkResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _agent_pb2.ListPredictedWorkResponse
+    def __init__(self, response: _Optional[_Union[_agent_pb2.ListPredictedWorkResponse, _Mapping]] = ...) -> None: ...
+
+class DismissWorkspacePredictedWorkRequest(_message.Message):
+    __slots__ = ("request", "actor_id")
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    request: _agent_pb2.DismissPredictedWorkRequest
+    actor_id: str
+    def __init__(self, request: _Optional[_Union[_agent_pb2.DismissPredictedWorkRequest, _Mapping]] = ..., actor_id: _Optional[str] = ...) -> None: ...
+
+class DismissWorkspacePredictedWorkResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
