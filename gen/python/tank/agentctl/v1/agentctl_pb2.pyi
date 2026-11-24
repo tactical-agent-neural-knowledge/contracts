@@ -3845,3 +3845,48 @@ class TakeWorkspacePredictedWorkResponse(_message.Message):
     RESPONSE_FIELD_NUMBER: _ClassVar[int]
     response: _agent_pb2.TakePredictedWorkResponse
     def __init__(self, response: _Optional[_Union[_agent_pb2.TakePredictedWorkResponse, _Mapping]] = ...) -> None: ...
+
+class PublishPageRequest(_message.Message):
+    __slots__ = ("entry", "title")
+    ENTRY_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    entry: str
+    title: str
+    def __init__(self, entry: _Optional[str] = ..., title: _Optional[str] = ...) -> None: ...
+
+class PublishPageResponse(_message.Message):
+    __slots__ = ("build_id", "upload_url", "upload_fields", "key_prefix", "refused")
+    class UploadFieldsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    BUILD_ID_FIELD_NUMBER: _ClassVar[int]
+    UPLOAD_URL_FIELD_NUMBER: _ClassVar[int]
+    UPLOAD_FIELDS_FIELD_NUMBER: _ClassVar[int]
+    KEY_PREFIX_FIELD_NUMBER: _ClassVar[int]
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
+    build_id: str
+    upload_url: str
+    upload_fields: _containers.ScalarMap[str, str]
+    key_prefix: str
+    refused: str
+    def __init__(self, build_id: _Optional[str] = ..., upload_url: _Optional[str] = ..., upload_fields: _Optional[_Mapping[str, str]] = ..., key_prefix: _Optional[str] = ..., refused: _Optional[str] = ...) -> None: ...
+
+class PagePublishedRequest(_message.Message):
+    __slots__ = ("build_id", "entry", "files")
+    BUILD_ID_FIELD_NUMBER: _ClassVar[int]
+    ENTRY_FIELD_NUMBER: _ClassVar[int]
+    FILES_FIELD_NUMBER: _ClassVar[int]
+    build_id: str
+    entry: str
+    files: int
+    def __init__(self, build_id: _Optional[str] = ..., entry: _Optional[str] = ..., files: _Optional[int] = ...) -> None: ...
+
+class PagePublishedResponse(_message.Message):
+    __slots__ = ("url",)
+    URL_FIELD_NUMBER: _ClassVar[int]
+    url: str
+    def __init__(self, url: _Optional[str] = ...) -> None: ...

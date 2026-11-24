@@ -266,6 +266,12 @@ const (
 	// RunnerServiceSessionStoreDeleteProcedure is the fully-qualified name of the RunnerService's
 	// SessionStoreDelete RPC.
 	RunnerServiceSessionStoreDeleteProcedure = "/tank.agentctl.v1.RunnerService/SessionStoreDelete"
+	// RunnerServicePublishPageProcedure is the fully-qualified name of the RunnerService's PublishPage
+	// RPC.
+	RunnerServicePublishPageProcedure = "/tank.agentctl.v1.RunnerService/PublishPage"
+	// RunnerServicePagePublishedProcedure is the fully-qualified name of the RunnerService's
+	// PagePublished RPC.
+	RunnerServicePagePublishedProcedure = "/tank.agentctl.v1.RunnerService/PagePublished"
 	// ControlServiceArenaTurnProcedure is the fully-qualified name of the ControlService's ArenaTurn
 	// RPC.
 	ControlServiceArenaTurnProcedure = "/tank.agentctl.v1.ControlService/ArenaTurn"
@@ -610,6 +616,13 @@ type RunnerServiceClient interface {
 	SessionStoreListSessions(context.Context, *connect.Request[v1.SessionStoreListSessionsRequest]) (*connect.Response[v1.SessionStoreListSessionsResponse], error)
 	SessionStoreListSubkeys(context.Context, *connect.Request[v1.SessionStoreListSubkeysRequest]) (*connect.Response[v1.SessionStoreListSubkeysResponse], error)
 	SessionStoreDelete(context.Context, *connect.Request[v1.SessionStoreDeleteRequest]) (*connect.Response[v1.SessionStoreDeleteResponse], error)
+	// A web page the agent made (a mockup, static HTML with its assets) published as a live
+	// preview people open: https://<build_id>.preview.<domain>, isolated from TANK, served from
+	// the previews bucket so it outlives the sandbox. PublishPage hands out an upload permit
+	// for the page's folder; PagePublished, once the files are up, makes it the preview.
+	// (cache7, 2026-11-24: a mockup reached people as a zip to download and open locally.)
+	PublishPage(context.Context, *connect.Request[v1.PublishPageRequest]) (*connect.Response[v1.PublishPageResponse], error)
+	PagePublished(context.Context, *connect.Request[v1.PagePublishedRequest]) (*connect.Response[v1.PagePublishedResponse], error)
 }
 
 // NewRunnerServiceClient constructs a client for the tank.agentctl.v1.RunnerService service. By
@@ -1109,6 +1122,18 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("SessionStoreDelete")),
 			connect.WithClientOptions(opts...),
 		),
+		publishPage: connect.NewClient[v1.PublishPageRequest, v1.PublishPageResponse](
+			httpClient,
+			baseURL+RunnerServicePublishPageProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("PublishPage")),
+			connect.WithClientOptions(opts...),
+		),
+		pagePublished: connect.NewClient[v1.PagePublishedRequest, v1.PagePublishedResponse](
+			httpClient,
+			baseURL+RunnerServicePagePublishedProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("PagePublished")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -1195,6 +1220,8 @@ type runnerServiceClient struct {
 	sessionStoreListSessions *connect.Client[v1.SessionStoreListSessionsRequest, v1.SessionStoreListSessionsResponse]
 	sessionStoreListSubkeys  *connect.Client[v1.SessionStoreListSubkeysRequest, v1.SessionStoreListSubkeysResponse]
 	sessionStoreDelete       *connect.Client[v1.SessionStoreDeleteRequest, v1.SessionStoreDeleteResponse]
+	publishPage              *connect.Client[v1.PublishPageRequest, v1.PublishPageResponse]
+	pagePublished            *connect.Client[v1.PagePublishedRequest, v1.PagePublishedResponse]
 }
 
 // GetRunContext calls tank.agentctl.v1.RunnerService.GetRunContext.
@@ -1602,6 +1629,16 @@ func (c *runnerServiceClient) SessionStoreDelete(ctx context.Context, req *conne
 	return c.sessionStoreDelete.CallUnary(ctx, req)
 }
 
+// PublishPage calls tank.agentctl.v1.RunnerService.PublishPage.
+func (c *runnerServiceClient) PublishPage(ctx context.Context, req *connect.Request[v1.PublishPageRequest]) (*connect.Response[v1.PublishPageResponse], error) {
+	return c.publishPage.CallUnary(ctx, req)
+}
+
+// PagePublished calls tank.agentctl.v1.RunnerService.PagePublished.
+func (c *runnerServiceClient) PagePublished(ctx context.Context, req *connect.Request[v1.PagePublishedRequest]) (*connect.Response[v1.PagePublishedResponse], error) {
+	return c.pagePublished.CallUnary(ctx, req)
+}
+
 // RunnerServiceHandler is an implementation of the tank.agentctl.v1.RunnerService service.
 type RunnerServiceHandler interface {
 	GetRunContext(context.Context, *connect.Request[v1.GetRunContextRequest]) (*connect.Response[v1.GetRunContextResponse], error)
@@ -1712,6 +1749,13 @@ type RunnerServiceHandler interface {
 	SessionStoreListSessions(context.Context, *connect.Request[v1.SessionStoreListSessionsRequest]) (*connect.Response[v1.SessionStoreListSessionsResponse], error)
 	SessionStoreListSubkeys(context.Context, *connect.Request[v1.SessionStoreListSubkeysRequest]) (*connect.Response[v1.SessionStoreListSubkeysResponse], error)
 	SessionStoreDelete(context.Context, *connect.Request[v1.SessionStoreDeleteRequest]) (*connect.Response[v1.SessionStoreDeleteResponse], error)
+	// A web page the agent made (a mockup, static HTML with its assets) published as a live
+	// preview people open: https://<build_id>.preview.<domain>, isolated from TANK, served from
+	// the previews bucket so it outlives the sandbox. PublishPage hands out an upload permit
+	// for the page's folder; PagePublished, once the files are up, makes it the preview.
+	// (cache7, 2026-11-24: a mockup reached people as a zip to download and open locally.)
+	PublishPage(context.Context, *connect.Request[v1.PublishPageRequest]) (*connect.Response[v1.PublishPageResponse], error)
+	PagePublished(context.Context, *connect.Request[v1.PagePublishedRequest]) (*connect.Response[v1.PagePublishedResponse], error)
 }
 
 // NewRunnerServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -2207,6 +2251,18 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("SessionStoreDelete")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServicePublishPageHandler := connect.NewUnaryHandler(
+		RunnerServicePublishPageProcedure,
+		svc.PublishPage,
+		connect.WithSchema(runnerServiceMethods.ByName("PublishPage")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServicePagePublishedHandler := connect.NewUnaryHandler(
+		RunnerServicePagePublishedProcedure,
+		svc.PagePublished,
+		connect.WithSchema(runnerServiceMethods.ByName("PagePublished")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agentctl.v1.RunnerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case RunnerServiceGetRunContextProcedure:
@@ -2371,6 +2427,10 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceSessionStoreListSubkeysHandler.ServeHTTP(w, r)
 		case RunnerServiceSessionStoreDeleteProcedure:
 			runnerServiceSessionStoreDeleteHandler.ServeHTTP(w, r)
+		case RunnerServicePublishPageProcedure:
+			runnerServicePublishPageHandler.ServeHTTP(w, r)
+		case RunnerServicePagePublishedProcedure:
+			runnerServicePagePublishedHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -2702,6 +2762,14 @@ func (UnimplementedRunnerServiceHandler) SessionStoreListSubkeys(context.Context
 
 func (UnimplementedRunnerServiceHandler) SessionStoreDelete(context.Context, *connect.Request[v1.SessionStoreDeleteRequest]) (*connect.Response[v1.SessionStoreDeleteResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.SessionStoreDelete is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) PublishPage(context.Context, *connect.Request[v1.PublishPageRequest]) (*connect.Response[v1.PublishPageResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.PublishPage is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) PagePublished(context.Context, *connect.Request[v1.PagePublishedRequest]) (*connect.Response[v1.PagePublishedResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.PagePublished is not implemented"))
 }
 
 // ControlServiceClient is a client for the tank.agentctl.v1.ControlService service.
