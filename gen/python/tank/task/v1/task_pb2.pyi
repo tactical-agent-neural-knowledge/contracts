@@ -26,6 +26,7 @@ class TaskRunEvent(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     TASK_RUN_EVENT_PROGRESS: _ClassVar[TaskRunEvent]
     TASK_RUN_EVENT_READY: _ClassVar[TaskRunEvent]
     TASK_RUN_EVENT_STUCK: _ClassVar[TaskRunEvent]
+    TASK_RUN_EVENT_DONE: _ClassVar[TaskRunEvent]
 TASK_STAGE_UNSPECIFIED: TaskStage
 TASK_STAGE_QUEUED: TaskStage
 TASK_STAGE_IN_PROGRESS: TaskStage
@@ -39,6 +40,7 @@ TASK_RUN_EVENT_WAITING: TaskRunEvent
 TASK_RUN_EVENT_PROGRESS: TaskRunEvent
 TASK_RUN_EVENT_READY: TaskRunEvent
 TASK_RUN_EVENT_STUCK: TaskRunEvent
+TASK_RUN_EVENT_DONE: TaskRunEvent
 
 class ProofCheck(_message.Message):
     __slots__ = ("text", "met")
@@ -333,7 +335,7 @@ class SendTaskResponse(_message.Message):
     def __init__(self, sent_user_ids: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class RecordTaskRunRequest(_message.Message):
-    __slots__ = ("run_id", "task_id", "event", "ask", "proof", "reason", "progress")
+    __slots__ = ("run_id", "task_id", "event", "ask", "proof", "reason", "progress", "checked_by")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     TASK_ID_FIELD_NUMBER: _ClassVar[int]
     EVENT_FIELD_NUMBER: _ClassVar[int]
@@ -341,6 +343,7 @@ class RecordTaskRunRequest(_message.Message):
     PROOF_FIELD_NUMBER: _ClassVar[int]
     REASON_FIELD_NUMBER: _ClassVar[int]
     PROGRESS_FIELD_NUMBER: _ClassVar[int]
+    CHECKED_BY_FIELD_NUMBER: _ClassVar[int]
     run_id: str
     task_id: str
     event: TaskRunEvent
@@ -348,7 +351,8 @@ class RecordTaskRunRequest(_message.Message):
     proof: TaskProof
     reason: str
     progress: str
-    def __init__(self, run_id: _Optional[str] = ..., task_id: _Optional[str] = ..., event: _Optional[_Union[TaskRunEvent, str]] = ..., ask: _Optional[str] = ..., proof: _Optional[_Union[TaskProof, _Mapping]] = ..., reason: _Optional[str] = ..., progress: _Optional[str] = ...) -> None: ...
+    checked_by: str
+    def __init__(self, run_id: _Optional[str] = ..., task_id: _Optional[str] = ..., event: _Optional[_Union[TaskRunEvent, str]] = ..., ask: _Optional[str] = ..., proof: _Optional[_Union[TaskProof, _Mapping]] = ..., reason: _Optional[str] = ..., progress: _Optional[str] = ..., checked_by: _Optional[str] = ...) -> None: ...
 
 class RecordTaskRunResponse(_message.Message):
     __slots__ = ("task",)
