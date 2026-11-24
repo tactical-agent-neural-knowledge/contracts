@@ -204,6 +204,16 @@ message ReplyResponse {
   string message_id = 1;
 }
 
+message ShowWorkingRequest {
+  string channel_id = 1;
+  // The thread the agent is working in; empty for the Tread itself.
+  string thread_root_id = 2;
+  string agent_id = 3;
+  // What it is doing, to follow "<agent> is": "reading the thread". Empty clears it.
+  string status = 4;
+}
+message ShowWorkingResponse {}
+
 // Workspace-level agent settings, admins only. Off by default.
 message WorkspaceAgentSettings {
   // An organization grant ('*') made in any Tread counts for every Tread in the
@@ -755,6 +765,13 @@ service AgentService {
   // whole text so far. Bot tokens only, on the requester's membership, like OpenThread; the
   // agent must be one of the workspace's own and allowed to run there.
   rpc Reply(ReplyRequest) returns (ReplyResponse);
+  // Shows an agent at work in a Tread or a thread before it has anything to say: the same
+  // agent.status frame a run's status sends, with no run (Overdrive, 2026-11-24: a person
+  // sees the agent respond within a few hundred milliseconds of pressing Send, every time).
+  // Nothing is stored and nothing is posted; clients drop the frame after 30 s or when an
+  // empty status follows. Bot tokens only; the agent must be one of the workspace's own and
+  // a member of the Tread.
+  rpc ShowWorking(ShowWorkingRequest) returns (ShowWorkingResponse);
   rpc GetWorkspaceAgentSettings(GetWorkspaceAgentSettingsRequest) returns (GetWorkspaceAgentSettingsResponse);
   rpc SetWorkspaceAgentSettings(SetWorkspaceAgentSettingsRequest) returns (SetWorkspaceAgentSettingsResponse);
   rpc GetTreadPlan(GetTreadPlanRequest) returns (GetTreadPlanResponse);
