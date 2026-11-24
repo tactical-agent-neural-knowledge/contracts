@@ -908,6 +908,9 @@ message PredictedWork {
   google.protobuf.Timestamp created_at = 15;
   google.protobuf.Timestamp ready_at = 16;
   string run_id = 17;      // the run that built it, when one did
+  // source = queued_task: the task waiting in Queued that this was predicted from.
+  // Starting that task is how an idea is taken.
+  string source_task_id = 18;
 }
 
 message ListPredictedWorkRequest {
