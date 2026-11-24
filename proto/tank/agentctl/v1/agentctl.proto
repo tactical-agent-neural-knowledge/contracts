@@ -2579,6 +2579,15 @@ message PublishPageRequest {
   string entry = 1;
   // What it is, in a few words, for the thread.
   string title = 2;
+  // The page's files, sent with the request: the control plane writes them to the previews
+  // bucket itself, so the sandbox keeps no storage credential and no storage egress (the
+  // upload permit below is unused). With files, the response carries the page's url.
+  repeated PageFile files = 3;
+}
+message PageFile {
+  // Its path in the folder: "guides-white.html", "img/hero.jpg".
+  string path = 1;
+  bytes content = 2;
 }
 message PublishPageResponse {
   string build_id = 1;
@@ -2589,6 +2598,8 @@ message PublishPageResponse {
   string key_prefix = 4;
   // Why there is no permit, in plain words; empty when there is one.
   string refused = 5;
+  // The published page's address for people, when files came with the request.
+  string url = 6;
 }
 message PagePublishedRequest {
   string build_id = 1;
