@@ -183,7 +183,63 @@ message RunContext {
   // calls AwaitStart instead of beginning work. The run's token is the same one every run
   // gets; adoption changes nothing about who holds it.
   bool standby = 42;
+  // Preview secrets (Overdrive, 2026-11-24): what the app this run serves gets in its
+  // environment for each of the workspace's preview secrets. Never a real value: a
+  // `LOCKBOX:<NAME>` placeholder the egress proxy swaps for the preview value on the way
+  // to the hosts that secret is bound to, a relay address for a database, or a value
+  // made for this run alone. Empty unless preview secrets are on for the workspace.
+  repeated PreviewSecretEnv preview_env = 43;
+  // The certificate of TANK's preview CA, which the egress proxy signs with when it
+  // reads a request to a host a preview secret is bound to. Only the certificate; the key
+  // lives in the egress pod alone. Empty when preview_env has no http secret.
+  string preview_ca_pem = 44;
 }
+
+// One preview secret as the app sees it (RunContext.preview_env).
+message PreviewSecretEnv {
+  string name = 1;
+  // http: "LOCKBOX:<name>". postgres, mysql, redis: a relay address carrying a
+  // placeholder. generated: a value made for this run.
+  string value = 2;
+  string kind = 3; // http | postgres | mysql | redis | generated
+}
+
+// A workspace's preview secret as the control plane keeps it. The value is write-only:
+// it is kept in the Lockbox Agent vault and never returned.
+message PreviewSecret {
+  string name = 1;
+  string kind = 2; // http | postgres | mysql | redis | generated
+  // Where the value may be sent: hostnames (or "*.example.com") for http; host:port of the
+  // real database for postgres, mysql and redis.
+  repeated string hosts = 3;
+  // http only: the proxy may also put the value in a request's body, not just its headers.
+  bool in_body = 4;
+  // Whether a preview value is stored. A secret without one gives a preview nothing.
+  bool is_set = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+message ListPreviewSecretsRequest {
+  string workspace_id = 1;
+}
+message ListPreviewSecretsResponse {
+  repeated PreviewSecret secrets = 1;
+}
+message PutPreviewSecretRequest {
+  string workspace_id = 1;
+  PreviewSecret secret = 2;
+  // The preview value. Empty keeps the stored one; a value is never echoed.
+  string value = 3;
+  string requested_by = 4; // user id, for the audit record
+}
+message PutPreviewSecretResponse {
+  PreviewSecret secret = 1;
+}
+message DeletePreviewSecretRequest {
+  string workspace_id = 1;
+  string name = 2;
+  string requested_by = 3;
+}
+message DeletePreviewSecretResponse {}
 
 // An Ops team as a run sees it (tank.agentops.v1 holds the full record).
 message TeamContext {
@@ -1510,6 +1566,11 @@ service ControlService {
   // the verdicts live here, the rating is computed here.
   rpc ListGuardrails(ListGuardrailsRequest) returns (ListGuardrailsResponse);
   rpc PutGuardrail(PutGuardrailRequest) returns (PutGuardrailResponse);
+  // Preview secrets, for the messaging core's Settings > Environment: the rows live here,
+  // each value in the Lockbox Agent vault.
+  rpc ListPreviewSecrets(ListPreviewSecretsRequest) returns (ListPreviewSecretsResponse);
+  rpc PutPreviewSecret(PutPreviewSecretRequest) returns (PutPreviewSecretResponse);
+  rpc DeletePreviewSecret(DeletePreviewSecretRequest) returns (DeletePreviewSecretResponse);
   rpc DeleteGuardrail(DeleteGuardrailRequest) returns (DeleteGuardrailResponse);
   rpc RateGuardrail(RateGuardrailRequest) returns (RateGuardrailResponse);
   rpc ListGuardrailVerdicts(ListGuardrailVerdictsRequest) returns (ListGuardrailVerdictsResponse);

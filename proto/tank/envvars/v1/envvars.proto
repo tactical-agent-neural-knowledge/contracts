@@ -28,6 +28,14 @@ message EnvVar {
   google.protobuf.Timestamp updated_at = 5;
   // The member who last changed it.
   string updated_by = 6;
+  // Preview value (Overdrive, 2026-11-24), for a secret only: a test value (a Stripe test
+  // key, a sandbox account) that TANK's previews use in place of the real one. Write-only,
+  // like the secret. A preview is never given the real value: without a preview value it
+  // gets nothing for this name. The app sees only a placeholder; TANK adds the preview
+  // value on the way out, to preview_hosts alone.
+  bool preview_set = 7;
+  repeated string preview_hosts = 8;
+  bool preview_in_body = 9;
 }
 
 message ListEnvVarsRequest {
@@ -61,8 +69,31 @@ message DeleteEnvVarRequest {
 }
 message DeleteEnvVarResponse {}
 
+message PutPreviewValueRequest {
+  string workspace_id = 1;
+  string name = 2;
+  // The preview value. Empty keeps the stored one.
+  string value = 3;
+  // Hostnames the value may be sent to ("api.stripe.com", "*.example.com"). At least one.
+  repeated string hosts = 4;
+  bool in_body = 5;
+}
+message PutPreviewValueResponse {
+  EnvVar var = 1;
+}
+message ClearPreviewValueRequest {
+  string workspace_id = 1;
+  string name = 2;
+}
+message ClearPreviewValueResponse {
+  EnvVar var = 1;
+}
+
 service EnvVarService {
   rpc ListEnvVars(ListEnvVarsRequest) returns (ListEnvVarsResponse);
   rpc PutEnvVar(PutEnvVarRequest) returns (PutEnvVarResponse);
   rpc DeleteEnvVar(DeleteEnvVarRequest) returns (DeleteEnvVarResponse);
+  // A secret's preview value and the hosts it may be sent to, owners and admins only.
+  rpc PutPreviewValue(PutPreviewValueRequest) returns (PutPreviewValueResponse);
+  rpc ClearPreviewValue(ClearPreviewValueRequest) returns (ClearPreviewValueResponse);
 }
