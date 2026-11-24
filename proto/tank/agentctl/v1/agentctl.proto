@@ -872,6 +872,10 @@ message WorkbenchStep {
   string id = 1;            // stable across calls, e.g. "plan", "tests", "deploy"
   string title = 2;
   string status = 3;        // pending | running | done | failed
+  // Who is doing the step when several agents work at once ("implementer", "tests",
+  // "review"). Steps that share a lane are laid on one row under its name; empty keeps
+  // the single row.
+  string lane = 4;
 }
 message WorkbenchStepsRequest {
   repeated WorkbenchStep steps = 1;   // the whole row, in order; a step left out is removed
@@ -886,6 +890,45 @@ message WorkbenchShowRequest {
   string text = 4;          // note: what the sticky says; also the caption under a stage
   string diagram = 5;       // diagram: erd | architecture, drawn by the server from the repository
   string title = 6;         // the stage's heading
+  // kind "explain": a change to an API or a database, shown rather than described. The
+  // facts come from the run; the narration is written by TANK's own model from them.
+  Explanation explain = 7;
+}
+// What changed behind the screen, as data a client can animate: the path a request takes,
+// the tables before and after, and one real request answered by the old code and the new.
+message Explanation {
+  repeated ExplainHop flow = 1;        // in the order the request travels
+  repeated ExplainTable tables = 2;    // only tables the change touches
+  ExplainReplay replay = 3;
+  // Server-filled: the change in plain words, from TANK's own model. Never the run's claim.
+  string narration = 4;
+}
+message ExplainHop {
+  string id = 1;
+  string label = 2;         // "POST /orders", "orders service", "orders table"
+  string kind = 3;          // client | service | database | queue | external
+  string detail = 4;        // one line: what happens here
+  bool changed = 5;         // this hop behaves differently after the change
+}
+message ExplainTable {
+  string name = 1;
+  string change = 2;        // added | removed | changed
+  repeated ExplainColumn columns = 3;
+}
+message ExplainColumn {
+  string name = 1;
+  string type = 2;
+  string change = 3;        // added | removed | changed | "" for untouched
+  string was = 4;           // changed: the type before
+}
+message ExplainReplay {
+  string method = 1;
+  string path = 2;
+  string request_body = 3;
+  int32 old_status = 4;
+  string old_body = 5;
+  int32 new_status = 6;
+  string new_body = 7;
 }
 message WorkbenchShowResponse {
   string board_id = 1;

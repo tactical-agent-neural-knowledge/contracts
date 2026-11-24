@@ -735,7 +735,7 @@ class RemoveBookmarkResponse(_message.Message):
     def __init__(self) -> None: ...
 
 class Draft(_message.Message):
-    __slots__ = ("channel_id", "thread_root_id", "rich_text", "text", "file_ids", "updated_at", "mentioned_agent_ids", "preparation_id", "preparation_state", "preparation_expires_at")
+    __slots__ = ("channel_id", "thread_root_id", "rich_text", "text", "file_ids", "updated_at", "mentioned_agent_ids", "preparation_id", "preparation_state", "preparation_expires_at", "offered_agent_id", "offered_agent_user_id")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     RICH_TEXT_FIELD_NUMBER: _ClassVar[int]
@@ -746,6 +746,8 @@ class Draft(_message.Message):
     PREPARATION_ID_FIELD_NUMBER: _ClassVar[int]
     PREPARATION_STATE_FIELD_NUMBER: _ClassVar[int]
     PREPARATION_EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
+    OFFERED_AGENT_ID_FIELD_NUMBER: _ClassVar[int]
+    OFFERED_AGENT_USER_ID_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
     thread_root_id: str
     rich_text: _richtext_pb2.RichText
@@ -756,7 +758,9 @@ class Draft(_message.Message):
     preparation_id: str
     preparation_state: PreparationState
     preparation_expires_at: _timestamp_pb2.Timestamp
-    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., text: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., mentioned_agent_ids: _Optional[_Iterable[str]] = ..., preparation_id: _Optional[str] = ..., preparation_state: _Optional[_Union[PreparationState, str]] = ..., preparation_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    offered_agent_id: str
+    offered_agent_user_id: str
+    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., rich_text: _Optional[_Union[_richtext_pb2.RichText, _Mapping]] = ..., text: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., mentioned_agent_ids: _Optional[_Iterable[str]] = ..., preparation_id: _Optional[str] = ..., preparation_state: _Optional[_Union[PreparationState, str]] = ..., preparation_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., offered_agent_id: _Optional[str] = ..., offered_agent_user_id: _Optional[str] = ...) -> None: ...
 
 class GetDraftRequest(_message.Message):
     __slots__ = ("channel_id", "thread_root_id")

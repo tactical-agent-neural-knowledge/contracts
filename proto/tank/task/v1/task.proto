@@ -79,6 +79,9 @@ message Task {
   string link = 21;
   // Files attached when the task was made, shared into its Tread when it starts.
   repeated string file_ids = 22;
+  // The message this task was made from (a reaction on it), empty for a task somebody typed.
+  // Its thread is the task's thread, so nothing is posted twice.
+  string source_message_id = 23;
 }
 
 
