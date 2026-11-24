@@ -39,6 +39,9 @@ message TaskProof {
   // Overdrive's stopwatch (2026-11-24): seconds from the ask to the change being live, when
   // it got there; 0 when nothing confirms it is out. Shown small beside the proof.
   int64 ask_to_live_seconds = 7;
+  // Of ask_to_live_seconds, how long the work waited for a person (a plan or a merge to be
+  // approved). The rest is TANK's own time, which is what the stopwatch shows first.
+  int64 waiting_seconds = 8;
 }
 
 // Who hears about a task when it reaches a stage.
