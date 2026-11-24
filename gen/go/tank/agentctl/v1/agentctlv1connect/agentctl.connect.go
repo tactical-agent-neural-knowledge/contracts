@@ -501,6 +501,9 @@ const (
 	// ControlServiceSetWorkspaceRepoDeliveryProcedure is the fully-qualified name of the
 	// ControlService's SetWorkspaceRepoDelivery RPC.
 	ControlServiceSetWorkspaceRepoDeliveryProcedure = "/tank.agentctl.v1.ControlService/SetWorkspaceRepoDelivery"
+	// ControlServiceSetWorkspaceDeliveryDefaultProcedure is the fully-qualified name of the
+	// ControlService's SetWorkspaceDeliveryDefault RPC.
+	ControlServiceSetWorkspaceDeliveryDefaultProcedure = "/tank.agentctl.v1.ControlService/SetWorkspaceDeliveryDefault"
 	// ControlServiceListWorkspacePredictedWorkProcedure is the fully-qualified name of the
 	// ControlService's ListWorkspacePredictedWork RPC.
 	ControlServiceListWorkspacePredictedWorkProcedure = "/tank.agentctl.v1.ControlService/ListWorkspacePredictedWork"
@@ -2987,6 +2990,7 @@ type ControlServiceClient interface {
 	// Overdrive: the messaging core authorizes, the control plane owns the rows.
 	ListWorkspaceRepoDelivery(context.Context, *connect.Request[v1.ListWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.ListWorkspaceRepoDeliveryResponse], error)
 	SetWorkspaceRepoDelivery(context.Context, *connect.Request[v1.SetWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.SetWorkspaceRepoDeliveryResponse], error)
+	SetWorkspaceDeliveryDefault(context.Context, *connect.Request[v1.SetWorkspaceDeliveryDefaultRequest]) (*connect.Response[v1.SetWorkspaceDeliveryDefaultResponse], error)
 	ListWorkspacePredictedWork(context.Context, *connect.Request[v1.ListWorkspacePredictedWorkRequest]) (*connect.Response[v1.ListWorkspacePredictedWorkResponse], error)
 	DismissWorkspacePredictedWork(context.Context, *connect.Request[v1.DismissWorkspacePredictedWorkRequest]) (*connect.Response[v1.DismissWorkspacePredictedWorkResponse], error)
 	TakeWorkspacePredictedWork(context.Context, *connect.Request[v1.TakeWorkspacePredictedWorkRequest]) (*connect.Response[v1.TakeWorkspacePredictedWorkResponse], error)
@@ -3459,6 +3463,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("SetWorkspaceRepoDelivery")),
 			connect.WithClientOptions(opts...),
 		),
+		setWorkspaceDeliveryDefault: connect.NewClient[v1.SetWorkspaceDeliveryDefaultRequest, v1.SetWorkspaceDeliveryDefaultResponse](
+			httpClient,
+			baseURL+ControlServiceSetWorkspaceDeliveryDefaultProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("SetWorkspaceDeliveryDefault")),
+			connect.WithClientOptions(opts...),
+		),
 		listWorkspacePredictedWork: connect.NewClient[v1.ListWorkspacePredictedWorkRequest, v1.ListWorkspacePredictedWorkResponse](
 			httpClient,
 			baseURL+ControlServiceListWorkspacePredictedWorkProcedure,
@@ -3558,6 +3568,7 @@ type controlServiceClient struct {
 	setWorkspaceAgentPolicy       *connect.Client[v1.SetWorkspaceAgentPolicyRequest, v1.SetWorkspaceAgentPolicyResponse]
 	listWorkspaceRepoDelivery     *connect.Client[v1.ListWorkspaceRepoDeliveryRequest, v1.ListWorkspaceRepoDeliveryResponse]
 	setWorkspaceRepoDelivery      *connect.Client[v1.SetWorkspaceRepoDeliveryRequest, v1.SetWorkspaceRepoDeliveryResponse]
+	setWorkspaceDeliveryDefault   *connect.Client[v1.SetWorkspaceDeliveryDefaultRequest, v1.SetWorkspaceDeliveryDefaultResponse]
 	listWorkspacePredictedWork    *connect.Client[v1.ListWorkspacePredictedWorkRequest, v1.ListWorkspacePredictedWorkResponse]
 	dismissWorkspacePredictedWork *connect.Client[v1.DismissWorkspacePredictedWorkRequest, v1.DismissWorkspacePredictedWorkResponse]
 	takeWorkspacePredictedWork    *connect.Client[v1.TakeWorkspacePredictedWorkRequest, v1.TakeWorkspacePredictedWorkResponse]
@@ -3943,6 +3954,11 @@ func (c *controlServiceClient) SetWorkspaceRepoDelivery(ctx context.Context, req
 	return c.setWorkspaceRepoDelivery.CallUnary(ctx, req)
 }
 
+// SetWorkspaceDeliveryDefault calls tank.agentctl.v1.ControlService.SetWorkspaceDeliveryDefault.
+func (c *controlServiceClient) SetWorkspaceDeliveryDefault(ctx context.Context, req *connect.Request[v1.SetWorkspaceDeliveryDefaultRequest]) (*connect.Response[v1.SetWorkspaceDeliveryDefaultResponse], error) {
+	return c.setWorkspaceDeliveryDefault.CallUnary(ctx, req)
+}
+
 // ListWorkspacePredictedWork calls tank.agentctl.v1.ControlService.ListWorkspacePredictedWork.
 func (c *controlServiceClient) ListWorkspacePredictedWork(ctx context.Context, req *connect.Request[v1.ListWorkspacePredictedWorkRequest]) (*connect.Response[v1.ListWorkspacePredictedWorkResponse], error) {
 	return c.listWorkspacePredictedWork.CallUnary(ctx, req)
@@ -4108,6 +4124,7 @@ type ControlServiceHandler interface {
 	// Overdrive: the messaging core authorizes, the control plane owns the rows.
 	ListWorkspaceRepoDelivery(context.Context, *connect.Request[v1.ListWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.ListWorkspaceRepoDeliveryResponse], error)
 	SetWorkspaceRepoDelivery(context.Context, *connect.Request[v1.SetWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.SetWorkspaceRepoDeliveryResponse], error)
+	SetWorkspaceDeliveryDefault(context.Context, *connect.Request[v1.SetWorkspaceDeliveryDefaultRequest]) (*connect.Response[v1.SetWorkspaceDeliveryDefaultResponse], error)
 	ListWorkspacePredictedWork(context.Context, *connect.Request[v1.ListWorkspacePredictedWorkRequest]) (*connect.Response[v1.ListWorkspacePredictedWorkResponse], error)
 	DismissWorkspacePredictedWork(context.Context, *connect.Request[v1.DismissWorkspacePredictedWorkRequest]) (*connect.Response[v1.DismissWorkspacePredictedWorkResponse], error)
 	TakeWorkspacePredictedWork(context.Context, *connect.Request[v1.TakeWorkspacePredictedWorkRequest]) (*connect.Response[v1.TakeWorkspacePredictedWorkResponse], error)
@@ -4576,6 +4593,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("SetWorkspaceRepoDelivery")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceSetWorkspaceDeliveryDefaultHandler := connect.NewUnaryHandler(
+		ControlServiceSetWorkspaceDeliveryDefaultProcedure,
+		svc.SetWorkspaceDeliveryDefault,
+		connect.WithSchema(controlServiceMethods.ByName("SetWorkspaceDeliveryDefault")),
+		connect.WithHandlerOptions(opts...),
+	)
 	controlServiceListWorkspacePredictedWorkHandler := connect.NewUnaryHandler(
 		ControlServiceListWorkspacePredictedWorkProcedure,
 		svc.ListWorkspacePredictedWork,
@@ -4748,6 +4771,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceListWorkspaceRepoDeliveryHandler.ServeHTTP(w, r)
 		case ControlServiceSetWorkspaceRepoDeliveryProcedure:
 			controlServiceSetWorkspaceRepoDeliveryHandler.ServeHTTP(w, r)
+		case ControlServiceSetWorkspaceDeliveryDefaultProcedure:
+			controlServiceSetWorkspaceDeliveryDefaultHandler.ServeHTTP(w, r)
 		case ControlServiceListWorkspacePredictedWorkProcedure:
 			controlServiceListWorkspacePredictedWorkHandler.ServeHTTP(w, r)
 		case ControlServiceDismissWorkspacePredictedWorkProcedure:
@@ -5065,6 +5090,10 @@ func (UnimplementedControlServiceHandler) ListWorkspaceRepoDelivery(context.Cont
 
 func (UnimplementedControlServiceHandler) SetWorkspaceRepoDelivery(context.Context, *connect.Request[v1.SetWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.SetWorkspaceRepoDeliveryResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.SetWorkspaceRepoDelivery is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) SetWorkspaceDeliveryDefault(context.Context, *connect.Request[v1.SetWorkspaceDeliveryDefaultRequest]) (*connect.Response[v1.SetWorkspaceDeliveryDefaultResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.SetWorkspaceDeliveryDefault is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) ListWorkspacePredictedWork(context.Context, *connect.Request[v1.ListWorkspacePredictedWorkRequest]) (*connect.Response[v1.ListWorkspacePredictedWorkResponse], error) {

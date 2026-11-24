@@ -812,6 +812,11 @@ service AgentService {
   // has built ahead for the workspace. Admins set; members read.
   rpc ListRepoDelivery(ListRepoDeliveryRequest) returns (ListRepoDeliveryResponse);
   rpc SetRepoDelivery(SetRepoDeliveryRequest) returns (SetRepoDeliveryResponse);
+  // The workspace's own choice, which every repository follows unless it has its own
+  // (Robby, 2026-11-24: "set it globally for a workspace so they don't need to be set per
+  // tread"). Admins only. Choosing TANK's runners opens the switch pull request in every
+  // repository that follows it, and in each repository connected later.
+  rpc SetWorkspaceDelivery(SetWorkspaceDeliveryRequest) returns (SetWorkspaceDeliveryResponse);
   rpc ListPredictedWork(ListPredictedWorkRequest) returns (ListPredictedWorkResponse);
   rpc DismissPredictedWork(DismissPredictedWorkRequest) returns (DismissPredictedWorkResponse);
   // Take work TANK built ahead: a run carries on its branch in a thread of the Tread it was
@@ -885,10 +890,22 @@ message RepoDelivery {
   string tank_runners_reason = 10;
   google.protobuf.Timestamp updated_at = 11;
   string updated_by = 12;
+  // True when the repository has no choice of its own and follows the workspace's; mode is
+  // then the workspace default it follows.
+  bool follows_default = 13;
 }
 
 message ListRepoDeliveryRequest { string workspace_id = 1; }
-message ListRepoDeliveryResponse { repeated RepoDelivery repos = 1; }
+message ListRepoDeliveryResponse {
+  repeated RepoDelivery repos = 1;
+  // The workspace's own choice; UNSPECIFIED is the same as OWN_CI (nothing moves).
+  DeliveryMode workspace_default = 2;
+  // Why the workspace default could not be applied, in one sentence; empty when it was.
+  string workspace_reason = 3;
+  // Whether TANK's runners can be chosen in this workspace now, and why not.
+  bool tank_runners_available = 4;
+  string tank_runners_reason = 5;
+}
 
 message SetRepoDeliveryRequest {
   string workspace_id = 1;
@@ -896,12 +913,22 @@ message SetRepoDeliveryRequest {
   DeliveryMode mode = 3;
   // OTHER_CI: issue a new report token and revoke the one before it.
   bool rotate_report_token = 4;
+  // Drop the repository's own choice: it follows the workspace default again (mode is
+  // then ignored).
+  bool use_default = 5;
 }
 message SetRepoDeliveryResponse {
   RepoDelivery repo = 1;
   // Shown once, when a token was issued by this call.
   string report_token = 2;
 }
+
+message SetWorkspaceDeliveryRequest {
+  string workspace_id = 1;
+  DeliveryMode mode = 2;
+}
+// The whole list again, every repository with what it now follows.
+message SetWorkspaceDeliveryResponse { ListRepoDeliveryResponse delivery = 1; }
 
 // ---- Overdrive: predicted work, an add-on (Robby, 2026-11-23) ----
 

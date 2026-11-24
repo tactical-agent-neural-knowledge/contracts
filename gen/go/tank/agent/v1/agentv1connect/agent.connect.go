@@ -112,6 +112,9 @@ const (
 	// AgentServiceSetRepoDeliveryProcedure is the fully-qualified name of the AgentService's
 	// SetRepoDelivery RPC.
 	AgentServiceSetRepoDeliveryProcedure = "/tank.agent.v1.AgentService/SetRepoDelivery"
+	// AgentServiceSetWorkspaceDeliveryProcedure is the fully-qualified name of the AgentService's
+	// SetWorkspaceDelivery RPC.
+	AgentServiceSetWorkspaceDeliveryProcedure = "/tank.agent.v1.AgentService/SetWorkspaceDelivery"
 	// AgentServiceListPredictedWorkProcedure is the fully-qualified name of the AgentService's
 	// ListPredictedWork RPC.
 	AgentServiceListPredictedWorkProcedure = "/tank.agent.v1.AgentService/ListPredictedWork"
@@ -194,6 +197,11 @@ type AgentServiceClient interface {
 	// has built ahead for the workspace. Admins set; members read.
 	ListRepoDelivery(context.Context, *connect.Request[v1.ListRepoDeliveryRequest]) (*connect.Response[v1.ListRepoDeliveryResponse], error)
 	SetRepoDelivery(context.Context, *connect.Request[v1.SetRepoDeliveryRequest]) (*connect.Response[v1.SetRepoDeliveryResponse], error)
+	// The workspace's own choice, which every repository follows unless it has its own
+	// (Robby, 2026-11-24: "set it globally for a workspace so they don't need to be set per
+	// tread"). Admins only. Choosing TANK's runners opens the switch pull request in every
+	// repository that follows it, and in each repository connected later.
+	SetWorkspaceDelivery(context.Context, *connect.Request[v1.SetWorkspaceDeliveryRequest]) (*connect.Response[v1.SetWorkspaceDeliveryResponse], error)
 	ListPredictedWork(context.Context, *connect.Request[v1.ListPredictedWorkRequest]) (*connect.Response[v1.ListPredictedWorkResponse], error)
 	DismissPredictedWork(context.Context, *connect.Request[v1.DismissPredictedWorkRequest]) (*connect.Response[v1.DismissPredictedWorkResponse], error)
 	// Take work TANK built ahead: a run carries on its branch in a thread of the Tread it was
@@ -407,6 +415,12 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("SetRepoDelivery")),
 			connect.WithClientOptions(opts...),
 		),
+		setWorkspaceDelivery: connect.NewClient[v1.SetWorkspaceDeliveryRequest, v1.SetWorkspaceDeliveryResponse](
+			httpClient,
+			baseURL+AgentServiceSetWorkspaceDeliveryProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("SetWorkspaceDelivery")),
+			connect.WithClientOptions(opts...),
+		),
 		listPredictedWork: connect.NewClient[v1.ListPredictedWorkRequest, v1.ListPredictedWorkResponse](
 			httpClient,
 			baseURL+AgentServiceListPredictedWorkProcedure,
@@ -496,6 +510,7 @@ type agentServiceClient struct {
 	listRepoPreviewSetups     *connect.Client[v1.ListRepoPreviewSetupsRequest, v1.ListRepoPreviewSetupsResponse]
 	listRepoDelivery          *connect.Client[v1.ListRepoDeliveryRequest, v1.ListRepoDeliveryResponse]
 	setRepoDelivery           *connect.Client[v1.SetRepoDeliveryRequest, v1.SetRepoDeliveryResponse]
+	setWorkspaceDelivery      *connect.Client[v1.SetWorkspaceDeliveryRequest, v1.SetWorkspaceDeliveryResponse]
 	listPredictedWork         *connect.Client[v1.ListPredictedWorkRequest, v1.ListPredictedWorkResponse]
 	dismissPredictedWork      *connect.Client[v1.DismissPredictedWorkRequest, v1.DismissPredictedWorkResponse]
 	takePredictedWork         *connect.Client[v1.TakePredictedWorkRequest, v1.TakePredictedWorkResponse]
@@ -657,6 +672,11 @@ func (c *agentServiceClient) SetRepoDelivery(ctx context.Context, req *connect.R
 	return c.setRepoDelivery.CallUnary(ctx, req)
 }
 
+// SetWorkspaceDelivery calls tank.agent.v1.AgentService.SetWorkspaceDelivery.
+func (c *agentServiceClient) SetWorkspaceDelivery(ctx context.Context, req *connect.Request[v1.SetWorkspaceDeliveryRequest]) (*connect.Response[v1.SetWorkspaceDeliveryResponse], error) {
+	return c.setWorkspaceDelivery.CallUnary(ctx, req)
+}
+
 // ListPredictedWork calls tank.agent.v1.AgentService.ListPredictedWork.
 func (c *agentServiceClient) ListPredictedWork(ctx context.Context, req *connect.Request[v1.ListPredictedWorkRequest]) (*connect.Response[v1.ListPredictedWorkResponse], error) {
 	return c.listPredictedWork.CallUnary(ctx, req)
@@ -755,6 +775,11 @@ type AgentServiceHandler interface {
 	// has built ahead for the workspace. Admins set; members read.
 	ListRepoDelivery(context.Context, *connect.Request[v1.ListRepoDeliveryRequest]) (*connect.Response[v1.ListRepoDeliveryResponse], error)
 	SetRepoDelivery(context.Context, *connect.Request[v1.SetRepoDeliveryRequest]) (*connect.Response[v1.SetRepoDeliveryResponse], error)
+	// The workspace's own choice, which every repository follows unless it has its own
+	// (Robby, 2026-11-24: "set it globally for a workspace so they don't need to be set per
+	// tread"). Admins only. Choosing TANK's runners opens the switch pull request in every
+	// repository that follows it, and in each repository connected later.
+	SetWorkspaceDelivery(context.Context, *connect.Request[v1.SetWorkspaceDeliveryRequest]) (*connect.Response[v1.SetWorkspaceDeliveryResponse], error)
 	ListPredictedWork(context.Context, *connect.Request[v1.ListPredictedWorkRequest]) (*connect.Response[v1.ListPredictedWorkResponse], error)
 	DismissPredictedWork(context.Context, *connect.Request[v1.DismissPredictedWorkRequest]) (*connect.Response[v1.DismissPredictedWorkResponse], error)
 	// Take work TANK built ahead: a run carries on its branch in a thread of the Tread it was
@@ -964,6 +989,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("SetRepoDelivery")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceSetWorkspaceDeliveryHandler := connect.NewUnaryHandler(
+		AgentServiceSetWorkspaceDeliveryProcedure,
+		svc.SetWorkspaceDelivery,
+		connect.WithSchema(agentServiceMethods.ByName("SetWorkspaceDelivery")),
+		connect.WithHandlerOptions(opts...),
+	)
 	agentServiceListPredictedWorkHandler := connect.NewUnaryHandler(
 		AgentServiceListPredictedWorkProcedure,
 		svc.ListPredictedWork,
@@ -1080,6 +1111,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceListRepoDeliveryHandler.ServeHTTP(w, r)
 		case AgentServiceSetRepoDeliveryProcedure:
 			agentServiceSetRepoDeliveryHandler.ServeHTTP(w, r)
+		case AgentServiceSetWorkspaceDeliveryProcedure:
+			agentServiceSetWorkspaceDeliveryHandler.ServeHTTP(w, r)
 		case AgentServiceListPredictedWorkProcedure:
 			agentServiceListPredictedWorkHandler.ServeHTTP(w, r)
 		case AgentServiceDismissPredictedWorkProcedure:
@@ -1225,6 +1258,10 @@ func (UnimplementedAgentServiceHandler) ListRepoDelivery(context.Context, *conne
 
 func (UnimplementedAgentServiceHandler) SetRepoDelivery(context.Context, *connect.Request[v1.SetRepoDeliveryRequest]) (*connect.Response[v1.SetRepoDeliveryResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetRepoDelivery is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) SetWorkspaceDelivery(context.Context, *connect.Request[v1.SetWorkspaceDeliveryRequest]) (*connect.Response[v1.SetWorkspaceDeliveryResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetWorkspaceDelivery is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) ListPredictedWork(context.Context, *connect.Request[v1.ListPredictedWorkRequest]) (*connect.Response[v1.ListPredictedWorkResponse], error) {
