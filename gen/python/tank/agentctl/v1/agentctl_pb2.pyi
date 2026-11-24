@@ -1710,6 +1710,24 @@ class RememberResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class ReportMigrationProofRequest(_message.Message):
+    __slots__ = ("tier", "ok", "duration_ms", "tool", "detail")
+    TIER_FIELD_NUMBER: _ClassVar[int]
+    OK_FIELD_NUMBER: _ClassVar[int]
+    DURATION_MS_FIELD_NUMBER: _ClassVar[int]
+    TOOL_FIELD_NUMBER: _ClassVar[int]
+    DETAIL_FIELD_NUMBER: _ClassVar[int]
+    tier: str
+    ok: bool
+    duration_ms: int
+    tool: str
+    detail: str
+    def __init__(self, tier: _Optional[str] = ..., ok: bool = ..., duration_ms: _Optional[int] = ..., tool: _Optional[str] = ..., detail: _Optional[str] = ...) -> None: ...
+
+class ReportMigrationProofResponse(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
 class Usage(_message.Message):
     __slots__ = ("input_tokens", "output_tokens", "cache_read_input_tokens", "cache_creation_input_tokens", "cost_usd", "model")
     INPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
@@ -3795,3 +3813,19 @@ class DismissWorkspacePredictedWorkRequest(_message.Message):
 class DismissWorkspacePredictedWorkResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class TakeWorkspacePredictedWorkRequest(_message.Message):
+    __slots__ = ("request", "actor_id", "addon")
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    ADDON_FIELD_NUMBER: _ClassVar[int]
+    request: _agent_pb2.TakePredictedWorkRequest
+    actor_id: str
+    addon: bool
+    def __init__(self, request: _Optional[_Union[_agent_pb2.TakePredictedWorkRequest, _Mapping]] = ..., actor_id: _Optional[str] = ..., addon: bool = ...) -> None: ...
+
+class TakeWorkspacePredictedWorkResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _agent_pb2.TakePredictedWorkResponse
+    def __init__(self, response: _Optional[_Union[_agent_pb2.TakePredictedWorkResponse, _Mapping]] = ...) -> None: ...

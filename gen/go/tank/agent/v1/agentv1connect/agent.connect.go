@@ -118,6 +118,9 @@ const (
 	// AgentServiceDismissPredictedWorkProcedure is the fully-qualified name of the AgentService's
 	// DismissPredictedWork RPC.
 	AgentServiceDismissPredictedWorkProcedure = "/tank.agent.v1.AgentService/DismissPredictedWork"
+	// AgentServiceTakePredictedWorkProcedure is the fully-qualified name of the AgentService's
+	// TakePredictedWork RPC.
+	AgentServiceTakePredictedWorkProcedure = "/tank.agent.v1.AgentService/TakePredictedWork"
 	// AgentServiceGetTreadSwitchboardProcedure is the fully-qualified name of the AgentService's
 	// GetTreadSwitchboard RPC.
 	AgentServiceGetTreadSwitchboardProcedure = "/tank.agent.v1.AgentService/GetTreadSwitchboard"
@@ -193,6 +196,10 @@ type AgentServiceClient interface {
 	SetRepoDelivery(context.Context, *connect.Request[v1.SetRepoDeliveryRequest]) (*connect.Response[v1.SetRepoDeliveryResponse], error)
 	ListPredictedWork(context.Context, *connect.Request[v1.ListPredictedWorkRequest]) (*connect.Response[v1.ListPredictedWorkResponse], error)
 	DismissPredictedWork(context.Context, *connect.Request[v1.DismissPredictedWorkRequest]) (*connect.Response[v1.DismissPredictedWorkResponse], error)
+	// Take work TANK built ahead: a run carries on its branch in a thread of the Tread it was
+	// predicted in, finishes it and asks for the merge like any other run. A prediction from a
+	// queued task is taken by starting the task instead.
+	TakePredictedWork(context.Context, *connect.Request[v1.TakePredictedWorkRequest]) (*connect.Response[v1.TakePredictedWorkResponse], error)
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
@@ -412,6 +419,12 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("DismissPredictedWork")),
 			connect.WithClientOptions(opts...),
 		),
+		takePredictedWork: connect.NewClient[v1.TakePredictedWorkRequest, v1.TakePredictedWorkResponse](
+			httpClient,
+			baseURL+AgentServiceTakePredictedWorkProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("TakePredictedWork")),
+			connect.WithClientOptions(opts...),
+		),
 		getTreadSwitchboard: connect.NewClient[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse](
 			httpClient,
 			baseURL+AgentServiceGetTreadSwitchboardProcedure,
@@ -485,6 +498,7 @@ type agentServiceClient struct {
 	setRepoDelivery           *connect.Client[v1.SetRepoDeliveryRequest, v1.SetRepoDeliveryResponse]
 	listPredictedWork         *connect.Client[v1.ListPredictedWorkRequest, v1.ListPredictedWorkResponse]
 	dismissPredictedWork      *connect.Client[v1.DismissPredictedWorkRequest, v1.DismissPredictedWorkResponse]
+	takePredictedWork         *connect.Client[v1.TakePredictedWorkRequest, v1.TakePredictedWorkResponse]
 	getTreadSwitchboard       *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
 	setTreadSettings          *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
 	getWorkspaceSpend         *connect.Client[v1.GetWorkspaceSpendRequest, v1.GetWorkspaceSpendResponse]
@@ -653,6 +667,11 @@ func (c *agentServiceClient) DismissPredictedWork(ctx context.Context, req *conn
 	return c.dismissPredictedWork.CallUnary(ctx, req)
 }
 
+// TakePredictedWork calls tank.agent.v1.AgentService.TakePredictedWork.
+func (c *agentServiceClient) TakePredictedWork(ctx context.Context, req *connect.Request[v1.TakePredictedWorkRequest]) (*connect.Response[v1.TakePredictedWorkResponse], error) {
+	return c.takePredictedWork.CallUnary(ctx, req)
+}
+
 // GetTreadSwitchboard calls tank.agent.v1.AgentService.GetTreadSwitchboard.
 func (c *agentServiceClient) GetTreadSwitchboard(ctx context.Context, req *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error) {
 	return c.getTreadSwitchboard.CallUnary(ctx, req)
@@ -738,6 +757,10 @@ type AgentServiceHandler interface {
 	SetRepoDelivery(context.Context, *connect.Request[v1.SetRepoDeliveryRequest]) (*connect.Response[v1.SetRepoDeliveryResponse], error)
 	ListPredictedWork(context.Context, *connect.Request[v1.ListPredictedWorkRequest]) (*connect.Response[v1.ListPredictedWorkResponse], error)
 	DismissPredictedWork(context.Context, *connect.Request[v1.DismissPredictedWorkRequest]) (*connect.Response[v1.DismissPredictedWorkResponse], error)
+	// Take work TANK built ahead: a run carries on its branch in a thread of the Tread it was
+	// predicted in, finishes it and asks for the merge like any other run. A prediction from a
+	// queued task is taken by starting the task instead.
+	TakePredictedWork(context.Context, *connect.Request[v1.TakePredictedWorkRequest]) (*connect.Response[v1.TakePredictedWorkResponse], error)
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
@@ -953,6 +976,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("DismissPredictedWork")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceTakePredictedWorkHandler := connect.NewUnaryHandler(
+		AgentServiceTakePredictedWorkProcedure,
+		svc.TakePredictedWork,
+		connect.WithSchema(agentServiceMethods.ByName("TakePredictedWork")),
+		connect.WithHandlerOptions(opts...),
+	)
 	agentServiceGetTreadSwitchboardHandler := connect.NewUnaryHandler(
 		AgentServiceGetTreadSwitchboardProcedure,
 		svc.GetTreadSwitchboard,
@@ -1055,6 +1084,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceListPredictedWorkHandler.ServeHTTP(w, r)
 		case AgentServiceDismissPredictedWorkProcedure:
 			agentServiceDismissPredictedWorkHandler.ServeHTTP(w, r)
+		case AgentServiceTakePredictedWorkProcedure:
+			agentServiceTakePredictedWorkHandler.ServeHTTP(w, r)
 		case AgentServiceGetTreadSwitchboardProcedure:
 			agentServiceGetTreadSwitchboardHandler.ServeHTTP(w, r)
 		case AgentServiceSetTreadSettingsProcedure:
@@ -1202,6 +1233,10 @@ func (UnimplementedAgentServiceHandler) ListPredictedWork(context.Context, *conn
 
 func (UnimplementedAgentServiceHandler) DismissPredictedWork(context.Context, *connect.Request[v1.DismissPredictedWorkRequest]) (*connect.Response[v1.DismissPredictedWorkResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.DismissPredictedWork is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) TakePredictedWork(context.Context, *connect.Request[v1.TakePredictedWorkRequest]) (*connect.Response[v1.TakePredictedWorkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.TakePredictedWork is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error) {

@@ -814,6 +814,10 @@ service AgentService {
   rpc SetRepoDelivery(SetRepoDeliveryRequest) returns (SetRepoDeliveryResponse);
   rpc ListPredictedWork(ListPredictedWorkRequest) returns (ListPredictedWorkResponse);
   rpc DismissPredictedWork(DismissPredictedWorkRequest) returns (DismissPredictedWorkResponse);
+  // Take work TANK built ahead: a run carries on its branch in a thread of the Tread it was
+  // predicted in, finishes it and asks for the merge like any other run. A prediction from a
+  // queued task is taken by starting the task instead.
+  rpc TakePredictedWork(TakePredictedWorkRequest) returns (TakePredictedWorkResponse);
   // The Tread's switchboard: metrics for members, settings for admins.
   rpc GetTreadSwitchboard(GetTreadSwitchboardRequest) returns (GetTreadSwitchboardResponse);
   rpc SetTreadSettings(SetTreadSettingsRequest) returns (SetTreadSettingsResponse);
@@ -932,6 +936,8 @@ message PredictedWork {
   // source = queued_task: the task waiting in Queued that this was predicted from.
   // Starting that task is how an idea is taken.
   string source_task_id = 18;
+  // The draft pull request it was built on, when it was built.
+  string pr_url = 19;
 }
 
 message ListPredictedWorkRequest {
@@ -954,3 +960,13 @@ message DismissPredictedWorkRequest {
   string id = 2;
 }
 message DismissPredictedWorkResponse {}
+
+message TakePredictedWorkRequest {
+  string workspace_id = 1;
+  string id = 2;
+}
+message TakePredictedWorkResponse {
+  // Where the run that carries it on is working.
+  string channel_id = 1;
+  string thread_root_id = 2;
+}
