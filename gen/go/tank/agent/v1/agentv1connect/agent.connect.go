@@ -39,6 +39,9 @@ const (
 	AgentServiceOpenThreadProcedure = "/tank.agent.v1.AgentService/OpenThread"
 	// AgentServiceReplyProcedure is the fully-qualified name of the AgentService's Reply RPC.
 	AgentServiceReplyProcedure = "/tank.agent.v1.AgentService/Reply"
+	// AgentServiceShowWorkingProcedure is the fully-qualified name of the AgentService's ShowWorking
+	// RPC.
+	AgentServiceShowWorkingProcedure = "/tank.agent.v1.AgentService/ShowWorking"
 	// AgentServiceGetWorkspaceAgentSettingsProcedure is the fully-qualified name of the AgentService's
 	// GetWorkspaceAgentSettings RPC.
 	AgentServiceGetWorkspaceAgentSettingsProcedure = "/tank.agent.v1.AgentService/GetWorkspaceAgentSettings"
@@ -146,6 +149,13 @@ type AgentServiceClient interface {
 	// whole text so far. Bot tokens only, on the requester's membership, like OpenThread; the
 	// agent must be one of the workspace's own and allowed to run there.
 	Reply(context.Context, *connect.Request[v1.ReplyRequest]) (*connect.Response[v1.ReplyResponse], error)
+	// Shows an agent at work in a Tread or a thread before it has anything to say: the same
+	// agent.status frame a run's status sends, with no run (Overdrive, 2026-11-24: a person
+	// sees the agent respond within a few hundred milliseconds of pressing Send, every time).
+	// Nothing is stored and nothing is posted; clients drop the frame after 30 s or when an
+	// empty status follows. Bot tokens only; the agent must be one of the workspace's own and
+	// a member of the Tread.
+	ShowWorking(context.Context, *connect.Request[v1.ShowWorkingRequest]) (*connect.Response[v1.ShowWorkingResponse], error)
 	GetWorkspaceAgentSettings(context.Context, *connect.Request[v1.GetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.GetWorkspaceAgentSettingsResponse], error)
 	SetWorkspaceAgentSettings(context.Context, *connect.Request[v1.SetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.SetWorkspaceAgentSettingsResponse], error)
 	GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error)
@@ -226,6 +236,12 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			httpClient,
 			baseURL+AgentServiceReplyProcedure,
 			connect.WithSchema(agentServiceMethods.ByName("Reply")),
+			connect.WithClientOptions(opts...),
+		),
+		showWorking: connect.NewClient[v1.ShowWorkingRequest, v1.ShowWorkingResponse](
+			httpClient,
+			baseURL+AgentServiceShowWorkingProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("ShowWorking")),
 			connect.WithClientOptions(opts...),
 		),
 		getWorkspaceAgentSettings: connect.NewClient[v1.GetWorkspaceAgentSettingsRequest, v1.GetWorkspaceAgentSettingsResponse](
@@ -440,6 +456,7 @@ type agentServiceClient struct {
 	startRun                  *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
 	openThread                *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
 	reply                     *connect.Client[v1.ReplyRequest, v1.ReplyResponse]
+	showWorking               *connect.Client[v1.ShowWorkingRequest, v1.ShowWorkingResponse]
 	getWorkspaceAgentSettings *connect.Client[v1.GetWorkspaceAgentSettingsRequest, v1.GetWorkspaceAgentSettingsResponse]
 	setWorkspaceAgentSettings *connect.Client[v1.SetWorkspaceAgentSettingsRequest, v1.SetWorkspaceAgentSettingsResponse]
 	getTreadPlan              *connect.Client[v1.GetTreadPlanRequest, v1.GetTreadPlanResponse]
@@ -489,6 +506,11 @@ func (c *agentServiceClient) OpenThread(ctx context.Context, req *connect.Reques
 // Reply calls tank.agent.v1.AgentService.Reply.
 func (c *agentServiceClient) Reply(ctx context.Context, req *connect.Request[v1.ReplyRequest]) (*connect.Response[v1.ReplyResponse], error) {
 	return c.reply.CallUnary(ctx, req)
+}
+
+// ShowWorking calls tank.agent.v1.AgentService.ShowWorking.
+func (c *agentServiceClient) ShowWorking(ctx context.Context, req *connect.Request[v1.ShowWorkingRequest]) (*connect.Response[v1.ShowWorkingResponse], error) {
+	return c.showWorking.CallUnary(ctx, req)
 }
 
 // GetWorkspaceAgentSettings calls tank.agent.v1.AgentService.GetWorkspaceAgentSettings.
@@ -672,6 +694,13 @@ type AgentServiceHandler interface {
 	// whole text so far. Bot tokens only, on the requester's membership, like OpenThread; the
 	// agent must be one of the workspace's own and allowed to run there.
 	Reply(context.Context, *connect.Request[v1.ReplyRequest]) (*connect.Response[v1.ReplyResponse], error)
+	// Shows an agent at work in a Tread or a thread before it has anything to say: the same
+	// agent.status frame a run's status sends, with no run (Overdrive, 2026-11-24: a person
+	// sees the agent respond within a few hundred milliseconds of pressing Send, every time).
+	// Nothing is stored and nothing is posted; clients drop the frame after 30 s or when an
+	// empty status follows. Bot tokens only; the agent must be one of the workspace's own and
+	// a member of the Tread.
+	ShowWorking(context.Context, *connect.Request[v1.ShowWorkingRequest]) (*connect.Response[v1.ShowWorkingResponse], error)
 	GetWorkspaceAgentSettings(context.Context, *connect.Request[v1.GetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.GetWorkspaceAgentSettingsResponse], error)
 	SetWorkspaceAgentSettings(context.Context, *connect.Request[v1.SetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.SetWorkspaceAgentSettingsResponse], error)
 	GetTreadPlan(context.Context, *connect.Request[v1.GetTreadPlanRequest]) (*connect.Response[v1.GetTreadPlanResponse], error)
@@ -748,6 +777,12 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		AgentServiceReplyProcedure,
 		svc.Reply,
 		connect.WithSchema(agentServiceMethods.ByName("Reply")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceShowWorkingHandler := connect.NewUnaryHandler(
+		AgentServiceShowWorkingProcedure,
+		svc.ShowWorking,
+		connect.WithSchema(agentServiceMethods.ByName("ShowWorking")),
 		connect.WithHandlerOptions(opts...),
 	)
 	agentServiceGetWorkspaceAgentSettingsHandler := connect.NewUnaryHandler(
@@ -962,6 +997,8 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceOpenThreadHandler.ServeHTTP(w, r)
 		case AgentServiceReplyProcedure:
 			agentServiceReplyHandler.ServeHTTP(w, r)
+		case AgentServiceShowWorkingProcedure:
+			agentServiceShowWorkingHandler.ServeHTTP(w, r)
 		case AgentServiceGetWorkspaceAgentSettingsProcedure:
 			agentServiceGetWorkspaceAgentSettingsHandler.ServeHTTP(w, r)
 		case AgentServiceSetWorkspaceAgentSettingsProcedure:
@@ -1049,6 +1086,10 @@ func (UnimplementedAgentServiceHandler) OpenThread(context.Context, *connect.Req
 
 func (UnimplementedAgentServiceHandler) Reply(context.Context, *connect.Request[v1.ReplyRequest]) (*connect.Response[v1.ReplyResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.Reply is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) ShowWorking(context.Context, *connect.Request[v1.ShowWorkingRequest]) (*connect.Response[v1.ShowWorkingResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.ShowWorking is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) GetWorkspaceAgentSettings(context.Context, *connect.Request[v1.GetWorkspaceAgentSettingsRequest]) (*connect.Response[v1.GetWorkspaceAgentSettingsResponse], error) {
