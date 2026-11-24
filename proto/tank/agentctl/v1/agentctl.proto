@@ -1096,6 +1096,48 @@ message ReportMigrationProofRequest {
 }
 message ReportMigrationProofResponse {}
 
+// One SELECT (or WITH … SELECT), run in a read-only transaction as a read-only role, with a
+// statement timeout and a row cap. The answer is a summary: how many rows, and per column
+// how many were null, how many distinct values, and the range of a numeric column. No row
+// and no text value is returned.
+message AskProductDatabaseRequest {
+  string query = 1;
+  string database = 2;  // the product's database name from tank.yaml; empty = its first
+}
+message ColumnSummary {
+  string name = 1;
+  int32 nulls = 2;
+  int32 distinct = 3;
+  // Only for a numeric column; empty otherwise.
+  string min = 4;
+  string max = 5;
+}
+message AskProductDatabaseResponse {
+  int32 rows = 1;          // rows the query returned, up to the cap
+  bool capped = 2;         // the cap was reached: there may be more
+  repeated ColumnSummary columns = 3;
+  int32 duration_ms = 4;
+  string error = 5;        // the database's own message when the query failed
+}
+
+// The run's new migrations (only the up part of each, in order), applied to a copy of the
+// product's database made for this call and deleted right after.
+message MigrationFile {
+  string name = 1;
+  string sql = 2;
+}
+message ProveMigrationOnCloneRequest {
+  repeated MigrationFile files = 1;
+  string database = 2;
+}
+message ProveMigrationOnCloneResponse {
+  bool ok = 1;
+  int32 duration_ms = 2;   // applying the migrations on the copy
+  int32 clone_ms = 3;      // making the copy
+  string detail = 4;       // the last lines of the output when it failed
+  double cost_usd = 5;     // what the copy cost, recorded on the run's ledger
+}
+
 // ----------------------------------------------------------------- run events
 
 // What the control plane forwards to people from a runner's event stream: only
@@ -1373,6 +1415,12 @@ service RunnerService {
   // for it. structure = the repository's migrations applied to an empty database in the
   // sandbox. Recorded on the run's prediction; a run that builds none is answered and ignored.
   rpc ReportMigrationProof(ReportMigrationProofRequest) returns (ReportMigrationProofResponse);
+  // Staged database changes against the run's own product database (TANK-hosted products
+  // only; never another product's): a read-only question answered as a summary, never rows,
+  // and a data-rewriting migration tried on a short-lived copy that is deleted after. Every
+  // call is audited.
+  rpc AskProductDatabase(AskProductDatabaseRequest) returns (AskProductDatabaseResponse);
+  rpc ProveMigrationOnClone(ProveMigrationOnCloneRequest) returns (ProveMigrationOnCloneResponse);
 
   // Client-streaming transcript: assistant_delta, tool_call, tool_result,
   // permission_request, result, usage. Persisted to agent.run_events.

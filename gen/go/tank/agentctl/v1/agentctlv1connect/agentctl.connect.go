@@ -248,6 +248,12 @@ const (
 	// RunnerServiceReportMigrationProofProcedure is the fully-qualified name of the RunnerService's
 	// ReportMigrationProof RPC.
 	RunnerServiceReportMigrationProofProcedure = "/tank.agentctl.v1.RunnerService/ReportMigrationProof"
+	// RunnerServiceAskProductDatabaseProcedure is the fully-qualified name of the RunnerService's
+	// AskProductDatabase RPC.
+	RunnerServiceAskProductDatabaseProcedure = "/tank.agentctl.v1.RunnerService/AskProductDatabase"
+	// RunnerServiceProveMigrationOnCloneProcedure is the fully-qualified name of the RunnerService's
+	// ProveMigrationOnClone RPC.
+	RunnerServiceProveMigrationOnCloneProcedure = "/tank.agentctl.v1.RunnerService/ProveMigrationOnClone"
 	// RunnerServiceStreamEventsProcedure is the fully-qualified name of the RunnerService's
 	// StreamEvents RPC.
 	RunnerServiceStreamEventsProcedure = "/tank.agentctl.v1.RunnerService/StreamEvents"
@@ -608,6 +614,12 @@ type RunnerServiceClient interface {
 	// for it. structure = the repository's migrations applied to an empty database in the
 	// sandbox. Recorded on the run's prediction; a run that builds none is answered and ignored.
 	ReportMigrationProof(context.Context, *connect.Request[v1.ReportMigrationProofRequest]) (*connect.Response[v1.ReportMigrationProofResponse], error)
+	// Staged database changes against the run's own product database (TANK-hosted products
+	// only; never another product's): a read-only question answered as a summary, never rows,
+	// and a data-rewriting migration tried on a short-lived copy that is deleted after. Every
+	// call is audited.
+	AskProductDatabase(context.Context, *connect.Request[v1.AskProductDatabaseRequest]) (*connect.Response[v1.AskProductDatabaseResponse], error)
+	ProveMigrationOnClone(context.Context, *connect.Request[v1.ProveMigrationOnCloneRequest]) (*connect.Response[v1.ProveMigrationOnCloneResponse], error)
 	// Client-streaming transcript: assistant_delta, tool_call, tool_result,
 	// permission_request, result, usage. Persisted to agent.run_events.
 	StreamEvents(context.Context) *connect.ClientStreamForClient[v1.StreamEventsRequest, v1.StreamEventsResponse]
@@ -1086,6 +1098,18 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("ReportMigrationProof")),
 			connect.WithClientOptions(opts...),
 		),
+		askProductDatabase: connect.NewClient[v1.AskProductDatabaseRequest, v1.AskProductDatabaseResponse](
+			httpClient,
+			baseURL+RunnerServiceAskProductDatabaseProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("AskProductDatabase")),
+			connect.WithClientOptions(opts...),
+		),
+		proveMigrationOnClone: connect.NewClient[v1.ProveMigrationOnCloneRequest, v1.ProveMigrationOnCloneResponse](
+			httpClient,
+			baseURL+RunnerServiceProveMigrationOnCloneProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ProveMigrationOnClone")),
+			connect.WithClientOptions(opts...),
+		),
 		streamEvents: connect.NewClient[v1.StreamEventsRequest, v1.StreamEventsResponse](
 			httpClient,
 			baseURL+RunnerServiceStreamEventsProcedure,
@@ -1214,6 +1238,8 @@ type runnerServiceClient struct {
 	recordDecision           *connect.Client[v1.RecordDecisionRequest, v1.RecordDecisionResponse]
 	remember                 *connect.Client[v1.RememberRequest, v1.RememberResponse]
 	reportMigrationProof     *connect.Client[v1.ReportMigrationProofRequest, v1.ReportMigrationProofResponse]
+	askProductDatabase       *connect.Client[v1.AskProductDatabaseRequest, v1.AskProductDatabaseResponse]
+	proveMigrationOnClone    *connect.Client[v1.ProveMigrationOnCloneRequest, v1.ProveMigrationOnCloneResponse]
 	streamEvents             *connect.Client[v1.StreamEventsRequest, v1.StreamEventsResponse]
 	sessionStorePut          *connect.Client[v1.SessionStorePutRequest, v1.SessionStorePutResponse]
 	sessionStoreList         *connect.Client[v1.SessionStoreListRequest, v1.SessionStoreListResponse]
@@ -1599,6 +1625,16 @@ func (c *runnerServiceClient) ReportMigrationProof(ctx context.Context, req *con
 	return c.reportMigrationProof.CallUnary(ctx, req)
 }
 
+// AskProductDatabase calls tank.agentctl.v1.RunnerService.AskProductDatabase.
+func (c *runnerServiceClient) AskProductDatabase(ctx context.Context, req *connect.Request[v1.AskProductDatabaseRequest]) (*connect.Response[v1.AskProductDatabaseResponse], error) {
+	return c.askProductDatabase.CallUnary(ctx, req)
+}
+
+// ProveMigrationOnClone calls tank.agentctl.v1.RunnerService.ProveMigrationOnClone.
+func (c *runnerServiceClient) ProveMigrationOnClone(ctx context.Context, req *connect.Request[v1.ProveMigrationOnCloneRequest]) (*connect.Response[v1.ProveMigrationOnCloneResponse], error) {
+	return c.proveMigrationOnClone.CallUnary(ctx, req)
+}
+
 // StreamEvents calls tank.agentctl.v1.RunnerService.StreamEvents.
 func (c *runnerServiceClient) StreamEvents(ctx context.Context) *connect.ClientStreamForClient[v1.StreamEventsRequest, v1.StreamEventsResponse] {
 	return c.streamEvents.CallClientStream(ctx)
@@ -1741,6 +1777,12 @@ type RunnerServiceHandler interface {
 	// for it. structure = the repository's migrations applied to an empty database in the
 	// sandbox. Recorded on the run's prediction; a run that builds none is answered and ignored.
 	ReportMigrationProof(context.Context, *connect.Request[v1.ReportMigrationProofRequest]) (*connect.Response[v1.ReportMigrationProofResponse], error)
+	// Staged database changes against the run's own product database (TANK-hosted products
+	// only; never another product's): a read-only question answered as a summary, never rows,
+	// and a data-rewriting migration tried on a short-lived copy that is deleted after. Every
+	// call is audited.
+	AskProductDatabase(context.Context, *connect.Request[v1.AskProductDatabaseRequest]) (*connect.Response[v1.AskProductDatabaseResponse], error)
+	ProveMigrationOnClone(context.Context, *connect.Request[v1.ProveMigrationOnCloneRequest]) (*connect.Response[v1.ProveMigrationOnCloneResponse], error)
 	// Client-streaming transcript: assistant_delta, tool_call, tool_result,
 	// permission_request, result, usage. Persisted to agent.run_events.
 	StreamEvents(context.Context, *connect.ClientStream[v1.StreamEventsRequest]) (*connect.Response[v1.StreamEventsResponse], error)
@@ -2215,6 +2257,18 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("ReportMigrationProof")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceAskProductDatabaseHandler := connect.NewUnaryHandler(
+		RunnerServiceAskProductDatabaseProcedure,
+		svc.AskProductDatabase,
+		connect.WithSchema(runnerServiceMethods.ByName("AskProductDatabase")),
+		connect.WithHandlerOptions(opts...),
+	)
+	runnerServiceProveMigrationOnCloneHandler := connect.NewUnaryHandler(
+		RunnerServiceProveMigrationOnCloneProcedure,
+		svc.ProveMigrationOnClone,
+		connect.WithSchema(runnerServiceMethods.ByName("ProveMigrationOnClone")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServiceStreamEventsHandler := connect.NewClientStreamHandler(
 		RunnerServiceStreamEventsProcedure,
 		svc.StreamEvents,
@@ -2415,6 +2469,10 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceRememberHandler.ServeHTTP(w, r)
 		case RunnerServiceReportMigrationProofProcedure:
 			runnerServiceReportMigrationProofHandler.ServeHTTP(w, r)
+		case RunnerServiceAskProductDatabaseProcedure:
+			runnerServiceAskProductDatabaseHandler.ServeHTTP(w, r)
+		case RunnerServiceProveMigrationOnCloneProcedure:
+			runnerServiceProveMigrationOnCloneHandler.ServeHTTP(w, r)
 		case RunnerServiceStreamEventsProcedure:
 			runnerServiceStreamEventsHandler.ServeHTTP(w, r)
 		case RunnerServiceSessionStorePutProcedure:
@@ -2738,6 +2796,14 @@ func (UnimplementedRunnerServiceHandler) Remember(context.Context, *connect.Requ
 
 func (UnimplementedRunnerServiceHandler) ReportMigrationProof(context.Context, *connect.Request[v1.ReportMigrationProofRequest]) (*connect.Response[v1.ReportMigrationProofResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReportMigrationProof is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) AskProductDatabase(context.Context, *connect.Request[v1.AskProductDatabaseRequest]) (*connect.Response[v1.AskProductDatabaseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.AskProductDatabase is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ProveMigrationOnClone(context.Context, *connect.Request[v1.ProveMigrationOnCloneRequest]) (*connect.Response[v1.ProveMigrationOnCloneResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ProveMigrationOnClone is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) StreamEvents(context.Context, *connect.ClientStream[v1.StreamEventsRequest]) (*connect.Response[v1.StreamEventsResponse], error) {

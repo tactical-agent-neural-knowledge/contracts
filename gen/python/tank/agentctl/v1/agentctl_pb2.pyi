@@ -1728,6 +1728,72 @@ class ReportMigrationProofResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
 
+class AskProductDatabaseRequest(_message.Message):
+    __slots__ = ("query", "database")
+    QUERY_FIELD_NUMBER: _ClassVar[int]
+    DATABASE_FIELD_NUMBER: _ClassVar[int]
+    query: str
+    database: str
+    def __init__(self, query: _Optional[str] = ..., database: _Optional[str] = ...) -> None: ...
+
+class ColumnSummary(_message.Message):
+    __slots__ = ("name", "nulls", "distinct", "min", "max")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    NULLS_FIELD_NUMBER: _ClassVar[int]
+    DISTINCT_FIELD_NUMBER: _ClassVar[int]
+    MIN_FIELD_NUMBER: _ClassVar[int]
+    MAX_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    nulls: int
+    distinct: int
+    min: str
+    max: str
+    def __init__(self, name: _Optional[str] = ..., nulls: _Optional[int] = ..., distinct: _Optional[int] = ..., min: _Optional[str] = ..., max: _Optional[str] = ...) -> None: ...
+
+class AskProductDatabaseResponse(_message.Message):
+    __slots__ = ("rows", "capped", "columns", "duration_ms", "error")
+    ROWS_FIELD_NUMBER: _ClassVar[int]
+    CAPPED_FIELD_NUMBER: _ClassVar[int]
+    COLUMNS_FIELD_NUMBER: _ClassVar[int]
+    DURATION_MS_FIELD_NUMBER: _ClassVar[int]
+    ERROR_FIELD_NUMBER: _ClassVar[int]
+    rows: int
+    capped: bool
+    columns: _containers.RepeatedCompositeFieldContainer[ColumnSummary]
+    duration_ms: int
+    error: str
+    def __init__(self, rows: _Optional[int] = ..., capped: bool = ..., columns: _Optional[_Iterable[_Union[ColumnSummary, _Mapping]]] = ..., duration_ms: _Optional[int] = ..., error: _Optional[str] = ...) -> None: ...
+
+class MigrationFile(_message.Message):
+    __slots__ = ("name", "sql")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    SQL_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    sql: str
+    def __init__(self, name: _Optional[str] = ..., sql: _Optional[str] = ...) -> None: ...
+
+class ProveMigrationOnCloneRequest(_message.Message):
+    __slots__ = ("files", "database")
+    FILES_FIELD_NUMBER: _ClassVar[int]
+    DATABASE_FIELD_NUMBER: _ClassVar[int]
+    files: _containers.RepeatedCompositeFieldContainer[MigrationFile]
+    database: str
+    def __init__(self, files: _Optional[_Iterable[_Union[MigrationFile, _Mapping]]] = ..., database: _Optional[str] = ...) -> None: ...
+
+class ProveMigrationOnCloneResponse(_message.Message):
+    __slots__ = ("ok", "duration_ms", "clone_ms", "detail", "cost_usd")
+    OK_FIELD_NUMBER: _ClassVar[int]
+    DURATION_MS_FIELD_NUMBER: _ClassVar[int]
+    CLONE_MS_FIELD_NUMBER: _ClassVar[int]
+    DETAIL_FIELD_NUMBER: _ClassVar[int]
+    COST_USD_FIELD_NUMBER: _ClassVar[int]
+    ok: bool
+    duration_ms: int
+    clone_ms: int
+    detail: str
+    cost_usd: float
+    def __init__(self, ok: bool = ..., duration_ms: _Optional[int] = ..., clone_ms: _Optional[int] = ..., detail: _Optional[str] = ..., cost_usd: _Optional[float] = ...) -> None: ...
+
 class Usage(_message.Message):
     __slots__ = ("input_tokens", "output_tokens", "cache_read_input_tokens", "cache_creation_input_tokens", "cost_usd", "model")
     INPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
