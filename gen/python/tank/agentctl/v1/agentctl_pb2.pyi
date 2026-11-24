@@ -3847,15 +3847,25 @@ class TakeWorkspacePredictedWorkResponse(_message.Message):
     def __init__(self, response: _Optional[_Union[_agent_pb2.TakePredictedWorkResponse, _Mapping]] = ...) -> None: ...
 
 class PublishPageRequest(_message.Message):
-    __slots__ = ("entry", "title")
+    __slots__ = ("entry", "title", "files")
     ENTRY_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
+    FILES_FIELD_NUMBER: _ClassVar[int]
     entry: str
     title: str
-    def __init__(self, entry: _Optional[str] = ..., title: _Optional[str] = ...) -> None: ...
+    files: _containers.RepeatedCompositeFieldContainer[PageFile]
+    def __init__(self, entry: _Optional[str] = ..., title: _Optional[str] = ..., files: _Optional[_Iterable[_Union[PageFile, _Mapping]]] = ...) -> None: ...
+
+class PageFile(_message.Message):
+    __slots__ = ("path", "content")
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_FIELD_NUMBER: _ClassVar[int]
+    path: str
+    content: bytes
+    def __init__(self, path: _Optional[str] = ..., content: _Optional[bytes] = ...) -> None: ...
 
 class PublishPageResponse(_message.Message):
-    __slots__ = ("build_id", "upload_url", "upload_fields", "key_prefix", "refused")
+    __slots__ = ("build_id", "upload_url", "upload_fields", "key_prefix", "refused", "url")
     class UploadFieldsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -3868,12 +3878,14 @@ class PublishPageResponse(_message.Message):
     UPLOAD_FIELDS_FIELD_NUMBER: _ClassVar[int]
     KEY_PREFIX_FIELD_NUMBER: _ClassVar[int]
     REFUSED_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
     build_id: str
     upload_url: str
     upload_fields: _containers.ScalarMap[str, str]
     key_prefix: str
     refused: str
-    def __init__(self, build_id: _Optional[str] = ..., upload_url: _Optional[str] = ..., upload_fields: _Optional[_Mapping[str, str]] = ..., key_prefix: _Optional[str] = ..., refused: _Optional[str] = ...) -> None: ...
+    url: str
+    def __init__(self, build_id: _Optional[str] = ..., upload_url: _Optional[str] = ..., upload_fields: _Optional[_Mapping[str, str]] = ..., key_prefix: _Optional[str] = ..., refused: _Optional[str] = ..., url: _Optional[str] = ...) -> None: ...
 
 class PagePublishedRequest(_message.Message):
     __slots__ = ("build_id", "entry", "files")
