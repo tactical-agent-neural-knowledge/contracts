@@ -36,6 +36,9 @@ message TaskProof {
   // A recording TANK's browser made of the run doing the thing (video/mp4), posted in the
   // task's Tread (2026-11-13). Shown under "What TANK showed".
   string video_file_id = 6;
+  // Overdrive's stopwatch (2026-11-24): seconds from the ask to the change being live, when
+  // it got there; 0 when nothing confirms it is out. Shown small beside the proof.
+  int64 ask_to_live_seconds = 7;
 }
 
 // Who hears about a task when it reaches a stage.
