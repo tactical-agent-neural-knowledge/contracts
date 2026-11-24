@@ -99,6 +99,10 @@ message Run {
   google.protobuf.Timestamp acked_at = 17;
   google.protobuf.Timestamp sandbox_ready_at = 18;
   google.protobuf.Timestamp first_reply_at = 19;
+  // When the run entered its current state: a strip shows how long a run has waited on a
+  // person ("waiting since 7:38") rather than its whole age (cache7, 2026-11-24: "3h 04m"
+  // under a merge waiting for a yes).
+  google.protobuf.Timestamp state_changed_at = 20;
 }
 
 message StartRunRequest {

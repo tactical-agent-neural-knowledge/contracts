@@ -149,7 +149,7 @@ class Agent(_message.Message):
     def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., principal_id: _Optional[str] = ..., name: _Optional[str] = ..., scopes: _Optional[_Iterable[str]] = ..., title: _Optional[str] = ..., skill: _Optional[str] = ..., kind: _Optional[_Union[AgentKind, str]] = ..., model: _Optional[str] = ..., model_pinned: bool = ..., min_plan: _Optional[str] = ...) -> None: ...
 
 class Run(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "state", "branch", "pr_url", "cost_usd", "status_message_id", "started_at", "ended_at", "plan_hash", "pending_gate_id", "prepared", "acked_at", "sandbox_ready_at", "first_reply_at")
+    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "state", "branch", "pr_url", "cost_usd", "status_message_id", "started_at", "ended_at", "plan_hash", "pending_gate_id", "prepared", "acked_at", "sandbox_ready_at", "first_reply_at", "state_changed_at")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -169,6 +169,7 @@ class Run(_message.Message):
     ACKED_AT_FIELD_NUMBER: _ClassVar[int]
     SANDBOX_READY_AT_FIELD_NUMBER: _ClassVar[int]
     FIRST_REPLY_AT_FIELD_NUMBER: _ClassVar[int]
+    STATE_CHANGED_AT_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -188,7 +189,8 @@ class Run(_message.Message):
     acked_at: _timestamp_pb2.Timestamp
     sandbox_ready_at: _timestamp_pb2.Timestamp
     first_reply_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., state: _Optional[_Union[RunState, str]] = ..., branch: _Optional[str] = ..., pr_url: _Optional[str] = ..., cost_usd: _Optional[float] = ..., status_message_id: _Optional[str] = ..., started_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., ended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., plan_hash: _Optional[str] = ..., pending_gate_id: _Optional[str] = ..., prepared: bool = ..., acked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., sandbox_ready_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., first_reply_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    state_changed_at: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., state: _Optional[_Union[RunState, str]] = ..., branch: _Optional[str] = ..., pr_url: _Optional[str] = ..., cost_usd: _Optional[float] = ..., status_message_id: _Optional[str] = ..., started_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., ended_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., plan_hash: _Optional[str] = ..., pending_gate_id: _Optional[str] = ..., prepared: bool = ..., acked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., sandbox_ready_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., first_reply_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., state_changed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class StartRunRequest(_message.Message):
     __slots__ = ("thread_root_id", "agent_id", "instructions", "requested_by", "parent_run_id", "preparation_id")
