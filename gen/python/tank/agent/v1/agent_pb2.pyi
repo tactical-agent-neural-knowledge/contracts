@@ -74,6 +74,12 @@ class DeliveryMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     DELIVERY_MODE_TANK_RUNNERS: _ClassVar[DeliveryMode]
     DELIVERY_MODE_OWN_CI: _ClassVar[DeliveryMode]
     DELIVERY_MODE_OTHER_CI: _ClassVar[DeliveryMode]
+
+class ChecksMode(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    CHECKS_MODE_UNSPECIFIED: _ClassVar[ChecksMode]
+    CHECKS_MODE_TANK: _ClassVar[ChecksMode]
+    CHECKS_MODE_OWN_CI: _ClassVar[ChecksMode]
 RUN_STATE_UNSPECIFIED: RunState
 RUN_STATE_REQUESTED: RunState
 RUN_STATE_ADMITTED: RunState
@@ -121,6 +127,9 @@ DELIVERY_MODE_UNSPECIFIED: DeliveryMode
 DELIVERY_MODE_TANK_RUNNERS: DeliveryMode
 DELIVERY_MODE_OWN_CI: DeliveryMode
 DELIVERY_MODE_OTHER_CI: DeliveryMode
+CHECKS_MODE_UNSPECIFIED: ChecksMode
+CHECKS_MODE_TANK: ChecksMode
+CHECKS_MODE_OWN_CI: ChecksMode
 
 class Agent(_message.Message):
     __slots__ = ("id", "workspace_id", "principal_id", "name", "scopes", "title", "skill", "kind", "model", "model_pinned", "min_plan")
@@ -1105,7 +1114,7 @@ class EnsureAgentTreadResponse(_message.Message):
     def __init__(self, channel_id: _Optional[str] = ..., created: bool = ...) -> None: ...
 
 class RepoDelivery(_message.Message):
-    __slots__ = ("repo", "mode", "switch_pull_request_url", "switch_status", "reason", "has_report_token", "report_url", "live_check_url", "tank_runners_available", "tank_runners_reason", "updated_at", "updated_by", "follows_default")
+    __slots__ = ("repo", "mode", "switch_pull_request_url", "switch_status", "reason", "has_report_token", "report_url", "live_check_url", "tank_runners_available", "tank_runners_reason", "updated_at", "updated_by", "follows_default", "checks_mode", "checks_follows_default")
     REPO_FIELD_NUMBER: _ClassVar[int]
     MODE_FIELD_NUMBER: _ClassVar[int]
     SWITCH_PULL_REQUEST_URL_FIELD_NUMBER: _ClassVar[int]
@@ -1119,6 +1128,8 @@ class RepoDelivery(_message.Message):
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
     UPDATED_BY_FIELD_NUMBER: _ClassVar[int]
     FOLLOWS_DEFAULT_FIELD_NUMBER: _ClassVar[int]
+    CHECKS_MODE_FIELD_NUMBER: _ClassVar[int]
+    CHECKS_FOLLOWS_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     repo: str
     mode: DeliveryMode
     switch_pull_request_url: str
@@ -1132,7 +1143,9 @@ class RepoDelivery(_message.Message):
     updated_at: _timestamp_pb2.Timestamp
     updated_by: str
     follows_default: bool
-    def __init__(self, repo: _Optional[str] = ..., mode: _Optional[_Union[DeliveryMode, str]] = ..., switch_pull_request_url: _Optional[str] = ..., switch_status: _Optional[str] = ..., reason: _Optional[str] = ..., has_report_token: bool = ..., report_url: _Optional[str] = ..., live_check_url: _Optional[str] = ..., tank_runners_available: bool = ..., tank_runners_reason: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., follows_default: bool = ...) -> None: ...
+    checks_mode: ChecksMode
+    checks_follows_default: bool
+    def __init__(self, repo: _Optional[str] = ..., mode: _Optional[_Union[DeliveryMode, str]] = ..., switch_pull_request_url: _Optional[str] = ..., switch_status: _Optional[str] = ..., reason: _Optional[str] = ..., has_report_token: bool = ..., report_url: _Optional[str] = ..., live_check_url: _Optional[str] = ..., tank_runners_available: bool = ..., tank_runners_reason: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., follows_default: bool = ..., checks_mode: _Optional[_Union[ChecksMode, str]] = ..., checks_follows_default: bool = ...) -> None: ...
 
 class ListRepoDeliveryRequest(_message.Message):
     __slots__ = ("workspace_id",)
@@ -1141,32 +1154,38 @@ class ListRepoDeliveryRequest(_message.Message):
     def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
 
 class ListRepoDeliveryResponse(_message.Message):
-    __slots__ = ("repos", "workspace_default", "workspace_reason", "tank_runners_available", "tank_runners_reason")
+    __slots__ = ("repos", "workspace_default", "workspace_reason", "tank_runners_available", "tank_runners_reason", "workspace_checks_mode")
     REPOS_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_REASON_FIELD_NUMBER: _ClassVar[int]
     TANK_RUNNERS_AVAILABLE_FIELD_NUMBER: _ClassVar[int]
     TANK_RUNNERS_REASON_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_CHECKS_MODE_FIELD_NUMBER: _ClassVar[int]
     repos: _containers.RepeatedCompositeFieldContainer[RepoDelivery]
     workspace_default: DeliveryMode
     workspace_reason: str
     tank_runners_available: bool
     tank_runners_reason: str
-    def __init__(self, repos: _Optional[_Iterable[_Union[RepoDelivery, _Mapping]]] = ..., workspace_default: _Optional[_Union[DeliveryMode, str]] = ..., workspace_reason: _Optional[str] = ..., tank_runners_available: bool = ..., tank_runners_reason: _Optional[str] = ...) -> None: ...
+    workspace_checks_mode: ChecksMode
+    def __init__(self, repos: _Optional[_Iterable[_Union[RepoDelivery, _Mapping]]] = ..., workspace_default: _Optional[_Union[DeliveryMode, str]] = ..., workspace_reason: _Optional[str] = ..., tank_runners_available: bool = ..., tank_runners_reason: _Optional[str] = ..., workspace_checks_mode: _Optional[_Union[ChecksMode, str]] = ...) -> None: ...
 
 class SetRepoDeliveryRequest(_message.Message):
-    __slots__ = ("workspace_id", "repo", "mode", "rotate_report_token", "use_default")
+    __slots__ = ("workspace_id", "repo", "mode", "rotate_report_token", "use_default", "checks_mode", "checks_use_default")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     REPO_FIELD_NUMBER: _ClassVar[int]
     MODE_FIELD_NUMBER: _ClassVar[int]
     ROTATE_REPORT_TOKEN_FIELD_NUMBER: _ClassVar[int]
     USE_DEFAULT_FIELD_NUMBER: _ClassVar[int]
+    CHECKS_MODE_FIELD_NUMBER: _ClassVar[int]
+    CHECKS_USE_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     repo: str
     mode: DeliveryMode
     rotate_report_token: bool
     use_default: bool
-    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., mode: _Optional[_Union[DeliveryMode, str]] = ..., rotate_report_token: bool = ..., use_default: bool = ...) -> None: ...
+    checks_mode: ChecksMode
+    checks_use_default: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., mode: _Optional[_Union[DeliveryMode, str]] = ..., rotate_report_token: bool = ..., use_default: bool = ..., checks_mode: _Optional[_Union[ChecksMode, str]] = ..., checks_use_default: bool = ...) -> None: ...
 
 class SetRepoDeliveryResponse(_message.Message):
     __slots__ = ("repo", "report_token")
@@ -1177,12 +1196,14 @@ class SetRepoDeliveryResponse(_message.Message):
     def __init__(self, repo: _Optional[_Union[RepoDelivery, _Mapping]] = ..., report_token: _Optional[str] = ...) -> None: ...
 
 class SetWorkspaceDeliveryRequest(_message.Message):
-    __slots__ = ("workspace_id", "mode")
+    __slots__ = ("workspace_id", "mode", "checks_mode")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     MODE_FIELD_NUMBER: _ClassVar[int]
+    CHECKS_MODE_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     mode: DeliveryMode
-    def __init__(self, workspace_id: _Optional[str] = ..., mode: _Optional[_Union[DeliveryMode, str]] = ...) -> None: ...
+    checks_mode: ChecksMode
+    def __init__(self, workspace_id: _Optional[str] = ..., mode: _Optional[_Union[DeliveryMode, str]] = ..., checks_mode: _Optional[_Union[ChecksMode, str]] = ...) -> None: ...
 
 class SetWorkspaceDeliveryResponse(_message.Message):
     __slots__ = ("delivery",)

@@ -867,6 +867,18 @@ enum DeliveryMode {
   DELIVERY_MODE_OTHER_CI = 3;
 }
 
+// ChecksMode is who decides a change's checks (Overdrive, 2026-11-24: TANK runs them itself,
+// not tied to any git host). TANK: TANK finds and runs the repository's checks on its own
+// nodes on the exact commit and tells the git host the result as the check "TANK"; that
+// result is what Ready to check and the merge wait for. OWN_CI: wait for the repository's
+// own CI, as before. UNSPECIFIED on a repository follows the workspace; a workspace with
+// none is TANK.
+enum ChecksMode {
+  CHECKS_MODE_UNSPECIFIED = 0;
+  CHECKS_MODE_TANK = 1;
+  CHECKS_MODE_OWN_CI = 2;
+}
+
 // RepoDelivery is one repository's setting. A repository with no setting behaves as
 // DELIVERY_MODE_OWN_CI, which is how every repository worked before the setting existed.
 message RepoDelivery {
@@ -893,6 +905,10 @@ message RepoDelivery {
   // True when the repository has no choice of its own and follows the workspace's; mode is
   // then the workspace default it follows.
   bool follows_default = 13;
+  // Who decides this repository's checks, as it stands (never UNSPECIFIED here), and whether
+  // that is the workspace's choice it follows rather than its own.
+  ChecksMode checks_mode = 14;
+  bool checks_follows_default = 15;
 }
 
 message ListRepoDeliveryRequest { string workspace_id = 1; }
@@ -905,6 +921,8 @@ message ListRepoDeliveryResponse {
   // Whether TANK's runners can be chosen in this workspace now, and why not.
   bool tank_runners_available = 4;
   string tank_runners_reason = 5;
+  // The workspace's checks choice as it stands (TANK when it has none).
+  ChecksMode workspace_checks_mode = 6;
 }
 
 message SetRepoDeliveryRequest {
@@ -916,6 +934,11 @@ message SetRepoDeliveryRequest {
   // Drop the repository's own choice: it follows the workspace default again (mode is
   // then ignored).
   bool use_default = 5;
+  // The repository's checks choice. UNSPECIFIED leaves it as it is. With mode UNSPECIFIED
+  // and use_default false, only the checks choice changes.
+  ChecksMode checks_mode = 6;
+  // Drop the repository's own checks choice: it follows the workspace's again.
+  bool checks_use_default = 7;
 }
 message SetRepoDeliveryResponse {
   RepoDelivery repo = 1;
@@ -926,6 +949,9 @@ message SetRepoDeliveryResponse {
 message SetWorkspaceDeliveryRequest {
   string workspace_id = 1;
   DeliveryMode mode = 2;
+  // The workspace's checks choice. UNSPECIFIED leaves it as it is; with mode UNSPECIFIED
+  // only the checks choice changes.
+  ChecksMode checks_mode = 3;
 }
 // The whole list again, every repository with what it now follows.
 message SetWorkspaceDeliveryResponse { ListRepoDeliveryResponse delivery = 1; }
