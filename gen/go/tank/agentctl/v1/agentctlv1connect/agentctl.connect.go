@@ -378,6 +378,9 @@ const (
 	ControlServiceRefreshNeuralKnowledgeProcedure = "/tank.agentctl.v1.ControlService/RefreshNeuralKnowledge"
 	// ControlServiceGetRunProcedure is the fully-qualified name of the ControlService's GetRun RPC.
 	ControlServiceGetRunProcedure = "/tank.agentctl.v1.ControlService/GetRun"
+	// ControlServiceGetRunReplayProcedure is the fully-qualified name of the ControlService's
+	// GetRunReplay RPC.
+	ControlServiceGetRunReplayProcedure = "/tank.agentctl.v1.ControlService/GetRunReplay"
 	// ControlServiceListRunsProcedure is the fully-qualified name of the ControlService's ListRuns RPC.
 	ControlServiceListRunsProcedure = "/tank.agentctl.v1.ControlService/ListRuns"
 	// ControlServiceDecideGateProcedure is the fully-qualified name of the ControlService's DecideGate
@@ -2761,6 +2764,9 @@ type ControlServiceClient interface {
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
+	// A run's live view as it happened (Overdrive replay): the bench's writes and the live line,
+	// for the runs whose Workbench is board_id. The api checks who may read it.
+	GetRunReplay(context.Context, *connect.Request[v1.GetRunReplayRequest]) (*connect.Response[v1.GetRunReplayResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
 	DecideGate(context.Context, *connect.Request[v1.DecideGateRequest]) (*connect.Response[v1.DecideGateResponse], error)
 	SteerRun(context.Context, *connect.Request[v1.SteerRunRequest]) (*connect.Response[v1.SteerRunResponse], error)
@@ -3091,6 +3097,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("GetRun")),
 			connect.WithClientOptions(opts...),
 		),
+		getRunReplay: connect.NewClient[v1.GetRunReplayRequest, v1.GetRunReplayResponse](
+			httpClient,
+			baseURL+ControlServiceGetRunReplayProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("GetRunReplay")),
+			connect.WithClientOptions(opts...),
+		),
 		listRuns: connect.NewClient[v1.ListRunsRequest, v1.ListRunsResponse](
 			httpClient,
 			baseURL+ControlServiceListRunsProcedure,
@@ -3374,6 +3386,7 @@ type controlServiceClient struct {
 	openThread                    *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
 	refreshNeuralKnowledge        *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
 	getRun                        *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	getRunReplay                  *connect.Client[v1.GetRunReplayRequest, v1.GetRunReplayResponse]
 	listRuns                      *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
 	decideGate                    *connect.Client[v1.DecideGateRequest, v1.DecideGateResponse]
 	steerRun                      *connect.Client[v1.SteerRunRequest, v1.SteerRunResponse]
@@ -3604,6 +3617,11 @@ func (c *controlServiceClient) RefreshNeuralKnowledge(ctx context.Context, req *
 // GetRun calls tank.agentctl.v1.ControlService.GetRun.
 func (c *controlServiceClient) GetRun(ctx context.Context, req *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error) {
 	return c.getRun.CallUnary(ctx, req)
+}
+
+// GetRunReplay calls tank.agentctl.v1.ControlService.GetRunReplay.
+func (c *controlServiceClient) GetRunReplay(ctx context.Context, req *connect.Request[v1.GetRunReplayRequest]) (*connect.Response[v1.GetRunReplayResponse], error) {
+	return c.getRunReplay.CallUnary(ctx, req)
 }
 
 // ListRuns calls tank.agentctl.v1.ControlService.ListRuns.
@@ -3867,6 +3885,9 @@ type ControlServiceHandler interface {
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
+	// A run's live view as it happened (Overdrive replay): the bench's writes and the live line,
+	// for the runs whose Workbench is board_id. The api checks who may read it.
+	GetRunReplay(context.Context, *connect.Request[v1.GetRunReplayRequest]) (*connect.Response[v1.GetRunReplayResponse], error)
 	ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error)
 	DecideGate(context.Context, *connect.Request[v1.DecideGateRequest]) (*connect.Response[v1.DecideGateResponse], error)
 	SteerRun(context.Context, *connect.Request[v1.SteerRunRequest]) (*connect.Response[v1.SteerRunResponse], error)
@@ -4193,6 +4214,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("GetRun")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceGetRunReplayHandler := connect.NewUnaryHandler(
+		ControlServiceGetRunReplayProcedure,
+		svc.GetRunReplay,
+		connect.WithSchema(controlServiceMethods.ByName("GetRunReplay")),
+		connect.WithHandlerOptions(opts...),
+	)
 	controlServiceListRunsHandler := connect.NewUnaryHandler(
 		ControlServiceListRunsProcedure,
 		svc.ListRuns,
@@ -4511,6 +4538,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceRefreshNeuralKnowledgeHandler.ServeHTTP(w, r)
 		case ControlServiceGetRunProcedure:
 			controlServiceGetRunHandler.ServeHTTP(w, r)
+		case ControlServiceGetRunReplayProcedure:
+			controlServiceGetRunReplayHandler.ServeHTTP(w, r)
 		case ControlServiceListRunsProcedure:
 			controlServiceListRunsHandler.ServeHTTP(w, r)
 		case ControlServiceDecideGateProcedure:
@@ -4750,6 +4779,10 @@ func (UnimplementedControlServiceHandler) RefreshNeuralKnowledge(context.Context
 
 func (UnimplementedControlServiceHandler) GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.GetRun is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) GetRunReplay(context.Context, *connect.Request[v1.GetRunReplayRequest]) (*connect.Response[v1.GetRunReplayResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.GetRunReplay is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) ListRuns(context.Context, *connect.Request[v1.ListRunsRequest]) (*connect.Response[v1.ListRunsResponse], error) {

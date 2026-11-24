@@ -1479,6 +1479,12 @@ message StageReplyResponse {
 message GetRunRequest {
   string run_id = 1;
 }
+message GetRunReplayRequest {
+  string workspace_id = 1;
+  string board_id = 2;
+  string run_id = 3;   // empty: the latest run on the bench
+}
+message GetRunReplayResponse { tank.board.v1.RunReplay replay = 1; }
 message GetRunResponse {
   tank.agent.v1.Run run = 1;
   string sdk_session_id = 2;
@@ -1632,6 +1638,9 @@ service ControlService {
   rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
   rpc RefreshNeuralKnowledge(RefreshNeuralKnowledgeRequest) returns (RefreshNeuralKnowledgeResponse);
   rpc GetRun(GetRunRequest) returns (GetRunResponse);
+  // A run's live view as it happened (Overdrive replay): the bench's writes and the live line,
+  // for the runs whose Workbench is board_id. The api checks who may read it.
+  rpc GetRunReplay(GetRunReplayRequest) returns (GetRunReplayResponse);
   rpc ListRuns(ListRunsRequest) returns (ListRunsResponse);
   rpc DecideGate(DecideGateRequest) returns (DecideGateResponse);
   rpc SteerRun(SteerRunRequest) returns (SteerRunResponse);
