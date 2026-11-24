@@ -119,6 +119,10 @@ message AgentStatus {
   string thread_root_id = 2;
   string run_id = 3;
   string status = 4; // "reading repo", "running tests", ...
+  // The agent whose status this is: its principal (user) id, as a member's. Set for a status
+  // with no run behind it (AgentService.ShowWorking) and for a run's own; empty from an older
+  // server, where a client names the workspace's agent as it did before.
+  string agent_id = 5;
 }
 // preparation.updated on evt.{ws}.user.{uid}: the sandbox being prepared for that user's
 // composer draft changed state, so every device shows the same "getting ready" indicator.

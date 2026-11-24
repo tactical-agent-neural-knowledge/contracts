@@ -183,16 +183,18 @@ class Typing(_message.Message):
     def __init__(self, channel_id: _Optional[str] = ..., user_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ...) -> None: ...
 
 class AgentStatus(_message.Message):
-    __slots__ = ("channel_id", "thread_root_id", "run_id", "status")
+    __slots__ = ("channel_id", "thread_root_id", "run_id", "status", "agent_id")
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
+    AGENT_ID_FIELD_NUMBER: _ClassVar[int]
     channel_id: str
     thread_root_id: str
     run_id: str
     status: str
-    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., run_id: _Optional[str] = ..., status: _Optional[str] = ...) -> None: ...
+    agent_id: str
+    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., run_id: _Optional[str] = ..., status: _Optional[str] = ..., agent_id: _Optional[str] = ...) -> None: ...
 
 class PreparationUpdate(_message.Message):
     __slots__ = ("channel_id", "thread_root_id", "preparation_id", "state")
