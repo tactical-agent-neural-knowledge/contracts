@@ -120,6 +120,8 @@ const (
 	// AiServiceRecordAnswerSignalProcedure is the fully-qualified name of the AiService's
 	// RecordAnswerSignal RPC.
 	AiServiceRecordAnswerSignalProcedure = "/tank.ai.v1.AiService/RecordAnswerSignal"
+	// AiServicePrepareProcedure is the fully-qualified name of the AiService's Prepare RPC.
+	AiServicePrepareProcedure = "/tank.ai.v1.AiService/Prepare"
 )
 
 // AiServiceClient is a client for the tank.ai.v1.AiService service.
@@ -197,6 +199,13 @@ type AiServiceClient interface {
 	// sent: the server records it from SendMessage.regenerate_message_id, and a stop from
 	// StopReply.
 	RecordAnswerSignal(context.Context, *connect.Request[v1.RecordAnswerSignalRequest]) (*connect.Response[v1.RecordAnswerSignalResponse], error)
+	// The person is writing a message to Neural and has not sent it (2026-11-23, replies within
+	// half a second). The client calls this as the draft changes, at most about twice a second.
+	// The server wakes a sleeping model and may start working out the reply ahead of the send;
+	// what it prepares is used only when the message that is sent is exactly this text in this
+	// conversation, and is thrown away otherwise. Nothing is stored, nobody else is told, and a
+	// draft never reaches anyone's screen. Rate-limited per person; an empty text only wakes.
+	Prepare(context.Context, *connect.Request[v1.PrepareRequest]) (*connect.Response[v1.PrepareResponse], error)
 }
 
 // NewAiServiceClient constructs a client for the tank.ai.v1.AiService service. By default, it uses
@@ -432,6 +441,12 @@ func NewAiServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aiServiceMethods.ByName("RecordAnswerSignal")),
 			connect.WithClientOptions(opts...),
 		),
+		prepare: connect.NewClient[v1.PrepareRequest, v1.PrepareResponse](
+			httpClient,
+			baseURL+AiServicePrepareProcedure,
+			connect.WithSchema(aiServiceMethods.ByName("Prepare")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -474,6 +489,7 @@ type aiServiceClient struct {
 	listMessages       *connect.Client[v1.ListMessagesRequest, v1.ListMessagesResponse]
 	getAttachment      *connect.Client[v1.GetAttachmentRequest, v1.GetAttachmentResponse]
 	recordAnswerSignal *connect.Client[v1.RecordAnswerSignalRequest, v1.RecordAnswerSignalResponse]
+	prepare            *connect.Client[v1.PrepareRequest, v1.PrepareResponse]
 }
 
 // ListConversations calls tank.ai.v1.AiService.ListConversations.
@@ -661,6 +677,11 @@ func (c *aiServiceClient) RecordAnswerSignal(ctx context.Context, req *connect.R
 	return c.recordAnswerSignal.CallUnary(ctx, req)
 }
 
+// Prepare calls tank.ai.v1.AiService.Prepare.
+func (c *aiServiceClient) Prepare(ctx context.Context, req *connect.Request[v1.PrepareRequest]) (*connect.Response[v1.PrepareResponse], error) {
+	return c.prepare.CallUnary(ctx, req)
+}
+
 // AiServiceHandler is an implementation of the tank.ai.v1.AiService service.
 type AiServiceHandler interface {
 	ListConversations(context.Context, *connect.Request[v1.ListConversationsRequest]) (*connect.Response[v1.ListConversationsResponse], error)
@@ -736,6 +757,13 @@ type AiServiceHandler interface {
 	// sent: the server records it from SendMessage.regenerate_message_id, and a stop from
 	// StopReply.
 	RecordAnswerSignal(context.Context, *connect.Request[v1.RecordAnswerSignalRequest]) (*connect.Response[v1.RecordAnswerSignalResponse], error)
+	// The person is writing a message to Neural and has not sent it (2026-11-23, replies within
+	// half a second). The client calls this as the draft changes, at most about twice a second.
+	// The server wakes a sleeping model and may start working out the reply ahead of the send;
+	// what it prepares is used only when the message that is sent is exactly this text in this
+	// conversation, and is thrown away otherwise. Nothing is stored, nobody else is told, and a
+	// draft never reaches anyone's screen. Rate-limited per person; an empty text only wakes.
+	Prepare(context.Context, *connect.Request[v1.PrepareRequest]) (*connect.Response[v1.PrepareResponse], error)
 }
 
 // NewAiServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -967,6 +995,12 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aiServiceMethods.ByName("RecordAnswerSignal")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aiServicePrepareHandler := connect.NewUnaryHandler(
+		AiServicePrepareProcedure,
+		svc.Prepare,
+		connect.WithSchema(aiServiceMethods.ByName("Prepare")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.ai.v1.AiService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AiServiceListConversationsProcedure:
@@ -1043,6 +1077,8 @@ func NewAiServiceHandler(svc AiServiceHandler, opts ...connect.HandlerOption) (s
 			aiServiceGetAttachmentHandler.ServeHTTP(w, r)
 		case AiServiceRecordAnswerSignalProcedure:
 			aiServiceRecordAnswerSignalHandler.ServeHTTP(w, r)
+		case AiServicePrepareProcedure:
+			aiServicePrepareHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -1198,4 +1234,8 @@ func (UnimplementedAiServiceHandler) GetAttachment(context.Context, *connect.Req
 
 func (UnimplementedAiServiceHandler) RecordAnswerSignal(context.Context, *connect.Request[v1.RecordAnswerSignalRequest]) (*connect.Response[v1.RecordAnswerSignalResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.RecordAnswerSignal is not implemented"))
+}
+
+func (UnimplementedAiServiceHandler) Prepare(context.Context, *connect.Request[v1.PrepareRequest]) (*connect.Response[v1.PrepareResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.ai.v1.AiService.Prepare is not implemented"))
 }

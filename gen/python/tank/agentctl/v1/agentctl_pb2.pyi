@@ -1864,6 +1864,28 @@ class CancelPreparationResponse(_message.Message):
     state: _workspace_pb2.PreparationState
     def __init__(self, state: _Optional[_Union[_workspace_pb2.PreparationState, str]] = ...) -> None: ...
 
+class StageReplyRequest(_message.Message):
+    __slots__ = ("workspace_id", "channel_id", "thread_root_id", "agent_id", "requested_by", "text")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    AGENT_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    channel_id: str
+    thread_root_id: str
+    agent_id: str
+    requested_by: str
+    text: str
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., text: _Optional[str] = ...) -> None: ...
+
+class StageReplyResponse(_message.Message):
+    __slots__ = ("staged",)
+    STAGED_FIELD_NUMBER: _ClassVar[int]
+    staged: bool
+    def __init__(self, staged: bool = ...) -> None: ...
+
 class GetRunRequest(_message.Message):
     __slots__ = ("run_id",)
     RUN_ID_FIELD_NUMBER: _ClassVar[int]

@@ -647,6 +647,22 @@ class GetUsageResponse(_message.Message):
     model_label: str
     def __init__(self, days: _Optional[_Iterable[_Union[UsageDay, _Mapping]]] = ..., messages: _Optional[int] = ..., input_tokens: _Optional[int] = ..., output_tokens: _Optional[int] = ..., cost_micro_usd: _Optional[int] = ..., today_messages: _Optional[int] = ..., month_cost_micro_usd: _Optional[int] = ..., all_time_messages: _Optional[int] = ..., conversations: _Optional[_Iterable[_Union[ConversationUsage, _Mapping]]] = ..., model_label: _Optional[str] = ...) -> None: ...
 
+class PrepareRequest(_message.Message):
+    __slots__ = ("conversation_id", "workspace_id", "text")
+    CONVERSATION_ID_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    conversation_id: str
+    workspace_id: str
+    text: str
+    def __init__(self, conversation_id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., text: _Optional[str] = ...) -> None: ...
+
+class PrepareResponse(_message.Message):
+    __slots__ = ("awake",)
+    AWAKE_FIELD_NUMBER: _ClassVar[int]
+    awake: bool
+    def __init__(self, awake: bool = ...) -> None: ...
+
 class RecordAnswerSignalRequest(_message.Message):
     __slots__ = ("message_id", "kind")
     MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
