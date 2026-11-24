@@ -543,6 +543,13 @@ message Draft {
   PreparationState preparation_state = 9;
   // When an unused preparation gives its sandbox back on its own.
   google.protobuf.Timestamp preparation_expires_at = 10;
+  // Set by the server, never by the client, and only where the offer is switched on: the
+  // draft tags no agent but reads like work, so this agent is ready to take it. A client
+  // that shows the offer and is not told otherwise sends the message with
+  // offered_agent_user_id in PostMessageRequest.mention_ids, which starts the work exactly
+  // as a typed mention would. Empty when there is no offer.
+  string offered_agent_id = 11;
+  string offered_agent_user_id = 12;
 }
 
 // Where the sandbox being prepared for a draft is. The trigger is PutDraft: when a saved

@@ -1355,14 +1355,16 @@ class AppFrameSpec(_message.Message):
     def __init__(self, repo: _Optional[str] = ..., ref: _Optional[str] = ..., path: _Optional[str] = ..., viewport_width: _Optional[int] = ..., viewport_height: _Optional[int] = ...) -> None: ...
 
 class WorkbenchStep(_message.Message):
-    __slots__ = ("id", "title", "status")
+    __slots__ = ("id", "title", "status", "lane")
     ID_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
+    LANE_FIELD_NUMBER: _ClassVar[int]
     id: str
     title: str
     status: str
-    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., status: _Optional[str] = ...) -> None: ...
+    lane: str
+    def __init__(self, id: _Optional[str] = ..., title: _Optional[str] = ..., status: _Optional[str] = ..., lane: _Optional[str] = ...) -> None: ...
 
 class WorkbenchStepsRequest(_message.Message):
     __slots__ = ("steps",)
@@ -1377,20 +1379,88 @@ class WorkbenchStepsResponse(_message.Message):
     def __init__(self, board_id: _Optional[str] = ...) -> None: ...
 
 class WorkbenchShowRequest(_message.Message):
-    __slots__ = ("kind", "file_ids", "app", "text", "diagram", "title")
+    __slots__ = ("kind", "file_ids", "app", "text", "diagram", "title", "explain")
     KIND_FIELD_NUMBER: _ClassVar[int]
     FILE_IDS_FIELD_NUMBER: _ClassVar[int]
     APP_FIELD_NUMBER: _ClassVar[int]
     TEXT_FIELD_NUMBER: _ClassVar[int]
     DIAGRAM_FIELD_NUMBER: _ClassVar[int]
     TITLE_FIELD_NUMBER: _ClassVar[int]
+    EXPLAIN_FIELD_NUMBER: _ClassVar[int]
     kind: str
     file_ids: _containers.RepeatedScalarFieldContainer[str]
     app: AppFrameSpec
     text: str
     diagram: str
     title: str
-    def __init__(self, kind: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ..., app: _Optional[_Union[AppFrameSpec, _Mapping]] = ..., text: _Optional[str] = ..., diagram: _Optional[str] = ..., title: _Optional[str] = ...) -> None: ...
+    explain: Explanation
+    def __init__(self, kind: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ..., app: _Optional[_Union[AppFrameSpec, _Mapping]] = ..., text: _Optional[str] = ..., diagram: _Optional[str] = ..., title: _Optional[str] = ..., explain: _Optional[_Union[Explanation, _Mapping]] = ...) -> None: ...
+
+class Explanation(_message.Message):
+    __slots__ = ("flow", "tables", "replay", "narration")
+    FLOW_FIELD_NUMBER: _ClassVar[int]
+    TABLES_FIELD_NUMBER: _ClassVar[int]
+    REPLAY_FIELD_NUMBER: _ClassVar[int]
+    NARRATION_FIELD_NUMBER: _ClassVar[int]
+    flow: _containers.RepeatedCompositeFieldContainer[ExplainHop]
+    tables: _containers.RepeatedCompositeFieldContainer[ExplainTable]
+    replay: ExplainReplay
+    narration: str
+    def __init__(self, flow: _Optional[_Iterable[_Union[ExplainHop, _Mapping]]] = ..., tables: _Optional[_Iterable[_Union[ExplainTable, _Mapping]]] = ..., replay: _Optional[_Union[ExplainReplay, _Mapping]] = ..., narration: _Optional[str] = ...) -> None: ...
+
+class ExplainHop(_message.Message):
+    __slots__ = ("id", "label", "kind", "detail", "changed")
+    ID_FIELD_NUMBER: _ClassVar[int]
+    LABEL_FIELD_NUMBER: _ClassVar[int]
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    DETAIL_FIELD_NUMBER: _ClassVar[int]
+    CHANGED_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    label: str
+    kind: str
+    detail: str
+    changed: bool
+    def __init__(self, id: _Optional[str] = ..., label: _Optional[str] = ..., kind: _Optional[str] = ..., detail: _Optional[str] = ..., changed: bool = ...) -> None: ...
+
+class ExplainTable(_message.Message):
+    __slots__ = ("name", "change", "columns")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_FIELD_NUMBER: _ClassVar[int]
+    COLUMNS_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    change: str
+    columns: _containers.RepeatedCompositeFieldContainer[ExplainColumn]
+    def __init__(self, name: _Optional[str] = ..., change: _Optional[str] = ..., columns: _Optional[_Iterable[_Union[ExplainColumn, _Mapping]]] = ...) -> None: ...
+
+class ExplainColumn(_message.Message):
+    __slots__ = ("name", "type", "change", "was")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    TYPE_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_FIELD_NUMBER: _ClassVar[int]
+    WAS_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    type: str
+    change: str
+    was: str
+    def __init__(self, name: _Optional[str] = ..., type: _Optional[str] = ..., change: _Optional[str] = ..., was: _Optional[str] = ...) -> None: ...
+
+class ExplainReplay(_message.Message):
+    __slots__ = ("method", "path", "request_body", "old_status", "old_body", "new_status", "new_body")
+    METHOD_FIELD_NUMBER: _ClassVar[int]
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    REQUEST_BODY_FIELD_NUMBER: _ClassVar[int]
+    OLD_STATUS_FIELD_NUMBER: _ClassVar[int]
+    OLD_BODY_FIELD_NUMBER: _ClassVar[int]
+    NEW_STATUS_FIELD_NUMBER: _ClassVar[int]
+    NEW_BODY_FIELD_NUMBER: _ClassVar[int]
+    method: str
+    path: str
+    request_body: str
+    old_status: int
+    old_body: str
+    new_status: int
+    new_body: str
+    def __init__(self, method: _Optional[str] = ..., path: _Optional[str] = ..., request_body: _Optional[str] = ..., old_status: _Optional[int] = ..., old_body: _Optional[str] = ..., new_status: _Optional[int] = ..., new_body: _Optional[str] = ...) -> None: ...
 
 class WorkbenchShowResponse(_message.Message):
     __slots__ = ("board_id", "object_ids")
