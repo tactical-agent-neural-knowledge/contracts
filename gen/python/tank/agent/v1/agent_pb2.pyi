@@ -243,6 +243,30 @@ class OpenThreadResponse(_message.Message):
     thread_root_id: str
     def __init__(self, thread_root_id: _Optional[str] = ...) -> None: ...
 
+class ReplyRequest(_message.Message):
+    __slots__ = ("channel_id", "thread_root_id", "agent_id", "requested_by", "text", "message_id", "client_msg_id")
+    CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
+    THREAD_ROOT_ID_FIELD_NUMBER: _ClassVar[int]
+    AGENT_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUESTED_BY_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    CLIENT_MSG_ID_FIELD_NUMBER: _ClassVar[int]
+    channel_id: str
+    thread_root_id: str
+    agent_id: str
+    requested_by: str
+    text: str
+    message_id: str
+    client_msg_id: str
+    def __init__(self, channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., agent_id: _Optional[str] = ..., requested_by: _Optional[str] = ..., text: _Optional[str] = ..., message_id: _Optional[str] = ..., client_msg_id: _Optional[str] = ...) -> None: ...
+
+class ReplyResponse(_message.Message):
+    __slots__ = ("message_id",)
+    MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    message_id: str
+    def __init__(self, message_id: _Optional[str] = ...) -> None: ...
+
 class WorkspaceAgentSettings(_message.Message):
     __slots__ = ("org_access_everywhere",)
     ORG_ACCESS_EVERYWHERE_FIELD_NUMBER: _ClassVar[int]
