@@ -468,6 +468,18 @@ const (
 	// ControlServiceSetWorkspaceAgentPolicyProcedure is the fully-qualified name of the
 	// ControlService's SetWorkspaceAgentPolicy RPC.
 	ControlServiceSetWorkspaceAgentPolicyProcedure = "/tank.agentctl.v1.ControlService/SetWorkspaceAgentPolicy"
+	// ControlServiceListWorkspaceRepoDeliveryProcedure is the fully-qualified name of the
+	// ControlService's ListWorkspaceRepoDelivery RPC.
+	ControlServiceListWorkspaceRepoDeliveryProcedure = "/tank.agentctl.v1.ControlService/ListWorkspaceRepoDelivery"
+	// ControlServiceSetWorkspaceRepoDeliveryProcedure is the fully-qualified name of the
+	// ControlService's SetWorkspaceRepoDelivery RPC.
+	ControlServiceSetWorkspaceRepoDeliveryProcedure = "/tank.agentctl.v1.ControlService/SetWorkspaceRepoDelivery"
+	// ControlServiceListWorkspacePredictedWorkProcedure is the fully-qualified name of the
+	// ControlService's ListWorkspacePredictedWork RPC.
+	ControlServiceListWorkspacePredictedWorkProcedure = "/tank.agentctl.v1.ControlService/ListWorkspacePredictedWork"
+	// ControlServiceDismissWorkspacePredictedWorkProcedure is the fully-qualified name of the
+	// ControlService's DismissWorkspacePredictedWork RPC.
+	ControlServiceDismissWorkspacePredictedWorkProcedure = "/tank.agentctl.v1.ControlService/DismissWorkspacePredictedWork"
 )
 
 // RunnerServiceClient is a client for the tank.agentctl.v1.RunnerService service.
@@ -2780,6 +2792,11 @@ type ControlServiceClient interface {
 	CreateGitHubConnectState(context.Context, *connect.Request[v1.CreateGitHubConnectStateRequest]) (*connect.Response[v1.CreateGitHubConnectStateResponse], error)
 	SetChannelAgentSettings(context.Context, *connect.Request[v1.SetChannelAgentSettingsRequest]) (*connect.Response[v1.SetChannelAgentSettingsResponse], error)
 	SetWorkspaceAgentPolicy(context.Context, *connect.Request[v1.SetWorkspaceAgentPolicyRequest]) (*connect.Response[v1.SetWorkspaceAgentPolicyResponse], error)
+	// Overdrive: the messaging core authorizes, the control plane owns the rows.
+	ListWorkspaceRepoDelivery(context.Context, *connect.Request[v1.ListWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.ListWorkspaceRepoDeliveryResponse], error)
+	SetWorkspaceRepoDelivery(context.Context, *connect.Request[v1.SetWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.SetWorkspaceRepoDeliveryResponse], error)
+	ListWorkspacePredictedWork(context.Context, *connect.Request[v1.ListWorkspacePredictedWorkRequest]) (*connect.Response[v1.ListWorkspacePredictedWorkResponse], error)
+	DismissWorkspacePredictedWork(context.Context, *connect.Request[v1.DismissWorkspacePredictedWorkRequest]) (*connect.Response[v1.DismissWorkspacePredictedWorkResponse], error)
 }
 
 // NewControlServiceClient constructs a client for the tank.agentctl.v1.ControlService service. By
@@ -3213,81 +3230,109 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("SetWorkspaceAgentPolicy")),
 			connect.WithClientOptions(opts...),
 		),
+		listWorkspaceRepoDelivery: connect.NewClient[v1.ListWorkspaceRepoDeliveryRequest, v1.ListWorkspaceRepoDeliveryResponse](
+			httpClient,
+			baseURL+ControlServiceListWorkspaceRepoDeliveryProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListWorkspaceRepoDelivery")),
+			connect.WithClientOptions(opts...),
+		),
+		setWorkspaceRepoDelivery: connect.NewClient[v1.SetWorkspaceRepoDeliveryRequest, v1.SetWorkspaceRepoDeliveryResponse](
+			httpClient,
+			baseURL+ControlServiceSetWorkspaceRepoDeliveryProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("SetWorkspaceRepoDelivery")),
+			connect.WithClientOptions(opts...),
+		),
+		listWorkspacePredictedWork: connect.NewClient[v1.ListWorkspacePredictedWorkRequest, v1.ListWorkspacePredictedWorkResponse](
+			httpClient,
+			baseURL+ControlServiceListWorkspacePredictedWorkProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("ListWorkspacePredictedWork")),
+			connect.WithClientOptions(opts...),
+		),
+		dismissWorkspacePredictedWork: connect.NewClient[v1.DismissWorkspacePredictedWorkRequest, v1.DismissWorkspacePredictedWorkResponse](
+			httpClient,
+			baseURL+ControlServiceDismissWorkspacePredictedWorkProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("DismissWorkspacePredictedWork")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // controlServiceClient implements ControlServiceClient.
 type controlServiceClient struct {
-	arenaTurn                   *connect.Client[v1.ArenaTurnRequest, v1.ArenaTurnResponse]
-	listGuardrails              *connect.Client[v1.ListGuardrailsRequest, v1.ListGuardrailsResponse]
-	putGuardrail                *connect.Client[v1.PutGuardrailRequest, v1.PutGuardrailResponse]
-	deleteGuardrail             *connect.Client[v1.DeleteGuardrailRequest, v1.DeleteGuardrailResponse]
-	rateGuardrail               *connect.Client[v1.RateGuardrailRequest, v1.RateGuardrailResponse]
-	listGuardrailVerdicts       *connect.Client[v1.ListGuardrailVerdictsRequest, v1.ListGuardrailVerdictsResponse]
-	extractGuardrails           *connect.Client[v1.ExtractGuardrailsRequest, v1.ExtractGuardrailsResponse]
-	listNeuralApps              *connect.Client[v1.ListNeuralAppsRequest, v1.ListNeuralAppsResponse]
-	getNeuralAppTools           *connect.Client[v1.GetNeuralAppToolsRequest, v1.GetNeuralAppToolsResponse]
-	callNeuralAppTool           *connect.Client[v1.CallNeuralAppToolRequest, v1.CallNeuralAppToolResponse]
-	startNeuralAppLogin         *connect.Client[v1.StartNeuralAppLoginRequest, v1.StartNeuralAppLoginResponse]
-	listNeuralAppAccounts       *connect.Client[v1.ListNeuralAppAccountsRequest, v1.ListNeuralAppAccountsResponse]
-	signOutOfNeuralApp          *connect.Client[v1.SignOutOfNeuralAppRequest, v1.SignOutOfNeuralAppResponse]
-	listInfraConnections        *connect.Client[v1.ListInfraConnectionsRequest, v1.ListInfraConnectionsResponse]
-	getInfraConnection          *connect.Client[v1.GetInfraConnectionRequest, v1.GetInfraConnectionResponse]
-	createInfraConnection       *connect.Client[v1.CreateInfraConnectionRequest, v1.CreateInfraConnectionResponse]
-	updateInfraConnection       *connect.Client[v1.UpdateInfraConnectionRequest, v1.UpdateInfraConnectionResponse]
-	deleteInfraConnection       *connect.Client[v1.DeleteInfraConnectionRequest, v1.DeleteInfraConnectionResponse]
-	testInfraConnection         *connect.Client[v1.TestInfraConnectionRequest, v1.TestInfraConnectionResponse]
-	getInfraSetupGuide          *connect.Client[v1.GetInfraSetupGuideRequest, v1.GetInfraSetupGuideResponse]
-	listInfraUses               *connect.Client[v1.ListInfraUsesRequest, v1.ListInfraUsesResponse]
-	listInfraRunbooks           *connect.Client[v1.ListInfraRunbooksRequest, v1.ListInfraRunbooksResponse]
-	putInfraRunbook             *connect.Client[v1.PutInfraRunbookRequest, v1.PutInfraRunbookResponse]
-	deleteInfraRunbook          *connect.Client[v1.DeleteInfraRunbookRequest, v1.DeleteInfraRunbookResponse]
-	listInfraWorkflowCandidates *connect.Client[v1.ListInfraWorkflowCandidatesRequest, v1.ListInfraWorkflowCandidatesResponse]
-	listInfraRelays             *connect.Client[v1.ListInfraRelaysRequest, v1.ListInfraRelaysResponse]
-	createInfraRelay            *connect.Client[v1.CreateInfraRelayRequest, v1.CreateInfraRelayResponse]
-	revokeInfraRelay            *connect.Client[v1.RevokeInfraRelayRequest, v1.RevokeInfraRelayResponse]
-	startRun                    *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
-	prepareRun                  *connect.Client[v1.PrepareRunRequest, v1.PrepareRunResponse]
-	cancelPreparation           *connect.Client[v1.CancelPreparationRequest, v1.CancelPreparationResponse]
-	stageReply                  *connect.Client[v1.StageReplyRequest, v1.StageReplyResponse]
-	openThread                  *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
-	refreshNeuralKnowledge      *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
-	getRun                      *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
-	listRuns                    *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
-	decideGate                  *connect.Client[v1.DecideGateRequest, v1.DecideGateResponse]
-	steerRun                    *connect.Client[v1.SteerRunRequest, v1.SteerRunResponse]
-	cancelRun                   *connect.Client[v1.CancelRunRequest, v1.CancelRunResponse]
-	listRunEvents               *connect.Client[v1.ListRunEventsRequest, v1.ListRunEventsResponse]
-	createProductRepo           *connect.Client[v1.CreateProductRepoRequest, v1.CreateProductRepoResponse]
-	commitProductFiles          *connect.Client[v1.CommitProductFilesRequest, v1.CommitProductFilesResponse]
-	setProductReplicas          *connect.Client[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse]
-	registerDeployment          *connect.Client[v1.RegisterDeploymentRequest, v1.RegisterDeploymentResponse]
-	getDeployment               *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
-	getProductState             *connect.Client[v1.GetProductStateRequest, v1.GetProductStateResponse]
-	checkProductPage            *connect.Client[v1.CheckProductPageRequest, v1.CheckProductPageResponse]
-	getProductSpec              *connect.Client[v1.GetProductSpecRequest, v1.GetProductSpecResponse]
-	approveProductBuild         *connect.Client[v1.ApproveProductBuildRequest, v1.ApproveProductBuildResponse]
-	operateProduct              *connect.Client[v1.OperateProductRequest, v1.OperateProductResponse]
-	listProductChanges          *connect.Client[v1.ListProductChangesRequest, v1.ListProductChangesResponse]
-	rollbackProduct             *connect.Client[v1.RollbackProductRequest, v1.RollbackProductResponse]
-	updateProductSpec           *connect.Client[v1.UpdateProductSpecRequest, v1.UpdateProductSpecResponse]
-	previewProductSpec          *connect.Client[v1.PreviewProductSpecRequest, v1.PreviewProductSpecResponse]
-	applyProductSpec            *connect.Client[v1.ApplyProductSpecRequest, v1.ApplyProductSpecResponse]
-	getProductSpecText          *connect.Client[v1.GetProductSpecTextRequest, v1.GetProductSpecTextResponse]
-	exportProduct               *connect.Client[v1.ExportProductRequest, v1.ExportProductResponse]
-	setProductSecret            *connect.Client[v1.SetProductSecretRequest, v1.SetProductSecretResponse]
-	setUpPreviewWorkflow        *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
-	readRepo                    *connect.Client[v1.ReadRepoRequest, v1.ReadRepoResponse]
-	buildPreview                *connect.Client[v1.BuildPreviewRequest, v1.BuildPreviewResponse]
-	openSetupPullRequest        *connect.Client[v1.OpenSetupPullRequestRequest, v1.OpenSetupPullRequestResponse]
-	readElementAt               *connect.Client[v1.ReadElementAtRequest, v1.ReadElementAtResponse]
-	mergeChange                 *connect.Client[v1.MergeChangeRequest, v1.MergeChangeResponse]
-	bindChannelRepo             *connect.Client[v1.BindChannelRepoRequest, v1.BindChannelRepoResponse]
-	unbindChannelRepo           *connect.Client[v1.UnbindChannelRepoRequest, v1.UnbindChannelRepoResponse]
-	setChannelRepoAccess        *connect.Client[v1.SetChannelRepoAccessRequest, v1.SetChannelRepoAccessResponse]
-	createGitHubConnectState    *connect.Client[v1.CreateGitHubConnectStateRequest, v1.CreateGitHubConnectStateResponse]
-	setChannelAgentSettings     *connect.Client[v1.SetChannelAgentSettingsRequest, v1.SetChannelAgentSettingsResponse]
-	setWorkspaceAgentPolicy     *connect.Client[v1.SetWorkspaceAgentPolicyRequest, v1.SetWorkspaceAgentPolicyResponse]
+	arenaTurn                     *connect.Client[v1.ArenaTurnRequest, v1.ArenaTurnResponse]
+	listGuardrails                *connect.Client[v1.ListGuardrailsRequest, v1.ListGuardrailsResponse]
+	putGuardrail                  *connect.Client[v1.PutGuardrailRequest, v1.PutGuardrailResponse]
+	deleteGuardrail               *connect.Client[v1.DeleteGuardrailRequest, v1.DeleteGuardrailResponse]
+	rateGuardrail                 *connect.Client[v1.RateGuardrailRequest, v1.RateGuardrailResponse]
+	listGuardrailVerdicts         *connect.Client[v1.ListGuardrailVerdictsRequest, v1.ListGuardrailVerdictsResponse]
+	extractGuardrails             *connect.Client[v1.ExtractGuardrailsRequest, v1.ExtractGuardrailsResponse]
+	listNeuralApps                *connect.Client[v1.ListNeuralAppsRequest, v1.ListNeuralAppsResponse]
+	getNeuralAppTools             *connect.Client[v1.GetNeuralAppToolsRequest, v1.GetNeuralAppToolsResponse]
+	callNeuralAppTool             *connect.Client[v1.CallNeuralAppToolRequest, v1.CallNeuralAppToolResponse]
+	startNeuralAppLogin           *connect.Client[v1.StartNeuralAppLoginRequest, v1.StartNeuralAppLoginResponse]
+	listNeuralAppAccounts         *connect.Client[v1.ListNeuralAppAccountsRequest, v1.ListNeuralAppAccountsResponse]
+	signOutOfNeuralApp            *connect.Client[v1.SignOutOfNeuralAppRequest, v1.SignOutOfNeuralAppResponse]
+	listInfraConnections          *connect.Client[v1.ListInfraConnectionsRequest, v1.ListInfraConnectionsResponse]
+	getInfraConnection            *connect.Client[v1.GetInfraConnectionRequest, v1.GetInfraConnectionResponse]
+	createInfraConnection         *connect.Client[v1.CreateInfraConnectionRequest, v1.CreateInfraConnectionResponse]
+	updateInfraConnection         *connect.Client[v1.UpdateInfraConnectionRequest, v1.UpdateInfraConnectionResponse]
+	deleteInfraConnection         *connect.Client[v1.DeleteInfraConnectionRequest, v1.DeleteInfraConnectionResponse]
+	testInfraConnection           *connect.Client[v1.TestInfraConnectionRequest, v1.TestInfraConnectionResponse]
+	getInfraSetupGuide            *connect.Client[v1.GetInfraSetupGuideRequest, v1.GetInfraSetupGuideResponse]
+	listInfraUses                 *connect.Client[v1.ListInfraUsesRequest, v1.ListInfraUsesResponse]
+	listInfraRunbooks             *connect.Client[v1.ListInfraRunbooksRequest, v1.ListInfraRunbooksResponse]
+	putInfraRunbook               *connect.Client[v1.PutInfraRunbookRequest, v1.PutInfraRunbookResponse]
+	deleteInfraRunbook            *connect.Client[v1.DeleteInfraRunbookRequest, v1.DeleteInfraRunbookResponse]
+	listInfraWorkflowCandidates   *connect.Client[v1.ListInfraWorkflowCandidatesRequest, v1.ListInfraWorkflowCandidatesResponse]
+	listInfraRelays               *connect.Client[v1.ListInfraRelaysRequest, v1.ListInfraRelaysResponse]
+	createInfraRelay              *connect.Client[v1.CreateInfraRelayRequest, v1.CreateInfraRelayResponse]
+	revokeInfraRelay              *connect.Client[v1.RevokeInfraRelayRequest, v1.RevokeInfraRelayResponse]
+	startRun                      *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
+	prepareRun                    *connect.Client[v1.PrepareRunRequest, v1.PrepareRunResponse]
+	cancelPreparation             *connect.Client[v1.CancelPreparationRequest, v1.CancelPreparationResponse]
+	stageReply                    *connect.Client[v1.StageReplyRequest, v1.StageReplyResponse]
+	openThread                    *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
+	refreshNeuralKnowledge        *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
+	getRun                        *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
+	listRuns                      *connect.Client[v1.ListRunsRequest, v1.ListRunsResponse]
+	decideGate                    *connect.Client[v1.DecideGateRequest, v1.DecideGateResponse]
+	steerRun                      *connect.Client[v1.SteerRunRequest, v1.SteerRunResponse]
+	cancelRun                     *connect.Client[v1.CancelRunRequest, v1.CancelRunResponse]
+	listRunEvents                 *connect.Client[v1.ListRunEventsRequest, v1.ListRunEventsResponse]
+	createProductRepo             *connect.Client[v1.CreateProductRepoRequest, v1.CreateProductRepoResponse]
+	commitProductFiles            *connect.Client[v1.CommitProductFilesRequest, v1.CommitProductFilesResponse]
+	setProductReplicas            *connect.Client[v1.SetProductReplicasRequest, v1.SetProductReplicasResponse]
+	registerDeployment            *connect.Client[v1.RegisterDeploymentRequest, v1.RegisterDeploymentResponse]
+	getDeployment                 *connect.Client[v1.GetDeploymentRequest, v1.GetDeploymentResponse]
+	getProductState               *connect.Client[v1.GetProductStateRequest, v1.GetProductStateResponse]
+	checkProductPage              *connect.Client[v1.CheckProductPageRequest, v1.CheckProductPageResponse]
+	getProductSpec                *connect.Client[v1.GetProductSpecRequest, v1.GetProductSpecResponse]
+	approveProductBuild           *connect.Client[v1.ApproveProductBuildRequest, v1.ApproveProductBuildResponse]
+	operateProduct                *connect.Client[v1.OperateProductRequest, v1.OperateProductResponse]
+	listProductChanges            *connect.Client[v1.ListProductChangesRequest, v1.ListProductChangesResponse]
+	rollbackProduct               *connect.Client[v1.RollbackProductRequest, v1.RollbackProductResponse]
+	updateProductSpec             *connect.Client[v1.UpdateProductSpecRequest, v1.UpdateProductSpecResponse]
+	previewProductSpec            *connect.Client[v1.PreviewProductSpecRequest, v1.PreviewProductSpecResponse]
+	applyProductSpec              *connect.Client[v1.ApplyProductSpecRequest, v1.ApplyProductSpecResponse]
+	getProductSpecText            *connect.Client[v1.GetProductSpecTextRequest, v1.GetProductSpecTextResponse]
+	exportProduct                 *connect.Client[v1.ExportProductRequest, v1.ExportProductResponse]
+	setProductSecret              *connect.Client[v1.SetProductSecretRequest, v1.SetProductSecretResponse]
+	setUpPreviewWorkflow          *connect.Client[v1.SetUpPreviewWorkflowRequest, v1.SetUpPreviewWorkflowResponse]
+	readRepo                      *connect.Client[v1.ReadRepoRequest, v1.ReadRepoResponse]
+	buildPreview                  *connect.Client[v1.BuildPreviewRequest, v1.BuildPreviewResponse]
+	openSetupPullRequest          *connect.Client[v1.OpenSetupPullRequestRequest, v1.OpenSetupPullRequestResponse]
+	readElementAt                 *connect.Client[v1.ReadElementAtRequest, v1.ReadElementAtResponse]
+	mergeChange                   *connect.Client[v1.MergeChangeRequest, v1.MergeChangeResponse]
+	bindChannelRepo               *connect.Client[v1.BindChannelRepoRequest, v1.BindChannelRepoResponse]
+	unbindChannelRepo             *connect.Client[v1.UnbindChannelRepoRequest, v1.UnbindChannelRepoResponse]
+	setChannelRepoAccess          *connect.Client[v1.SetChannelRepoAccessRequest, v1.SetChannelRepoAccessResponse]
+	createGitHubConnectState      *connect.Client[v1.CreateGitHubConnectStateRequest, v1.CreateGitHubConnectStateResponse]
+	setChannelAgentSettings       *connect.Client[v1.SetChannelAgentSettingsRequest, v1.SetChannelAgentSettingsResponse]
+	setWorkspaceAgentPolicy       *connect.Client[v1.SetWorkspaceAgentPolicyRequest, v1.SetWorkspaceAgentPolicyResponse]
+	listWorkspaceRepoDelivery     *connect.Client[v1.ListWorkspaceRepoDeliveryRequest, v1.ListWorkspaceRepoDeliveryResponse]
+	setWorkspaceRepoDelivery      *connect.Client[v1.SetWorkspaceRepoDeliveryRequest, v1.SetWorkspaceRepoDeliveryResponse]
+	listWorkspacePredictedWork    *connect.Client[v1.ListWorkspacePredictedWorkRequest, v1.ListWorkspacePredictedWorkResponse]
+	dismissWorkspacePredictedWork *connect.Client[v1.DismissWorkspacePredictedWorkRequest, v1.DismissWorkspacePredictedWorkResponse]
 }
 
 // ArenaTurn calls tank.agentctl.v1.ControlService.ArenaTurn.
@@ -3640,6 +3685,27 @@ func (c *controlServiceClient) SetWorkspaceAgentPolicy(ctx context.Context, req 
 	return c.setWorkspaceAgentPolicy.CallUnary(ctx, req)
 }
 
+// ListWorkspaceRepoDelivery calls tank.agentctl.v1.ControlService.ListWorkspaceRepoDelivery.
+func (c *controlServiceClient) ListWorkspaceRepoDelivery(ctx context.Context, req *connect.Request[v1.ListWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.ListWorkspaceRepoDeliveryResponse], error) {
+	return c.listWorkspaceRepoDelivery.CallUnary(ctx, req)
+}
+
+// SetWorkspaceRepoDelivery calls tank.agentctl.v1.ControlService.SetWorkspaceRepoDelivery.
+func (c *controlServiceClient) SetWorkspaceRepoDelivery(ctx context.Context, req *connect.Request[v1.SetWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.SetWorkspaceRepoDeliveryResponse], error) {
+	return c.setWorkspaceRepoDelivery.CallUnary(ctx, req)
+}
+
+// ListWorkspacePredictedWork calls tank.agentctl.v1.ControlService.ListWorkspacePredictedWork.
+func (c *controlServiceClient) ListWorkspacePredictedWork(ctx context.Context, req *connect.Request[v1.ListWorkspacePredictedWorkRequest]) (*connect.Response[v1.ListWorkspacePredictedWorkResponse], error) {
+	return c.listWorkspacePredictedWork.CallUnary(ctx, req)
+}
+
+// DismissWorkspacePredictedWork calls
+// tank.agentctl.v1.ControlService.DismissWorkspacePredictedWork.
+func (c *controlServiceClient) DismissWorkspacePredictedWork(ctx context.Context, req *connect.Request[v1.DismissWorkspacePredictedWorkRequest]) (*connect.Response[v1.DismissWorkspacePredictedWorkResponse], error) {
+	return c.dismissWorkspacePredictedWork.CallUnary(ctx, req)
+}
+
 // ControlServiceHandler is an implementation of the tank.agentctl.v1.ControlService service.
 type ControlServiceHandler interface {
 	// ArenaTurn writes one turn of a service's public conversation on TANK's own model,
@@ -3778,6 +3844,11 @@ type ControlServiceHandler interface {
 	CreateGitHubConnectState(context.Context, *connect.Request[v1.CreateGitHubConnectStateRequest]) (*connect.Response[v1.CreateGitHubConnectStateResponse], error)
 	SetChannelAgentSettings(context.Context, *connect.Request[v1.SetChannelAgentSettingsRequest]) (*connect.Response[v1.SetChannelAgentSettingsResponse], error)
 	SetWorkspaceAgentPolicy(context.Context, *connect.Request[v1.SetWorkspaceAgentPolicyRequest]) (*connect.Response[v1.SetWorkspaceAgentPolicyResponse], error)
+	// Overdrive: the messaging core authorizes, the control plane owns the rows.
+	ListWorkspaceRepoDelivery(context.Context, *connect.Request[v1.ListWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.ListWorkspaceRepoDeliveryResponse], error)
+	SetWorkspaceRepoDelivery(context.Context, *connect.Request[v1.SetWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.SetWorkspaceRepoDeliveryResponse], error)
+	ListWorkspacePredictedWork(context.Context, *connect.Request[v1.ListWorkspacePredictedWorkRequest]) (*connect.Response[v1.ListWorkspacePredictedWorkResponse], error)
+	DismissWorkspacePredictedWork(context.Context, *connect.Request[v1.DismissWorkspacePredictedWorkRequest]) (*connect.Response[v1.DismissWorkspacePredictedWorkResponse], error)
 }
 
 // NewControlServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -4207,6 +4278,30 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("SetWorkspaceAgentPolicy")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceListWorkspaceRepoDeliveryHandler := connect.NewUnaryHandler(
+		ControlServiceListWorkspaceRepoDeliveryProcedure,
+		svc.ListWorkspaceRepoDelivery,
+		connect.WithSchema(controlServiceMethods.ByName("ListWorkspaceRepoDelivery")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceSetWorkspaceRepoDeliveryHandler := connect.NewUnaryHandler(
+		ControlServiceSetWorkspaceRepoDeliveryProcedure,
+		svc.SetWorkspaceRepoDelivery,
+		connect.WithSchema(controlServiceMethods.ByName("SetWorkspaceRepoDelivery")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceListWorkspacePredictedWorkHandler := connect.NewUnaryHandler(
+		ControlServiceListWorkspacePredictedWorkProcedure,
+		svc.ListWorkspacePredictedWork,
+		connect.WithSchema(controlServiceMethods.ByName("ListWorkspacePredictedWork")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceDismissWorkspacePredictedWorkHandler := connect.NewUnaryHandler(
+		ControlServiceDismissWorkspacePredictedWorkProcedure,
+		svc.DismissWorkspacePredictedWork,
+		connect.WithSchema(controlServiceMethods.ByName("DismissWorkspacePredictedWork")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agentctl.v1.ControlService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ControlServiceArenaTurnProcedure:
@@ -4349,6 +4444,14 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceSetChannelAgentSettingsHandler.ServeHTTP(w, r)
 		case ControlServiceSetWorkspaceAgentPolicyProcedure:
 			controlServiceSetWorkspaceAgentPolicyHandler.ServeHTTP(w, r)
+		case ControlServiceListWorkspaceRepoDeliveryProcedure:
+			controlServiceListWorkspaceRepoDeliveryHandler.ServeHTTP(w, r)
+		case ControlServiceSetWorkspaceRepoDeliveryProcedure:
+			controlServiceSetWorkspaceRepoDeliveryHandler.ServeHTTP(w, r)
+		case ControlServiceListWorkspacePredictedWorkProcedure:
+			controlServiceListWorkspacePredictedWorkHandler.ServeHTTP(w, r)
+		case ControlServiceDismissWorkspacePredictedWorkProcedure:
+			controlServiceDismissWorkspacePredictedWorkHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -4636,4 +4739,20 @@ func (UnimplementedControlServiceHandler) SetChannelAgentSettings(context.Contex
 
 func (UnimplementedControlServiceHandler) SetWorkspaceAgentPolicy(context.Context, *connect.Request[v1.SetWorkspaceAgentPolicyRequest]) (*connect.Response[v1.SetWorkspaceAgentPolicyResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.SetWorkspaceAgentPolicy is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListWorkspaceRepoDelivery(context.Context, *connect.Request[v1.ListWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.ListWorkspaceRepoDeliveryResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListWorkspaceRepoDelivery is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) SetWorkspaceRepoDelivery(context.Context, *connect.Request[v1.SetWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.SetWorkspaceRepoDeliveryResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.SetWorkspaceRepoDelivery is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) ListWorkspacePredictedWork(context.Context, *connect.Request[v1.ListWorkspacePredictedWorkRequest]) (*connect.Response[v1.ListWorkspacePredictedWorkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.ListWorkspacePredictedWork is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) DismissWorkspacePredictedWork(context.Context, *connect.Request[v1.DismissWorkspacePredictedWorkRequest]) (*connect.Response[v1.DismissWorkspacePredictedWorkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.DismissWorkspacePredictedWork is not implemented"))
 }
