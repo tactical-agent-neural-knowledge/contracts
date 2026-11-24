@@ -245,6 +245,9 @@ const (
 	RunnerServiceRecordDecisionProcedure = "/tank.agentctl.v1.RunnerService/RecordDecision"
 	// RunnerServiceRememberProcedure is the fully-qualified name of the RunnerService's Remember RPC.
 	RunnerServiceRememberProcedure = "/tank.agentctl.v1.RunnerService/Remember"
+	// RunnerServiceReportMigrationProofProcedure is the fully-qualified name of the RunnerService's
+	// ReportMigrationProof RPC.
+	RunnerServiceReportMigrationProofProcedure = "/tank.agentctl.v1.RunnerService/ReportMigrationProof"
 	// RunnerServiceStreamEventsProcedure is the fully-qualified name of the RunnerService's
 	// StreamEvents RPC.
 	RunnerServiceStreamEventsProcedure = "/tank.agentctl.v1.RunnerService/StreamEvents"
@@ -489,6 +492,9 @@ const (
 	// ControlServiceDismissWorkspacePredictedWorkProcedure is the fully-qualified name of the
 	// ControlService's DismissWorkspacePredictedWork RPC.
 	ControlServiceDismissWorkspacePredictedWorkProcedure = "/tank.agentctl.v1.ControlService/DismissWorkspacePredictedWork"
+	// ControlServiceTakeWorkspacePredictedWorkProcedure is the fully-qualified name of the
+	// ControlService's TakeWorkspacePredictedWork RPC.
+	ControlServiceTakeWorkspacePredictedWorkProcedure = "/tank.agentctl.v1.ControlService/TakeWorkspacePredictedWork"
 )
 
 // RunnerServiceClient is a client for the tank.agentctl.v1.RunnerService service.
@@ -589,6 +595,10 @@ type RunnerServiceClient interface {
 	GetCiFailure(context.Context, *connect.Request[v1.GetCiFailureRequest]) (*connect.Response[v1.GetCiFailureResponse], error)
 	RecordDecision(context.Context, *connect.Request[v1.RecordDecisionRequest]) (*connect.Response[v1.RecordDecisionResponse], error)
 	Remember(context.Context, *connect.Request[v1.RememberRequest]) (*connect.Response[v1.RememberResponse], error)
+	// Overdrive's predicted work: how far a database change was proven before anybody asked
+	// for it. structure = the repository's migrations applied to an empty database in the
+	// sandbox. Recorded on the run's prediction; a run that builds none is answered and ignored.
+	ReportMigrationProof(context.Context, *connect.Request[v1.ReportMigrationProofRequest]) (*connect.Response[v1.ReportMigrationProofResponse], error)
 	// Client-streaming transcript: assistant_delta, tool_call, tool_result,
 	// permission_request, result, usage. Persisted to agent.run_events.
 	StreamEvents(context.Context) *connect.ClientStreamForClient[v1.StreamEventsRequest, v1.StreamEventsResponse]
@@ -1054,6 +1064,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("Remember")),
 			connect.WithClientOptions(opts...),
 		),
+		reportMigrationProof: connect.NewClient[v1.ReportMigrationProofRequest, v1.ReportMigrationProofResponse](
+			httpClient,
+			baseURL+RunnerServiceReportMigrationProofProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ReportMigrationProof")),
+			connect.WithClientOptions(opts...),
+		),
 		streamEvents: connect.NewClient[v1.StreamEventsRequest, v1.StreamEventsResponse](
 			httpClient,
 			baseURL+RunnerServiceStreamEventsProcedure,
@@ -1169,6 +1185,7 @@ type runnerServiceClient struct {
 	getCiFailure             *connect.Client[v1.GetCiFailureRequest, v1.GetCiFailureResponse]
 	recordDecision           *connect.Client[v1.RecordDecisionRequest, v1.RecordDecisionResponse]
 	remember                 *connect.Client[v1.RememberRequest, v1.RememberResponse]
+	reportMigrationProof     *connect.Client[v1.ReportMigrationProofRequest, v1.ReportMigrationProofResponse]
 	streamEvents             *connect.Client[v1.StreamEventsRequest, v1.StreamEventsResponse]
 	sessionStorePut          *connect.Client[v1.SessionStorePutRequest, v1.SessionStorePutResponse]
 	sessionStoreList         *connect.Client[v1.SessionStoreListRequest, v1.SessionStoreListResponse]
@@ -1547,6 +1564,11 @@ func (c *runnerServiceClient) Remember(ctx context.Context, req *connect.Request
 	return c.remember.CallUnary(ctx, req)
 }
 
+// ReportMigrationProof calls tank.agentctl.v1.RunnerService.ReportMigrationProof.
+func (c *runnerServiceClient) ReportMigrationProof(ctx context.Context, req *connect.Request[v1.ReportMigrationProofRequest]) (*connect.Response[v1.ReportMigrationProofResponse], error) {
+	return c.reportMigrationProof.CallUnary(ctx, req)
+}
+
 // StreamEvents calls tank.agentctl.v1.RunnerService.StreamEvents.
 func (c *runnerServiceClient) StreamEvents(ctx context.Context) *connect.ClientStreamForClient[v1.StreamEventsRequest, v1.StreamEventsResponse] {
 	return c.streamEvents.CallClientStream(ctx)
@@ -1675,6 +1697,10 @@ type RunnerServiceHandler interface {
 	GetCiFailure(context.Context, *connect.Request[v1.GetCiFailureRequest]) (*connect.Response[v1.GetCiFailureResponse], error)
 	RecordDecision(context.Context, *connect.Request[v1.RecordDecisionRequest]) (*connect.Response[v1.RecordDecisionResponse], error)
 	Remember(context.Context, *connect.Request[v1.RememberRequest]) (*connect.Response[v1.RememberResponse], error)
+	// Overdrive's predicted work: how far a database change was proven before anybody asked
+	// for it. structure = the repository's migrations applied to an empty database in the
+	// sandbox. Recorded on the run's prediction; a run that builds none is answered and ignored.
+	ReportMigrationProof(context.Context, *connect.Request[v1.ReportMigrationProofRequest]) (*connect.Response[v1.ReportMigrationProofResponse], error)
 	// Client-streaming transcript: assistant_delta, tool_call, tool_result,
 	// permission_request, result, usage. Persisted to agent.run_events.
 	StreamEvents(context.Context, *connect.ClientStream[v1.StreamEventsRequest]) (*connect.Response[v1.StreamEventsResponse], error)
@@ -2136,6 +2162,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("Remember")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceReportMigrationProofHandler := connect.NewUnaryHandler(
+		RunnerServiceReportMigrationProofProcedure,
+		svc.ReportMigrationProof,
+		connect.WithSchema(runnerServiceMethods.ByName("ReportMigrationProof")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServiceStreamEventsHandler := connect.NewClientStreamHandler(
 		RunnerServiceStreamEventsProcedure,
 		svc.StreamEvents,
@@ -2322,6 +2354,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceRecordDecisionHandler.ServeHTTP(w, r)
 		case RunnerServiceRememberProcedure:
 			runnerServiceRememberHandler.ServeHTTP(w, r)
+		case RunnerServiceReportMigrationProofProcedure:
+			runnerServiceReportMigrationProofHandler.ServeHTTP(w, r)
 		case RunnerServiceStreamEventsProcedure:
 			runnerServiceStreamEventsHandler.ServeHTTP(w, r)
 		case RunnerServiceSessionStorePutProcedure:
@@ -2639,6 +2673,10 @@ func (UnimplementedRunnerServiceHandler) Remember(context.Context, *connect.Requ
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.Remember is not implemented"))
 }
 
+func (UnimplementedRunnerServiceHandler) ReportMigrationProof(context.Context, *connect.Request[v1.ReportMigrationProofRequest]) (*connect.Response[v1.ReportMigrationProofResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReportMigrationProof is not implemented"))
+}
+
 func (UnimplementedRunnerServiceHandler) StreamEvents(context.Context, *connect.ClientStream[v1.StreamEventsRequest]) (*connect.Response[v1.StreamEventsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.StreamEvents is not implemented"))
 }
@@ -2811,6 +2849,7 @@ type ControlServiceClient interface {
 	SetWorkspaceRepoDelivery(context.Context, *connect.Request[v1.SetWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.SetWorkspaceRepoDeliveryResponse], error)
 	ListWorkspacePredictedWork(context.Context, *connect.Request[v1.ListWorkspacePredictedWorkRequest]) (*connect.Response[v1.ListWorkspacePredictedWorkResponse], error)
 	DismissWorkspacePredictedWork(context.Context, *connect.Request[v1.DismissWorkspacePredictedWorkRequest]) (*connect.Response[v1.DismissWorkspacePredictedWorkResponse], error)
+	TakeWorkspacePredictedWork(context.Context, *connect.Request[v1.TakeWorkspacePredictedWorkRequest]) (*connect.Response[v1.TakeWorkspacePredictedWorkResponse], error)
 }
 
 // NewControlServiceClient constructs a client for the tank.agentctl.v1.ControlService service. By
@@ -3286,6 +3325,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("DismissWorkspacePredictedWork")),
 			connect.WithClientOptions(opts...),
 		),
+		takeWorkspacePredictedWork: connect.NewClient[v1.TakeWorkspacePredictedWorkRequest, v1.TakeWorkspacePredictedWorkResponse](
+			httpClient,
+			baseURL+ControlServiceTakeWorkspacePredictedWorkProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("TakeWorkspacePredictedWork")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -3368,6 +3413,7 @@ type controlServiceClient struct {
 	setWorkspaceRepoDelivery      *connect.Client[v1.SetWorkspaceRepoDeliveryRequest, v1.SetWorkspaceRepoDeliveryResponse]
 	listWorkspacePredictedWork    *connect.Client[v1.ListWorkspacePredictedWorkRequest, v1.ListWorkspacePredictedWorkResponse]
 	dismissWorkspacePredictedWork *connect.Client[v1.DismissWorkspacePredictedWorkRequest, v1.DismissWorkspacePredictedWorkResponse]
+	takeWorkspacePredictedWork    *connect.Client[v1.TakeWorkspacePredictedWorkRequest, v1.TakeWorkspacePredictedWorkResponse]
 }
 
 // ArenaTurn calls tank.agentctl.v1.ControlService.ArenaTurn.
@@ -3756,6 +3802,11 @@ func (c *controlServiceClient) DismissWorkspacePredictedWork(ctx context.Context
 	return c.dismissWorkspacePredictedWork.CallUnary(ctx, req)
 }
 
+// TakeWorkspacePredictedWork calls tank.agentctl.v1.ControlService.TakeWorkspacePredictedWork.
+func (c *controlServiceClient) TakeWorkspacePredictedWork(ctx context.Context, req *connect.Request[v1.TakeWorkspacePredictedWorkRequest]) (*connect.Response[v1.TakeWorkspacePredictedWorkResponse], error) {
+	return c.takeWorkspacePredictedWork.CallUnary(ctx, req)
+}
+
 // ControlServiceHandler is an implementation of the tank.agentctl.v1.ControlService service.
 type ControlServiceHandler interface {
 	// ArenaTurn writes one turn of a service's public conversation on TANK's own model,
@@ -3904,6 +3955,7 @@ type ControlServiceHandler interface {
 	SetWorkspaceRepoDelivery(context.Context, *connect.Request[v1.SetWorkspaceRepoDeliveryRequest]) (*connect.Response[v1.SetWorkspaceRepoDeliveryResponse], error)
 	ListWorkspacePredictedWork(context.Context, *connect.Request[v1.ListWorkspacePredictedWorkRequest]) (*connect.Response[v1.ListWorkspacePredictedWorkResponse], error)
 	DismissWorkspacePredictedWork(context.Context, *connect.Request[v1.DismissWorkspacePredictedWorkRequest]) (*connect.Response[v1.DismissWorkspacePredictedWorkResponse], error)
+	TakeWorkspacePredictedWork(context.Context, *connect.Request[v1.TakeWorkspacePredictedWorkRequest]) (*connect.Response[v1.TakeWorkspacePredictedWorkResponse], error)
 }
 
 // NewControlServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -4375,6 +4427,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		connect.WithSchema(controlServiceMethods.ByName("DismissWorkspacePredictedWork")),
 		connect.WithHandlerOptions(opts...),
 	)
+	controlServiceTakeWorkspacePredictedWorkHandler := connect.NewUnaryHandler(
+		ControlServiceTakeWorkspacePredictedWorkProcedure,
+		svc.TakeWorkspacePredictedWork,
+		connect.WithSchema(controlServiceMethods.ByName("TakeWorkspacePredictedWork")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.agentctl.v1.ControlService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ControlServiceArenaTurnProcedure:
@@ -4531,6 +4589,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServiceListWorkspacePredictedWorkHandler.ServeHTTP(w, r)
 		case ControlServiceDismissWorkspacePredictedWorkProcedure:
 			controlServiceDismissWorkspacePredictedWorkHandler.ServeHTTP(w, r)
+		case ControlServiceTakeWorkspacePredictedWorkProcedure:
+			controlServiceTakeWorkspacePredictedWorkHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -4846,4 +4906,8 @@ func (UnimplementedControlServiceHandler) ListWorkspacePredictedWork(context.Con
 
 func (UnimplementedControlServiceHandler) DismissWorkspacePredictedWork(context.Context, *connect.Request[v1.DismissWorkspacePredictedWorkRequest]) (*connect.Response[v1.DismissWorkspacePredictedWorkResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.DismissWorkspacePredictedWork is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) TakeWorkspacePredictedWork(context.Context, *connect.Request[v1.TakeWorkspacePredictedWorkRequest]) (*connect.Response[v1.TakeWorkspacePredictedWorkResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.TakeWorkspacePredictedWork is not implemented"))
 }

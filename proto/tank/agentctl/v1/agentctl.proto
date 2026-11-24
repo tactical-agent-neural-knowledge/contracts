@@ -1087,6 +1087,15 @@ message RememberRequest {
 }
 message RememberResponse {}
 
+message ReportMigrationProofRequest {
+  string tier = 1;        // structure | questions | clone
+  bool ok = 2;            // the migrations applied without an error
+  int32 duration_ms = 3;  // how long applying them took
+  string tool = 4;        // what applied them (goose, prisma, alembic, a command), for the record
+  string detail = 5;      // the last lines of the output when it failed
+}
+message ReportMigrationProofResponse {}
+
 // ----------------------------------------------------------------- run events
 
 // What the control plane forwards to people from a runner's event stream: only
@@ -1360,6 +1369,10 @@ service RunnerService {
 
   rpc RecordDecision(RecordDecisionRequest) returns (RecordDecisionResponse);
   rpc Remember(RememberRequest) returns (RememberResponse);
+  // Overdrive's predicted work: how far a database change was proven before anybody asked
+  // for it. structure = the repository's migrations applied to an empty database in the
+  // sandbox. Recorded on the run's prediction; a run that builds none is answered and ignored.
+  rpc ReportMigrationProof(ReportMigrationProofRequest) returns (ReportMigrationProofResponse);
 
   // Client-streaming transcript: assistant_delta, tool_call, tool_result,
   // permission_request, result, usage. Persisted to agent.run_events.
@@ -1708,6 +1721,7 @@ service ControlService {
   rpc SetWorkspaceRepoDelivery(SetWorkspaceRepoDeliveryRequest) returns (SetWorkspaceRepoDeliveryResponse);
   rpc ListWorkspacePredictedWork(ListWorkspacePredictedWorkRequest) returns (ListWorkspacePredictedWorkResponse);
   rpc DismissWorkspacePredictedWork(DismissWorkspacePredictedWorkRequest) returns (DismissWorkspacePredictedWorkResponse);
+  rpc TakeWorkspacePredictedWork(TakeWorkspacePredictedWorkRequest) returns (TakeWorkspacePredictedWorkResponse);
 }
 
 // The control plane composes the workflow file itself: only it can see the repository,
@@ -2535,3 +2549,10 @@ message DismissWorkspacePredictedWorkRequest {
   string actor_id = 2;
 }
 message DismissWorkspacePredictedWorkResponse {}
+// addon says whether the workspace has the add-on: without it nothing was built to take.
+message TakeWorkspacePredictedWorkRequest {
+  tank.agent.v1.TakePredictedWorkRequest request = 1;
+  string actor_id = 2;
+  bool addon = 3;
+}
+message TakeWorkspacePredictedWorkResponse { tank.agent.v1.TakePredictedWorkResponse response = 1; }
