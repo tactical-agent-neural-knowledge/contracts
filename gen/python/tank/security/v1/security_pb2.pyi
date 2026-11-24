@@ -105,7 +105,7 @@ class Finding(_message.Message):
     def __init__(self, id: _Optional[str] = ..., summary: _Optional[str] = ..., locus: _Optional[str] = ..., severity: _Optional[str] = ..., proposal: _Optional[str] = ...) -> None: ...
 
 class Control(_message.Message):
-    __slots__ = ("id", "version", "statement", "owner", "category", "check_kind", "check", "evidence_query", "clauses", "state", "reason", "evidence", "attestation", "evaluated_at", "max_age_seconds", "stale", "findings", "tags")
+    __slots__ = ("id", "version", "statement", "owner", "category", "check_kind", "check", "evidence_query", "clauses", "state", "reason", "evidence", "attestation", "evaluated_at", "max_age_seconds", "stale", "findings", "tags", "alerting_since")
     ID_FIELD_NUMBER: _ClassVar[int]
     VERSION_FIELD_NUMBER: _ClassVar[int]
     STATEMENT_FIELD_NUMBER: _ClassVar[int]
@@ -124,6 +124,7 @@ class Control(_message.Message):
     STALE_FIELD_NUMBER: _ClassVar[int]
     FINDINGS_FIELD_NUMBER: _ClassVar[int]
     TAGS_FIELD_NUMBER: _ClassVar[int]
+    ALERTING_SINCE_FIELD_NUMBER: _ClassVar[int]
     id: str
     version: int
     statement: str
@@ -142,7 +143,8 @@ class Control(_message.Message):
     stale: bool
     findings: _containers.RepeatedCompositeFieldContainer[Finding]
     tags: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, id: _Optional[str] = ..., version: _Optional[int] = ..., statement: _Optional[str] = ..., owner: _Optional[str] = ..., category: _Optional[_Union[ControlCategory, str]] = ..., check_kind: _Optional[_Union[CheckKind, str]] = ..., check: _Optional[str] = ..., evidence_query: _Optional[str] = ..., clauses: _Optional[_Iterable[_Union[FrameworkClause, _Mapping]]] = ..., state: _Optional[_Union[ControlState, str]] = ..., reason: _Optional[str] = ..., evidence: _Optional[_Union[Evidence, _Mapping]] = ..., attestation: _Optional[_Union[Attestation, _Mapping]] = ..., evaluated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., max_age_seconds: _Optional[int] = ..., stale: bool = ..., findings: _Optional[_Iterable[_Union[Finding, _Mapping]]] = ..., tags: _Optional[_Iterable[str]] = ...) -> None: ...
+    alerting_since: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., version: _Optional[int] = ..., statement: _Optional[str] = ..., owner: _Optional[str] = ..., category: _Optional[_Union[ControlCategory, str]] = ..., check_kind: _Optional[_Union[CheckKind, str]] = ..., check: _Optional[str] = ..., evidence_query: _Optional[str] = ..., clauses: _Optional[_Iterable[_Union[FrameworkClause, _Mapping]]] = ..., state: _Optional[_Union[ControlState, str]] = ..., reason: _Optional[str] = ..., evidence: _Optional[_Union[Evidence, _Mapping]] = ..., attestation: _Optional[_Union[Attestation, _Mapping]] = ..., evaluated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., max_age_seconds: _Optional[int] = ..., stale: bool = ..., findings: _Optional[_Iterable[_Union[Finding, _Mapping]]] = ..., tags: _Optional[_Iterable[str]] = ..., alerting_since: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class StateCount(_message.Message):
     __slots__ = ("state", "count")
