@@ -3870,6 +3870,20 @@ class SetWorkspaceRepoDeliveryResponse(_message.Message):
     response: _agent_pb2.SetRepoDeliveryResponse
     def __init__(self, response: _Optional[_Union[_agent_pb2.SetRepoDeliveryResponse, _Mapping]] = ...) -> None: ...
 
+class SetWorkspaceDeliveryDefaultRequest(_message.Message):
+    __slots__ = ("request", "actor_id")
+    REQUEST_FIELD_NUMBER: _ClassVar[int]
+    ACTOR_ID_FIELD_NUMBER: _ClassVar[int]
+    request: _agent_pb2.SetWorkspaceDeliveryRequest
+    actor_id: str
+    def __init__(self, request: _Optional[_Union[_agent_pb2.SetWorkspaceDeliveryRequest, _Mapping]] = ..., actor_id: _Optional[str] = ...) -> None: ...
+
+class SetWorkspaceDeliveryDefaultResponse(_message.Message):
+    __slots__ = ("response",)
+    RESPONSE_FIELD_NUMBER: _ClassVar[int]
+    response: _agent_pb2.SetWorkspaceDeliveryResponse
+    def __init__(self, response: _Optional[_Union[_agent_pb2.SetWorkspaceDeliveryResponse, _Mapping]] = ...) -> None: ...
+
 class ListWorkspacePredictedWorkRequest(_message.Message):
     __slots__ = ("request", "addon")
     REQUEST_FIELD_NUMBER: _ClassVar[int]
