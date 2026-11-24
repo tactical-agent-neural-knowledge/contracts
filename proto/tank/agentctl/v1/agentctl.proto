@@ -1383,6 +1383,14 @@ service RunnerService {
   rpc SessionStoreListSessions(SessionStoreListSessionsRequest) returns (SessionStoreListSessionsResponse);
   rpc SessionStoreListSubkeys(SessionStoreListSubkeysRequest) returns (SessionStoreListSubkeysResponse);
   rpc SessionStoreDelete(SessionStoreDeleteRequest) returns (SessionStoreDeleteResponse);
+
+  // A web page the agent made (a mockup, static HTML with its assets) published as a live
+  // preview people open: https://<build_id>.preview.<domain>, isolated from TANK, served from
+  // the previews bucket so it outlives the sandbox. PublishPage hands out an upload permit
+  // for the page's folder; PagePublished, once the files are up, makes it the preview.
+  // (cache7, 2026-11-24: a mockup reached people as a zip to download and open locally.)
+  rpc PublishPage(PublishPageRequest) returns (PublishPageResponse);
+  rpc PagePublished(PagePublishedRequest) returns (PagePublishedResponse);
 }
 
 // ------------------------------------------------------------ control service
@@ -2565,3 +2573,29 @@ message TakeWorkspacePredictedWorkRequest {
   bool addon = 3;
 }
 message TakeWorkspacePredictedWorkResponse { tank.agent.v1.TakePredictedWorkResponse response = 1; }
+
+message PublishPageRequest {
+  // The page that opens first, relative to the folder: "index.html", "guides-white.html".
+  string entry = 1;
+  // What it is, in a few words, for the thread.
+  string title = 2;
+}
+message PublishPageResponse {
+  string build_id = 1;
+  // Each file is POSTed to upload_url as multipart form data with upload_fields and its own
+  // key, key_prefix + its path in the folder.
+  string upload_url = 2;
+  map<string, string> upload_fields = 3;
+  string key_prefix = 4;
+  // Why there is no permit, in plain words; empty when there is one.
+  string refused = 5;
+}
+message PagePublishedRequest {
+  string build_id = 1;
+  string entry = 2;
+  int32 files = 3;
+}
+message PagePublishedResponse {
+  // The page's address for people, ready to post.
+  string url = 1;
+}
