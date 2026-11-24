@@ -355,6 +355,9 @@ const (
 	// ControlServiceCancelPreparationProcedure is the fully-qualified name of the ControlService's
 	// CancelPreparation RPC.
 	ControlServiceCancelPreparationProcedure = "/tank.agentctl.v1.ControlService/CancelPreparation"
+	// ControlServiceStageReplyProcedure is the fully-qualified name of the ControlService's StageReply
+	// RPC.
+	ControlServiceStageReplyProcedure = "/tank.agentctl.v1.ControlService/StageReply"
 	// ControlServiceOpenThreadProcedure is the fully-qualified name of the ControlService's OpenThread
 	// RPC.
 	ControlServiceOpenThreadProcedure = "/tank.agentctl.v1.ControlService/OpenThread"
@@ -2685,6 +2688,12 @@ type ControlServiceClient interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	PrepareRun(context.Context, *connect.Request[v1.PrepareRunRequest]) (*connect.Response[v1.PrepareRunResponse], error)
 	CancelPreparation(context.Context, *connect.Request[v1.CancelPreparationRequest]) (*connect.Response[v1.CancelPreparationResponse], error)
+	// A draft tags an agent that answers from the Neural model alone (2026-11-23, replies within
+	// half a second): the control plane may write that reply ahead of the send. What it writes is
+	// used only when the message that arrives is exactly this text, from this person, in this
+	// thread, and is thrown away otherwise; nothing is posted or stored by this call. Idempotent,
+	// and a no-op for an agent that is not pinned to the Neural model.
+	StageReply(context.Context, *connect.Request[v1.StageReplyRequest]) (*connect.Response[v1.StageReplyResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
@@ -2970,6 +2979,12 @@ func NewControlServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(controlServiceMethods.ByName("CancelPreparation")),
 			connect.WithClientOptions(opts...),
 		),
+		stageReply: connect.NewClient[v1.StageReplyRequest, v1.StageReplyResponse](
+			httpClient,
+			baseURL+ControlServiceStageReplyProcedure,
+			connect.WithSchema(controlServiceMethods.ByName("StageReply")),
+			connect.WithClientOptions(opts...),
+		),
 		openThread: connect.NewClient[v1.OpenThreadRequest, v1.OpenThreadResponse](
 			httpClient,
 			baseURL+ControlServiceOpenThreadProcedure,
@@ -3234,6 +3249,7 @@ type controlServiceClient struct {
 	startRun                    *connect.Client[v1.StartRunRequest, v1.StartRunResponse]
 	prepareRun                  *connect.Client[v1.PrepareRunRequest, v1.PrepareRunResponse]
 	cancelPreparation           *connect.Client[v1.CancelPreparationRequest, v1.CancelPreparationResponse]
+	stageReply                  *connect.Client[v1.StageReplyRequest, v1.StageReplyResponse]
 	openThread                  *connect.Client[v1.OpenThreadRequest, v1.OpenThreadResponse]
 	refreshNeuralKnowledge      *connect.Client[v1.RefreshNeuralKnowledgeRequest, v1.RefreshNeuralKnowledgeResponse]
 	getRun                      *connect.Client[v1.GetRunRequest, v1.GetRunResponse]
@@ -3427,6 +3443,11 @@ func (c *controlServiceClient) PrepareRun(ctx context.Context, req *connect.Requ
 // CancelPreparation calls tank.agentctl.v1.ControlService.CancelPreparation.
 func (c *controlServiceClient) CancelPreparation(ctx context.Context, req *connect.Request[v1.CancelPreparationRequest]) (*connect.Response[v1.CancelPreparationResponse], error) {
 	return c.cancelPreparation.CallUnary(ctx, req)
+}
+
+// StageReply calls tank.agentctl.v1.ControlService.StageReply.
+func (c *controlServiceClient) StageReply(ctx context.Context, req *connect.Request[v1.StageReplyRequest]) (*connect.Response[v1.StageReplyResponse], error) {
+	return c.stageReply.CallUnary(ctx, req)
 }
 
 // OpenThread calls tank.agentctl.v1.ControlService.OpenThread.
@@ -3665,6 +3686,12 @@ type ControlServiceHandler interface {
 	StartRun(context.Context, *connect.Request[v1.StartRunRequest]) (*connect.Response[v1.StartRunResponse], error)
 	PrepareRun(context.Context, *connect.Request[v1.PrepareRunRequest]) (*connect.Response[v1.PrepareRunResponse], error)
 	CancelPreparation(context.Context, *connect.Request[v1.CancelPreparationRequest]) (*connect.Response[v1.CancelPreparationResponse], error)
+	// A draft tags an agent that answers from the Neural model alone (2026-11-23, replies within
+	// half a second): the control plane may write that reply ahead of the send. What it writes is
+	// used only when the message that arrives is exactly this text, from this person, in this
+	// thread, and is thrown away otherwise; nothing is posted or stored by this call. Idempotent,
+	// and a no-op for an agent that is not pinned to the Neural model.
+	StageReply(context.Context, *connect.Request[v1.StageReplyRequest]) (*connect.Response[v1.StageReplyResponse], error)
 	OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error)
 	RefreshNeuralKnowledge(context.Context, *connect.Request[v1.RefreshNeuralKnowledgeRequest]) (*connect.Response[v1.RefreshNeuralKnowledgeResponse], error)
 	GetRun(context.Context, *connect.Request[v1.GetRunRequest]) (*connect.Response[v1.GetRunResponse], error)
@@ -3944,6 +3971,12 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 		ControlServiceCancelPreparationProcedure,
 		svc.CancelPreparation,
 		connect.WithSchema(controlServiceMethods.ByName("CancelPreparation")),
+		connect.WithHandlerOptions(opts...),
+	)
+	controlServiceStageReplyHandler := connect.NewUnaryHandler(
+		ControlServiceStageReplyProcedure,
+		svc.StageReply,
+		connect.WithSchema(controlServiceMethods.ByName("StageReply")),
 		connect.WithHandlerOptions(opts...),
 	)
 	controlServiceOpenThreadHandler := connect.NewUnaryHandler(
@@ -4238,6 +4271,8 @@ func NewControlServiceHandler(svc ControlServiceHandler, opts ...connect.Handler
 			controlServicePrepareRunHandler.ServeHTTP(w, r)
 		case ControlServiceCancelPreparationProcedure:
 			controlServiceCancelPreparationHandler.ServeHTTP(w, r)
+		case ControlServiceStageReplyProcedure:
+			controlServiceStageReplyHandler.ServeHTTP(w, r)
 		case ControlServiceOpenThreadProcedure:
 			controlServiceOpenThreadHandler.ServeHTTP(w, r)
 		case ControlServiceRefreshNeuralKnowledgeProcedure:
@@ -4445,6 +4480,10 @@ func (UnimplementedControlServiceHandler) PrepareRun(context.Context, *connect.R
 
 func (UnimplementedControlServiceHandler) CancelPreparation(context.Context, *connect.Request[v1.CancelPreparationRequest]) (*connect.Response[v1.CancelPreparationResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.CancelPreparation is not implemented"))
+}
+
+func (UnimplementedControlServiceHandler) StageReply(context.Context, *connect.Request[v1.StageReplyRequest]) (*connect.Response[v1.StageReplyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.ControlService.StageReply is not implemented"))
 }
 
 func (UnimplementedControlServiceHandler) OpenThread(context.Context, *connect.Request[v1.OpenThreadRequest]) (*connect.Response[v1.OpenThreadResponse], error) {

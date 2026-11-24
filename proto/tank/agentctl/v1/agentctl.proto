@@ -1347,6 +1347,20 @@ message CancelPreparationResponse {
   tank.workspace.v1.PreparationState state = 1;
 }
 
+message StageReplyRequest {
+  string workspace_id = 1;
+  string channel_id = 2;
+  string thread_root_id = 3; // empty for a draft that starts a new thread
+  string agent_id = 4;
+  string requested_by = 5;
+  // The draft as it stands.
+  string text = 6;
+}
+message StageReplyResponse {
+  // A reply is being written ahead for this draft.
+  bool staged = 1;
+}
+
 message GetRunRequest {
   string run_id = 1;
 }
@@ -1489,6 +1503,12 @@ service ControlService {
   rpc StartRun(StartRunRequest) returns (StartRunResponse);
   rpc PrepareRun(PrepareRunRequest) returns (PrepareRunResponse);
   rpc CancelPreparation(CancelPreparationRequest) returns (CancelPreparationResponse);
+  // A draft tags an agent that answers from the Neural model alone (2026-11-23, replies within
+  // half a second): the control plane may write that reply ahead of the send. What it writes is
+  // used only when the message that arrives is exactly this text, from this person, in this
+  // thread, and is thrown away otherwise; nothing is posted or stored by this call. Idempotent,
+  // and a no-op for an agent that is not pinned to the Neural model.
+  rpc StageReply(StageReplyRequest) returns (StageReplyResponse);
   rpc OpenThread(OpenThreadRequest) returns (OpenThreadResponse);
   rpc RefreshNeuralKnowledge(RefreshNeuralKnowledgeRequest) returns (RefreshNeuralKnowledgeResponse);
   rpc GetRun(GetRunRequest) returns (GetRunResponse);
