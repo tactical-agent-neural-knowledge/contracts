@@ -654,7 +654,7 @@ class ListRepoPreviewSetupsResponse(_message.Message):
     def __init__(self, setups: _Optional[_Iterable[_Union[RepoPreviewSetup, _Mapping]]] = ..., secret_name: _Optional[str] = ..., token_issued: bool = ...) -> None: ...
 
 class TreadSettings(_message.Message):
-    __slots__ = ("concurrent_runs", "auto_accept_plans", "max_run_usd", "daily_usd", "pull_requests", "pr_reviewer_ids", "read_neural_knowledge", "merge_allowed", "notify_reviewers", "strongest_model", "model")
+    __slots__ = ("concurrent_runs", "auto_accept_plans", "max_run_usd", "daily_usd", "pull_requests", "pr_reviewer_ids", "read_neural_knowledge", "merge_allowed", "notify_reviewers", "strongest_model", "model", "auto_follows_workspace")
     CONCURRENT_RUNS_FIELD_NUMBER: _ClassVar[int]
     AUTO_ACCEPT_PLANS_FIELD_NUMBER: _ClassVar[int]
     MAX_RUN_USD_FIELD_NUMBER: _ClassVar[int]
@@ -666,6 +666,7 @@ class TreadSettings(_message.Message):
     NOTIFY_REVIEWERS_FIELD_NUMBER: _ClassVar[int]
     STRONGEST_MODEL_FIELD_NUMBER: _ClassVar[int]
     MODEL_FIELD_NUMBER: _ClassVar[int]
+    AUTO_FOLLOWS_WORKSPACE_FIELD_NUMBER: _ClassVar[int]
     concurrent_runs: int
     auto_accept_plans: bool
     max_run_usd: float
@@ -677,7 +678,8 @@ class TreadSettings(_message.Message):
     notify_reviewers: bool
     strongest_model: bool
     model: str
-    def __init__(self, concurrent_runs: _Optional[int] = ..., auto_accept_plans: bool = ..., max_run_usd: _Optional[float] = ..., daily_usd: _Optional[float] = ..., pull_requests: _Optional[str] = ..., pr_reviewer_ids: _Optional[_Iterable[str]] = ..., read_neural_knowledge: bool = ..., merge_allowed: bool = ..., notify_reviewers: bool = ..., strongest_model: bool = ..., model: _Optional[str] = ...) -> None: ...
+    auto_follows_workspace: bool
+    def __init__(self, concurrent_runs: _Optional[int] = ..., auto_accept_plans: bool = ..., max_run_usd: _Optional[float] = ..., daily_usd: _Optional[float] = ..., pull_requests: _Optional[str] = ..., pr_reviewer_ids: _Optional[_Iterable[str]] = ..., read_neural_knowledge: bool = ..., merge_allowed: bool = ..., notify_reviewers: bool = ..., strongest_model: bool = ..., model: _Optional[str] = ..., auto_follows_workspace: bool = ...) -> None: ...
 
 class HourBucket(_message.Message):
     __slots__ = ("hour", "runs", "spend_usd", "neural_saved_usd")
@@ -874,14 +876,16 @@ class GetTreadSwitchboardRequest(_message.Message):
     def __init__(self, channel_id: _Optional[str] = ...) -> None: ...
 
 class GetTreadSwitchboardResponse(_message.Message):
-    __slots__ = ("metrics", "settings", "can_manage")
+    __slots__ = ("metrics", "settings", "can_manage", "workspace_auto")
     METRICS_FIELD_NUMBER: _ClassVar[int]
     SETTINGS_FIELD_NUMBER: _ClassVar[int]
     CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
+    WORKSPACE_AUTO_FIELD_NUMBER: _ClassVar[int]
     metrics: TreadMetrics
     settings: TreadSettings
     can_manage: bool
-    def __init__(self, metrics: _Optional[_Union[TreadMetrics, _Mapping]] = ..., settings: _Optional[_Union[TreadSettings, _Mapping]] = ..., can_manage: bool = ...) -> None: ...
+    workspace_auto: WorkspaceAuto
+    def __init__(self, metrics: _Optional[_Union[TreadMetrics, _Mapping]] = ..., settings: _Optional[_Union[TreadSettings, _Mapping]] = ..., can_manage: bool = ..., workspace_auto: _Optional[_Union[WorkspaceAuto, _Mapping]] = ...) -> None: ...
 
 class SetTreadSettingsRequest(_message.Message):
     __slots__ = ("channel_id", "settings")
@@ -1260,6 +1264,52 @@ class SetWorkspaceDeliveryResponse(_message.Message):
     DELIVERY_FIELD_NUMBER: _ClassVar[int]
     delivery: ListRepoDeliveryResponse
     def __init__(self, delivery: _Optional[_Union[ListRepoDeliveryResponse, _Mapping]] = ...) -> None: ...
+
+class WorkspaceAuto(_message.Message):
+    __slots__ = ("approve_plans", "merge_pull_requests", "updated_at", "updated_by", "treads_following", "treads_own")
+    APPROVE_PLANS_FIELD_NUMBER: _ClassVar[int]
+    MERGE_PULL_REQUESTS_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_BY_FIELD_NUMBER: _ClassVar[int]
+    TREADS_FOLLOWING_FIELD_NUMBER: _ClassVar[int]
+    TREADS_OWN_FIELD_NUMBER: _ClassVar[int]
+    approve_plans: bool
+    merge_pull_requests: bool
+    updated_at: _timestamp_pb2.Timestamp
+    updated_by: str
+    treads_following: int
+    treads_own: int
+    def __init__(self, approve_plans: bool = ..., merge_pull_requests: bool = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., treads_following: _Optional[int] = ..., treads_own: _Optional[int] = ...) -> None: ...
+
+class GetWorkspaceAutoRequest(_message.Message):
+    __slots__ = ("workspace_id",)
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    def __init__(self, workspace_id: _Optional[str] = ...) -> None: ...
+
+class GetWorkspaceAutoResponse(_message.Message):
+    __slots__ = ("auto", "can_manage")
+    AUTO_FIELD_NUMBER: _ClassVar[int]
+    CAN_MANAGE_FIELD_NUMBER: _ClassVar[int]
+    auto: WorkspaceAuto
+    can_manage: bool
+    def __init__(self, auto: _Optional[_Union[WorkspaceAuto, _Mapping]] = ..., can_manage: bool = ...) -> None: ...
+
+class SetWorkspaceAutoRequest(_message.Message):
+    __slots__ = ("workspace_id", "approve_plans", "merge_pull_requests")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    APPROVE_PLANS_FIELD_NUMBER: _ClassVar[int]
+    MERGE_PULL_REQUESTS_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    approve_plans: bool
+    merge_pull_requests: bool
+    def __init__(self, workspace_id: _Optional[str] = ..., approve_plans: bool = ..., merge_pull_requests: bool = ...) -> None: ...
+
+class SetWorkspaceAutoResponse(_message.Message):
+    __slots__ = ("auto",)
+    AUTO_FIELD_NUMBER: _ClassVar[int]
+    auto: WorkspaceAuto
+    def __init__(self, auto: _Optional[_Union[WorkspaceAuto, _Mapping]] = ...) -> None: ...
 
 class PredictedWork(_message.Message):
     __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "task_id", "title", "summary", "source", "state", "repo", "branch", "preview_url", "migration_proof", "migration_ms", "created_at", "ready_at", "run_id", "source_task_id", "pr_url")

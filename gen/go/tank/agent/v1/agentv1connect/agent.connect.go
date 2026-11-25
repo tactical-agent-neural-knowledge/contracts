@@ -130,6 +130,12 @@ const (
 	// AgentServiceSetTreadSettingsProcedure is the fully-qualified name of the AgentService's
 	// SetTreadSettings RPC.
 	AgentServiceSetTreadSettingsProcedure = "/tank.agent.v1.AgentService/SetTreadSettings"
+	// AgentServiceGetWorkspaceAutoProcedure is the fully-qualified name of the AgentService's
+	// GetWorkspaceAuto RPC.
+	AgentServiceGetWorkspaceAutoProcedure = "/tank.agent.v1.AgentService/GetWorkspaceAuto"
+	// AgentServiceSetWorkspaceAutoProcedure is the fully-qualified name of the AgentService's
+	// SetWorkspaceAuto RPC.
+	AgentServiceSetWorkspaceAutoProcedure = "/tank.agent.v1.AgentService/SetWorkspaceAuto"
 	// AgentServiceGetWorkspaceSpendProcedure is the fully-qualified name of the AgentService's
 	// GetWorkspaceSpend RPC.
 	AgentServiceGetWorkspaceSpendProcedure = "/tank.agent.v1.AgentService/GetWorkspaceSpend"
@@ -211,6 +217,12 @@ type AgentServiceClient interface {
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
+	// The workspace's Auto default: whether TANK approves plans and merges pull requests by
+	// itself in every Tread that has no Auto choice of its own (Robby, 2026-11-25). Members
+	// read; admins set. Turning either on decides what is already waiting in the Treads that
+	// follow it.
+	GetWorkspaceAuto(context.Context, *connect.Request[v1.GetWorkspaceAutoRequest]) (*connect.Response[v1.GetWorkspaceAutoResponse], error)
+	SetWorkspaceAuto(context.Context, *connect.Request[v1.SetWorkspaceAutoRequest]) (*connect.Response[v1.SetWorkspaceAutoResponse], error)
 	// Spend: the workspace's agent money by Tread, person, team, kind and day.
 	GetWorkspaceSpend(context.Context, *connect.Request[v1.GetWorkspaceSpendRequest]) (*connect.Response[v1.GetWorkspaceSpendResponse], error)
 	// The security state of every Tread in the workspace that is connected to a repository.
@@ -451,6 +463,18 @@ func NewAgentServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(agentServiceMethods.ByName("SetTreadSettings")),
 			connect.WithClientOptions(opts...),
 		),
+		getWorkspaceAuto: connect.NewClient[v1.GetWorkspaceAutoRequest, v1.GetWorkspaceAutoResponse](
+			httpClient,
+			baseURL+AgentServiceGetWorkspaceAutoProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("GetWorkspaceAuto")),
+			connect.WithClientOptions(opts...),
+		),
+		setWorkspaceAuto: connect.NewClient[v1.SetWorkspaceAutoRequest, v1.SetWorkspaceAutoResponse](
+			httpClient,
+			baseURL+AgentServiceSetWorkspaceAutoProcedure,
+			connect.WithSchema(agentServiceMethods.ByName("SetWorkspaceAuto")),
+			connect.WithClientOptions(opts...),
+		),
 		getWorkspaceSpend: connect.NewClient[v1.GetWorkspaceSpendRequest, v1.GetWorkspaceSpendResponse](
 			httpClient,
 			baseURL+AgentServiceGetWorkspaceSpendProcedure,
@@ -516,6 +540,8 @@ type agentServiceClient struct {
 	takePredictedWork         *connect.Client[v1.TakePredictedWorkRequest, v1.TakePredictedWorkResponse]
 	getTreadSwitchboard       *connect.Client[v1.GetTreadSwitchboardRequest, v1.GetTreadSwitchboardResponse]
 	setTreadSettings          *connect.Client[v1.SetTreadSettingsRequest, v1.SetTreadSettingsResponse]
+	getWorkspaceAuto          *connect.Client[v1.GetWorkspaceAutoRequest, v1.GetWorkspaceAutoResponse]
+	setWorkspaceAuto          *connect.Client[v1.SetWorkspaceAutoRequest, v1.SetWorkspaceAutoResponse]
 	getWorkspaceSpend         *connect.Client[v1.GetWorkspaceSpendRequest, v1.GetWorkspaceSpendResponse]
 	listTreadSecurity         *connect.Client[v1.ListTreadSecurityRequest, v1.ListTreadSecurityResponse]
 	listWorkspaceDeployments  *connect.Client[v1.ListWorkspaceDeploymentsRequest, v1.ListWorkspaceDeploymentsResponse]
@@ -702,6 +728,16 @@ func (c *agentServiceClient) SetTreadSettings(ctx context.Context, req *connect.
 	return c.setTreadSettings.CallUnary(ctx, req)
 }
 
+// GetWorkspaceAuto calls tank.agent.v1.AgentService.GetWorkspaceAuto.
+func (c *agentServiceClient) GetWorkspaceAuto(ctx context.Context, req *connect.Request[v1.GetWorkspaceAutoRequest]) (*connect.Response[v1.GetWorkspaceAutoResponse], error) {
+	return c.getWorkspaceAuto.CallUnary(ctx, req)
+}
+
+// SetWorkspaceAuto calls tank.agent.v1.AgentService.SetWorkspaceAuto.
+func (c *agentServiceClient) SetWorkspaceAuto(ctx context.Context, req *connect.Request[v1.SetWorkspaceAutoRequest]) (*connect.Response[v1.SetWorkspaceAutoResponse], error) {
+	return c.setWorkspaceAuto.CallUnary(ctx, req)
+}
+
 // GetWorkspaceSpend calls tank.agent.v1.AgentService.GetWorkspaceSpend.
 func (c *agentServiceClient) GetWorkspaceSpend(ctx context.Context, req *connect.Request[v1.GetWorkspaceSpendRequest]) (*connect.Response[v1.GetWorkspaceSpendResponse], error) {
 	return c.getWorkspaceSpend.CallUnary(ctx, req)
@@ -789,6 +825,12 @@ type AgentServiceHandler interface {
 	// The Tread's switchboard: metrics for members, settings for admins.
 	GetTreadSwitchboard(context.Context, *connect.Request[v1.GetTreadSwitchboardRequest]) (*connect.Response[v1.GetTreadSwitchboardResponse], error)
 	SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error)
+	// The workspace's Auto default: whether TANK approves plans and merges pull requests by
+	// itself in every Tread that has no Auto choice of its own (Robby, 2026-11-25). Members
+	// read; admins set. Turning either on decides what is already waiting in the Treads that
+	// follow it.
+	GetWorkspaceAuto(context.Context, *connect.Request[v1.GetWorkspaceAutoRequest]) (*connect.Response[v1.GetWorkspaceAutoResponse], error)
+	SetWorkspaceAuto(context.Context, *connect.Request[v1.SetWorkspaceAutoRequest]) (*connect.Response[v1.SetWorkspaceAutoResponse], error)
 	// Spend: the workspace's agent money by Tread, person, team, kind and day.
 	GetWorkspaceSpend(context.Context, *connect.Request[v1.GetWorkspaceSpendRequest]) (*connect.Response[v1.GetWorkspaceSpendResponse], error)
 	// The security state of every Tread in the workspace that is connected to a repository.
@@ -1025,6 +1067,18 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(agentServiceMethods.ByName("SetTreadSettings")),
 		connect.WithHandlerOptions(opts...),
 	)
+	agentServiceGetWorkspaceAutoHandler := connect.NewUnaryHandler(
+		AgentServiceGetWorkspaceAutoProcedure,
+		svc.GetWorkspaceAuto,
+		connect.WithSchema(agentServiceMethods.ByName("GetWorkspaceAuto")),
+		connect.WithHandlerOptions(opts...),
+	)
+	agentServiceSetWorkspaceAutoHandler := connect.NewUnaryHandler(
+		AgentServiceSetWorkspaceAutoProcedure,
+		svc.SetWorkspaceAuto,
+		connect.WithSchema(agentServiceMethods.ByName("SetWorkspaceAuto")),
+		connect.WithHandlerOptions(opts...),
+	)
 	agentServiceGetWorkspaceSpendHandler := connect.NewUnaryHandler(
 		AgentServiceGetWorkspaceSpendProcedure,
 		svc.GetWorkspaceSpend,
@@ -1123,6 +1177,10 @@ func NewAgentServiceHandler(svc AgentServiceHandler, opts ...connect.HandlerOpti
 			agentServiceGetTreadSwitchboardHandler.ServeHTTP(w, r)
 		case AgentServiceSetTreadSettingsProcedure:
 			agentServiceSetTreadSettingsHandler.ServeHTTP(w, r)
+		case AgentServiceGetWorkspaceAutoProcedure:
+			agentServiceGetWorkspaceAutoHandler.ServeHTTP(w, r)
+		case AgentServiceSetWorkspaceAutoProcedure:
+			agentServiceSetWorkspaceAutoHandler.ServeHTTP(w, r)
 		case AgentServiceGetWorkspaceSpendProcedure:
 			agentServiceGetWorkspaceSpendHandler.ServeHTTP(w, r)
 		case AgentServiceListTreadSecurityProcedure:
@@ -1282,6 +1340,14 @@ func (UnimplementedAgentServiceHandler) GetTreadSwitchboard(context.Context, *co
 
 func (UnimplementedAgentServiceHandler) SetTreadSettings(context.Context, *connect.Request[v1.SetTreadSettingsRequest]) (*connect.Response[v1.SetTreadSettingsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetTreadSettings is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) GetWorkspaceAuto(context.Context, *connect.Request[v1.GetWorkspaceAutoRequest]) (*connect.Response[v1.GetWorkspaceAutoResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.GetWorkspaceAuto is not implemented"))
+}
+
+func (UnimplementedAgentServiceHandler) SetWorkspaceAuto(context.Context, *connect.Request[v1.SetWorkspaceAutoRequest]) (*connect.Response[v1.SetWorkspaceAutoResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agent.v1.AgentService.SetWorkspaceAuto is not implemented"))
 }
 
 func (UnimplementedAgentServiceHandler) GetWorkspaceSpend(context.Context, *connect.Request[v1.GetWorkspaceSpendRequest]) (*connect.Response[v1.GetWorkspaceSpendResponse], error) {

@@ -507,6 +507,12 @@ message TreadSettings {
   // Supersedes strongest_model, which stays for older clients: picking claude-opus-5
   // is what that switch meant.
   string model = 11;
+  // True when the Tread has no Auto choice of its own and follows the workspace's
+  // (WorkspaceAuto): auto_accept_plans and pull_requests then read back as the workspace
+  // default makes them. Sent true on a save, the Tread's own choice is dropped and it
+  // follows the workspace again (auto_accept_plans and the merge half of pull_requests are
+  // then ignored). A client that changes either Auto switch sends it false.
+  bool auto_follows_workspace = 12;
 }
 message HourBucket {
   google.protobuf.Timestamp hour = 1;
@@ -637,6 +643,9 @@ message GetTreadSwitchboardResponse {
   TreadMetrics metrics = 1;
   TreadSettings settings = 2;
   bool can_manage = 3;
+  // The workspace's Auto default, which this Tread follows when
+  // settings.auto_follows_workspace is set.
+  WorkspaceAuto workspace_auto = 4;
 }
 message SetTreadSettingsRequest {
   string channel_id = 1;
@@ -826,6 +835,12 @@ service AgentService {
   // The Tread's switchboard: metrics for members, settings for admins.
   rpc GetTreadSwitchboard(GetTreadSwitchboardRequest) returns (GetTreadSwitchboardResponse);
   rpc SetTreadSettings(SetTreadSettingsRequest) returns (SetTreadSettingsResponse);
+  // The workspace's Auto default: whether TANK approves plans and merges pull requests by
+  // itself in every Tread that has no Auto choice of its own (Robby, 2026-11-25). Members
+  // read; admins set. Turning either on decides what is already waiting in the Treads that
+  // follow it.
+  rpc GetWorkspaceAuto(GetWorkspaceAutoRequest) returns (GetWorkspaceAutoResponse);
+  rpc SetWorkspaceAuto(SetWorkspaceAutoRequest) returns (SetWorkspaceAutoResponse);
   // Spend: the workspace's agent money by Tread, person, team, kind and day.
   rpc GetWorkspaceSpend(GetWorkspaceSpendRequest) returns (GetWorkspaceSpendResponse);
   // The security state of every Tread in the workspace that is connected to a repository.
@@ -996,6 +1011,31 @@ message SetWorkspaceDeliveryRequest {
 }
 // The whole list again, every repository with what it now follows.
 message SetWorkspaceDeliveryResponse { ListRepoDeliveryResponse delivery = 1; }
+
+// WorkspaceAuto is the workspace's Auto default. Both off (and no row) is the platform's
+// own behavior: every plan and every pull request waits for a person unless its Tread says
+// otherwise.
+message WorkspaceAuto {
+  bool approve_plans = 1;
+  // Merge once the checks pass, in Treads where TANK may merge at all.
+  bool merge_pull_requests = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  string updated_by = 4;
+  // How many of the workspace's Treads follow it, and how many have Auto settings of their own.
+  int32 treads_following = 5;
+  int32 treads_own = 6;
+}
+message GetWorkspaceAutoRequest { string workspace_id = 1; }
+message GetWorkspaceAutoResponse {
+  WorkspaceAuto auto = 1;
+  bool can_manage = 2;
+}
+message SetWorkspaceAutoRequest {
+  string workspace_id = 1;
+  bool approve_plans = 2;
+  bool merge_pull_requests = 3;
+}
+message SetWorkspaceAutoResponse { WorkspaceAuto auto = 1; }
 
 // ---- Overdrive: predicted work, an add-on (Robby, 2026-11-23) ----
 
