@@ -41,6 +41,9 @@ const (
 	// EnvVarServiceDeleteEnvVarProcedure is the fully-qualified name of the EnvVarService's
 	// DeleteEnvVar RPC.
 	EnvVarServiceDeleteEnvVarProcedure = "/tank.envvars.v1.EnvVarService/DeleteEnvVar"
+	// EnvVarServiceSetEnvVarUseProcedure is the fully-qualified name of the EnvVarService's
+	// SetEnvVarUse RPC.
+	EnvVarServiceSetEnvVarUseProcedure = "/tank.envvars.v1.EnvVarService/SetEnvVarUse"
 	// EnvVarServicePutPreviewValueProcedure is the fully-qualified name of the EnvVarService's
 	// PutPreviewValue RPC.
 	EnvVarServicePutPreviewValueProcedure = "/tank.envvars.v1.EnvVarService/PutPreviewValue"
@@ -54,6 +57,8 @@ type EnvVarServiceClient interface {
 	ListEnvVars(context.Context, *connect.Request[v1.ListEnvVarsRequest]) (*connect.Response[v1.ListEnvVarsResponse], error)
 	PutEnvVar(context.Context, *connect.Request[v1.PutEnvVarRequest]) (*connect.Response[v1.PutEnvVarResponse], error)
 	DeleteEnvVar(context.Context, *connect.Request[v1.DeleteEnvVarRequest]) (*connect.Response[v1.DeleteEnvVarResponse], error)
+	// Changes who uses a variable without its value (a secret's cannot be read back).
+	SetEnvVarUse(context.Context, *connect.Request[v1.SetEnvVarUseRequest]) (*connect.Response[v1.SetEnvVarUseResponse], error)
 	// A secret's preview value and the hosts it may be sent to, owners and admins only.
 	PutPreviewValue(context.Context, *connect.Request[v1.PutPreviewValueRequest]) (*connect.Response[v1.PutPreviewValueResponse], error)
 	ClearPreviewValue(context.Context, *connect.Request[v1.ClearPreviewValueRequest]) (*connect.Response[v1.ClearPreviewValueResponse], error)
@@ -88,6 +93,12 @@ func NewEnvVarServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(envVarServiceMethods.ByName("DeleteEnvVar")),
 			connect.WithClientOptions(opts...),
 		),
+		setEnvVarUse: connect.NewClient[v1.SetEnvVarUseRequest, v1.SetEnvVarUseResponse](
+			httpClient,
+			baseURL+EnvVarServiceSetEnvVarUseProcedure,
+			connect.WithSchema(envVarServiceMethods.ByName("SetEnvVarUse")),
+			connect.WithClientOptions(opts...),
+		),
 		putPreviewValue: connect.NewClient[v1.PutPreviewValueRequest, v1.PutPreviewValueResponse](
 			httpClient,
 			baseURL+EnvVarServicePutPreviewValueProcedure,
@@ -108,6 +119,7 @@ type envVarServiceClient struct {
 	listEnvVars       *connect.Client[v1.ListEnvVarsRequest, v1.ListEnvVarsResponse]
 	putEnvVar         *connect.Client[v1.PutEnvVarRequest, v1.PutEnvVarResponse]
 	deleteEnvVar      *connect.Client[v1.DeleteEnvVarRequest, v1.DeleteEnvVarResponse]
+	setEnvVarUse      *connect.Client[v1.SetEnvVarUseRequest, v1.SetEnvVarUseResponse]
 	putPreviewValue   *connect.Client[v1.PutPreviewValueRequest, v1.PutPreviewValueResponse]
 	clearPreviewValue *connect.Client[v1.ClearPreviewValueRequest, v1.ClearPreviewValueResponse]
 }
@@ -127,6 +139,11 @@ func (c *envVarServiceClient) DeleteEnvVar(ctx context.Context, req *connect.Req
 	return c.deleteEnvVar.CallUnary(ctx, req)
 }
 
+// SetEnvVarUse calls tank.envvars.v1.EnvVarService.SetEnvVarUse.
+func (c *envVarServiceClient) SetEnvVarUse(ctx context.Context, req *connect.Request[v1.SetEnvVarUseRequest]) (*connect.Response[v1.SetEnvVarUseResponse], error) {
+	return c.setEnvVarUse.CallUnary(ctx, req)
+}
+
 // PutPreviewValue calls tank.envvars.v1.EnvVarService.PutPreviewValue.
 func (c *envVarServiceClient) PutPreviewValue(ctx context.Context, req *connect.Request[v1.PutPreviewValueRequest]) (*connect.Response[v1.PutPreviewValueResponse], error) {
 	return c.putPreviewValue.CallUnary(ctx, req)
@@ -142,6 +159,8 @@ type EnvVarServiceHandler interface {
 	ListEnvVars(context.Context, *connect.Request[v1.ListEnvVarsRequest]) (*connect.Response[v1.ListEnvVarsResponse], error)
 	PutEnvVar(context.Context, *connect.Request[v1.PutEnvVarRequest]) (*connect.Response[v1.PutEnvVarResponse], error)
 	DeleteEnvVar(context.Context, *connect.Request[v1.DeleteEnvVarRequest]) (*connect.Response[v1.DeleteEnvVarResponse], error)
+	// Changes who uses a variable without its value (a secret's cannot be read back).
+	SetEnvVarUse(context.Context, *connect.Request[v1.SetEnvVarUseRequest]) (*connect.Response[v1.SetEnvVarUseResponse], error)
 	// A secret's preview value and the hosts it may be sent to, owners and admins only.
 	PutPreviewValue(context.Context, *connect.Request[v1.PutPreviewValueRequest]) (*connect.Response[v1.PutPreviewValueResponse], error)
 	ClearPreviewValue(context.Context, *connect.Request[v1.ClearPreviewValueRequest]) (*connect.Response[v1.ClearPreviewValueResponse], error)
@@ -172,6 +191,12 @@ func NewEnvVarServiceHandler(svc EnvVarServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(envVarServiceMethods.ByName("DeleteEnvVar")),
 		connect.WithHandlerOptions(opts...),
 	)
+	envVarServiceSetEnvVarUseHandler := connect.NewUnaryHandler(
+		EnvVarServiceSetEnvVarUseProcedure,
+		svc.SetEnvVarUse,
+		connect.WithSchema(envVarServiceMethods.ByName("SetEnvVarUse")),
+		connect.WithHandlerOptions(opts...),
+	)
 	envVarServicePutPreviewValueHandler := connect.NewUnaryHandler(
 		EnvVarServicePutPreviewValueProcedure,
 		svc.PutPreviewValue,
@@ -192,6 +217,8 @@ func NewEnvVarServiceHandler(svc EnvVarServiceHandler, opts ...connect.HandlerOp
 			envVarServicePutEnvVarHandler.ServeHTTP(w, r)
 		case EnvVarServiceDeleteEnvVarProcedure:
 			envVarServiceDeleteEnvVarHandler.ServeHTTP(w, r)
+		case EnvVarServiceSetEnvVarUseProcedure:
+			envVarServiceSetEnvVarUseHandler.ServeHTTP(w, r)
 		case EnvVarServicePutPreviewValueProcedure:
 			envVarServicePutPreviewValueHandler.ServeHTTP(w, r)
 		case EnvVarServiceClearPreviewValueProcedure:
@@ -215,6 +242,10 @@ func (UnimplementedEnvVarServiceHandler) PutEnvVar(context.Context, *connect.Req
 
 func (UnimplementedEnvVarServiceHandler) DeleteEnvVar(context.Context, *connect.Request[v1.DeleteEnvVarRequest]) (*connect.Response[v1.DeleteEnvVarResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.envvars.v1.EnvVarService.DeleteEnvVar is not implemented"))
+}
+
+func (UnimplementedEnvVarServiceHandler) SetEnvVarUse(context.Context, *connect.Request[v1.SetEnvVarUseRequest]) (*connect.Response[v1.SetEnvVarUseResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.envvars.v1.EnvVarService.SetEnvVarUse is not implemented"))
 }
 
 func (UnimplementedEnvVarServiceHandler) PutPreviewValue(context.Context, *connect.Request[v1.PutPreviewValueRequest]) (*connect.Response[v1.PutPreviewValueResponse], error) {
