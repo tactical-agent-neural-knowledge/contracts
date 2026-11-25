@@ -36,6 +36,15 @@ message EnvVar {
   bool preview_set = 7;
   repeated string preview_hosts = 8;
   bool preview_in_body = 9;
+  // Who uses it (2026-11-24): "agents", "products" or "both". Agents are the workspace's
+  // agents in their runs; products are the products TANK hosts for the workspace. A value
+  // used by products is applied to every hosted product whose tank.yaml lists the name
+  // under secrets (Secrets Manager agentures/<slug>, by the control plane), and the product
+  // restarts with it. The default for a new name is "both" when a hosted product's
+  // tank.yaml lists it, otherwise "agents".
+  string used_by = 10;
+  // The hosted products whose tank.yaml lists this name, by slug. Filled on a listing.
+  repeated string products = 11;
 }
 
 message ListEnvVarsRequest {
@@ -55,6 +64,9 @@ message PutEnvVarRequest {
   bool secret = 4;
   // True to make a new variable only: the call fails if the name already exists.
   bool create_only = 5;
+  // "agents", "products" or "both". Empty keeps an existing variable's, and gives a new one
+  // the default (EnvVar.used_by).
+  string used_by = 6;
 }
 message PutEnvVarResponse {
   // A secret's value is never echoed.
@@ -68,6 +80,16 @@ message DeleteEnvVarRequest {
   string name = 2;
 }
 message DeleteEnvVarResponse {}
+
+message SetEnvVarUseRequest {
+  string workspace_id = 1;
+  string name = 2;
+  // "agents", "products" or "both".
+  string used_by = 3;
+}
+message SetEnvVarUseResponse {
+  EnvVar var = 1;
+}
 
 message PutPreviewValueRequest {
   string workspace_id = 1;
@@ -93,6 +115,8 @@ service EnvVarService {
   rpc ListEnvVars(ListEnvVarsRequest) returns (ListEnvVarsResponse);
   rpc PutEnvVar(PutEnvVarRequest) returns (PutEnvVarResponse);
   rpc DeleteEnvVar(DeleteEnvVarRequest) returns (DeleteEnvVarResponse);
+  // Changes who uses a variable without its value (a secret's cannot be read back).
+  rpc SetEnvVarUse(SetEnvVarUseRequest) returns (SetEnvVarUseResponse);
   // A secret's preview value and the hosts it may be sent to, owners and admins only.
   rpc PutPreviewValue(PutPreviewValueRequest) returns (PutPreviewValueResponse);
   rpc ClearPreviewValue(ClearPreviewValueRequest) returns (ClearPreviewValueResponse);

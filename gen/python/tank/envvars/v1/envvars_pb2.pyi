@@ -7,7 +7,7 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class EnvVar(_message.Message):
-    __slots__ = ("name", "value", "secret", "is_set", "updated_at", "updated_by", "preview_set", "preview_hosts", "preview_in_body")
+    __slots__ = ("name", "value", "secret", "is_set", "updated_at", "updated_by", "preview_set", "preview_hosts", "preview_in_body", "used_by", "products")
     NAME_FIELD_NUMBER: _ClassVar[int]
     VALUE_FIELD_NUMBER: _ClassVar[int]
     SECRET_FIELD_NUMBER: _ClassVar[int]
@@ -17,6 +17,8 @@ class EnvVar(_message.Message):
     PREVIEW_SET_FIELD_NUMBER: _ClassVar[int]
     PREVIEW_HOSTS_FIELD_NUMBER: _ClassVar[int]
     PREVIEW_IN_BODY_FIELD_NUMBER: _ClassVar[int]
+    USED_BY_FIELD_NUMBER: _ClassVar[int]
+    PRODUCTS_FIELD_NUMBER: _ClassVar[int]
     name: str
     value: str
     secret: bool
@@ -26,7 +28,9 @@ class EnvVar(_message.Message):
     preview_set: bool
     preview_hosts: _containers.RepeatedScalarFieldContainer[str]
     preview_in_body: bool
-    def __init__(self, name: _Optional[str] = ..., value: _Optional[str] = ..., secret: bool = ..., is_set: bool = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., preview_set: bool = ..., preview_hosts: _Optional[_Iterable[str]] = ..., preview_in_body: bool = ...) -> None: ...
+    used_by: str
+    products: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, name: _Optional[str] = ..., value: _Optional[str] = ..., secret: bool = ..., is_set: bool = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., preview_set: bool = ..., preview_hosts: _Optional[_Iterable[str]] = ..., preview_in_body: bool = ..., used_by: _Optional[str] = ..., products: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class ListEnvVarsRequest(_message.Message):
     __slots__ = ("workspace_id",)
@@ -41,18 +45,20 @@ class ListEnvVarsResponse(_message.Message):
     def __init__(self, vars: _Optional[_Iterable[_Union[EnvVar, _Mapping]]] = ...) -> None: ...
 
 class PutEnvVarRequest(_message.Message):
-    __slots__ = ("workspace_id", "name", "value", "secret", "create_only")
+    __slots__ = ("workspace_id", "name", "value", "secret", "create_only", "used_by")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
     VALUE_FIELD_NUMBER: _ClassVar[int]
     SECRET_FIELD_NUMBER: _ClassVar[int]
     CREATE_ONLY_FIELD_NUMBER: _ClassVar[int]
+    USED_BY_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     name: str
     value: str
     secret: bool
     create_only: bool
-    def __init__(self, workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., value: _Optional[str] = ..., secret: bool = ..., create_only: bool = ...) -> None: ...
+    used_by: str
+    def __init__(self, workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., value: _Optional[str] = ..., secret: bool = ..., create_only: bool = ..., used_by: _Optional[str] = ...) -> None: ...
 
 class PutEnvVarResponse(_message.Message):
     __slots__ = ("var", "created")
@@ -73,6 +79,22 @@ class DeleteEnvVarRequest(_message.Message):
 class DeleteEnvVarResponse(_message.Message):
     __slots__ = ()
     def __init__(self) -> None: ...
+
+class SetEnvVarUseRequest(_message.Message):
+    __slots__ = ("workspace_id", "name", "used_by")
+    WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    USED_BY_FIELD_NUMBER: _ClassVar[int]
+    workspace_id: str
+    name: str
+    used_by: str
+    def __init__(self, workspace_id: _Optional[str] = ..., name: _Optional[str] = ..., used_by: _Optional[str] = ...) -> None: ...
+
+class SetEnvVarUseResponse(_message.Message):
+    __slots__ = ("var",)
+    VAR_FIELD_NUMBER: _ClassVar[int]
+    var: EnvVar
+    def __init__(self, var: _Optional[_Union[EnvVar, _Mapping]] = ...) -> None: ...
 
 class PutPreviewValueRequest(_message.Message):
     __slots__ = ("workspace_id", "name", "value", "hosts", "in_body")
