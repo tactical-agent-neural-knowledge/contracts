@@ -1114,7 +1114,7 @@ class EnsureAgentTreadResponse(_message.Message):
     def __init__(self, channel_id: _Optional[str] = ..., created: bool = ...) -> None: ...
 
 class RepoDelivery(_message.Message):
-    __slots__ = ("repo", "mode", "switch_pull_request_url", "switch_status", "reason", "has_report_token", "report_url", "live_check_url", "tank_runners_available", "tank_runners_reason", "updated_at", "updated_by", "follows_default", "checks_mode", "checks_follows_default")
+    __slots__ = ("repo", "mode", "switch_pull_request_url", "switch_status", "reason", "has_report_token", "report_url", "live_check_url", "tank_runners_available", "tank_runners_reason", "updated_at", "updated_by", "follows_default", "checks_mode", "checks_follows_default", "checks_report")
     REPO_FIELD_NUMBER: _ClassVar[int]
     MODE_FIELD_NUMBER: _ClassVar[int]
     SWITCH_PULL_REQUEST_URL_FIELD_NUMBER: _ClassVar[int]
@@ -1130,6 +1130,7 @@ class RepoDelivery(_message.Message):
     FOLLOWS_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     CHECKS_MODE_FIELD_NUMBER: _ClassVar[int]
     CHECKS_FOLLOWS_DEFAULT_FIELD_NUMBER: _ClassVar[int]
+    CHECKS_REPORT_FIELD_NUMBER: _ClassVar[int]
     repo: str
     mode: DeliveryMode
     switch_pull_request_url: str
@@ -1145,7 +1146,52 @@ class RepoDelivery(_message.Message):
     follows_default: bool
     checks_mode: ChecksMode
     checks_follows_default: bool
-    def __init__(self, repo: _Optional[str] = ..., mode: _Optional[_Union[DeliveryMode, str]] = ..., switch_pull_request_url: _Optional[str] = ..., switch_status: _Optional[str] = ..., reason: _Optional[str] = ..., has_report_token: bool = ..., report_url: _Optional[str] = ..., live_check_url: _Optional[str] = ..., tank_runners_available: bool = ..., tank_runners_reason: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., follows_default: bool = ..., checks_mode: _Optional[_Union[ChecksMode, str]] = ..., checks_follows_default: bool = ...) -> None: ...
+    checks_report: ChecksReport
+    def __init__(self, repo: _Optional[str] = ..., mode: _Optional[_Union[DeliveryMode, str]] = ..., switch_pull_request_url: _Optional[str] = ..., switch_status: _Optional[str] = ..., reason: _Optional[str] = ..., has_report_token: bool = ..., report_url: _Optional[str] = ..., live_check_url: _Optional[str] = ..., tank_runners_available: bool = ..., tank_runners_reason: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by: _Optional[str] = ..., follows_default: bool = ..., checks_mode: _Optional[_Union[ChecksMode, str]] = ..., checks_follows_default: bool = ..., checks_report: _Optional[_Union[ChecksReport, _Mapping]] = ...) -> None: ...
+
+class ChecksReport(_message.Message):
+    __slots__ = ("runs", "passed", "p50_ms", "p95_ms", "wait_p50_ms", "wait_p95_ms", "flaky", "image", "image_source", "compare_tank_ms", "compare_own_ci_ms", "compare_sha", "cache_hits", "cache_misses", "last_at")
+    RUNS_FIELD_NUMBER: _ClassVar[int]
+    PASSED_FIELD_NUMBER: _ClassVar[int]
+    P50_MS_FIELD_NUMBER: _ClassVar[int]
+    P95_MS_FIELD_NUMBER: _ClassVar[int]
+    WAIT_P50_MS_FIELD_NUMBER: _ClassVar[int]
+    WAIT_P95_MS_FIELD_NUMBER: _ClassVar[int]
+    FLAKY_FIELD_NUMBER: _ClassVar[int]
+    IMAGE_FIELD_NUMBER: _ClassVar[int]
+    IMAGE_SOURCE_FIELD_NUMBER: _ClassVar[int]
+    COMPARE_TANK_MS_FIELD_NUMBER: _ClassVar[int]
+    COMPARE_OWN_CI_MS_FIELD_NUMBER: _ClassVar[int]
+    COMPARE_SHA_FIELD_NUMBER: _ClassVar[int]
+    CACHE_HITS_FIELD_NUMBER: _ClassVar[int]
+    CACHE_MISSES_FIELD_NUMBER: _ClassVar[int]
+    LAST_AT_FIELD_NUMBER: _ClassVar[int]
+    runs: int
+    passed: int
+    p50_ms: int
+    p95_ms: int
+    wait_p50_ms: int
+    wait_p95_ms: int
+    flaky: _containers.RepeatedCompositeFieldContainer[FlakyStep]
+    image: str
+    image_source: str
+    compare_tank_ms: int
+    compare_own_ci_ms: int
+    compare_sha: str
+    cache_hits: int
+    cache_misses: int
+    last_at: _timestamp_pb2.Timestamp
+    def __init__(self, runs: _Optional[int] = ..., passed: _Optional[int] = ..., p50_ms: _Optional[int] = ..., p95_ms: _Optional[int] = ..., wait_p50_ms: _Optional[int] = ..., wait_p95_ms: _Optional[int] = ..., flaky: _Optional[_Iterable[_Union[FlakyStep, _Mapping]]] = ..., image: _Optional[str] = ..., image_source: _Optional[str] = ..., compare_tank_ms: _Optional[int] = ..., compare_own_ci_ms: _Optional[int] = ..., compare_sha: _Optional[str] = ..., cache_hits: _Optional[int] = ..., cache_misses: _Optional[int] = ..., last_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class FlakyStep(_message.Message):
+    __slots__ = ("step", "flaky", "runs")
+    STEP_FIELD_NUMBER: _ClassVar[int]
+    FLAKY_FIELD_NUMBER: _ClassVar[int]
+    RUNS_FIELD_NUMBER: _ClassVar[int]
+    step: str
+    flaky: int
+    runs: int
+    def __init__(self, step: _Optional[str] = ..., flaky: _Optional[int] = ..., runs: _Optional[int] = ...) -> None: ...
 
 class ListRepoDeliveryRequest(_message.Message):
     __slots__ = ("workspace_id",)
@@ -1170,7 +1216,7 @@ class ListRepoDeliveryResponse(_message.Message):
     def __init__(self, repos: _Optional[_Iterable[_Union[RepoDelivery, _Mapping]]] = ..., workspace_default: _Optional[_Union[DeliveryMode, str]] = ..., workspace_reason: _Optional[str] = ..., tank_runners_available: bool = ..., tank_runners_reason: _Optional[str] = ..., workspace_checks_mode: _Optional[_Union[ChecksMode, str]] = ...) -> None: ...
 
 class SetRepoDeliveryRequest(_message.Message):
-    __slots__ = ("workspace_id", "repo", "mode", "rotate_report_token", "use_default", "checks_mode", "checks_use_default")
+    __slots__ = ("workspace_id", "repo", "mode", "rotate_report_token", "use_default", "checks_mode", "checks_use_default", "set_checks_image", "checks_image")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     REPO_FIELD_NUMBER: _ClassVar[int]
     MODE_FIELD_NUMBER: _ClassVar[int]
@@ -1178,6 +1224,8 @@ class SetRepoDeliveryRequest(_message.Message):
     USE_DEFAULT_FIELD_NUMBER: _ClassVar[int]
     CHECKS_MODE_FIELD_NUMBER: _ClassVar[int]
     CHECKS_USE_DEFAULT_FIELD_NUMBER: _ClassVar[int]
+    SET_CHECKS_IMAGE_FIELD_NUMBER: _ClassVar[int]
+    CHECKS_IMAGE_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     repo: str
     mode: DeliveryMode
@@ -1185,7 +1233,9 @@ class SetRepoDeliveryRequest(_message.Message):
     use_default: bool
     checks_mode: ChecksMode
     checks_use_default: bool
-    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., mode: _Optional[_Union[DeliveryMode, str]] = ..., rotate_report_token: bool = ..., use_default: bool = ..., checks_mode: _Optional[_Union[ChecksMode, str]] = ..., checks_use_default: bool = ...) -> None: ...
+    set_checks_image: bool
+    checks_image: str
+    def __init__(self, workspace_id: _Optional[str] = ..., repo: _Optional[str] = ..., mode: _Optional[_Union[DeliveryMode, str]] = ..., rotate_report_token: bool = ..., use_default: bool = ..., checks_mode: _Optional[_Union[ChecksMode, str]] = ..., checks_use_default: bool = ..., set_checks_image: bool = ..., checks_image: _Optional[str] = ...) -> None: ...
 
 class SetRepoDeliveryResponse(_message.Message):
     __slots__ = ("repo", "report_token")
