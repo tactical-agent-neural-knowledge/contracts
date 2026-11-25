@@ -1785,6 +1785,9 @@ service ControlService {
   rpc ListWorkspaceRepoDelivery(ListWorkspaceRepoDeliveryRequest) returns (ListWorkspaceRepoDeliveryResponse);
   rpc SetWorkspaceRepoDelivery(SetWorkspaceRepoDeliveryRequest) returns (SetWorkspaceRepoDeliveryResponse);
   rpc SetWorkspaceDeliveryDefault(SetWorkspaceDeliveryDefaultRequest) returns (SetWorkspaceDeliveryDefaultResponse);
+  // The workspace's Auto default: the messaging core authorizes (admins), the control plane
+  // stores it, applies it in ResolvePolicy and decides what waits in the Treads that follow it.
+  rpc SetWorkspaceAutoDefault(SetWorkspaceAutoDefaultRequest) returns (SetWorkspaceAutoDefaultResponse);
   rpc ListWorkspacePredictedWork(ListWorkspacePredictedWorkRequest) returns (ListWorkspacePredictedWorkResponse);
   rpc DismissWorkspacePredictedWork(DismissWorkspacePredictedWorkRequest) returns (DismissWorkspacePredictedWorkResponse);
   rpc TakeWorkspacePredictedWork(TakeWorkspacePredictedWorkRequest) returns (TakeWorkspacePredictedWorkResponse);
@@ -2610,6 +2613,11 @@ message SetWorkspaceDeliveryDefaultRequest {
   string actor_id = 2;
 }
 message SetWorkspaceDeliveryDefaultResponse { tank.agent.v1.SetWorkspaceDeliveryResponse response = 1; }
+message SetWorkspaceAutoDefaultRequest {
+  tank.agent.v1.SetWorkspaceAutoRequest request = 1;
+  string actor_id = 2;
+}
+message SetWorkspaceAutoDefaultResponse { tank.agent.v1.SetWorkspaceAutoResponse response = 1; }
 message ListWorkspacePredictedWorkRequest {
   tank.agent.v1.ListPredictedWorkRequest request = 1;
   bool addon = 2;
