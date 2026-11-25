@@ -909,6 +909,42 @@ message RepoDelivery {
   // that is the workspace's choice it follows rather than its own.
   ChecksMode checks_mode = 14;
   bool checks_follows_default = 15;
+  // How TANK's checks have gone on this repository lately (the last 30 days); unset when
+  // TANK has not checked it.
+  ChecksReport checks_report = 16;
+}
+
+// ChecksReport is a repository's record of TANK's own checks (TANK-native checks 1c/1d,
+// 2026-11-25), computed by the control plane from every job it ran. Times are whole jobs,
+// from the record starting to its verdict.
+message ChecksReport {
+  int32 runs = 1;          // full check jobs in the window
+  int32 passed = 2;
+  int32 p50_ms = 3;
+  int32 p95_ms = 4;
+  // Time a job waited for its machine before it began, p50 and p95.
+  int32 wait_p50_ms = 5;
+  int32 wait_p95_ms = 6;
+  // Steps that failed and then passed on a second run of the same commit.
+  repeated FlakyStep flaky = 7;
+  // The image the checks run in, and whether it was pinned from the first green run
+  // ("first_green") or set by a person ("person"); empty follows TANK's current image.
+  string image = 8;
+  string image_source = 9;
+  // The latest commit both TANK and the repository's own CI finished, for "TANK 48s ·
+  // GitHub 7m 12s"; zero when there is none.
+  int32 compare_tank_ms = 10;
+  int32 compare_own_ci_ms = 11;
+  string compare_sha = 12;
+  int32 cache_hits = 13;
+  int32 cache_misses = 14;
+  google.protobuf.Timestamp last_at = 15;
+}
+
+message FlakyStep {
+  string step = 1;
+  int32 flaky = 2;  // runs it was flaky in
+  int32 runs = 3;   // runs it ran in
 }
 
 message ListRepoDeliveryRequest { string workspace_id = 1; }
@@ -939,6 +975,11 @@ message SetRepoDeliveryRequest {
   ChecksMode checks_mode = 6;
   // Drop the repository's own checks choice: it follows the workspace's again.
   bool checks_use_default = 7;
+  // The image TANK's checks run in: set_checks_image with checks_image pins it (an image of
+  // TANK's own sandbox repositories only); set_checks_image with "" goes back to pinning
+  // from the next green run.
+  bool set_checks_image = 8;
+  string checks_image = 9;
 }
 message SetRepoDeliveryResponse {
   RepoDelivery repo = 1;
