@@ -149,9 +149,26 @@ message StartTaskResponse {
   Task task = 1;
 }
 
+// Why a person said it looks right, picked with one tap (2026-11-26). The words people see
+// are the clients'; the server keeps the reasons on the check (task_checks.reasons) for
+// TANK Neural's training files.
+enum CheckReason {
+  CHECK_REASON_UNSPECIFIED = 0;
+  // It does what was asked.
+  CHECK_REASON_AS_ASKED = 1;
+  // It came quickly.
+  CHECK_REASON_FAST = 2;
+  // It looks good.
+  CHECK_REASON_LOOKS_GREAT = 3;
+  // The person tried it on their phone.
+  CHECK_REASON_WORKS_ON_PHONE = 4;
+}
+
 // Looks right: READY_TO_CHECK → DONE, by anyone in the Tread.
 message ConfirmTaskRequest {
   string task_id = 1;
+  // Optional one-tap reasons; unspecified and repeats are dropped.
+  repeated CheckReason reasons = 2;
 }
 message ConfirmTaskResponse {
   Task task = 1;

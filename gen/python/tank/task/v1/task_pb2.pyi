@@ -18,6 +18,14 @@ class TaskStage(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     TASK_STAGE_STUCK: _ClassVar[TaskStage]
     TASK_STAGE_CANCELLED: _ClassVar[TaskStage]
 
+class CheckReason(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    CHECK_REASON_UNSPECIFIED: _ClassVar[CheckReason]
+    CHECK_REASON_AS_ASKED: _ClassVar[CheckReason]
+    CHECK_REASON_FAST: _ClassVar[CheckReason]
+    CHECK_REASON_LOOKS_GREAT: _ClassVar[CheckReason]
+    CHECK_REASON_WORKS_ON_PHONE: _ClassVar[CheckReason]
+
 class TaskRunEvent(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     TASK_RUN_EVENT_UNSPECIFIED: _ClassVar[TaskRunEvent]
@@ -34,6 +42,11 @@ TASK_STAGE_READY_TO_CHECK: TaskStage
 TASK_STAGE_DONE: TaskStage
 TASK_STAGE_STUCK: TaskStage
 TASK_STAGE_CANCELLED: TaskStage
+CHECK_REASON_UNSPECIFIED: CheckReason
+CHECK_REASON_AS_ASKED: CheckReason
+CHECK_REASON_FAST: CheckReason
+CHECK_REASON_LOOKS_GREAT: CheckReason
+CHECK_REASON_WORKS_ON_PHONE: CheckReason
 TASK_RUN_EVENT_UNSPECIFIED: TaskRunEvent
 TASK_RUN_EVENT_STARTED: TaskRunEvent
 TASK_RUN_EVENT_WAITING: TaskRunEvent
@@ -227,10 +240,12 @@ class StartTaskResponse(_message.Message):
     def __init__(self, task: _Optional[_Union[Task, _Mapping]] = ...) -> None: ...
 
 class ConfirmTaskRequest(_message.Message):
-    __slots__ = ("task_id",)
+    __slots__ = ("task_id", "reasons")
     TASK_ID_FIELD_NUMBER: _ClassVar[int]
+    REASONS_FIELD_NUMBER: _ClassVar[int]
     task_id: str
-    def __init__(self, task_id: _Optional[str] = ...) -> None: ...
+    reasons: _containers.RepeatedScalarFieldContainer[CheckReason]
+    def __init__(self, task_id: _Optional[str] = ..., reasons: _Optional[_Iterable[_Union[CheckReason, str]]] = ...) -> None: ...
 
 class ConfirmTaskResponse(_message.Message):
     __slots__ = ("task",)
