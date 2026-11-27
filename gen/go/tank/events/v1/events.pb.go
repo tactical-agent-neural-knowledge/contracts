@@ -1360,7 +1360,8 @@ func (x *NotificationsRead) GetNotificationIds() []string {
 	return nil
 }
 
-// agent.run.updated on evt.{ws}.thread.{root}: state, status message or cost changed.
+// agent.run.updated on evt.{ws}.thread.{root}: sent when the run is created and whenever its
+// state, status message or cost changes.
 type AgentRunUpdated struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Run           *v16.Run               `protobuf:"bytes,1,opt,name=run,proto3" json:"run,omitempty"`

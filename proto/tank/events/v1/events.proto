@@ -147,7 +147,8 @@ message MessageEphemeral {
 message NotificationsRead {
   repeated string notification_ids = 1; // empty = every notification in the workspace
 }
-// agent.run.updated on evt.{ws}.thread.{root}: state, status message or cost changed.
+// agent.run.updated on evt.{ws}.thread.{root}: sent when the run is created and whenever its
+// state, status message or cost changes.
 message AgentRunUpdated {
   tank.agent.v1.Run run = 1;
 }
