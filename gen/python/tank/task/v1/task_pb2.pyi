@@ -17,6 +17,22 @@ class TaskStage(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     TASK_STAGE_DONE: _ClassVar[TaskStage]
     TASK_STAGE_STUCK: _ClassVar[TaskStage]
     TASK_STAGE_CANCELLED: _ClassVar[TaskStage]
+    TASK_STAGE_WAITING_DEPLOY: _ClassVar[TaskStage]
+
+class TaskSurface(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    TASK_SURFACE_UNSPECIFIED: _ClassVar[TaskSurface]
+    TASK_SURFACE_WEB: _ClassVar[TaskSurface]
+    TASK_SURFACE_MOBILE: _ClassVar[TaskSurface]
+    TASK_SURFACE_API: _ClassVar[TaskSurface]
+    TASK_SURFACE_DESKTOP: _ClassVar[TaskSurface]
+
+class SurfaceState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    SURFACE_STATE_UNSPECIFIED: _ClassVar[SurfaceState]
+    SURFACE_STATE_WAITING_DEPLOY: _ClassVar[SurfaceState]
+    SURFACE_STATE_READY: _ClassVar[SurfaceState]
+    SURFACE_STATE_CHECKED: _ClassVar[SurfaceState]
 
 class CheckReason(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -35,6 +51,7 @@ class TaskRunEvent(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     TASK_RUN_EVENT_READY: _ClassVar[TaskRunEvent]
     TASK_RUN_EVENT_STUCK: _ClassVar[TaskRunEvent]
     TASK_RUN_EVENT_DONE: _ClassVar[TaskRunEvent]
+    TASK_RUN_EVENT_SURFACES: _ClassVar[TaskRunEvent]
 TASK_STAGE_UNSPECIFIED: TaskStage
 TASK_STAGE_QUEUED: TaskStage
 TASK_STAGE_IN_PROGRESS: TaskStage
@@ -42,6 +59,16 @@ TASK_STAGE_READY_TO_CHECK: TaskStage
 TASK_STAGE_DONE: TaskStage
 TASK_STAGE_STUCK: TaskStage
 TASK_STAGE_CANCELLED: TaskStage
+TASK_STAGE_WAITING_DEPLOY: TaskStage
+TASK_SURFACE_UNSPECIFIED: TaskSurface
+TASK_SURFACE_WEB: TaskSurface
+TASK_SURFACE_MOBILE: TaskSurface
+TASK_SURFACE_API: TaskSurface
+TASK_SURFACE_DESKTOP: TaskSurface
+SURFACE_STATE_UNSPECIFIED: SurfaceState
+SURFACE_STATE_WAITING_DEPLOY: SurfaceState
+SURFACE_STATE_READY: SurfaceState
+SURFACE_STATE_CHECKED: SurfaceState
 CHECK_REASON_UNSPECIFIED: CheckReason
 CHECK_REASON_AS_ASKED: CheckReason
 CHECK_REASON_FAST: CheckReason
@@ -54,6 +81,25 @@ TASK_RUN_EVENT_PROGRESS: TaskRunEvent
 TASK_RUN_EVENT_READY: TaskRunEvent
 TASK_RUN_EVENT_STUCK: TaskRunEvent
 TASK_RUN_EVENT_DONE: TaskRunEvent
+TASK_RUN_EVENT_SURFACES: TaskRunEvent
+
+class SurfaceCheck(_message.Message):
+    __slots__ = ("surface", "state", "state_at", "waiting_on", "checked_by", "checked_at", "pull_request_url")
+    SURFACE_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    STATE_AT_FIELD_NUMBER: _ClassVar[int]
+    WAITING_ON_FIELD_NUMBER: _ClassVar[int]
+    CHECKED_BY_FIELD_NUMBER: _ClassVar[int]
+    CHECKED_AT_FIELD_NUMBER: _ClassVar[int]
+    PULL_REQUEST_URL_FIELD_NUMBER: _ClassVar[int]
+    surface: TaskSurface
+    state: SurfaceState
+    state_at: _timestamp_pb2.Timestamp
+    waiting_on: str
+    checked_by: str
+    checked_at: _timestamp_pb2.Timestamp
+    pull_request_url: str
+    def __init__(self, surface: _Optional[_Union[TaskSurface, str]] = ..., state: _Optional[_Union[SurfaceState, str]] = ..., state_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., waiting_on: _Optional[str] = ..., checked_by: _Optional[str] = ..., checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., pull_request_url: _Optional[str] = ...) -> None: ...
 
 class ProofCheck(_message.Message):
     __slots__ = ("text", "met")
@@ -94,7 +140,7 @@ class TaskNotify(_message.Message):
     def __init__(self, stage: _Optional[_Union[TaskStage, str]] = ..., user_id: _Optional[str] = ..., from_workspace: bool = ...) -> None: ...
 
 class Task(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "title", "details", "stage", "created_by", "created_at", "updated_at", "stage_at", "run_id", "progress", "proof", "checked_by", "checked_at", "stuck_reason", "notify", "asker_muted", "channel_name", "link", "file_ids", "source_message_id")
+    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "title", "details", "stage", "created_by", "created_at", "updated_at", "stage_at", "run_id", "progress", "proof", "checked_by", "checked_at", "stuck_reason", "notify", "asker_muted", "channel_name", "link", "file_ids", "source_message_id", "surfaces")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -118,6 +164,7 @@ class Task(_message.Message):
     LINK_FIELD_NUMBER: _ClassVar[int]
     FILE_IDS_FIELD_NUMBER: _ClassVar[int]
     SOURCE_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
+    SURFACES_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -141,7 +188,8 @@ class Task(_message.Message):
     link: str
     file_ids: _containers.RepeatedScalarFieldContainer[str]
     source_message_id: str
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., title: _Optional[str] = ..., details: _Optional[str] = ..., stage: _Optional[_Union[TaskStage, str]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stage_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., run_id: _Optional[str] = ..., progress: _Optional[str] = ..., proof: _Optional[_Union[TaskProof, _Mapping]] = ..., checked_by: _Optional[str] = ..., checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stuck_reason: _Optional[str] = ..., notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ..., asker_muted: bool = ..., channel_name: _Optional[str] = ..., link: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ..., source_message_id: _Optional[str] = ...) -> None: ...
+    surfaces: _containers.RepeatedCompositeFieldContainer[SurfaceCheck]
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., title: _Optional[str] = ..., details: _Optional[str] = ..., stage: _Optional[_Union[TaskStage, str]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stage_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., run_id: _Optional[str] = ..., progress: _Optional[str] = ..., proof: _Optional[_Union[TaskProof, _Mapping]] = ..., checked_by: _Optional[str] = ..., checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stuck_reason: _Optional[str] = ..., notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ..., asker_muted: bool = ..., channel_name: _Optional[str] = ..., link: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ..., source_message_id: _Optional[str] = ..., surfaces: _Optional[_Iterable[_Union[SurfaceCheck, _Mapping]]] = ...) -> None: ...
 
 class ListTasksRequest(_message.Message):
     __slots__ = ("workspace_id", "channel_id", "stages", "asked_by", "limit")
@@ -240,12 +288,14 @@ class StartTaskResponse(_message.Message):
     def __init__(self, task: _Optional[_Union[Task, _Mapping]] = ...) -> None: ...
 
 class ConfirmTaskRequest(_message.Message):
-    __slots__ = ("task_id", "reasons")
+    __slots__ = ("task_id", "reasons", "surfaces")
     TASK_ID_FIELD_NUMBER: _ClassVar[int]
     REASONS_FIELD_NUMBER: _ClassVar[int]
+    SURFACES_FIELD_NUMBER: _ClassVar[int]
     task_id: str
     reasons: _containers.RepeatedScalarFieldContainer[CheckReason]
-    def __init__(self, task_id: _Optional[str] = ..., reasons: _Optional[_Iterable[_Union[CheckReason, str]]] = ...) -> None: ...
+    surfaces: _containers.RepeatedScalarFieldContainer[TaskSurface]
+    def __init__(self, task_id: _Optional[str] = ..., reasons: _Optional[_Iterable[_Union[CheckReason, str]]] = ..., surfaces: _Optional[_Iterable[_Union[TaskSurface, str]]] = ...) -> None: ...
 
 class ConfirmTaskResponse(_message.Message):
     __slots__ = ("task",)
@@ -352,7 +402,7 @@ class SendTaskResponse(_message.Message):
     def __init__(self, sent_user_ids: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class RecordTaskRunRequest(_message.Message):
-    __slots__ = ("run_id", "task_id", "event", "ask", "proof", "reason", "progress", "checked_by")
+    __slots__ = ("run_id", "task_id", "event", "ask", "proof", "reason", "progress", "checked_by", "surfaces")
     RUN_ID_FIELD_NUMBER: _ClassVar[int]
     TASK_ID_FIELD_NUMBER: _ClassVar[int]
     EVENT_FIELD_NUMBER: _ClassVar[int]
@@ -361,6 +411,7 @@ class RecordTaskRunRequest(_message.Message):
     REASON_FIELD_NUMBER: _ClassVar[int]
     PROGRESS_FIELD_NUMBER: _ClassVar[int]
     CHECKED_BY_FIELD_NUMBER: _ClassVar[int]
+    SURFACES_FIELD_NUMBER: _ClassVar[int]
     run_id: str
     task_id: str
     event: TaskRunEvent
@@ -369,7 +420,8 @@ class RecordTaskRunRequest(_message.Message):
     reason: str
     progress: str
     checked_by: str
-    def __init__(self, run_id: _Optional[str] = ..., task_id: _Optional[str] = ..., event: _Optional[_Union[TaskRunEvent, str]] = ..., ask: _Optional[str] = ..., proof: _Optional[_Union[TaskProof, _Mapping]] = ..., reason: _Optional[str] = ..., progress: _Optional[str] = ..., checked_by: _Optional[str] = ...) -> None: ...
+    surfaces: _containers.RepeatedCompositeFieldContainer[SurfaceCheck]
+    def __init__(self, run_id: _Optional[str] = ..., task_id: _Optional[str] = ..., event: _Optional[_Union[TaskRunEvent, str]] = ..., ask: _Optional[str] = ..., proof: _Optional[_Union[TaskProof, _Mapping]] = ..., reason: _Optional[str] = ..., progress: _Optional[str] = ..., checked_by: _Optional[str] = ..., surfaces: _Optional[_Iterable[_Union[SurfaceCheck, _Mapping]]] = ...) -> None: ...
 
 class RecordTaskRunResponse(_message.Message):
     __slots__ = ("task",)

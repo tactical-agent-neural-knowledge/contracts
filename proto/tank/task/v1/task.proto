@@ -17,6 +17,46 @@ enum TaskStage {
   TASK_STAGE_DONE = 4;
   TASK_STAGE_STUCK = 5;
   TASK_STAGE_CANCELLED = 6;
+  // Every surface a person can check is either checked or waiting on a deploy (a TestFlight
+  // build, 2026-11-27); none is ready now. Moves back to READY_TO_CHECK when a waiting
+  // surface goes live, and to DONE when the last one is checked. Never a spinner: the task
+  // says what it waits on (SurfaceCheck.waiting_on).
+  TASK_STAGE_WAITING_DEPLOY = 7;
+}
+
+// Where a task's change can be tried. A task has only the surfaces it touched: none for work
+// that is not code (an answer, a live check), one, or several. Order is display order.
+enum TaskSurface {
+  TASK_SURFACE_UNSPECIFIED = 0;
+  TASK_SURFACE_WEB = 1;
+  TASK_SURFACE_MOBILE = 2;
+  TASK_SURFACE_API = 3;
+  TASK_SURFACE_DESKTOP = 4;
+}
+
+enum SurfaceState {
+  SURFACE_STATE_UNSPECIFIED = 0;
+  // The change is merged but not out yet (mobile: building and waiting on TestFlight). Not
+  // checkable.
+  SURFACE_STATE_WAITING_DEPLOY = 1;
+  // Live where a person can try it; "Ready to check on web".
+  SURFACE_STATE_READY = 2;
+  // A person checked this surface.
+  SURFACE_STATE_CHECKED = 3;
+}
+
+// One surface of a task and where it stands. Surfaces clear independently: checking web does
+// not wait for mobile.
+message SurfaceCheck {
+  TaskSurface surface = 1;
+  SurfaceState state = 2;
+  google.protobuf.Timestamp state_at = 3; // when it entered its state
+  // WAITING_DEPLOY: one plain phrase for what it waits on ("TestFlight"); empty otherwise.
+  string waiting_on = 4;
+  string checked_by = 5; // CHECKED
+  google.protobuf.Timestamp checked_at = 6;
+  // The pull request that changed this surface, so a card can link the right one.
+  string pull_request_url = 7;
 }
 
 // One line of the checklist against the ask, with whether TANK's record says it was met.
@@ -88,6 +128,11 @@ message Task {
   // The message this task was made from (a reaction on it), empty for a task somebody typed.
   // Its thread is the task's thread, so nothing is posted twice.
   string source_message_id = 23;
+  // Per-surface readiness, only the surfaces the task touched, in TaskSurface order. Empty
+  // for a task with no surface to check (not code, or nothing reported): it is checked as a
+  // whole through stage, as before. stage is derived: READY_TO_CHECK while any surface is
+  // READY, else WAITING_DEPLOY while any waits, else DONE once every one is CHECKED.
+  repeated SurfaceCheck surfaces = 24;
 }
 
 
@@ -169,6 +214,10 @@ message ConfirmTaskRequest {
   string task_id = 1;
   // Optional one-tap reasons; unspecified and repeats are dropped.
   repeated CheckReason reasons = 2;
+  // Surfaces being checked off. Empty = every surface that is READY now (or the whole task
+  // when it has no surfaces). A surface that is not READY is refused for the whole call.
+  // Surfaces still waiting on a deploy stay waiting; the task is DONE only when all are checked.
+  repeated TaskSurface surfaces = 3;
 }
 message ConfirmTaskResponse {
   Task task = 1;
@@ -254,6 +303,10 @@ enum TaskRunEvent {
   // approver), or work that changed nothing to approve (an answer, a live check, a
   // read-only ask). → DONE, with proof.
   TASK_RUN_EVENT_DONE = 6;
+  // The surfaces in RecordTaskRunRequest.surfaces changed state (2026-11-27): a mobile build
+  // reached TestFlight (WAITING_DEPLOY → READY), or a surface was found to be waiting on a
+  // deploy. Moves the task between READY_TO_CHECK and WAITING_DEPLOY; never to DONE.
+  TASK_RUN_EVENT_SURFACES = 7;
 }
 
 // Control plane only: the run's own token or the control plane's bot token with
@@ -267,6 +320,9 @@ message RecordTaskRunRequest {
   string reason = 6;  // STUCK: one sentence a person reads
   string progress = 7;
   string checked_by = 8; // DONE: the person whose approval was the check; empty when nothing needed one
+  // READY and SURFACES: the state of each surface the task touched. Surfaces left out keep
+  // their state. A READY with none leaves the task a whole-task check.
+  repeated SurfaceCheck surfaces = 9;
 }
 message RecordTaskRunResponse {
   Task task = 1;
