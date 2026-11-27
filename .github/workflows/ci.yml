@@ -1,7 +1,9 @@
 name: ci
 
+# The checks (buf lint, breaking, generated code, builds) and the secret scan run in TANK
+# (.tank/checks.yaml, the "TANK checks" check run). This file only publishes the TypeScript
+# package, with the workflow's own GitHub token.
 on:
-  pull_request:
   push:
     branches: [main]
     tags: ["v*"]
@@ -14,47 +16,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # breaking check compares against main
-      - uses: bufbuild/buf-setup-action@v1
-        with:
-          github_token: ${{ github.token }}
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache: true
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - run: buf lint
-      # The check that makes the polyrepo safe: a wire break here would be a
-      # production incident in web/mobile/agent-runner, so it is caught at the source.
-      # actions/checkout leaves PRs on a detached merge commit with no local
-      # "main" ref, so materialize it from origin before buf reads .git.
-      - name: breaking change check
-        if: github.event_name == 'pull_request'
-        run: |
-          git fetch --no-tags origin main:main
-          buf breaking --against ".git#branch=main"
-      - name: generated code is current
-        run: |
-          make tools
-          buf generate
-          if ! git diff --exit-code --stat gen/; then
-            echo "::error::gen/ is stale. Run 'make gen' and commit the result."; exit 1
-          fi
-      - run: go build ./...
-      - name: typescript compiles
-        working-directory: gen/ts
-        run: npm install --no-audit --no-fund && npm run build
-
   publish-ts:
     if: github.event_name == 'push'
-    needs: check
     runs-on: ubuntu-latest
     permissions:
       contents: read

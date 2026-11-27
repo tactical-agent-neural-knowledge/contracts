@@ -9,8 +9,8 @@ python 29.3). Go 1.26 module for `gen/go`; npm package in `gen/ts` built with ts
 ## CI / deploy path
 | Workflow | Trigger | Does | Verified by |
 |---|---|---|---|
-| `ci.yml` check | PR, main, tags | buf lint, **buf breaking vs main** (PRs), gen is current, go build, tsc | green run |
-| `ci.yml` publish-ts | main, `v*` tags | publishes `@tactical-agent-neural-knowledge/contracts` canary / release to GitHub Packages | package version visible in the org's Packages |
+| TANK checks (`.tank/checks.yaml`, no workflow) | every push and PR from the org | buf lint, buf breaking vs main, gen is current, go build, tsc, gitleaks, run by TANK (agent-control internal/pushchecks); a fork's PR runs only when its author is an org member | the "TANK checks" check run is green |
+| `ci.yml` publish-ts | main, `v*` tags | publishes `@tactical-agent-neural-knowledge/contracts` canary / release to GitHub Packages (no longer waits for the checks: TANK runs them beside it) | package version visible in the org's Packages |
 
 ## Command vocabulary
 | Intent | Command |
