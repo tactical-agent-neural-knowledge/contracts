@@ -1640,6 +1640,26 @@ class OpenPullRequestResponse(_message.Message):
     refused: GuardrailRefusal
     def __init__(self, pr_url: _Optional[str] = ..., pr_number: _Optional[int] = ..., refused: _Optional[_Union[GuardrailRefusal, _Mapping]] = ...) -> None: ...
 
+class ClosePullRequestRequest(_message.Message):
+    __slots__ = ("repo", "pr_number", "comment")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    PR_NUMBER_FIELD_NUMBER: _ClassVar[int]
+    COMMENT_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    pr_number: int
+    comment: str
+    def __init__(self, repo: _Optional[str] = ..., pr_number: _Optional[int] = ..., comment: _Optional[str] = ...) -> None: ...
+
+class ClosePullRequestResponse(_message.Message):
+    __slots__ = ("pr_url", "state", "refused")
+    PR_URL_FIELD_NUMBER: _ClassVar[int]
+    STATE_FIELD_NUMBER: _ClassVar[int]
+    REFUSED_FIELD_NUMBER: _ClassVar[int]
+    pr_url: str
+    state: str
+    refused: GuardrailRefusal
+    def __init__(self, pr_url: _Optional[str] = ..., state: _Optional[str] = ..., refused: _Optional[_Union[GuardrailRefusal, _Mapping]] = ...) -> None: ...
+
 class GuardrailRefusal(_message.Message):
     __slots__ = ("guardrail_id", "text", "reason")
     GUARDRAIL_ID_FIELD_NUMBER: _ClassVar[int]
