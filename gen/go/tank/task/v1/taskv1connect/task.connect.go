@@ -67,6 +67,8 @@ const (
 	TaskServiceRecordTaskRunProcedure = "/tank.task.v1.TaskService/RecordTaskRun"
 	// TaskServiceSendTaskProcedure is the fully-qualified name of the TaskService's SendTask RPC.
 	TaskServiceSendTaskProcedure = "/tank.task.v1.TaskService/SendTask"
+	// TaskServiceRenameTaskProcedure is the fully-qualified name of the TaskService's RenameTask RPC.
+	TaskServiceRenameTaskProcedure = "/tank.task.v1.TaskService/RenameTask"
 )
 
 // TaskServiceClient is a client for the tank.task.v1.TaskService service.
@@ -85,6 +87,7 @@ type TaskServiceClient interface {
 	SetTaskSettings(context.Context, *connect.Request[v1.SetTaskSettingsRequest]) (*connect.Response[v1.SetTaskSettingsResponse], error)
 	RecordTaskRun(context.Context, *connect.Request[v1.RecordTaskRunRequest]) (*connect.Response[v1.RecordTaskRunResponse], error)
 	SendTask(context.Context, *connect.Request[v1.SendTaskRequest]) (*connect.Response[v1.SendTaskResponse], error)
+	RenameTask(context.Context, *connect.Request[v1.RenameTaskRequest]) (*connect.Response[v1.RenameTaskResponse], error)
 }
 
 // NewTaskServiceClient constructs a client for the tank.task.v1.TaskService service. By default, it
@@ -182,6 +185,12 @@ func NewTaskServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(taskServiceMethods.ByName("SendTask")),
 			connect.WithClientOptions(opts...),
 		),
+		renameTask: connect.NewClient[v1.RenameTaskRequest, v1.RenameTaskResponse](
+			httpClient,
+			baseURL+TaskServiceRenameTaskProcedure,
+			connect.WithSchema(taskServiceMethods.ByName("RenameTask")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -201,6 +210,7 @@ type taskServiceClient struct {
 	setTaskSettings       *connect.Client[v1.SetTaskSettingsRequest, v1.SetTaskSettingsResponse]
 	recordTaskRun         *connect.Client[v1.RecordTaskRunRequest, v1.RecordTaskRunResponse]
 	sendTask              *connect.Client[v1.SendTaskRequest, v1.SendTaskResponse]
+	renameTask            *connect.Client[v1.RenameTaskRequest, v1.RenameTaskResponse]
 }
 
 // ListTasks calls tank.task.v1.TaskService.ListTasks.
@@ -273,6 +283,11 @@ func (c *taskServiceClient) SendTask(ctx context.Context, req *connect.Request[v
 	return c.sendTask.CallUnary(ctx, req)
 }
 
+// RenameTask calls tank.task.v1.TaskService.RenameTask.
+func (c *taskServiceClient) RenameTask(ctx context.Context, req *connect.Request[v1.RenameTaskRequest]) (*connect.Response[v1.RenameTaskResponse], error) {
+	return c.renameTask.CallUnary(ctx, req)
+}
+
 // TaskServiceHandler is an implementation of the tank.task.v1.TaskService service.
 type TaskServiceHandler interface {
 	ListTasks(context.Context, *connect.Request[v1.ListTasksRequest]) (*connect.Response[v1.ListTasksResponse], error)
@@ -289,6 +304,7 @@ type TaskServiceHandler interface {
 	SetTaskSettings(context.Context, *connect.Request[v1.SetTaskSettingsRequest]) (*connect.Response[v1.SetTaskSettingsResponse], error)
 	RecordTaskRun(context.Context, *connect.Request[v1.RecordTaskRunRequest]) (*connect.Response[v1.RecordTaskRunResponse], error)
 	SendTask(context.Context, *connect.Request[v1.SendTaskRequest]) (*connect.Response[v1.SendTaskResponse], error)
+	RenameTask(context.Context, *connect.Request[v1.RenameTaskRequest]) (*connect.Response[v1.RenameTaskResponse], error)
 }
 
 // NewTaskServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -382,6 +398,12 @@ func NewTaskServiceHandler(svc TaskServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(taskServiceMethods.ByName("SendTask")),
 		connect.WithHandlerOptions(opts...),
 	)
+	taskServiceRenameTaskHandler := connect.NewUnaryHandler(
+		TaskServiceRenameTaskProcedure,
+		svc.RenameTask,
+		connect.WithSchema(taskServiceMethods.ByName("RenameTask")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/tank.task.v1.TaskService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case TaskServiceListTasksProcedure:
@@ -412,6 +434,8 @@ func NewTaskServiceHandler(svc TaskServiceHandler, opts ...connect.HandlerOption
 			taskServiceRecordTaskRunHandler.ServeHTTP(w, r)
 		case TaskServiceSendTaskProcedure:
 			taskServiceSendTaskHandler.ServeHTTP(w, r)
+		case TaskServiceRenameTaskProcedure:
+			taskServiceRenameTaskHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -475,4 +499,8 @@ func (UnimplementedTaskServiceHandler) RecordTaskRun(context.Context, *connect.R
 
 func (UnimplementedTaskServiceHandler) SendTask(context.Context, *connect.Request[v1.SendTaskRequest]) (*connect.Response[v1.SendTaskResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.task.v1.TaskService.SendTask is not implemented"))
+}
+
+func (UnimplementedTaskServiceHandler) RenameTask(context.Context, *connect.Request[v1.RenameTaskRequest]) (*connect.Response[v1.RenameTaskResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.task.v1.TaskService.RenameTask is not implemented"))
 }
