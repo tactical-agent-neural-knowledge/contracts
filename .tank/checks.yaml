@@ -1,0 +1,23 @@
+# TANK's checks of every push and pull request (agent-control internal/pushchecks). Each job
+# runs on TANK's nodes from a clone of the exact commit; the commit gets one "TANK checks"
+# check run, green only when every job passed. Replaces .github/workflows/ci.yml's check job and
+# security.yml (secrets only, as it was). This repository is public: TANK runs a pull
+# request from a fork only when its author is a member of the organization.
+version: 1
+neuralsecurity: {scanners: [secrets]}
+jobs:
+  - name: check
+    cpu: "4"
+    steps:
+      - name: generators
+        setup: make tools
+      - name: buf lint
+        run: make lint
+      - name: breaking change check
+        run: git fetch -q --depth 1 origin main:main 2>/dev/null || git fetch -q --depth 1 origin main:refs/heads/main; make breaking
+      - name: generated code is current
+        run: npx --yes @bufbuild/buf generate && git diff --exit-code --stat gen/
+      - name: go build
+        run: go build ./...
+      - name: typescript compiles
+        run: cd gen/ts && npm install --no-audit --no-fund && npm run build
