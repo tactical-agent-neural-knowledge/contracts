@@ -34,6 +34,11 @@ class SurfaceState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     SURFACE_STATE_READY: _ClassVar[SurfaceState]
     SURFACE_STATE_CHECKED: _ClassVar[SurfaceState]
 
+class TaskSort(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    TASK_SORT_UNSPECIFIED: _ClassVar[TaskSort]
+    TASK_SORT_ACTIVITY: _ClassVar[TaskSort]
+
 class CheckReason(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     CHECK_REASON_UNSPECIFIED: _ClassVar[CheckReason]
@@ -69,6 +74,8 @@ SURFACE_STATE_UNSPECIFIED: SurfaceState
 SURFACE_STATE_WAITING_DEPLOY: SurfaceState
 SURFACE_STATE_READY: SurfaceState
 SURFACE_STATE_CHECKED: SurfaceState
+TASK_SORT_UNSPECIFIED: TaskSort
+TASK_SORT_ACTIVITY: TaskSort
 CHECK_REASON_UNSPECIFIED: CheckReason
 CHECK_REASON_AS_ASKED: CheckReason
 CHECK_REASON_FAST: CheckReason
@@ -140,7 +147,7 @@ class TaskNotify(_message.Message):
     def __init__(self, stage: _Optional[_Union[TaskStage, str]] = ..., user_id: _Optional[str] = ..., from_workspace: bool = ...) -> None: ...
 
 class Task(_message.Message):
-    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "title", "details", "stage", "created_by", "created_at", "updated_at", "stage_at", "run_id", "progress", "proof", "checked_by", "checked_at", "stuck_reason", "notify", "asker_muted", "channel_name", "link", "file_ids", "source_message_id", "surfaces")
+    __slots__ = ("id", "workspace_id", "channel_id", "thread_root_id", "title", "details", "stage", "created_by", "created_at", "updated_at", "stage_at", "run_id", "progress", "proof", "checked_by", "checked_at", "stuck_reason", "notify", "asker_muted", "channel_name", "link", "file_ids", "source_message_id", "surfaces", "ask", "title_edited", "last_activity_at")
     ID_FIELD_NUMBER: _ClassVar[int]
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -165,6 +172,9 @@ class Task(_message.Message):
     FILE_IDS_FIELD_NUMBER: _ClassVar[int]
     SOURCE_MESSAGE_ID_FIELD_NUMBER: _ClassVar[int]
     SURFACES_FIELD_NUMBER: _ClassVar[int]
+    ASK_FIELD_NUMBER: _ClassVar[int]
+    TITLE_EDITED_FIELD_NUMBER: _ClassVar[int]
+    LAST_ACTIVITY_AT_FIELD_NUMBER: _ClassVar[int]
     id: str
     workspace_id: str
     channel_id: str
@@ -189,21 +199,26 @@ class Task(_message.Message):
     file_ids: _containers.RepeatedScalarFieldContainer[str]
     source_message_id: str
     surfaces: _containers.RepeatedCompositeFieldContainer[SurfaceCheck]
-    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., title: _Optional[str] = ..., details: _Optional[str] = ..., stage: _Optional[_Union[TaskStage, str]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stage_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., run_id: _Optional[str] = ..., progress: _Optional[str] = ..., proof: _Optional[_Union[TaskProof, _Mapping]] = ..., checked_by: _Optional[str] = ..., checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stuck_reason: _Optional[str] = ..., notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ..., asker_muted: bool = ..., channel_name: _Optional[str] = ..., link: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ..., source_message_id: _Optional[str] = ..., surfaces: _Optional[_Iterable[_Union[SurfaceCheck, _Mapping]]] = ...) -> None: ...
+    ask: str
+    title_edited: bool
+    last_activity_at: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., thread_root_id: _Optional[str] = ..., title: _Optional[str] = ..., details: _Optional[str] = ..., stage: _Optional[_Union[TaskStage, str]] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stage_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., run_id: _Optional[str] = ..., progress: _Optional[str] = ..., proof: _Optional[_Union[TaskProof, _Mapping]] = ..., checked_by: _Optional[str] = ..., checked_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., stuck_reason: _Optional[str] = ..., notify: _Optional[_Iterable[_Union[TaskNotify, _Mapping]]] = ..., asker_muted: bool = ..., channel_name: _Optional[str] = ..., link: _Optional[str] = ..., file_ids: _Optional[_Iterable[str]] = ..., source_message_id: _Optional[str] = ..., surfaces: _Optional[_Iterable[_Union[SurfaceCheck, _Mapping]]] = ..., ask: _Optional[str] = ..., title_edited: bool = ..., last_activity_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class ListTasksRequest(_message.Message):
-    __slots__ = ("workspace_id", "channel_id", "stages", "asked_by", "limit")
+    __slots__ = ("workspace_id", "channel_id", "stages", "asked_by", "limit", "sort")
     WORKSPACE_ID_FIELD_NUMBER: _ClassVar[int]
     CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
     STAGES_FIELD_NUMBER: _ClassVar[int]
     ASKED_BY_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
+    SORT_FIELD_NUMBER: _ClassVar[int]
     workspace_id: str
     channel_id: str
     stages: _containers.RepeatedScalarFieldContainer[TaskStage]
     asked_by: str
     limit: int
-    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., stages: _Optional[_Iterable[_Union[TaskStage, str]]] = ..., asked_by: _Optional[str] = ..., limit: _Optional[int] = ...) -> None: ...
+    sort: TaskSort
+    def __init__(self, workspace_id: _Optional[str] = ..., channel_id: _Optional[str] = ..., stages: _Optional[_Iterable[_Union[TaskStage, str]]] = ..., asked_by: _Optional[str] = ..., limit: _Optional[int] = ..., sort: _Optional[_Union[TaskSort, str]] = ...) -> None: ...
 
 class ListTasksResponse(_message.Message):
     __slots__ = ("tasks", "has_agent", "ready_to_check")
@@ -336,6 +351,20 @@ class CancelTaskRequest(_message.Message):
     def __init__(self, task_id: _Optional[str] = ...) -> None: ...
 
 class CancelTaskResponse(_message.Message):
+    __slots__ = ("task",)
+    TASK_FIELD_NUMBER: _ClassVar[int]
+    task: Task
+    def __init__(self, task: _Optional[_Union[Task, _Mapping]] = ...) -> None: ...
+
+class RenameTaskRequest(_message.Message):
+    __slots__ = ("task_id", "title")
+    TASK_ID_FIELD_NUMBER: _ClassVar[int]
+    TITLE_FIELD_NUMBER: _ClassVar[int]
+    task_id: str
+    title: str
+    def __init__(self, task_id: _Optional[str] = ..., title: _Optional[str] = ...) -> None: ...
+
+class RenameTaskResponse(_message.Message):
     __slots__ = ("task",)
     TASK_FIELD_NUMBER: _ClassVar[int]
     task: Task

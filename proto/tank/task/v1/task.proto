@@ -133,6 +133,20 @@ message Task {
   // whole through stage, as before. stage is derived: READY_TO_CHECK while any surface is
   // READY, else WAITING_DEPLOY while any waits, else DONE once every one is CHECKED.
   repeated SurfaceCheck surfaces = 24;
+  // The ask in the asker's own words. title is now a short name (2026-11-27): generated from
+  // the ask a moment after the task is made (until then, the ask clipped), or typed by a person.
+  string ask = 25;
+  // A person named it with RenameTask; generated names never replace it.
+  bool title_edited = 26;
+  // The newest of: a stage change, or a message in the task's thread by anyone, an agent
+  // included. ListTasks sorts on it for the Tasks view.
+  google.protobuf.Timestamp last_activity_at = 27;
+}
+
+enum TaskSort {
+  TASK_SORT_UNSPECIFIED = 0; // as before: by stage, then updated_at
+  // Newest last_activity_at first.
+  TASK_SORT_ACTIVITY = 1;
 }
 
 
@@ -142,6 +156,7 @@ message ListTasksRequest {
   repeated TaskStage stages = 3; // empty = all
   string asked_by = 4;    // only tasks this person asked for
   int32 limit = 5;        // 0 = 500
+  TaskSort sort = 6;
 }
 message ListTasksResponse {
   repeated Task tasks = 1;
@@ -250,6 +265,16 @@ message CancelTaskResponse {
   Task task = 1;
 }
 
+// Rename a task, as a Tread is renamed. The name is trimmed, runs of spaces collapse, 1 to 80
+// characters. It marks the title as edited, so a generated name never replaces it.
+message RenameTaskRequest {
+  string task_id = 1;
+  string title = 2;
+}
+message RenameTaskResponse {
+  Task task = 1;
+}
+
 // Replace the task's own picks (workspace rules are not affected).
 message SetTaskNotifyRequest {
   string task_id = 1;
@@ -343,4 +368,5 @@ service TaskService {
   rpc SetTaskSettings(SetTaskSettingsRequest) returns (SetTaskSettingsResponse);
   rpc RecordTaskRun(RecordTaskRunRequest) returns (RecordTaskRunResponse);
   rpc SendTask(SendTaskRequest) returns (SendTaskResponse);
+  rpc RenameTask(RenameTaskRequest) returns (RenameTaskResponse);
 }
