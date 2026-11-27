@@ -234,6 +234,9 @@ const (
 	// RunnerServiceOpenPullRequestProcedure is the fully-qualified name of the RunnerService's
 	// OpenPullRequest RPC.
 	RunnerServiceOpenPullRequestProcedure = "/tank.agentctl.v1.RunnerService/OpenPullRequest"
+	// RunnerServiceClosePullRequestProcedure is the fully-qualified name of the RunnerService's
+	// ClosePullRequest RPC.
+	RunnerServiceClosePullRequestProcedure = "/tank.agentctl.v1.RunnerService/ClosePullRequest"
 	// RunnerServiceRequestCiWatchProcedure is the fully-qualified name of the RunnerService's
 	// RequestCiWatch RPC.
 	RunnerServiceRequestCiWatchProcedure = "/tank.agentctl.v1.RunnerService/RequestCiWatch"
@@ -612,6 +615,7 @@ type RunnerServiceClient interface {
 	WorkbenchShow(context.Context, *connect.Request[v1.WorkbenchShowRequest]) (*connect.Response[v1.WorkbenchShowResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
+	ClosePullRequest(context.Context, *connect.Request[v1.ClosePullRequestRequest]) (*connect.Response[v1.ClosePullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
 	GetCiFailure(context.Context, *connect.Request[v1.GetCiFailureRequest]) (*connect.Response[v1.GetCiFailureResponse], error)
 	RecordDecision(context.Context, *connect.Request[v1.RecordDecisionRequest]) (*connect.Response[v1.RecordDecisionResponse], error)
@@ -1074,6 +1078,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("OpenPullRequest")),
 			connect.WithClientOptions(opts...),
 		),
+		closePullRequest: connect.NewClient[v1.ClosePullRequestRequest, v1.ClosePullRequestResponse](
+			httpClient,
+			baseURL+RunnerServiceClosePullRequestProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ClosePullRequest")),
+			connect.WithClientOptions(opts...),
+		),
 		requestCiWatch: connect.NewClient[v1.RequestCiWatchRequest, v1.RequestCiWatchResponse](
 			httpClient,
 			baseURL+RunnerServiceRequestCiWatchProcedure,
@@ -1239,6 +1249,7 @@ type runnerServiceClient struct {
 	workbenchShow            *connect.Client[v1.WorkbenchShowRequest, v1.WorkbenchShowResponse]
 	pollInbox                *connect.Client[v1.PollInboxRequest, v1.PollInboxResponse]
 	openPullRequest          *connect.Client[v1.OpenPullRequestRequest, v1.OpenPullRequestResponse]
+	closePullRequest         *connect.Client[v1.ClosePullRequestRequest, v1.ClosePullRequestResponse]
 	requestCiWatch           *connect.Client[v1.RequestCiWatchRequest, v1.RequestCiWatchResponse]
 	getCiFailure             *connect.Client[v1.GetCiFailureRequest, v1.GetCiFailureResponse]
 	recordDecision           *connect.Client[v1.RecordDecisionRequest, v1.RecordDecisionResponse]
@@ -1606,6 +1617,11 @@ func (c *runnerServiceClient) OpenPullRequest(ctx context.Context, req *connect.
 	return c.openPullRequest.CallUnary(ctx, req)
 }
 
+// ClosePullRequest calls tank.agentctl.v1.RunnerService.ClosePullRequest.
+func (c *runnerServiceClient) ClosePullRequest(ctx context.Context, req *connect.Request[v1.ClosePullRequestRequest]) (*connect.Response[v1.ClosePullRequestResponse], error) {
+	return c.closePullRequest.CallUnary(ctx, req)
+}
+
 // RequestCiWatch calls tank.agentctl.v1.RunnerService.RequestCiWatch.
 func (c *runnerServiceClient) RequestCiWatch(ctx context.Context, req *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error) {
 	return c.requestCiWatch.CallUnary(ctx, req)
@@ -1775,6 +1791,7 @@ type RunnerServiceHandler interface {
 	WorkbenchShow(context.Context, *connect.Request[v1.WorkbenchShowRequest]) (*connect.Response[v1.WorkbenchShowResponse], error)
 	PollInbox(context.Context, *connect.Request[v1.PollInboxRequest]) (*connect.Response[v1.PollInboxResponse], error)
 	OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error)
+	ClosePullRequest(context.Context, *connect.Request[v1.ClosePullRequestRequest]) (*connect.Response[v1.ClosePullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
 	GetCiFailure(context.Context, *connect.Request[v1.GetCiFailureRequest]) (*connect.Response[v1.GetCiFailureResponse], error)
 	RecordDecision(context.Context, *connect.Request[v1.RecordDecisionRequest]) (*connect.Response[v1.RecordDecisionResponse], error)
@@ -2233,6 +2250,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("OpenPullRequest")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceClosePullRequestHandler := connect.NewUnaryHandler(
+		RunnerServiceClosePullRequestProcedure,
+		svc.ClosePullRequest,
+		connect.WithSchema(runnerServiceMethods.ByName("ClosePullRequest")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServiceRequestCiWatchHandler := connect.NewUnaryHandler(
 		RunnerServiceRequestCiWatchProcedure,
 		svc.RequestCiWatch,
@@ -2465,6 +2488,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServicePollInboxHandler.ServeHTTP(w, r)
 		case RunnerServiceOpenPullRequestProcedure:
 			runnerServiceOpenPullRequestHandler.ServeHTTP(w, r)
+		case RunnerServiceClosePullRequestProcedure:
+			runnerServiceClosePullRequestHandler.ServeHTTP(w, r)
 		case RunnerServiceRequestCiWatchProcedure:
 			runnerServiceRequestCiWatchHandler.ServeHTTP(w, r)
 		case RunnerServiceGetCiFailureProcedure:
@@ -2782,6 +2807,10 @@ func (UnimplementedRunnerServiceHandler) PollInbox(context.Context, *connect.Req
 
 func (UnimplementedRunnerServiceHandler) OpenPullRequest(context.Context, *connect.Request[v1.OpenPullRequestRequest]) (*connect.Response[v1.OpenPullRequestResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.OpenPullRequest is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ClosePullRequest(context.Context, *connect.Request[v1.ClosePullRequestRequest]) (*connect.Response[v1.ClosePullRequestResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ClosePullRequest is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error) {

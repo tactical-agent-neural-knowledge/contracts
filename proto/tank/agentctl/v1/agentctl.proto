@@ -1045,6 +1045,24 @@ message OpenPullRequestResponse {
   GuardrailRefusal refused = 3;
 }
 
+// ClosePullRequest closes an open pull request without merging it, for a pull request
+// that has been superseded (Robby, 2026-11-27). The control plane closes it with the
+// App's own token, so the sandbox never holds one. Only a repository the run may write
+// to is allowed; closing an already closed pull request is not an error.
+message ClosePullRequestRequest {
+  string repo = 1;         // owner/name; empty: the run's primary repository
+  int32 pr_number = 2;
+  // Posted on the pull request before it is closed, e.g. which one supersedes it.
+  string comment = 3;
+}
+message ClosePullRequestResponse {
+  string pr_url = 1;
+  // GitHub's state after the call: "closed", or "merged" when it had already merged
+  // (nothing is changed then).
+  string state = 2;
+  GuardrailRefusal refused = 3;
+}
+
 // Why an action was not performed: the guardrail and the exact blocker.
 message GuardrailRefusal {
   string guardrail_id = 1;
@@ -1406,6 +1424,7 @@ service RunnerService {
   rpc PollInbox(PollInboxRequest) returns (PollInboxResponse);
 
   rpc OpenPullRequest(OpenPullRequestRequest) returns (OpenPullRequestResponse);
+  rpc ClosePullRequest(ClosePullRequestRequest) returns (ClosePullRequestResponse);
   rpc RequestCiWatch(RequestCiWatchRequest) returns (RequestCiWatchResponse);
   rpc GetCiFailure(GetCiFailureRequest) returns (GetCiFailureResponse);
 
