@@ -1702,6 +1702,92 @@ class GetCiFailureResponse(_message.Message):
     failed_log_excerpt: str
     def __init__(self, complete: bool = ..., green: bool = ..., checks: _Optional[_Iterable[_Union[_blocks_pb2.Check, _Mapping]]] = ..., failed_log_excerpt: _Optional[str] = ...) -> None: ...
 
+class ReleaseStatusRequest(_message.Message):
+    __slots__ = ("repo", "pr_number", "sha")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    PR_NUMBER_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    pr_number: int
+    sha: str
+    def __init__(self, repo: _Optional[str] = ..., pr_number: _Optional[int] = ..., sha: _Optional[str] = ...) -> None: ...
+
+class ReleaseStatusResponse(_message.Message):
+    __slots__ = ("repo", "pr_number", "sha", "merged", "merged_at", "summary", "workflows", "platforms", "facts", "unread")
+    REPO_FIELD_NUMBER: _ClassVar[int]
+    PR_NUMBER_FIELD_NUMBER: _ClassVar[int]
+    SHA_FIELD_NUMBER: _ClassVar[int]
+    MERGED_FIELD_NUMBER: _ClassVar[int]
+    MERGED_AT_FIELD_NUMBER: _ClassVar[int]
+    SUMMARY_FIELD_NUMBER: _ClassVar[int]
+    WORKFLOWS_FIELD_NUMBER: _ClassVar[int]
+    PLATFORMS_FIELD_NUMBER: _ClassVar[int]
+    FACTS_FIELD_NUMBER: _ClassVar[int]
+    UNREAD_FIELD_NUMBER: _ClassVar[int]
+    repo: str
+    pr_number: int
+    sha: str
+    merged: bool
+    merged_at: _timestamp_pb2.Timestamp
+    summary: str
+    workflows: _containers.RepeatedCompositeFieldContainer[ReleaseWorkflow]
+    platforms: _containers.RepeatedCompositeFieldContainer[ReleasePlatform]
+    facts: _containers.RepeatedScalarFieldContainer[str]
+    unread: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, repo: _Optional[str] = ..., pr_number: _Optional[int] = ..., sha: _Optional[str] = ..., merged: bool = ..., merged_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., summary: _Optional[str] = ..., workflows: _Optional[_Iterable[_Union[ReleaseWorkflow, _Mapping]]] = ..., platforms: _Optional[_Iterable[_Union[ReleasePlatform, _Mapping]]] = ..., facts: _Optional[_Iterable[str]] = ..., unread: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ReleaseWorkflow(_message.Message):
+    __slots__ = ("name", "status", "conclusion", "url", "started_at", "completed_at", "jobs")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    CONCLUSION_FIELD_NUMBER: _ClassVar[int]
+    URL_FIELD_NUMBER: _ClassVar[int]
+    STARTED_AT_FIELD_NUMBER: _ClassVar[int]
+    COMPLETED_AT_FIELD_NUMBER: _ClassVar[int]
+    JOBS_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    status: str
+    conclusion: str
+    url: str
+    started_at: _timestamp_pb2.Timestamp
+    completed_at: _timestamp_pb2.Timestamp
+    jobs: _containers.RepeatedCompositeFieldContainer[ReleaseJob]
+    def __init__(self, name: _Optional[str] = ..., status: _Optional[str] = ..., conclusion: _Optional[str] = ..., url: _Optional[str] = ..., started_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., completed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., jobs: _Optional[_Iterable[_Union[ReleaseJob, _Mapping]]] = ...) -> None: ...
+
+class ReleaseJob(_message.Message):
+    __slots__ = ("name", "conclusion", "completed_at")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    CONCLUSION_FIELD_NUMBER: _ClassVar[int]
+    COMPLETED_AT_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    conclusion: str
+    completed_at: _timestamp_pb2.Timestamp
+    def __init__(self, name: _Optional[str] = ..., conclusion: _Optional[str] = ..., completed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class ReleasePlatform(_message.Message):
+    __slots__ = ("platform", "delivery", "build_number", "runtime_version", "update_id", "update_group_id", "published_at", "note", "serving_update_id", "newer_serving")
+    PLATFORM_FIELD_NUMBER: _ClassVar[int]
+    DELIVERY_FIELD_NUMBER: _ClassVar[int]
+    BUILD_NUMBER_FIELD_NUMBER: _ClassVar[int]
+    RUNTIME_VERSION_FIELD_NUMBER: _ClassVar[int]
+    UPDATE_ID_FIELD_NUMBER: _ClassVar[int]
+    UPDATE_GROUP_ID_FIELD_NUMBER: _ClassVar[int]
+    PUBLISHED_AT_FIELD_NUMBER: _ClassVar[int]
+    NOTE_FIELD_NUMBER: _ClassVar[int]
+    SERVING_UPDATE_ID_FIELD_NUMBER: _ClassVar[int]
+    NEWER_SERVING_FIELD_NUMBER: _ClassVar[int]
+    platform: str
+    delivery: str
+    build_number: str
+    runtime_version: str
+    update_id: str
+    update_group_id: str
+    published_at: _timestamp_pb2.Timestamp
+    note: str
+    serving_update_id: str
+    newer_serving: bool
+    def __init__(self, platform: _Optional[str] = ..., delivery: _Optional[str] = ..., build_number: _Optional[str] = ..., runtime_version: _Optional[str] = ..., update_id: _Optional[str] = ..., update_group_id: _Optional[str] = ..., published_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., note: _Optional[str] = ..., serving_update_id: _Optional[str] = ..., newer_serving: bool = ...) -> None: ...
+
 class RecordDecisionRequest(_message.Message):
     __slots__ = ("title", "body", "tags")
     TITLE_FIELD_NUMBER: _ClassVar[int]

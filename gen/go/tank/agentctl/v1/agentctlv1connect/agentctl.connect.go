@@ -243,6 +243,9 @@ const (
 	// RunnerServiceGetCiFailureProcedure is the fully-qualified name of the RunnerService's
 	// GetCiFailure RPC.
 	RunnerServiceGetCiFailureProcedure = "/tank.agentctl.v1.RunnerService/GetCiFailure"
+	// RunnerServiceReleaseStatusProcedure is the fully-qualified name of the RunnerService's
+	// ReleaseStatus RPC.
+	RunnerServiceReleaseStatusProcedure = "/tank.agentctl.v1.RunnerService/ReleaseStatus"
 	// RunnerServiceRecordDecisionProcedure is the fully-qualified name of the RunnerService's
 	// RecordDecision RPC.
 	RunnerServiceRecordDecisionProcedure = "/tank.agentctl.v1.RunnerService/RecordDecision"
@@ -618,6 +621,7 @@ type RunnerServiceClient interface {
 	ClosePullRequest(context.Context, *connect.Request[v1.ClosePullRequestRequest]) (*connect.Response[v1.ClosePullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
 	GetCiFailure(context.Context, *connect.Request[v1.GetCiFailureRequest]) (*connect.Response[v1.GetCiFailureResponse], error)
+	ReleaseStatus(context.Context, *connect.Request[v1.ReleaseStatusRequest]) (*connect.Response[v1.ReleaseStatusResponse], error)
 	RecordDecision(context.Context, *connect.Request[v1.RecordDecisionRequest]) (*connect.Response[v1.RecordDecisionResponse], error)
 	Remember(context.Context, *connect.Request[v1.RememberRequest]) (*connect.Response[v1.RememberResponse], error)
 	// Overdrive's predicted work: how far a database change was proven before anybody asked
@@ -1096,6 +1100,12 @@ func NewRunnerServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(runnerServiceMethods.ByName("GetCiFailure")),
 			connect.WithClientOptions(opts...),
 		),
+		releaseStatus: connect.NewClient[v1.ReleaseStatusRequest, v1.ReleaseStatusResponse](
+			httpClient,
+			baseURL+RunnerServiceReleaseStatusProcedure,
+			connect.WithSchema(runnerServiceMethods.ByName("ReleaseStatus")),
+			connect.WithClientOptions(opts...),
+		),
 		recordDecision: connect.NewClient[v1.RecordDecisionRequest, v1.RecordDecisionResponse](
 			httpClient,
 			baseURL+RunnerServiceRecordDecisionProcedure,
@@ -1252,6 +1262,7 @@ type runnerServiceClient struct {
 	closePullRequest         *connect.Client[v1.ClosePullRequestRequest, v1.ClosePullRequestResponse]
 	requestCiWatch           *connect.Client[v1.RequestCiWatchRequest, v1.RequestCiWatchResponse]
 	getCiFailure             *connect.Client[v1.GetCiFailureRequest, v1.GetCiFailureResponse]
+	releaseStatus            *connect.Client[v1.ReleaseStatusRequest, v1.ReleaseStatusResponse]
 	recordDecision           *connect.Client[v1.RecordDecisionRequest, v1.RecordDecisionResponse]
 	remember                 *connect.Client[v1.RememberRequest, v1.RememberResponse]
 	reportMigrationProof     *connect.Client[v1.ReportMigrationProofRequest, v1.ReportMigrationProofResponse]
@@ -1632,6 +1643,11 @@ func (c *runnerServiceClient) GetCiFailure(ctx context.Context, req *connect.Req
 	return c.getCiFailure.CallUnary(ctx, req)
 }
 
+// ReleaseStatus calls tank.agentctl.v1.RunnerService.ReleaseStatus.
+func (c *runnerServiceClient) ReleaseStatus(ctx context.Context, req *connect.Request[v1.ReleaseStatusRequest]) (*connect.Response[v1.ReleaseStatusResponse], error) {
+	return c.releaseStatus.CallUnary(ctx, req)
+}
+
 // RecordDecision calls tank.agentctl.v1.RunnerService.RecordDecision.
 func (c *runnerServiceClient) RecordDecision(ctx context.Context, req *connect.Request[v1.RecordDecisionRequest]) (*connect.Response[v1.RecordDecisionResponse], error) {
 	return c.recordDecision.CallUnary(ctx, req)
@@ -1794,6 +1810,7 @@ type RunnerServiceHandler interface {
 	ClosePullRequest(context.Context, *connect.Request[v1.ClosePullRequestRequest]) (*connect.Response[v1.ClosePullRequestResponse], error)
 	RequestCiWatch(context.Context, *connect.Request[v1.RequestCiWatchRequest]) (*connect.Response[v1.RequestCiWatchResponse], error)
 	GetCiFailure(context.Context, *connect.Request[v1.GetCiFailureRequest]) (*connect.Response[v1.GetCiFailureResponse], error)
+	ReleaseStatus(context.Context, *connect.Request[v1.ReleaseStatusRequest]) (*connect.Response[v1.ReleaseStatusResponse], error)
 	RecordDecision(context.Context, *connect.Request[v1.RecordDecisionRequest]) (*connect.Response[v1.RecordDecisionResponse], error)
 	Remember(context.Context, *connect.Request[v1.RememberRequest]) (*connect.Response[v1.RememberResponse], error)
 	// Overdrive's predicted work: how far a database change was proven before anybody asked
@@ -2268,6 +2285,12 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(runnerServiceMethods.ByName("GetCiFailure")),
 		connect.WithHandlerOptions(opts...),
 	)
+	runnerServiceReleaseStatusHandler := connect.NewUnaryHandler(
+		RunnerServiceReleaseStatusProcedure,
+		svc.ReleaseStatus,
+		connect.WithSchema(runnerServiceMethods.ByName("ReleaseStatus")),
+		connect.WithHandlerOptions(opts...),
+	)
 	runnerServiceRecordDecisionHandler := connect.NewUnaryHandler(
 		RunnerServiceRecordDecisionProcedure,
 		svc.RecordDecision,
@@ -2494,6 +2517,8 @@ func NewRunnerServiceHandler(svc RunnerServiceHandler, opts ...connect.HandlerOp
 			runnerServiceRequestCiWatchHandler.ServeHTTP(w, r)
 		case RunnerServiceGetCiFailureProcedure:
 			runnerServiceGetCiFailureHandler.ServeHTTP(w, r)
+		case RunnerServiceReleaseStatusProcedure:
+			runnerServiceReleaseStatusHandler.ServeHTTP(w, r)
 		case RunnerServiceRecordDecisionProcedure:
 			runnerServiceRecordDecisionHandler.ServeHTTP(w, r)
 		case RunnerServiceRememberProcedure:
@@ -2819,6 +2844,10 @@ func (UnimplementedRunnerServiceHandler) RequestCiWatch(context.Context, *connec
 
 func (UnimplementedRunnerServiceHandler) GetCiFailure(context.Context, *connect.Request[v1.GetCiFailureRequest]) (*connect.Response[v1.GetCiFailureResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.GetCiFailure is not implemented"))
+}
+
+func (UnimplementedRunnerServiceHandler) ReleaseStatus(context.Context, *connect.Request[v1.ReleaseStatusRequest]) (*connect.Response[v1.ReleaseStatusResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("tank.agentctl.v1.RunnerService.ReleaseStatus is not implemented"))
 }
 
 func (UnimplementedRunnerServiceHandler) RecordDecision(context.Context, *connect.Request[v1.RecordDecisionRequest]) (*connect.Response[v1.RecordDecisionResponse], error) {
