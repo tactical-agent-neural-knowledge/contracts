@@ -1088,6 +1088,66 @@ message GetCiFailureResponse {
   string failed_log_excerpt = 4;
 }
 
+// ReleaseStatus is how a merged change went out, read live by the control plane: the
+// workflow runs and job logs on its merge commit through TANK's App, TANK's own release
+// records, and for an Expo app what the update server serves right now. A sandbox has no
+// GitHub Actions access of its own; this is how a run answers "did it ship?" or "is there a
+// TestFlight build?" from what happened, never from how the pipeline is meant to work
+// (tank-team, 2026-11-28: mobile #449 had shipped as an update to build 429 at 09:51, and
+// the run said it could not see whether anything ran). Only a repository the run may read.
+message ReleaseStatusRequest {
+  string repo = 1;      // owner/name; empty: the run's primary repository
+  int32 pr_number = 2;  // a merged pull request, or
+  string sha = 3;       // a commit; one of the two is required
+}
+message ReleaseStatusResponse {
+  string repo = 1;
+  int32 pr_number = 2;
+  string sha = 3;       // the merge commit read
+  bool merged = 4;
+  google.protobuf.Timestamp merged_at = 5;
+  // One plain sentence for a person, in UTC, e.g. "#449 shipped as an over-the-air update
+  // at 09:51 UTC to iOS build 429; no new TestFlight build was needed."
+  string summary = 6;
+  repeated ReleaseWorkflow workflows = 7;
+  // An Expo app's delivery per platform, from the build and update logs.
+  repeated ReleasePlatform platforms = 8;
+  // Each fact read, one per line, naming where it was read.
+  repeated string facts = 9;
+  // What could not be read and why. Say so; never guess past it.
+  repeated string unread = 10;
+}
+message ReleaseWorkflow {
+  string name = 1;
+  string status = 2;      // queued | in_progress | completed
+  string conclusion = 3;  // success | failure | skipped | ...
+  string url = 4;
+  google.protobuf.Timestamp started_at = 5;
+  google.protobuf.Timestamp completed_at = 6;
+  repeated ReleaseJob jobs = 7;
+}
+message ReleaseJob {
+  string name = 1;
+  string conclusion = 2;
+  google.protobuf.Timestamp completed_at = 3;
+}
+message ReleasePlatform {
+  string platform = 1;        // ios | android
+  // update: published over the air to an installed build; build: a new native build;
+  // skipped: neither, note says why; unknown: the logs did not say.
+  string delivery = 2;
+  string build_number = 3;    // the store build that runs it (update) or was made (build)
+  string runtime_version = 4;
+  string update_id = 5;
+  string update_group_id = 6;
+  google.protobuf.Timestamp published_at = 7;
+  string note = 8;
+  // What the update server hands this platform's production phones right now, asked as a
+  // phone would; empty when it was not asked. newer_serving: it is a later update than this.
+  string serving_update_id = 9;
+  bool newer_serving = 10;
+}
+
 // ------------------------------------------------------------------ knowledge
 
 message RecordDecisionRequest {
@@ -1427,6 +1487,7 @@ service RunnerService {
   rpc ClosePullRequest(ClosePullRequestRequest) returns (ClosePullRequestResponse);
   rpc RequestCiWatch(RequestCiWatchRequest) returns (RequestCiWatchResponse);
   rpc GetCiFailure(GetCiFailureRequest) returns (GetCiFailureResponse);
+  rpc ReleaseStatus(ReleaseStatusRequest) returns (ReleaseStatusResponse);
 
   rpc RecordDecision(RecordDecisionRequest) returns (RecordDecisionResponse);
   rpc Remember(RememberRequest) returns (RememberResponse);
